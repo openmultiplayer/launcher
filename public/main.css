@@ -1,0 +1,23 @@
+/* Width */
+#scroll {
+  overflow-y: scroll;
+}
+
+#scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+#scroll::-webkit-scrollbar-track {
+  background: #1d1d1d;
+}
+
+/* Handle */
+#scroll::-webkit-scrollbar-thumb {
+  background: #585858;
+}
+
+/* Handle on hover */
+#scroll::-webkit-scrollbar-thumb:hover {
+  background: #797979;
+}
