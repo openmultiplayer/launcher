@@ -65,8 +65,6 @@ const SearchBar = (props: IProps) => {
               aspectRatio: 1,
               justifyContent: "center",
               alignItems: "center",
-              borderBottomWidth: 1,
-              borderColor: theme.separatorBorderColor,
             }}
           >
             <Text size={2} color={theme.separatorBorderColor}>
