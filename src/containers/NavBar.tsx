@@ -12,16 +12,19 @@ import Text from "../components/Text";
 import Icon from "../components/Icon";
 import DirectConnetOverlay from "./DirectConnetOverlay";
 import { ThemeContext } from "../contexts/theme";
+import { ListType } from "../utils/types";
 
-type ListType = "fav" | "internet" | "partners";
+interface IProps {
+  onListChange: (type: ListType) => void;
+}
 
-const NavBar = () => {
+const NavBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
-  const [selectedList, setSelectedList] = useState<ListType>("fav");
+  const [selectedList, setSelectedList] = useState<ListType>("favorites");
   const [showingDirectConnect, showDirectConnect] = useState(false);
 
   const list: { label: string; type: ListType }[] = [
-    { label: "❤️ Favorites", type: "fav" },
+    { label: "❤️ Favorites", type: "favorites" },
     { label: "🌐 Internet", type: "internet" },
     { label: "🫱🏼‍🫲🏽 Partners", type: "partners" },
   ];
@@ -49,7 +52,10 @@ const NavBar = () => {
                     : {},
                 ]}
                 onPress={() => {
-                  setSelectedList(item.type);
+                  if (selectedList !== item.type) {
+                    setSelectedList(item.type);
+                    props.onListChange(item.type);
+                  }
                 }}
               >
                 <Text

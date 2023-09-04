@@ -4,9 +4,12 @@ import NavBar from "./containers/NavBar";
 import MainView from "./containers/MainBody";
 import { ThemeContext } from "./contexts/theme";
 import { darkThemeColors, lightThemeColors } from "./constants/theme";
+import { ListType } from "./utils/types";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
+
+  const onListChange = (type: ListType) => {};
 
   return (
     <ThemeContext.Provider
@@ -17,7 +20,7 @@ const App = () => {
       }}
     >
       <View style={styles.app}>
-        <NavBar />
+        <NavBar onListChange={(type) => onListChange(type)} />
         <MainView />
       </View>
     </ThemeContext.Provider>

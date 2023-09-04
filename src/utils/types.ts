@@ -7,6 +7,8 @@ export type Rule =
   | "weburl"
   | "worldtime";
 
+export type ListType = "favorites" | "internet" | "partners";
+
 export interface Server {
   ip: string;
   port: number;
