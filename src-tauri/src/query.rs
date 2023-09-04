@@ -89,6 +89,14 @@ impl Query {
         packet.push((self.port & 0xFF) as u8);
         packet.push((self.port >> 8 & 0xFF) as u8);
         packet.push(query_type as u8);
+
+        if query_type == 'p' || query_type == 'o' {
+            packet.push(0);
+            packet.push(0);
+            packet.push(0);
+            packet.push(0);
+        }
+
         let amt = self.socket.send(&packet).await.unwrap();
         Ok(amt)
     }
@@ -115,6 +123,8 @@ impl Query {
             self.build_rules_packet(packet)
         } else if query_type == 'o' {
             Ok(String::from("{\"isOmp\": true}"))
+        } else if query_type == 'p' {
+            Ok(String::from("pong"))
         } else {
             Ok(String::from("no_data"))
         }
