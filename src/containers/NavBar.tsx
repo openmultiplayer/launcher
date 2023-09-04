@@ -157,7 +157,8 @@ const styles = StyleSheet.create({
   },
   listItem: {
     height: "100%",
-    paddingHorizontal: 8,
+    paddingRight: 6,
+    marginLeft: 8,
     justifyContent: "center",
   },
   inputs: {
