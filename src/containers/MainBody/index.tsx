@@ -6,7 +6,7 @@ import ServerInfo from "./ServerInfo";
 import SearchBar from "./ServerList/SearchBar";
 import { mockServers } from "../../utils/mocks";
 
-function MainView() {
+const MainView = () => {
   const [selectedServer, setSelectedServer] = useState<Server | undefined>(
     undefined
   );

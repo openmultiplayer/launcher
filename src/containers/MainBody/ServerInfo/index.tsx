@@ -9,7 +9,7 @@ interface IProps {
   server: Server | undefined;
 }
 
-function ServerInfo(props: IProps) {
+const ServerInfo = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
 
   return (
@@ -26,7 +26,7 @@ function ServerInfo(props: IProps) {
       <AdditionalInfo server={props.server} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   serverInfoView: {

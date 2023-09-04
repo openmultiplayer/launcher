@@ -18,7 +18,7 @@ interface IProps {
 type Rule = { name: string; value: string };
 type RuleList = Rule[];
 
-function AdditionalInfo(props: IProps) {
+const AdditionalInfo = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
 
   const rules = useMemo(() => {
@@ -130,7 +130,7 @@ function AdditionalInfo(props: IProps) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   additionalInfoView: {

@@ -13,7 +13,7 @@ interface IProps {
   onPress?: () => void;
 }
 
-function Icon(props: IProps) {
+const Icon = (props: IProps) => {
   const image =
     typeof props.image === "string" ? { uri: props.image } : props.image;
 
@@ -33,7 +33,7 @@ function Icon(props: IProps) {
   } else {
     return Icon;
   }
-}
+};
 
 const styles = StyleSheet.create({
   icon: {

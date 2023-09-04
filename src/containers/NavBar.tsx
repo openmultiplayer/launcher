@@ -15,7 +15,7 @@ import { ThemeContext } from "../contexts/theme";
 
 type ListType = "fav" | "internet" | "partners";
 
-function NavBar() {
+const NavBar = () => {
   const { theme } = useContext(ThemeContext);
   const [selectedList, setSelectedList] = useState<ListType>("fav");
   const [showingDirectConnect, showDirectConnect] = useState(false);
@@ -112,7 +112,7 @@ function NavBar() {
       {/* <View style={{ position: 'absolute', top: 0, left: 0, height: 600, width: 400, backgroundColor: 'red' }} /> */}
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

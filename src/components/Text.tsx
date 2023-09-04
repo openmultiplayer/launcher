@@ -11,7 +11,7 @@ interface IProps extends TextProps {
   children?: React.ReactNode | undefined;
 }
 
-function Text(props: IProps) {
+const Text = (props: IProps) => {
   const size = props.size
     ? props.size === 1
       ? 14
@@ -49,6 +49,6 @@ function Text(props: IProps) {
       {props.children}
     </RNText>
   );
-}
+};
 
 export default Text;
