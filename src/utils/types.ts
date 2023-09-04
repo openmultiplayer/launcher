@@ -45,3 +45,14 @@ export interface SearchData {
   ompOnly: boolean;
   nonEmpty: boolean;
 }
+
+export interface APIResponseServer {
+  gm: string;
+  hn: string;
+  ip: string;
+  la: string;
+  pa: boolean;
+  pc: number;
+  pm: number;
+  vn: string;
+}
