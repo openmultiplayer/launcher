@@ -18,7 +18,8 @@
     "react-dom": "^18.2.0",
     "react-native-big-list": "^1.6.1",
     "react-native-modal": "^13.0.1",
-    "react-native-web": "^0.19.7"
+    "react-native-web": "^0.19.7",
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.4.0",
