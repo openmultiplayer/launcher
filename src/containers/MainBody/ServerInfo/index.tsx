@@ -17,7 +17,6 @@ const ServerInfo = (props: IProps) => {
       style={[
         styles.serverInfoView,
         {
-          borderColor: theme.separatorBorderColor,
           backgroundColor: theme.listBackgroundColor,
         },
       ]}
@@ -33,7 +32,6 @@ const styles = StyleSheet.create({
     flex: 0.285,
     // maxWidth: 350,
     height: "100%",
-    borderLeftWidth: 3,
   },
 });
 

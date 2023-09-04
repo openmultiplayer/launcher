@@ -51,6 +51,7 @@ const AdditionalInfo = (props: IProps) => {
           styles.rulesContainer,
           {
             backgroundColor: theme.itemContainerBackgroundColor,
+            marginTop: 2,
           },
         ]}
         key={"rule-list-item-" + index}
@@ -105,7 +106,7 @@ const AdditionalInfo = (props: IProps) => {
         id="scroll"
         data={rules}
         renderItem={renderRule}
-        contentContainerStyle={{ paddingRight: 3 }}
+        contentContainerStyle={{ paddingHorizontal: 3 }}
       />
       <View
         style={[
@@ -140,9 +141,7 @@ const styles = StyleSheet.create({
   },
   rulesContainer: {
     height: 25,
-    width: "100%",
     flexDirection: "row",
-    marginBottom: 2,
   },
   commonFieldContainer: {
     justifyContent: "center",

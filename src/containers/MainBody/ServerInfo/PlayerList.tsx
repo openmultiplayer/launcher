@@ -21,6 +21,7 @@ const PlayerList = (props: IProps) => {
           styles.playerContainer,
           {
             backgroundColor: theme.itemContainerBackgroundColor,
+            marginTop: 2,
           },
         ]}
         key={"player-list-item-" + index}
@@ -68,7 +69,7 @@ const PlayerList = (props: IProps) => {
         id="scroll"
         data={props.players}
         renderItem={renderPlayer}
-        contentContainerStyle={{ paddingRight: 3 }}
+        contentContainerStyle={{ paddingHorizontal: 3 }}
       />
     </>
   );
@@ -77,9 +78,7 @@ const PlayerList = (props: IProps) => {
 const styles = StyleSheet.create({
   playerContainer: {
     height: 26,
-    width: "100%",
     flexDirection: "row",
-    marginBottom: 2,
   },
   commonFieldContainer: {
     justifyContent: "center",
@@ -87,7 +86,6 @@ const styles = StyleSheet.create({
   nameFieldContainer: {
     flex: 1,
     paddingLeft: 8,
-    borderLeftWidth: 0,
     alignItems: "flex-start",
   },
   scoreFieldContainer: {
