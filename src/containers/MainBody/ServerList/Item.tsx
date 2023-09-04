@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, memo } from "react";
 import { StyleSheet, View, Pressable, Animated } from "react-native";
 import { Server } from "../../../utils/types";
 import Icon from "../../../components/Icon";
@@ -15,7 +15,7 @@ interface IProps {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-function ServerItem(props: IProps) {
+const ServerItem = memo((props: IProps) => {
   const { server, index } = props;
 
   const { theme } = useContext(ThemeContext);
@@ -143,7 +143,7 @@ function ServerItem(props: IProps) {
       </View>
     </AnimatedPressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   pressableContainer: {
