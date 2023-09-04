@@ -35,7 +35,15 @@ const SearchBar = (props: IProps) => {
       >
         <Icon image={images.icons.search} size={20} />
       </View>
-      <View style={styles.inputContainer}>
+      <View
+        style={[
+          styles.inputContainer,
+          {
+            borderBottomWidth: searchQuery.length ? 1 : 0,
+            borderColor: theme.separatorBorderColor,
+          },
+        ]}
+      >
         <TextInput
           placeholder="Search for server hostname/mode"
           placeholderTextColor={theme.textPlaceholder}
@@ -44,8 +52,6 @@ const SearchBar = (props: IProps) => {
             height: "100%",
             backgroundColor: theme.secondary,
             flex: 1,
-            // borderBottomWidth: 1,
-            borderColor: theme.separatorBorderColor,
             paddingLeft: 5,
             // @ts-ignore
             outlineStyle: "none",
@@ -61,13 +67,15 @@ const SearchBar = (props: IProps) => {
               setSearchQuery("");
             }}
             style={{
-              height: "100%",
+              height: "80%",
               aspectRatio: 1,
               justifyContent: "center",
               alignItems: "center",
+              marginTop: "1%",
+              backgroundColor: theme.separatorBorderColor,
             }}
           >
-            <Text size={2} color={theme.separatorBorderColor}>
+            <Text size={2} color={theme.textPlaceholder}>
               ✖
             </Text>
           </Pressable>
@@ -111,6 +119,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     height: "100%",
     flex: 1,
+    marginRight: 10,
     flexDirection: "row",
     alignItems: "center",
   },
