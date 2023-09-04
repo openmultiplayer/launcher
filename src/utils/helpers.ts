@@ -25,3 +25,11 @@ export const mapAPIResponseServerListToAppStructure = (
 
   return restructuredList;
 };
+
+export const fetchInternetServers = async (cached: boolean = true) => {
+  if (cached) {
+    const response = await getCachedInternetList();
+    useTempServersStore.getState().setInternetList(response.servers);
+    console.log(response);
+  }
+};
