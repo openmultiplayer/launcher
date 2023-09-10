@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 // use serde_json::json;
+mod injector;
 mod query;
 
 use std::time::Instant;
@@ -79,6 +80,12 @@ async fn ping_server(ip: &str, port: i32) -> Result<u32, String> {
     }
 }
 
+#[tauri::command]
+fn inject(name: &str, ip: &str, port: i32, exe: &str, dll: &str) -> u32 {
+    injector::run_samp(name, ip, port, exe, dll).unwrap();
+    2
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -93,7 +100,8 @@ fn main() {
             request_server_players,
             request_server_rules,
             request_server_is_omp,
-            ping_server
+            ping_server,
+            inject
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
