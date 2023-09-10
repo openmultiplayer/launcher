@@ -1,6 +1,6 @@
 [package]
 name = "omp-launcher"
-version = "0.0.0"
+version = "0.0.1"
 description = "open.mp launcher"
 authors = ["Amyr Ahmady (iAmir)"]
 license = ""
@@ -20,6 +20,7 @@ tokio = { version = "1.32.0", features = ["full"] }
 byteorder = "1.4.3"
 chardet = "0.2.4"
 encoding = "0.2.33"
+dll-syringe = "0.15.2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
