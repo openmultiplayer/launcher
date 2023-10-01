@@ -13,6 +13,7 @@ import Icon from "../components/Icon";
 import DirectConnetOverlay from "./DirectConnetOverlay";
 import { ThemeContext } from "../contexts/theme";
 import { ListType } from "../utils/types";
+import { useSettingsStore } from "../states/settings";
 
 interface IProps {
   onListChange: (type: ListType) => void;
@@ -23,10 +24,13 @@ const NavBar = (props: IProps) => {
   const [selectedList, setSelectedList] = useState<ListType>("favorites");
   const [showingDirectConnect, showDirectConnect] = useState(false);
 
+  const { nickName, setNickName } = useSettingsStore();
+
   const list: { label: string; type: ListType }[] = [
     { label: "❤️ Favorites", type: "favorites" },
     { label: "🌐 Internet", type: "internet" },
     { label: "🫱🏼‍🫲🏽 Partners", type: "partners" },
+    { label: "🕒 Recently Joined", type: "recentlyjoined" },
   ];
 
   return (
@@ -77,6 +81,8 @@ const NavBar = (props: IProps) => {
           <View style={styles.nicknameContainer}>
             <Icon image={images.icons.nickname} size={25} color={"white"} />
             <TextInput
+              value={nickName}
+              onChangeText={(text) => setNickName(text)}
               placeholder="Nickname..."
               placeholderTextColor={theme.textPlaceholder}
               style={{

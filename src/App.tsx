@@ -5,14 +5,14 @@ import MainView from "./containers/MainBody";
 import { ThemeContext } from "./contexts/theme";
 import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import { ListType } from "./utils/types";
-import { fetchInternetServers } from "./utils/helpers";
+import { fetchServers } from "./utils/helpers";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
   const [currentListType, setCurrentListType] = useState<ListType>("favorites");
 
   useEffect(() => {
-    fetchInternetServers();
+    fetchServers();
   }, []);
 
   return (

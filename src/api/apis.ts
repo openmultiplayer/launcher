@@ -2,7 +2,7 @@ import api from "../api/config";
 import { mapAPIResponseServerListToAppStructure } from "../utils/helpers";
 import { APIResponseServer, Server } from "../utils/types";
 
-export const getCachedInternetList = async () => {
+export const getCachedList = async () => {
   return new Promise<{ success: boolean; servers: Server[] }>((resolve, _) => {
     api
       .get("/servers")

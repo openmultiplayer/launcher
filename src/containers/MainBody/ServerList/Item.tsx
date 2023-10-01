@@ -5,6 +5,8 @@ import Icon from "../../../components/Icon";
 import { images } from "../../../constants/images";
 import Text from "../../../components/Text";
 import { ThemeContext } from "../../../contexts/theme";
+import { invoke } from "@tauri-apps/api";
+import { useSettingsStore } from "../../../states/settings";
 
 interface IProps {
   server: Server;
@@ -20,6 +22,9 @@ const ServerItem = memo((props: IProps) => {
 
   const { theme } = useContext(ThemeContext);
   const isSelectedRef = useRef(!!props.isSelected);
+  const lastPressTime = useRef(0);
+
+  const { nickName, gtasaPath } = useSettingsStore();
 
   useEffect(() => {
     if (props.isSelected) {
@@ -53,6 +58,28 @@ const ServerItem = memo((props: IProps) => {
     if (!isSelectedRef.current) fadeInAnim.start();
   };
 
+  const onPress = () => {
+    var delta = new Date().getTime() - lastPressTime.current;
+
+    if (delta < 500) {
+      // double tap happend
+      lastPressTime.current = 0;
+
+      invoke("inject", {
+        name: nickName,
+        ip: server.ip,
+        port: server.port,
+        exe: gtasaPath,
+        dll: `${gtasaPath}/samp.dll`,
+      });
+    } else {
+      lastPressTime.current = new Date().getTime();
+      if (props.onSelect) {
+        props.onSelect(props.server);
+      }
+    }
+  };
+
   return (
     <AnimatedPressable
       key={"server-item-" + index}
@@ -64,11 +91,7 @@ const ServerItem = memo((props: IProps) => {
       ]}
       onHoverIn={() => !props.isSelected && fadeIn()}
       onHoverOut={() => !props.isSelected && fadeOut()}
-      onPress={() => {
-        if (props.onSelect) {
-          props.onSelect(props.server);
-        }
-      }}
+      onPress={() => onPress()}
     >
       <View
         style={[

@@ -1,16 +1,13 @@
 import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
-import { Server } from "../../../utils/types";
-import PlayerList from "./PlayerList";
 import { ThemeContext } from "../../../contexts/theme";
+import { useTempServersStore } from "../../../states/servers";
 import AdditionalInfo from "./AdditionalInfo";
+import PlayerList from "./PlayerList";
 
-interface IProps {
-  server: Server | undefined;
-}
-
-const ServerInfo = (props: IProps) => {
+const ServerInfo = () => {
   const { theme } = useContext(ThemeContext);
+  const { selected } = useTempServersStore();
 
   return (
     <View
@@ -21,8 +18,8 @@ const ServerInfo = (props: IProps) => {
         },
       ]}
     >
-      <PlayerList players={props.server ? props.server.players : []} />
-      <AdditionalInfo server={props.server} />
+      <PlayerList players={selected ? selected.players : []} />
+      <AdditionalInfo server={selected} />
     </View>
   );
 };

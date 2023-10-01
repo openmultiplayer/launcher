@@ -1,42 +1,17 @@
-import { useContext, useMemo } from "react";
-import { StyleSheet, View, StyleProp, ViewStyle } from "react-native";
+import { useContext } from "react";
+import { StyleSheet, View } from "react-native";
 import BigList from "react-native-big-list";
-import { SearchData, Server } from "../../../utils/types";
-import ServerItem from "./Item";
-import ListHeader from "./ListHeader";
 import { ThemeContext } from "../../../contexts/theme";
+import { Server } from "../../../utils/types";
+import ListHeader from "./ListHeader";
 
 interface IProps {
   data: Server[];
-  style?: StyleProp<ViewStyle>;
-  searchData: SearchData;
-  selectedServer?: Server;
-  onServerSelect?: (server: Server) => void;
+  renderItem: (item: Server, index: number) => JSX.Element;
 }
 
-const ServerList = (props: IProps) => {
+const List = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
-
-  const serverList = useMemo(() => {
-    const { ompOnly, nonEmpty, query } = props.searchData;
-    const list = props.data.filter((server) => {
-      const ompCheck = ompOnly ? server.usingOmp === true : true;
-      const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
-
-      return (
-        ompCheck &&
-        nonEmptyCheck &&
-        server.hostname.toLowerCase().includes(query.toLowerCase())
-      );
-    });
-
-    return list;
-  }, [
-    props.searchData.query,
-    props.searchData.ompOnly,
-    props.searchData.nonEmpty,
-    props.data,
-  ]);
 
   return (
     <View
@@ -49,24 +24,8 @@ const ServerList = (props: IProps) => {
       <BigList
         id="scroll"
         contentContainerStyle={{ paddingHorizontal: 3 }}
-        data={serverList}
-        renderItem={(info) => (
-          <ServerItem
-            isSelected={
-              props.selectedServer
-                ? props.selectedServer.ip === info.item.ip &&
-                  props.selectedServer.port === info.item.port
-                : false
-            }
-            server={info.item}
-            index={info.index}
-            onSelect={(server) => {
-              if (props.onServerSelect) {
-                props.onServerSelect(server);
-              }
-            }}
-          />
-        )}
+        data={props.data}
+        renderItem={(info) => props.renderItem(info.item, info.index)}
         headerHeight={0}
         itemHeight={28}
         renderFooter={null}
@@ -82,4 +41,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ServerList;
+export default List;

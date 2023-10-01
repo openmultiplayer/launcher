@@ -3,10 +3,11 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { Server } from "../utils/types";
 
 interface ServersTempState {
-  internet: Server[];
-  partners: Server[];
-  setInternetList: (list: Server[]) => void;
-  setPartnersList: (list: Server[]) => void;
+  servers: Server[];
+  selected: undefined | Server;
+  setSelected: (server: undefined | Server) => void;
+  setServers: (list: Server[]) => void;
+  updateServer: (server: Server) => void;
 }
 
 interface ServersPersistentState {
@@ -15,11 +16,25 @@ interface ServersPersistentState {
   updateInFavoritesList: (server: Server) => void;
 }
 
-const useTempServersStore = create<ServersTempState>()((set) => ({
-  internet: [],
-  partners: [],
-  setInternetList: (list) => set(() => ({ internet: list })),
-  setPartnersList: (list) => set(() => ({ partners: list })),
+const useTempServersStore = create<ServersTempState>()((set, get) => ({
+  servers: [],
+  selected: undefined,
+  setSelected: (server) => set(() => ({ selected: server })),
+  setServers: (list) => set(() => ({ servers: list })),
+  updateServer: (server) =>
+    set(() => {
+      console.log("upadting selected server");
+      const list = [...get().servers];
+
+      const index = list.findIndex(
+        (srv) => srv.ip === server.ip && srv.port === server.port
+      );
+      if (index !== -1) {
+        list[index] = { ...server };
+      }
+
+      return { servers: list };
+    }),
 }));
 
 const useFavServersStore = create<ServersPersistentState>()(
