@@ -7,6 +7,7 @@ import Text from "../../../components/Text";
 import { ThemeContext } from "../../../contexts/theme";
 import { invoke } from "@tauri-apps/api";
 import { useSettingsStore } from "../../../states/settings";
+import { usePersistentServersStore } from "../../../states/servers";
 
 interface IProps {
   server: Server;
@@ -25,6 +26,7 @@ const ServerItem = memo((props: IProps) => {
   const lastPressTime = useRef(0);
 
   const { nickName, gtasaPath } = useSettingsStore();
+  const { addToRecentlyJoined } = usePersistentServersStore();
 
   useEffect(() => {
     if (props.isSelected) {
@@ -65,6 +67,7 @@ const ServerItem = memo((props: IProps) => {
       // double tap happend
       lastPressTime.current = 0;
 
+      addToRecentlyJoined(`${server.ip}:${server.port}`);
       invoke("inject", {
         name: nickName,
         ip: server.ip,
