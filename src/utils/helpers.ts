@@ -1,4 +1,4 @@
-import { getCachedInternetList } from "../api/apis";
+import { getCachedList } from "../api/apis";
 import { useTempServersStore } from "../states/servers";
 import { Player, Server, APIResponseServer } from "./types";
 
@@ -19,17 +19,18 @@ export const mapAPIResponseServerListToAppStructure = (
       rules: {} as Server["rules"],
       players: [] as Player[],
       ping: 0,
-      usingOmp: false,
-    };
+      usingOmp: server.omp,
+      partner: server.pr,
+    } as Server;
   });
 
   return restructuredList;
 };
 
-export const fetchInternetServers = async (cached: boolean = true) => {
+export const fetchServers = async (cached: boolean = true) => {
   if (cached) {
-    const response = await getCachedInternetList();
-    useTempServersStore.getState().setInternetList(response.servers);
+    const response = await getCachedList();
+    useTempServersStore.getState().setServers(response.servers);
     console.log(response);
   }
 };

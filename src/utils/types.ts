@@ -7,7 +7,7 @@ export type Rule =
   | "weburl"
   | "worldtime";
 
-export type ListType = "favorites" | "internet" | "partners";
+export type ListType = "favorites" | "internet" | "partners" | "recentlyjoined";
 
 export interface Server {
   ip: string;
@@ -20,6 +20,7 @@ export interface Server {
   hasPassword: boolean;
   version: string;
   usingOmp: boolean;
+  partner: boolean;
   ping: number;
   players: Player[];
   rules: {
@@ -55,4 +56,6 @@ export interface APIResponseServer {
   pc: number;
   pm: number;
   vn: string;
+  omp: boolean;
+  pr: boolean;
 }

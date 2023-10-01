@@ -1,20 +1,21 @@
 import { invoke } from "@tauri-apps/api";
 import { Player, Server } from "./types";
 
-export const queryServer = async (ip: string, port: number) => {
+export const queryServer = async (server: Server) => {
   return new Promise<Server>(async (resolve, reject) => {
     try {
-      let server: Server = {} as Server;
+      const { ip, port } = server;
+      let newSrv: Server = { ...server };
 
-      server = { ...server, ...(await getServerInfo(ip, port)) };
-      server.ip = ip;
-      server.port = port;
-      server.players = await getServerPlayers(ip, port);
-      server.rules = await getServerRules(ip, port);
-      server.usingOmp = await getServerOmpStatus(ip, port);
-      server.ping = await getServerPing(ip, port);
+      newSrv = { ...newSrv, ...(await getServerInfo(ip, port)) };
+      newSrv.ip = ip;
+      newSrv.port = port;
+      newSrv.players = await getServerPlayers(ip, port);
+      newSrv.rules = await getServerRules(ip, port);
+      newSrv.usingOmp = await getServerOmpStatus(ip, port);
+      newSrv.ping = await getServerPing(ip, port);
 
-      return resolve(server);
+      return resolve(newSrv);
     } catch (error) {
       reject(error);
     }
