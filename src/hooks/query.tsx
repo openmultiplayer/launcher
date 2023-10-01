@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTempServersStore } from "../states/servers";
 import { queryServer } from "../utils/query";
 import { Server } from "../utils/types";
@@ -13,12 +13,12 @@ export const useQuery = () => {
     selectedServer.current = selected;
   }, [selected]);
 
-  const [server, setServer] = useState<undefined | Server>(undefined);
-
   const stopQuery = () => {
     if (queryTimer.current != undefined) {
       clearInterval(queryTimer.current);
       queryTimer.current = undefined;
+      setSelected(undefined);
+      selectedServer.current = undefined;
     }
   };
 
@@ -35,16 +35,13 @@ export const useQuery = () => {
   };
 
   const getServerInfo = (srv: Server) => {
-    console.log("querying", srv.ip + ":" + srv.port);
     queryServer(srv)
       .then((server) => {
-        console.log("query response", server);
         if (server && selectedServer.current) {
           if (
             server.ip == selectedServer.current.ip &&
             server.port == selectedServer.current.port
           ) {
-            console.log("setting server info");
             updateServer(server);
             setSelected(server);
           }
