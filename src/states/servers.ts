@@ -12,8 +12,10 @@ interface ServersTempState {
 
 interface ServersPersistentState {
   favorites: Server[];
+  recentlyJoined: string[];
   setFavoritesList: (list: Server[]) => void;
   updateInFavoritesList: (server: Server) => void;
+  addToRecentlyJoined: (address: string) => void;
 }
 
 const useTempServersStore = create<ServersTempState>()((set, get) => ({
@@ -37,10 +39,11 @@ const useTempServersStore = create<ServersTempState>()((set, get) => ({
     }),
 }));
 
-const useFavServersStore = create<ServersPersistentState>()(
+const usePersistentServersStore = create<ServersPersistentState>()(
   persist(
     (set, get) => ({
       favorites: [],
+      recentlyJoined: [],
       setFavoritesList: (list) => set({ favorites: list }),
       updateInFavoritesList: (server) =>
         set(() => {
@@ -55,12 +58,24 @@ const useFavServersStore = create<ServersPersistentState>()(
 
           return { favorites: list };
         }),
+      addToRecentlyJoined: (address) =>
+        set(() => {
+          const cpy = [...get().recentlyJoined];
+          const findIndex = cpy.findIndex((addr) => addr === address);
+          if (findIndex !== -1) {
+            cpy.splice(findIndex, 1);
+            cpy.push(address);
+          } else {
+            cpy.push(address);
+          }
+          return { recentlyJoined: cpy };
+        }),
     }),
     {
-      name: "favorites-storage",
+      name: "favorites-and-recentlyjoined-storage",
       storage: createJSONStorage(() => localStorage),
     }
   )
 );
 
-export { useTempServersStore, useFavServersStore };
+export { usePersistentServersStore, useTempServersStore };

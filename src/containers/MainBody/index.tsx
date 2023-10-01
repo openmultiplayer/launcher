@@ -6,6 +6,7 @@ import SearchBar from "./ServerList/SearchBar";
 import Favorites from "./ServerList/Tabs/Favorites";
 import Internet from "./ServerList/Tabs/Internet";
 import Partners from "./ServerList/Tabs/Partners";
+import RecentlyJoined from "./ServerList/Tabs/RecentlyJoined";
 
 interface IProps {
   listType: ListType;
@@ -25,6 +26,8 @@ const MainView = (props: IProps) => {
       return <Partners searchData={searchData} />;
     else if (props.listType === "internet")
       return <Internet searchData={searchData} />;
+    else if (props.listType === "recentlyjoined")
+      return <RecentlyJoined searchData={searchData} />;
   };
 
   return (

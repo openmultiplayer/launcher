@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
 import {
-  useFavServersStore,
+  usePersistentServersStore,
   useTempServersStore,
 } from "../../../../states/servers";
 import { SearchData, Server } from "../../../../utils/types";
@@ -14,7 +14,7 @@ interface IProps {
 
 const Favorites = (props: IProps) => {
   const { startQuery, stopQuery } = useQuery();
-  const { favorites, updateInFavoritesList } = useFavServersStore();
+  const { favorites, updateInFavoritesList } = usePersistentServersStore();
   const { selected, setSelected } = useTempServersStore();
 
   useEffect(() => {
