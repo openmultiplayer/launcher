@@ -37,6 +37,7 @@ const Favorites = (props: IProps) => {
       const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
 
       return (
+        server.ip &&
         ompCheck &&
         nonEmptyCheck &&
         server.hostname.toLowerCase().includes(query.toLowerCase())
