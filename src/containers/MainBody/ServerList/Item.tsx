@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
     height: 25,
     width: "100%",
     flexDirection: "row",
+    marginTop: 2,
   },
   iconContainer: {
     height: 25,
