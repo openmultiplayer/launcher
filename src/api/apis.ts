@@ -5,7 +5,7 @@ import { APIResponseServer, Server } from "../utils/types";
 export const getCachedList = async () => {
   return new Promise<{ success: boolean; servers: Server[] }>((resolve, _) => {
     api
-      .get("/servers")
+      .get("/servers/full")
       .then((response) => {
         const list: APIResponseServer[] = response.data;
         if (Array.isArray(list)) {

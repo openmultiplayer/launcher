@@ -48,14 +48,19 @@ export interface SearchData {
 }
 
 export interface APIResponseServer {
-  gm: string;
-  hn: string;
-  ip: string;
-  la: string;
-  pa: boolean;
-  pc: number;
-  pm: number;
-  vn: string;
-  omp: boolean;
-  pr: boolean;
+  core: {
+    gm: string;
+    hn: string;
+    ip: string;
+    la: string;
+    pa: boolean;
+    pc: number;
+    pm: number;
+    vn: string;
+    omp: boolean;
+    pr: boolean;
+  };
+  ru: {
+    [x: string]: string;
+  };
 }

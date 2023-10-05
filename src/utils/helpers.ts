@@ -7,20 +7,20 @@ export const mapAPIResponseServerListToAppStructure = (
 ) => {
   const restructuredList: Server[] = list.map((server) => {
     return {
-      hostname: server.hn,
-      gameMode: server.gm,
-      ip: server.ip.split(":")[0],
-      port: parseInt(server.ip.split(":")[1]),
-      language: server.la,
-      hasPassword: server.pa,
-      playerCount: server.pc,
-      maxPlayers: server.pm,
-      version: server.vn,
-      rules: {} as Server["rules"],
+      hostname: server.core.hn,
+      gameMode: server.core.gm,
+      ip: server.core.ip.split(":")[0],
+      port: parseInt(server.core.ip.split(":")[1]),
+      language: server.core.la,
+      hasPassword: server.core.pa,
+      playerCount: server.core.pc,
+      maxPlayers: server.core.pm,
+      version: server.core.vn,
+      rules: server.ru,
       players: [] as Player[],
       ping: 0,
-      usingOmp: server.omp,
-      partner: server.pr,
+      usingOmp: server.core.omp,
+      partner: server.core.pr,
     } as Server;
   });
 
