@@ -4,6 +4,7 @@ import Text from "../../components/Text";
 import { useContextMenu } from "../../states/contextMenu";
 import { usePersistentServersStore } from "../../states/servers";
 import { ThemeContext } from "./../../contexts/theme";
+import Clipboard from "@react-native-clipboard/clipboard";
 
 const ContextMenu = () => {
   const { width, height } = useWindowDimensions();
@@ -13,6 +14,15 @@ const ContextMenu = () => {
   const [favBtnBgCol, setFavBtnBgCol] = useState(
     theme.listHeaderBackgroundColor
   );
+  const [cpyBtnBgCol, setCpyBtnBgCol] = useState(
+    theme.listHeaderBackgroundColor
+  );
+
+  const hideMenu = () => {
+    setFavBtnBgCol(theme.listHeaderBackgroundColor);
+    setCpyBtnBgCol(theme.listHeaderBackgroundColor);
+    hide();
+  };
 
   if (visible) {
     return (
@@ -57,7 +67,7 @@ const ContextMenu = () => {
             onHoverOut={() => setFavBtnBgCol(theme.listHeaderBackgroundColor)}
             onPress={() => {
               addToFavorites(server);
-              hide();
+              hideMenu();
             }}
             style={{
               backgroundColor: favBtnBgCol,
@@ -68,6 +78,30 @@ const ContextMenu = () => {
           >
             <Text bold color={"white"}>
               ❤️ Add to Favorites
+            </Text>
+          </Pressable>
+          <Pressable
+            onHoverIn={() => setCpyBtnBgCol(theme.selectedItemBackgroundColor)}
+            onHoverOut={() => setCpyBtnBgCol(theme.listHeaderBackgroundColor)}
+            onPress={() => {
+              Clipboard.setString(`HostName: ${server.hostname}
+Address: ${server.ip}:${server.port}
+Players: ${server.playerCount} / ${server.maxPlayers}
+Ping: ${server.ping}
+Mode: ${server.gameMode}
+Language: ${server.language}
+Using open.mp: ${server.usingOmp ? "Yes" : "No"}`);
+              hideMenu();
+            }}
+            style={{
+              backgroundColor: cpyBtnBgCol,
+              paddingLeft: 10,
+              paddingRight: 30,
+              paddingVertical: 7,
+            }}
+          >
+            <Text bold color={"white"}>
+              📃 Copy Server Info
             </Text>
           </Pressable>
         </View>

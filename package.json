@@ -13,6 +13,7 @@
     "start": "tauri dev"
   },
   "dependencies": {
+    "@react-native-clipboard/clipboard": "^1.12.1",
     "@tauri-apps/api": "^1.4.0",
     "axios": "^1.5.0",
     "react": "^18.2.0",
