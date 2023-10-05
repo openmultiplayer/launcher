@@ -41,7 +41,7 @@ const RecentlyJoined = (props: IProps) => {
       );
     });
 
-    return list;
+    return list.reverse();
   }, [
     props.searchData.query,
     props.searchData.ompOnly,
