@@ -6,6 +6,7 @@ import { ThemeContext } from "./contexts/theme";
 import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import { ListType } from "./utils/types";
 import { fetchServers } from "./utils/helpers";
+import ContextMenu from "./containers/ServerContextMenu";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
@@ -27,6 +28,7 @@ const App = () => {
         <NavBar onListChange={(type) => setCurrentListType(type)} />
         <MainView listType={currentListType} />
       </View>
+      <ContextMenu />
     </ThemeContext.Provider>
   );
 };
