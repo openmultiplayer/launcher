@@ -8,6 +8,7 @@ import { ThemeContext } from "../../../contexts/theme";
 import { invoke } from "@tauri-apps/api";
 import { useSettingsStore } from "../../../states/settings";
 import { usePersistentServersStore } from "../../../states/servers";
+import { useContextMenu } from "../../../states/contextMenu";
 
 interface IProps {
   server: Server;
@@ -27,6 +28,7 @@ const ServerItem = memo((props: IProps) => {
 
   const { nickName, gtasaPath } = useSettingsStore();
   const { addToRecentlyJoined } = usePersistentServersStore();
+  const { show: showContextMenu } = useContextMenu();
 
   useEffect(() => {
     if (props.isSelected) {
@@ -78,7 +80,7 @@ const ServerItem = memo((props: IProps) => {
     } else {
       lastPressTime.current = new Date().getTime();
       if (props.onSelect) {
-        props.onSelect(props.server);
+        props.onSelect(server);
       }
     }
   };
@@ -95,6 +97,13 @@ const ServerItem = memo((props: IProps) => {
       onHoverIn={() => !props.isSelected && fadeIn()}
       onHoverOut={() => !props.isSelected && fadeOut()}
       onPress={() => onPress()}
+      // @ts-ignore
+      onContextMenu={(e) => {
+        console.log(e);
+        e.preventDefault();
+        showContextMenu({ x: e.clientX, y: e.clientY }, server);
+        return e;
+      }}
     >
       <View
         style={[
