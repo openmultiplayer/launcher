@@ -4,6 +4,8 @@ import {
   ImageSourcePropType,
   StyleSheet,
   TouchableOpacity,
+  StyleProp,
+  ImageStyle,
 } from "react-native";
 
 interface IProps {
@@ -11,6 +13,7 @@ interface IProps {
   size: number;
   color?: ColorValue;
   onPress?: () => void;
+  style?: StyleProp<ImageStyle>;
 }
 
 const Icon = (props: IProps) => {
@@ -24,6 +27,7 @@ const Icon = (props: IProps) => {
         styles.icon,
         { tintColor: props.color },
         { height: props.size, width: props.size },
+        props.style,
       ]}
     />
   );
