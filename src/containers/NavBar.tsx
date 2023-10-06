@@ -14,6 +14,7 @@ import DirectConnetOverlay from "./DirectConnetOverlay";
 import { ThemeContext } from "../contexts/theme";
 import { ListType } from "../utils/types";
 import { useSettingsStore } from "../states/settings";
+import { useSettingsModal } from "../states/settingsModal";
 
 interface IProps {
   onListChange: (type: ListType) => void;
@@ -25,12 +26,17 @@ const NavBar = (props: IProps) => {
   const [showingDirectConnect, showDirectConnect] = useState(false);
 
   const { nickName, setNickName } = useSettingsStore();
+  const { show: showSettings } = useSettingsModal();
 
-  const list: { label: string; type: ListType }[] = [
-    { label: "❤️ Favorites", type: "favorites" },
-    { label: "🌐 Internet", type: "internet" },
-    { label: "🫱🏼‍🫲🏽 Partners", type: "partners" },
-    { label: "🕒 Recently Joined", type: "recentlyjoined" },
+  const list: { icon: string; label: string; type: ListType }[] = [
+    { icon: images.icons.favorite, label: "Favorites", type: "favorites" },
+    { icon: images.icons.internet, label: "Internet", type: "internet" },
+    { icon: images.icons.partner, label: "Partners", type: "partners" },
+    {
+      icon: images.icons.recently,
+      label: "Recently Joined",
+      type: "recentlyjoined",
+    },
   ];
 
   return (
@@ -62,6 +68,11 @@ const NavBar = (props: IProps) => {
                   }
                 }}
               >
+                <Icon
+                  style={{ marginHorizontal: 4 }}
+                  image={item.icon}
+                  size={18}
+                />
                 <Text
                   semibold
                   size={1}
@@ -109,7 +120,10 @@ const NavBar = (props: IProps) => {
           />
         </View>
         <View style={styles.iconsContainer}>
-          <TouchableOpacity style={styles.iconContainer}>
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => showSettings()}
+          >
             <Icon image={images.icons.settings} size={31} color={"white"} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconContainer}>
@@ -166,6 +180,8 @@ const styles = StyleSheet.create({
     paddingRight: 6,
     marginLeft: 8,
     justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
   },
   inputs: {
     height: "100%",

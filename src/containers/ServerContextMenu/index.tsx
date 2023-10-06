@@ -5,6 +5,8 @@ import { useContextMenu } from "../../states/contextMenu";
 import { usePersistentServersStore } from "../../states/servers";
 import { ThemeContext } from "./../../contexts/theme";
 import Clipboard from "@react-native-clipboard/clipboard";
+import Icon from "../../components/Icon";
+import { images } from "../../constants/images";
 
 const ContextMenu = () => {
   const { width, height } = useWindowDimensions();
@@ -74,10 +76,17 @@ const ContextMenu = () => {
               paddingLeft: 10,
               paddingRight: 30,
               paddingVertical: 7,
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
+            <Icon
+              style={{ marginRight: 5 }}
+              image={images.icons.favorite}
+              size={14}
+            />
             <Text bold color={"white"}>
-              ❤️ Add to Favorites
+              Add to Favorites
             </Text>
           </Pressable>
           <Pressable
@@ -98,10 +107,17 @@ Using open.mp: ${server.usingOmp ? "Yes" : "No"}`);
               paddingLeft: 10,
               paddingRight: 30,
               paddingVertical: 7,
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
+            <Icon
+              style={{ marginRight: 5 }}
+              image={images.icons.copy}
+              size={14}
+            />
             <Text bold color={"white"}>
-              📃 Copy Server Info
+              Copy Server Info
             </Text>
           </Pressable>
         </View>
