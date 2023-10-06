@@ -4,7 +4,7 @@ import Text from "../../components/Text";
 import { useContextMenu } from "../../states/contextMenu";
 import { usePersistentServersStore } from "../../states/servers";
 import { ThemeContext } from "./../../contexts/theme";
-import Clipboard from "@react-native-clipboard/clipboard";
+import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
 import Icon from "../../components/Icon";
 import { images } from "../../constants/images";
 
