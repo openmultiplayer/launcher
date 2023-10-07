@@ -1,4 +1,5 @@
-import { getCachedList } from "../api/apis";
+import { getCachedList, getUpdateInfo } from "../api/apis";
+import { useAppInfo } from "../states/appInfo";
 import { useTempServersStore } from "../states/servers";
 import { Player, Server, APIResponseServer } from "./types";
 
@@ -31,6 +32,16 @@ export const fetchServers = async (cached: boolean = true) => {
   if (cached) {
     const response = await getCachedList();
     useTempServersStore.getState().setServers(response.servers);
+    console.log(response);
+  }
+};
+
+export const fetchUpdateInfo = async (cached: boolean = true) => {
+  if (cached) {
+    const response = await getUpdateInfo();
+    if (response.info) {
+      useAppInfo.getState().setUpdateInfo(response.info);
+    }
     console.log(response);
   }
 };

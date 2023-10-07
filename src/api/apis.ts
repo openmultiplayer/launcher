@@ -1,4 +1,5 @@
 import api from "../api/config";
+import { UpdateInfo } from "../states/appInfo";
 import { mapAPIResponseServerListToAppStructure } from "../utils/helpers";
 import { APIResponseServer, Server } from "../utils/types";
 
@@ -18,4 +19,20 @@ export const getCachedList = async () => {
         resolve({ success: false, servers: [] });
       });
   });
+};
+
+export const getUpdateInfo = async () => {
+  return new Promise<{ success: boolean; info: UpdateInfo | undefined }>(
+    (resolve, _) => {
+      api
+        .get("/launcher")
+        .then((response) => {
+          resolve({ success: true, info: response.data });
+        })
+        .catch((e) => {
+          console.log(e);
+          resolve({ success: false, info: undefined });
+        });
+    }
+  );
 };

@@ -5,7 +5,7 @@ import MainView from "./containers/MainBody";
 import { ThemeContext } from "./contexts/theme";
 import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import { ListType } from "./utils/types";
-import { fetchServers } from "./utils/helpers";
+import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
 import ContextMenu from "./containers/ServerContextMenu";
 
 const App = () => {
@@ -14,6 +14,7 @@ const App = () => {
 
   useEffect(() => {
     fetchServers();
+    fetchUpdateInfo();
   }, []);
 
   return (
