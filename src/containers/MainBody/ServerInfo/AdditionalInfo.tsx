@@ -106,13 +106,12 @@ const AdditionalInfo = (props: IProps) => {
         id="scroll"
         data={rules}
         renderItem={renderRule}
-        contentContainerStyle={{ paddingHorizontal: 3 }}
+        contentContainerStyle={{ paddingHorizontal: 3, paddingBottom: 3 }}
       />
       <View
         style={[
           {
             height: 40,
-            borderTopWidth: 3,
             justifyContent: "center",
             alignItems: "center",
             paddingHorizontal: 5,
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
   additionalInfoView: {
     width: "100%",
     height: "45%",
-    borderTopWidth: 3,
+    // borderTopWidth: 3,
   },
   rulesContainer: {
     height: 25,

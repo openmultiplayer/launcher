@@ -69,7 +69,7 @@ const PlayerList = (props: IProps) => {
         id="scroll"
         data={props.players}
         renderItem={renderPlayer}
-        contentContainerStyle={{ paddingHorizontal: 3 }}
+        contentContainerStyle={{ paddingHorizontal: 3, paddingBottom: 3 }}
       />
     </>
   );
