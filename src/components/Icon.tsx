@@ -10,6 +10,7 @@ import {
 
 interface IProps {
   image: string | ImageSourcePropType;
+  title?: string;
   size: number;
   color?: ColorValue;
   onPress?: () => void;
@@ -32,10 +33,14 @@ const Icon = (props: IProps) => {
     />
   );
 
+  const Titled = props.title ? <div title={props.title}>{Icon}</div> : Icon;
+
   if (props.onPress) {
-    return <TouchableOpacity onPress={props.onPress}>{Icon}</TouchableOpacity>;
+    return (
+      <TouchableOpacity onPress={props.onPress}>{Titled}</TouchableOpacity>
+    );
   } else {
-    return Icon;
+    return Titled;
   }
 };
 
