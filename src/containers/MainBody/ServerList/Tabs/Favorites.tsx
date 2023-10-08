@@ -65,6 +65,7 @@ const Favorites = (props: IProps) => {
   return (
     <View style={{ flex: 1 }}>
       <List
+        containerStyle={{ paddingBottom: 60 }}
         data={list}
         renderItem={(item, index) => (
           <ServerItem
