@@ -32,6 +32,8 @@ const Text = (props: IProps) => {
     ? "500"
     : undefined;
 
+  const { style, ...propsWithoutStyle } = props;
+
   return (
     <RNText
       numberOfLines={1}
@@ -43,8 +45,9 @@ const Text = (props: IProps) => {
         },
         // @ts-ignore
         props.selectable ? {} : { userSelect: "none" },
+        style,
       ]}
-      {...props}
+      {...propsWithoutStyle}
     >
       {props.children}
     </RNText>
