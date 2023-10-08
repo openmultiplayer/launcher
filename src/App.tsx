@@ -7,6 +7,7 @@ import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import { ListType } from "./utils/types";
 import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
 import ContextMenu from "./containers/ServerContextMenu";
+import SettingsModal from "./containers/Settings";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
@@ -30,6 +31,7 @@ const App = () => {
         <MainView listType={currentListType} />
       </View>
       <ContextMenu />
+      <SettingsModal />
     </ThemeContext.Provider>
   );
 };
