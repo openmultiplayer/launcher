@@ -90,7 +90,12 @@ const NavBar = (props: IProps) => {
         </View>
         <View style={styles.inputs}>
           <View style={styles.nicknameContainer}>
-            <Icon image={images.icons.nickname} size={25} color={"white"} />
+            <Icon
+              title={"Nickname"}
+              image={images.icons.nickname}
+              size={25}
+              color={"white"}
+            />
             <TextInput
               value={nickName}
               onChangeText={(text) => setNickName(text)}
@@ -113,6 +118,7 @@ const NavBar = (props: IProps) => {
             />
           </View>
           <Icon
+            title="Direct Connect"
             image={images.icons.connect}
             size={25}
             onPress={() => showDirectConnect(!showingDirectConnect)}
@@ -124,10 +130,12 @@ const NavBar = (props: IProps) => {
             style={styles.iconContainer}
             onPress={() => showSettings()}
           >
-            <Icon image={images.icons.settings} size={31} color={"white"} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconContainer}>
-            <Icon image={images.icons.info} size={28} color={"white"} />
+            <Icon
+              title="Settings"
+              image={images.icons.settings}
+              size={31}
+              color={"white"}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -159,7 +167,7 @@ const styles = StyleSheet.create({
   },
   iconsContainer: {
     height: "100%",
-    aspectRatio: 2,
+    aspectRatio: 1,
     alignItems: "center",
     justifyContent: "space-evenly",
     flexDirection: "row",
