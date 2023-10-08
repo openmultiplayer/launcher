@@ -128,6 +128,7 @@ const ServerItem = memo((props: IProps) => {
           ]}
         >
           <Icon
+            title={server.hasPassword ? "Locked" : "Unlocked"}
             image={
               server.hasPassword ? images.icons.locked : images.icons.unlocked
             }
@@ -136,7 +137,11 @@ const ServerItem = memo((props: IProps) => {
         </View>
         {server.usingOmp && (
           <View style={[styles.iconContainer]}>
-            <Icon image={images.icons.ompLight} size={20} />
+            <Icon
+              title={"open.mp server"}
+              image={images.icons.ompLight}
+              size={20}
+            />
           </View>
         )}
         <View style={[styles.commonFieldContainer, styles.hostNameContainer]}>
