@@ -7,16 +7,20 @@ export interface UpdateInfo {
   changelog: string;
 }
 
-interface AppInfoState {
+interface AppState {
   version: string;
+  maximized: boolean;
   updateInfo: UpdateInfo | undefined;
+  toggleMaximized: (enable: boolean) => void;
   setUpdateInfo: (data: UpdateInfo) => void;
 }
 
-const useAppInfo = create<AppInfoState>()((set) => ({
+const useAppState = create<AppState>()((set) => ({
   version: VERSION,
+  maximized: false,
   updateInfo: undefined,
+  toggleMaximized: (enable: boolean) => set(() => ({ maximized: enable })),
   setUpdateInfo: (data: UpdateInfo) => set(() => ({ updateInfo: data })),
 }));
 
-export { useAppInfo };
+export { useAppState };

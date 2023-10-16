@@ -1,5 +1,5 @@
 import api from "../api/config";
-import { UpdateInfo } from "../states/appInfo";
+import { UpdateInfo } from "../states/app";
 import { mapAPIResponseServerListToAppStructure } from "../utils/helpers";
 import { APIResponseServer, Server } from "../utils/types";
 

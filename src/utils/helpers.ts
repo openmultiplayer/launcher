@@ -1,5 +1,5 @@
 import { getCachedList, getUpdateInfo } from "../api/apis";
-import { useAppInfo } from "../states/appInfo";
+import { useAppState } from "../states/app";
 import { useTempServersStore } from "../states/servers";
 import { Player, Server, APIResponseServer } from "./types";
 
@@ -40,7 +40,7 @@ export const fetchUpdateInfo = async (cached: boolean = true) => {
   if (cached) {
     const response = await getUpdateInfo();
     if (response.info) {
-      useAppInfo.getState().setUpdateInfo(response.info);
+      useAppState.getState().setUpdateInfo(response.info);
     }
     console.log(response);
   }
