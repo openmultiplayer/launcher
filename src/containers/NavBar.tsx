@@ -11,7 +11,6 @@ import { appWindow } from "@tauri-apps/api/window";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { images } from "../constants/images";
-// import DirectConnetOverlay from "./DirectConnetOverlay";
 import { ThemeContext } from "../contexts/theme";
 import { useSettingsStore } from "../states/settings";
 import { useSettingsModal } from "../states/settingsModal";
@@ -23,12 +22,16 @@ interface IProps {
 }
 
 const WindowTitleBarButtons = ({
-  size,
+  size = 25,
   image,
   onPress,
+  iconSize = 15,
+  title = "",
 }: {
-  size: number;
+  size?: number;
+  iconSize?: number;
   image: string;
+  title?: string;
   onPress: () => void;
 }) => {
   const { theme } = useContext(ThemeContext);
@@ -44,7 +47,12 @@ const WindowTitleBarButtons = ({
         }}
         onPress={onPress}
       >
-        <Icon image={image} size={15} color={theme.textPrimary} />
+        <Icon
+          title={title}
+          image={image}
+          size={iconSize}
+          color={theme.textPrimary}
+        />
       </Pressable>
     </div>
   );
@@ -72,23 +80,6 @@ const NavBar = (props: IProps) => {
 
   return (
     <>
-      {/* <div data-tauri-drag-region class="titlebar">
-        <div class="titlebar-button" id="titlebar-minimize">
-          <img
-            src="https://api.iconify.design/mdi:window-minimize.svg"
-            alt="minimize"
-          />
-        </div>
-        <div class="titlebar-button" id="titlebar-maximize">
-          <img
-            src="https://api.iconify.design/mdi:window-maximize.svg"
-            alt="maximize"
-          />
-        </div>
-        <div class="titlebar-button" id="titlebar-close">
-          <img src="https://api.iconify.design/mdi:close.svg" alt="close" />
-        </div>
-      </div> */}
       <div
         data-tauri-drag-region
         style={{
@@ -130,12 +121,18 @@ const NavBar = (props: IProps) => {
           style={{ flexDirection: "row", alignItems: "center", height: "100%" }}
         >
           <WindowTitleBarButtons
-            size={25}
+            title="Settings"
+            iconSize={18}
+            image={images.icons.settings}
+            onPress={() => showSettings()}
+          />
+          <WindowTitleBarButtons
+            title="Minimize"
             image={images.icons.windowMinimize}
             onPress={() => appWindow.minimize()}
           />
           <WindowTitleBarButtons
-            size={25}
+            title="Maximize"
             image={images.icons.windowMaximize}
             onPress={async () => {
               await appWindow.toggleMaximize();
@@ -143,7 +140,7 @@ const NavBar = (props: IProps) => {
             }}
           />
           <WindowTitleBarButtons
-            size={25}
+            title="Close"
             image={images.icons.windowClose}
             onPress={() => appWindow.close()}
           />
@@ -225,33 +222,8 @@ const NavBar = (props: IProps) => {
               }}
             />
           </View>
-          {/* <Icon
-            title="Direct Connect"
-            image={images.icons.connect}
-            size={25}
-            onPress={() => showDirectConnect(!showingDirectConnect)}
-            color={"white"}
-          /> */}
-        </View>
-        <View style={styles.iconsContainer}>
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={() => showSettings()}
-          >
-            <Icon
-              title="Settings"
-              image={images.icons.settings}
-              size={20}
-              color={"white"}
-            />
-          </TouchableOpacity>
         </View>
       </View>
-      {/* <DirectConnetOverlay
-        visible={showingDirectConnect}
-        onClose={() => showDirectConnect(!showingDirectConnect)}
-      /> */}
-      {/* <View style={{ position: 'absolute', top: 0, left: 0, height: 600, width: 400, backgroundColor: 'red' }} /> */}
     </>
   );
 };
