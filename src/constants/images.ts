@@ -15,5 +15,8 @@ export const images = {
     internet: "icons/internet.png",
     recently: "icons/recently.png",
     copy: "icons/copy.png",
+    windowClose: "icons/window_close.svg",
+    windowMinimize: "icons/window_minimize.svg",
+    windowMaximize: "icons/window_maximize.svg",
   },
 };

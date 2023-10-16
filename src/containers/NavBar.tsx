@@ -1,29 +1,58 @@
-import { useState, useContext } from "react";
+import { shell } from "@tauri-apps/api";
+import { useContext, useState } from "react";
 import {
-  Image,
+  Pressable,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { images } from "../constants/images";
-import { shell } from "@tauri-apps/api";
-import Text from "../components/Text";
+import { appWindow } from "@tauri-apps/api/window";
 import Icon from "../components/Icon";
-import DirectConnetOverlay from "./DirectConnetOverlay";
+import Text from "../components/Text";
+import { images } from "../constants/images";
+// import DirectConnetOverlay from "./DirectConnetOverlay";
 import { ThemeContext } from "../contexts/theme";
-import { ListType } from "../utils/types";
 import { useSettingsStore } from "../states/settings";
 import { useSettingsModal } from "../states/settingsModal";
+import { ListType } from "../utils/types";
 
 interface IProps {
   onListChange: (type: ListType) => void;
 }
 
+const WindowTitleBarButtons = ({
+  size,
+  image,
+  onPress,
+}: {
+  size: number;
+  image: string;
+  onPress: () => void;
+}) => {
+  const { theme } = useContext(ThemeContext);
+  return (
+    // @ts-ignore
+    <div class="titlebar-button" style={{ height: size, width: size + 5 }}>
+      <Pressable
+        style={{
+          height: "100%",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={onPress}
+      >
+        <Icon image={image} size={15} color={theme.textPrimary} />
+      </Pressable>
+    </div>
+  );
+};
+
 const NavBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
   const [selectedList, setSelectedList] = useState<ListType>("favorites");
-  const [showingDirectConnect, showDirectConnect] = useState(false);
+  // const [showingDirectConnect, showDirectConnect] = useState(false);
 
   const { nickName, setNickName } = useSettingsStore();
   const { show: showSettings } = useSettingsModal();
@@ -41,12 +70,86 @@ const NavBar = (props: IProps) => {
 
   return (
     <>
-      <View style={[styles.container, { backgroundColor: theme.secondary }]}>
-        <View style={styles.logoContainer}>
-          <TouchableOpacity onPress={() => shell.open("https://open.mp/")}>
-            <Image source={{ uri: images.logoDark }} style={styles.logo} />
-          </TouchableOpacity>
+      {/* <div data-tauri-drag-region class="titlebar">
+        <div class="titlebar-button" id="titlebar-minimize">
+          <img
+            src="https://api.iconify.design/mdi:window-minimize.svg"
+            alt="minimize"
+          />
+        </div>
+        <div class="titlebar-button" id="titlebar-maximize">
+          <img
+            src="https://api.iconify.design/mdi:window-maximize.svg"
+            alt="maximize"
+          />
+        </div>
+        <div class="titlebar-button" id="titlebar-close">
+          <img src="https://api.iconify.design/mdi:close.svg" alt="close" />
+        </div>
+      </div> */}
+      <div
+        data-tauri-drag-region
+        style={{
+          height: 25,
+          width: "100%",
+          backgroundColor: theme.secondary,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TouchableOpacity
+          style={{ height: "100%" }}
+          onPress={() => shell.open("https://open.mp/")}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              height: "100%",
+              width: 130,
+              paddingLeft: 2,
+            }}
+          >
+            <View style={styles.logoContainer}>
+              <Icon image={images.icons.omp} size={21} />
+            </View>
+            <Text
+              semibold
+              color={theme.textPrimary}
+              style={{ top: -2, marginLeft: 3 }}
+            >
+              Open Multiplayer
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <View
+          style={{ flexDirection: "row", alignItems: "center", height: "100%" }}
+        >
+          <WindowTitleBarButtons
+            size={25}
+            image={images.icons.windowMinimize}
+            onPress={() => appWindow.minimize()}
+          />
+          <WindowTitleBarButtons
+            size={25}
+            image={images.icons.windowMaximize}
+            onPress={() => appWindow.toggleMaximize()}
+          />
+          <WindowTitleBarButtons
+            size={25}
+            image={images.icons.windowClose}
+            onPress={() => appWindow.close()}
+          />
         </View>
+      </div>
+      <View
+        style={[
+          styles.container,
+          // { backgroundColor: theme.secondary },
+        ]}
+      >
         <View style={styles.listing}>
           {list.map((item) => {
             return (
@@ -56,7 +159,7 @@ const NavBar = (props: IProps) => {
                   styles.listItem,
                   selectedList === item.type
                     ? {
-                        borderBottomWidth: 4,
+                        borderBottomWidth: 1,
                         borderColor: theme.textSelected,
                       }
                     : {},
@@ -117,13 +220,13 @@ const NavBar = (props: IProps) => {
               }}
             />
           </View>
-          <Icon
+          {/* <Icon
             title="Direct Connect"
             image={images.icons.connect}
             size={25}
             onPress={() => showDirectConnect(!showingDirectConnect)}
             color={"white"}
-          />
+          /> */}
         </View>
         <View style={styles.iconsContainer}>
           <TouchableOpacity
@@ -133,16 +236,16 @@ const NavBar = (props: IProps) => {
             <Icon
               title="Settings"
               image={images.icons.settings}
-              size={31}
+              size={20}
               color={"white"}
             />
           </TouchableOpacity>
         </View>
       </View>
-      <DirectConnetOverlay
+      {/* <DirectConnetOverlay
         visible={showingDirectConnect}
         onClose={() => showDirectConnect(!showingDirectConnect)}
-      />
+      /> */}
       {/* <View style={{ position: 'absolute', top: 0, left: 0, height: 600, width: 400, backgroundColor: 'red' }} /> */}
     </>
   );
@@ -153,16 +256,17 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
     flexDirection: "row",
+    backgroundColor: "#2D2D2D",
   },
   logoContainer: {
     height: "100%",
-    aspectRatio: 1.2,
+    aspectRatio: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   logo: {
-    height: 40,
-    width: 40,
+    height: 22,
+    width: 22,
     resizeMode: "stretch",
   },
   iconsContainer: {
@@ -186,7 +290,6 @@ const styles = StyleSheet.create({
   listItem: {
     height: "100%",
     paddingRight: 6,
-    marginLeft: 8,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
