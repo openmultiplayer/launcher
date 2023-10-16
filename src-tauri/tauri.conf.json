@@ -13,6 +13,17 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "show": true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "startDragging": true
+      },
       "shell": {
         "all": false,
         "open": true
@@ -37,9 +48,13 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "omp-launcher",
+        "title": "open.mp launcher",
         "width": 900,
-        "height": 600
+        "height": 600,
+        "decorations": false,
+        "transparent": true,
+        "userAgent": "omp-launcher",
+        "center": true
       }
     ]
   }
