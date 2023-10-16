@@ -29,7 +29,7 @@ const App = () => {
           setTheme,
         }}
       >
-        <View style={styles.appView}>
+        <View style={[styles.appView, { borderRadius: maximized ? 0 : 8 }]}>
           <NavBar onListChange={(type) => setCurrentListType(type)} />
           <MainView listType={currentListType} />
         </View>
@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     overflow: "hidden",
-    borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
