@@ -19,20 +19,22 @@ const App = () => {
   }, []);
 
   return (
-    <ThemeContext.Provider
-      value={{
-        themeType,
-        theme: themeType === "dark" ? darkThemeColors : lightThemeColors,
-        setTheme,
-      }}
-    >
-      <View style={styles.app}>
-        <NavBar onListChange={(type) => setCurrentListType(type)} />
-        <MainView listType={currentListType} />
-      </View>
-      <ContextMenu />
-      <SettingsModal />
-    </ThemeContext.Provider>
+    <View style={styles.app}>
+      <ThemeContext.Provider
+        value={{
+          themeType,
+          theme: themeType === "dark" ? darkThemeColors : lightThemeColors,
+          setTheme,
+        }}
+      >
+        <View style={styles.appView}>
+          <NavBar onListChange={(type) => setCurrentListType(type)} />
+          <MainView listType={currentListType} />
+        </View>
+        <ContextMenu />
+        <SettingsModal />
+      </ThemeContext.Provider>
+    </View>
   );
 };
 
@@ -42,6 +44,20 @@ const styles = StyleSheet.create({
     height: "100vh",
     // @ts-ignore
     width: "100vw",
+    padding: 4,
+  },
+  appView: {
+    height: "100%",
+    width: "100%",
+    overflow: "hidden",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.6,
+    shadowRadius: 4.65,
   },
 });
 

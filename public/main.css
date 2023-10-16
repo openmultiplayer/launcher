@@ -21,3 +21,7 @@
 #scroll::-webkit-scrollbar-thumb:hover {
   background: #797979;
 }
+
+.titlebar-button:hover {
+  background: #8477B7;
+}
