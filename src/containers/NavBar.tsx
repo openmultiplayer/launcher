@@ -16,6 +16,7 @@ import { ThemeContext } from "../contexts/theme";
 import { useSettingsStore } from "../states/settings";
 import { useSettingsModal } from "../states/settingsModal";
 import { ListType } from "../utils/types";
+import { useAppState } from "../states/app";
 
 interface IProps {
   onListChange: (type: ListType) => void;
@@ -52,6 +53,7 @@ const WindowTitleBarButtons = ({
 const NavBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
   const [selectedList, setSelectedList] = useState<ListType>("favorites");
+  const { toggleMaximized } = useAppState();
   // const [showingDirectConnect, showDirectConnect] = useState(false);
 
   const { nickName, setNickName } = useSettingsStore();
@@ -135,7 +137,10 @@ const NavBar = (props: IProps) => {
           <WindowTitleBarButtons
             size={25}
             image={images.icons.windowMaximize}
-            onPress={() => appWindow.toggleMaximize()}
+            onPress={async () => {
+              await appWindow.toggleMaximize();
+              toggleMaximized(await appWindow.isMaximized());
+            }}
           />
           <WindowTitleBarButtons
             size={25}

@@ -8,10 +8,12 @@ import { ListType } from "./utils/types";
 import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
 import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
+import { useAppState } from "./states/app";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
   const [currentListType, setCurrentListType] = useState<ListType>("favorites");
+  const { maximized } = useAppState();
 
   useEffect(() => {
     fetchServers();
@@ -19,7 +21,7 @@ const App = () => {
   }, []);
 
   return (
-    <View style={styles.app}>
+    <View style={[styles.app, { padding: maximized ? 0 : 4 }]}>
       <ThemeContext.Provider
         value={{
           themeType,
@@ -44,7 +46,6 @@ const styles = StyleSheet.create({
     height: "100vh",
     // @ts-ignore
     width: "100vw",
-    padding: 4,
   },
   appView: {
     height: "100%",
