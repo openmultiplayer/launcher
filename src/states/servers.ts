@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Server } from "../utils/types";
 
-interface ServersTempState {
+interface ServersState {
   servers: Server[];
   selected: undefined | Server;
   setSelected: (server: undefined | Server) => void;
@@ -19,7 +19,7 @@ interface ServersPersistentState {
   addToFavorites: (server: Server) => void;
 }
 
-const useTempServersStore = create<ServersTempState>()((set, get) => ({
+const useServers = create<ServersState>()((set, get) => ({
   servers: [],
   selected: undefined,
   setSelected: (server) => set(() => ({ selected: server })),
@@ -93,4 +93,4 @@ const usePersistentServersStore = create<ServersPersistentState>()(
   )
 );
 
-export { usePersistentServersStore, useTempServersStore };
+export { usePersistentServersStore, useServers };

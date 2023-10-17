@@ -1,6 +1,6 @@
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
-import { useTempServersStore } from "../states/servers";
+import { useServers } from "../states/servers";
 import { Player, Server, APIResponseServer } from "./types";
 
 export const mapAPIResponseServerListToAppStructure = (
@@ -31,7 +31,7 @@ export const mapAPIResponseServerListToAppStructure = (
 export const fetchServers = async (cached: boolean = true) => {
   if (cached) {
     const response = await getCachedList();
-    useTempServersStore.getState().setServers(response.servers);
+    useServers.getState().setServers(response.servers);
     console.log(response);
   }
 };

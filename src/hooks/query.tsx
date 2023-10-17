@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
-import { useTempServersStore } from "../states/servers";
+import { useServers } from "../states/servers";
 import { queryServer } from "../utils/query";
 import { Server } from "../utils/types";
 
 export const useQuery = () => {
   const queryTimer = useRef<number | undefined>(undefined);
 
-  const { selected, updateServer, setSelected } = useTempServersStore();
+  const { selected, updateServer, setSelected } = useServers();
   const selectedServer = useRef<Server | undefined>(selected);
 
   useEffect(() => {

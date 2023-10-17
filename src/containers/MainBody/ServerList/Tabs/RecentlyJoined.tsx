@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
 import {
   usePersistentServersStore,
-  useTempServersStore,
+  useServers,
 } from "../../../../states/servers";
 import { SearchData, Server } from "../../../../utils/types";
 import List from "../List";
@@ -14,7 +14,7 @@ interface IProps {
 
 const RecentlyJoined = (props: IProps) => {
   const { startQuery, stopQuery } = useQuery();
-  const { selected, servers, setSelected } = useTempServersStore();
+  const { selected, servers, setSelected } = useServers();
   const { recentlyJoined } = usePersistentServersStore();
 
   useEffect(() => {

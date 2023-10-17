@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
 import {
   usePersistentServersStore,
-  useTempServersStore,
+  useServers,
 } from "../../../../states/servers";
 import { SearchData, Server } from "../../../../utils/types";
 import List from "../List";
@@ -18,7 +18,7 @@ interface IProps {
 const Favorites = (props: IProps) => {
   const { startQuery, stopQuery } = useQuery();
   const { favorites, updateInFavoritesList } = usePersistentServersStore();
-  const { selected, setSelected } = useTempServersStore();
+  const { selected, setSelected } = useServers();
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {

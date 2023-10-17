@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
-import { useTempServersStore } from "../../../../states/servers";
+import { useServers } from "../../../../states/servers";
 import { SearchData, Server } from "../../../../utils/types";
 import List from "../List";
 import ServerItem from "./../Item";
@@ -11,7 +11,7 @@ interface IProps {
 
 const Internet = (props: IProps) => {
   const { startQuery, stopQuery } = useQuery();
-  const { selected, servers, setSelected } = useTempServersStore();
+  const { selected, servers, setSelected } = useServers();
 
   useEffect(() => {
     return () => {

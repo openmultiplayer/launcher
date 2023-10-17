@@ -1,13 +1,13 @@
 import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { ThemeContext } from "../../../contexts/theme";
-import { useTempServersStore } from "../../../states/servers";
+import { useServers } from "../../../states/servers";
 import AdditionalInfo from "./AdditionalInfo";
 import PlayerList from "./PlayerList";
 
 const ServerInfo = () => {
   const { theme } = useContext(ThemeContext);
-  const { selected } = useTempServersStore();
+  const { selected } = useServers();
 
   return (
     <View
