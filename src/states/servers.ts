@@ -26,7 +26,6 @@ const useServers = create<ServersState>()((set, get) => ({
   setServers: (list) => set(() => ({ servers: list })),
   updateServer: (server) =>
     set(() => {
-      console.log("upadting selected server");
       const list = [...get().servers];
 
       const index = list.findIndex(
