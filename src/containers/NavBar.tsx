@@ -109,10 +109,7 @@ const NavBar = (props: IProps) => {
             <View style={styles.logoContainer}>
               <Icon image={images.icons.omp} size={20} />
             </View>
-            <Text
-              color={theme.textPrimary}
-              style={{ top: -1, marginLeft: 3 }}
-            >
+            <Text color={theme.textPrimary} style={{ top: -1, marginLeft: 3 }}>
               Open Multiplayer
             </Text>
           </View>
@@ -155,41 +152,59 @@ const NavBar = (props: IProps) => {
         <View style={styles.listing}>
           {list.map((item) => {
             return (
-              <TouchableOpacity
+              <View
                 key={"list-type-" + item.type}
-                style={[
-                  styles.listItem,
-                  selectedList === item.type
-                    ? {
-                        borderBottomWidth: 1,
-                        borderColor: theme.textSelected,
-                      }
-                    : {},
-                ]}
-                onPress={() => {
-                  if (selectedList !== item.type) {
-                    setSelectedList(item.type);
-                    props.onListChange(item.type);
-                  }
+                style={{
+                  overflow: "hidden",
+                  height: 34,
+                  top: 2,
                 }}
               >
-                <Icon
-                  style={{ marginHorizontal: 4 }}
-                  image={item.icon}
-                  size={18}
-                />
-                <Text
-                  semibold
-                  size={1}
-                  color={
+                <TouchableOpacity
+                  style={[
+                    styles.listItem,
                     selectedList === item.type
-                      ? theme.textSelected
-                      : theme.textPrimary
-                  }
+                      ? {
+                          shadowColor: theme.primary,
+                          shadowOffset: {
+                            width: 0,
+                            height: 0,
+                          },
+                          shadowOpacity: 0.45,
+                          shadowRadius: 5.84,
+                          borderColor: theme.textSelected,
+                        }
+                      : {},
+                  ]}
+                  onPress={() => {
+                    if (selectedList !== item.type) {
+                      setSelectedList(item.type);
+                      props.onListChange(item.type);
+                    }
+                  }}
                 >
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    semibold={selectedList === item.type}
+                    size={1}
+                    color={
+                      selectedList === item.type
+                        ? theme.textSelected
+                        : theme.textPrimary
+                    }
+                    style={
+                      selectedList === item.type
+                        ? {
+                            textShadowColor: "rgba(132, 119, 183, 0.5)",
+                            textShadowOffset: { width: 0, height: 0 },
+                            textShadowRadius: 4,
+                          }
+                        : {}
+                    }
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             );
           })}
         </View>
@@ -198,7 +213,7 @@ const NavBar = (props: IProps) => {
             <Icon
               title={"Nickname"}
               image={images.icons.nickname}
-              size={25}
+              size={18}
               color={"white"}
             />
             <TextInput
@@ -214,7 +229,7 @@ const NavBar = (props: IProps) => {
                 width: 150,
                 marginRight: 10,
                 marginLeft: 10,
-                height: "55%",
+                height: "80%",
                 paddingHorizontal: 5,
                 borderRadius: 3,
                 // @ts-ignore
@@ -231,9 +246,10 @@ const NavBar = (props: IProps) => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 50,
+    height: 30,
     flexDirection: "row",
     backgroundColor: "#2D2D2D",
+    zIndex: 1000,
   },
   logoContainer: {
     height: "100%",
@@ -265,8 +281,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   listItem: {
-    height: "100%",
-    paddingRight: 6,
+    height: 30,
+    paddingHorizontal: 10,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
