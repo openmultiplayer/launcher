@@ -83,7 +83,7 @@ const NavBar = (props: IProps) => {
       <div
         data-tauri-drag-region
         style={{
-          height: 25,
+          height: 22,
           width: "100%",
           backgroundColor: theme.secondary,
           display: "flex",
@@ -103,15 +103,15 @@ const NavBar = (props: IProps) => {
               height: "100%",
               width: 130,
               paddingLeft: 2,
+              top: 1,
             }}
           >
             <View style={styles.logoContainer}>
-              <Icon image={images.icons.omp} size={21} />
+              <Icon image={images.icons.omp} size={20} />
             </View>
             <Text
-              semibold
               color={theme.textPrimary}
-              style={{ top: -2, marginLeft: 3 }}
+              style={{ top: -1, marginLeft: 3 }}
             >
               Open Multiplayer
             </Text>
@@ -122,7 +122,7 @@ const NavBar = (props: IProps) => {
         >
           <WindowTitleBarButtons
             title="Settings"
-            iconSize={18}
+            iconSize={17}
             image={images.icons.settings}
             onPress={() => showSettings()}
           />
