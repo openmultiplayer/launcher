@@ -1,71 +1,20 @@
-import { shell } from "@tauri-apps/api";
 import { useContext, useState } from "react";
-import {
-  Pressable,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { appWindow } from "@tauri-apps/api/window";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { images } from "../constants/images";
 import { ThemeContext } from "../contexts/theme";
 import { useSettingsStore } from "../states/settings";
-import { useSettingsModal } from "../states/settingsModal";
 import { ListType } from "../utils/types";
-import { useAppState } from "../states/app";
 
 interface IProps {
   onListChange: (type: ListType) => void;
 }
 
-const WindowTitleBarButtons = ({
-  size = 25,
-  image,
-  onPress,
-  iconSize = 15,
-  title = "",
-}: {
-  size?: number;
-  iconSize?: number;
-  image: string;
-  title?: string;
-  onPress: () => void;
-}) => {
-  const { theme } = useContext(ThemeContext);
-  return (
-    // @ts-ignore
-    <div class="titlebar-button" style={{ height: size, width: size + 5 }}>
-      <Pressable
-        style={{
-          height: "100%",
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={onPress}
-      >
-        <Icon
-          title={title}
-          image={image}
-          size={iconSize}
-          color={theme.textPrimary}
-        />
-      </Pressable>
-    </div>
-  );
-};
-
 const NavBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
   const [selectedList, setSelectedList] = useState<ListType>("favorites");
-  const { toggleMaximized } = useAppState();
-  // const [showingDirectConnect, showDirectConnect] = useState(false);
-
   const { nickName, setNickName } = useSettingsStore();
-  const { show: showSettings } = useSettingsModal();
 
   const list: { icon: string; label: string; type: ListType }[] = [
     { icon: images.icons.favorite, label: "Favorites", type: "favorites" },
@@ -80,75 +29,7 @@ const NavBar = (props: IProps) => {
 
   return (
     <>
-      <div
-        data-tauri-drag-region
-        style={{
-          height: 25,
-          width: "100%",
-          backgroundColor: theme.secondary,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <TouchableOpacity
-          style={{ height: "100%" }}
-          onPress={() => shell.open("https://open.mp/")}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              height: "100%",
-              width: 130,
-              paddingLeft: 2,
-              top: 1,
-            }}
-          >
-            <View style={styles.logoContainer}>
-              <Icon image={images.icons.omp} size={20} />
-            </View>
-            <Text color={theme.textPrimary} style={{ top: -1, marginLeft: 3 }}>
-              Open Multiplayer
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <View
-          style={{ flexDirection: "row", alignItems: "center", height: "100%" }}
-        >
-          <WindowTitleBarButtons
-            title="Settings"
-            iconSize={17}
-            image={images.icons.settings}
-            onPress={() => showSettings()}
-          />
-          <WindowTitleBarButtons
-            title="Minimize"
-            image={images.icons.windowMinimize}
-            onPress={() => appWindow.minimize()}
-          />
-          <WindowTitleBarButtons
-            title="Maximize"
-            image={images.icons.windowMaximize}
-            onPress={async () => {
-              await appWindow.toggleMaximize();
-              toggleMaximized(await appWindow.isMaximized());
-            }}
-          />
-          <WindowTitleBarButtons
-            title="Close"
-            image={images.icons.windowClose}
-            onPress={() => appWindow.close()}
-          />
-        </View>
-      </div>
-      <View
-        style={[
-          styles.container,
-          // { backgroundColor: theme.secondary },
-        ]}
-      >
+      <View style={[styles.container, { backgroundColor: theme.secondary }]}>
         <View style={styles.listing}>
           {list.map((item) => {
             const selected = selectedList === item.type;
@@ -250,19 +131,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 30,
     flexDirection: "row",
-    backgroundColor: "#2D2D2D",
     zIndex: 1000,
-  },
-  logoContainer: {
-    height: "100%",
-    aspectRatio: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logo: {
-    height: 22,
-    width: 22,
-    resizeMode: "stretch",
   },
   iconsContainer: {
     height: "100%",

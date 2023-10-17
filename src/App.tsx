@@ -9,6 +9,7 @@ import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
 import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
 import { useAppState } from "./states/app";
+import WindowTitleBar from "./containers/WindowTitleBar";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
@@ -30,6 +31,7 @@ const App = () => {
         }}
       >
         <View style={[styles.appView, { borderRadius: maximized ? 0 : 8 }]}>
+          <WindowTitleBar />
           <NavBar onListChange={(type) => setCurrentListType(type)} />
           <MainView listType={currentListType} />
         </View>
