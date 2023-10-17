@@ -83,7 +83,7 @@ const NavBar = (props: IProps) => {
       <div
         data-tauri-drag-region
         style={{
-          height: 22,
+          height: 25,
           width: "100%",
           backgroundColor: theme.secondary,
           display: "flex",
@@ -151,6 +151,7 @@ const NavBar = (props: IProps) => {
       >
         <View style={styles.listing}>
           {list.map((item) => {
+            const selected = selectedList === item.type;
             return (
               <View
                 key={"list-type-" + item.type}
@@ -163,7 +164,7 @@ const NavBar = (props: IProps) => {
                 <TouchableOpacity
                   style={[
                     styles.listItem,
-                    selectedList === item.type
+                    selected
                       ? {
                           shadowColor: theme.primary,
                           shadowOffset: {
@@ -183,16 +184,17 @@ const NavBar = (props: IProps) => {
                     }
                   }}
                 >
+                  <Icon
+                    image={item.icon}
+                    size={15}
+                    style={{ marginRight: 5, opacity: selected ? 1 : 0.5 }}
+                  />
                   <Text
-                    semibold={selectedList === item.type}
+                    semibold={selected}
                     size={1}
-                    color={
-                      selectedList === item.type
-                        ? theme.textSelected
-                        : theme.textPrimary
-                    }
+                    color={selected ? theme.textSelected : theme.textPrimary}
                     style={
-                      selectedList === item.type
+                      selected
                         ? {
                             textShadowColor: "rgba(132, 119, 183, 0.5)",
                             textShadowOffset: { width: 0, height: 0 },
