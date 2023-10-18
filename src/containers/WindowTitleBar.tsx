@@ -74,8 +74,8 @@ const WindowTitleBar = () => {
             alignItems: "center",
             height: "100%",
             width: 130,
-            paddingLeft: 2,
-            top: 1,
+            paddingLeft: 4,
+            top: 2,
           }}
         >
           <View style={styles.logoContainer}>
