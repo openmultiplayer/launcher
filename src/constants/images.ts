@@ -10,6 +10,7 @@ export const images = {
     omp: "icons/omp.png",
     ompLight: "icons/omp-light.png",
     search: "icons/search.png",
+    filter: "icons/filter.png",
     favorite: "icons/favorite.png",
     partner: "icons/partner.png",
     internet: "icons/internet.png",
