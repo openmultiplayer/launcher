@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     height: "100%",
     flexDirection: "row",
     alignItems: "center",
+    marginLeft: -0.5,
   },
   listItem: {
     height: 30,
