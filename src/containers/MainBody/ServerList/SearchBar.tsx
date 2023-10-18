@@ -1,30 +1,56 @@
-import { useContext, useState, useEffect } from "react";
-import { StyleSheet, View, TextInput, Pressable } from "react-native";
-import { ThemeContext } from "../../../contexts/theme";
+import { useContext, useEffect, useState } from "react";
+import {
+  Pressable,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Icon from "../../../components/Icon";
-import { images } from "../../../constants/images";
 import Text from "../../../components/Text";
-import CheckBox from "../../../components/CheckBox";
+import { images } from "../../../constants/images";
+import { ThemeContext } from "../../../contexts/theme";
 
 interface IProps {
-  onChange: (query: string, ompOnly: boolean, nonEmpty: boolean) => void;
+  onChange: (query: string) => void;
+  onClickFilter?: (showFilter: boolean) => void;
 }
 
 const SearchBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [ompOnly, setOmpOnly] = useState(false);
-  const [nonEmpty, setNonEmpty] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
-    props.onChange(searchQuery, ompOnly, nonEmpty);
-  }, [searchQuery, ompOnly, nonEmpty]);
+    props.onChange(searchQuery);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (props.onClickFilter) {
+      props.onClickFilter(showFilter);
+    }
+  }, [showFilter]);
 
   return (
     <View
       style={[styles.searchContainer, { backgroundColor: theme.secondary }]}
     >
+      <TouchableOpacity
+        style={{
+          height: "100%",
+          aspectRatio: 1.1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={() => setShowFilter(!showFilter)}
+      >
+        <Icon
+          image={images.icons.filter}
+          size={20}
+          color={theme.textPlaceholder}
+        />
+      </TouchableOpacity>
       <View
         style={{
           height: "100%",
@@ -33,7 +59,7 @@ const SearchBar = (props: IProps) => {
           alignItems: "center",
         }}
       >
-        <Icon image={images.icons.search} size={20} />
+        <Icon image={images.icons.search} size={16} />
       </View>
       <View
         style={[
@@ -50,9 +76,9 @@ const SearchBar = (props: IProps) => {
           value={searchQuery}
           style={{
             height: "100%",
-            backgroundColor: theme.secondary,
+            backgroundColor: "transparent",
             flex: 1,
-            paddingLeft: 5,
+            paddingHorizontal: 5,
             // @ts-ignore
             outlineStyle: "none",
             color: theme.textPrimary,
@@ -81,37 +107,13 @@ const SearchBar = (props: IProps) => {
           </Pressable>
         )}
       </View>
-      <View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <CheckBox
-            value={ompOnly}
-            onChange={(value) => setOmpOnly(value)}
-            style={{ marginRight: 5 }}
-          />
-          <Text size={1} color={theme.textPrimary}>
-            Only open.mp servers
-          </Text>
-        </View>
-        <View
-          style={{ flexDirection: "row", alignItems: "center", marginTop: 1 }}
-        >
-          <CheckBox
-            value={nonEmpty}
-            onChange={(value) => setNonEmpty(value)}
-            style={{ marginRight: 5 }}
-          />
-          <Text size={1} color={theme.textPrimary}>
-            Non-empty Servers
-          </Text>
-        </View>
-      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   searchContainer: {
-    height: 40,
+    height: 30,
     flexDirection: "row",
     alignItems: "center",
     paddingRight: 10,
