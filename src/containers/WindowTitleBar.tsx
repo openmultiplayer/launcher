@@ -24,8 +24,7 @@ const WindowTitleBarButtons = ({
 }) => {
   const { theme } = useContext(ThemeContext);
   return (
-    // @ts-ignore
-    <div class="titlebar-button" style={{ height: size, width: size + 5 }}>
+    <div className="titlebar-button" style={{ height: size, width: size + 5 }}>
       <Pressable
         style={{
           height: "100%",
