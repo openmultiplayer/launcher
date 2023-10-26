@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, transformWithEsbuild } from "vite";
 import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
@@ -16,12 +16,34 @@ const extensions = [
 ];
 
 export default defineConfig(async () => ({
+  define: {
+    global: "window",
+    __DEV__: false,
+  },
   optimizeDeps: {
+    force: true,
     esbuildOptions: {
       resolveExtensions: extensions,
+      jsx: "automatic",
+      loader: {
+        ".js": "jsx",
+      },
     },
   },
   plugins: [
+    {
+      name: "treat-js-files-as-jsx",
+      async transform(code, id) {
+        if (!id.match(/src\/.*\.js$/)) return null;
+
+        // Use the exposed transform from vite, instead of directly
+        // transforming with esbuild
+        return transformWithEsbuild(code, id, {
+          loader: "jsx",
+          jsx: "automatic",
+        });
+      },
+    },
     react({
       babel: {
         plugins: [
@@ -37,6 +59,7 @@ export default defineConfig(async () => ({
     }),
   ],
   resolve: {
+    extensions,
     alias: {
       "react-native": "react-native-web",
     },
