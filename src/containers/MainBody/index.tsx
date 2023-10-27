@@ -155,7 +155,6 @@ const styles = StyleSheet.create({
   serverProperties: {
     width: "100%",
     height: 80,
-    paddingTop: 2,
     paddingHorizontal: 8,
     alignItems: "flex-end",
     borderTopWidth: 1,
