@@ -1,5 +1,10 @@
-import { useState, useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import Chart from "../PingChart";
+import CheckBox from "../../components/CheckBox";
+import Text from "../../components/Text";
+import { ThemeContext } from "../../contexts/theme";
+import { useServers } from "../../states/servers";
 import { ListType, SearchData } from "../../utils/types";
 import ServerInfo from "./ServerInfo";
 import SearchBar from "./ServerList/SearchBar";
@@ -7,9 +12,6 @@ import Favorites from "./ServerList/Tabs/Favorites";
 import Internet from "./ServerList/Tabs/Internet";
 import Partners from "./ServerList/Tabs/Partners";
 import RecentlyJoined from "./ServerList/Tabs/RecentlyJoined";
-import CheckBox from "../../components/CheckBox";
-import { ThemeContext } from "../../contexts/theme";
-import Text from "../../components/Text";
 
 interface IProps {
   listType: ListType;
@@ -85,6 +87,8 @@ const MainView = (props: IProps) => {
     ompOnly: false,
   });
   const [showFilter, setShowFilter] = useState(false);
+  const { selected } = useServers();
+  const { theme } = useContext(ThemeContext);
 
   const renderList = () => {
     if (props.listType === "favorites")
@@ -107,6 +111,19 @@ const MainView = (props: IProps) => {
         {renderList()}
         <ServerInfo />
       </View>
+      {selected && (
+        <View
+          style={[
+            styles.serverProperties,
+            {
+              backgroundColor: theme.itemContainerBackgroundColor,
+              borderTopColor: theme.separatorBorderColor,
+            },
+          ]}
+        >
+          <Chart containerStyle={styles.chartContainer} />
+        </View>
+      )}
       {showFilter && (
         <FiltersModal
           ompOnly={searchData.ompOnly}
@@ -129,6 +146,18 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     flexDirection: "row",
+  },
+  serverProperties: {
+    width: "100%",
+    height: 80,
+    paddingTop: 2,
+    paddingHorizontal: 8,
+    alignItems: "flex-end",
+    borderTopWidth: 1,
+  },
+  chartContainer: {
+    width: "40%",
+    height: 90,
   },
 });
 
