@@ -109,6 +109,7 @@ const SearchBar = (props: IProps) => {
         style={{
           height: "100%",
           aspectRatio: 1,
+          opacity: 0.5,
           left: 5,
           justifyContent: "center",
           alignItems: "center",
@@ -116,7 +117,9 @@ const SearchBar = (props: IProps) => {
         onPress={() => showSideLists(!sideLists)}
       >
         <Icon
-          image={images.icons.filter}
+          image={
+            sideLists ? images.icons.closeSideLists : images.icons.openSideLists
+          }
           size={20}
           color={theme.textPlaceholder}
         />
