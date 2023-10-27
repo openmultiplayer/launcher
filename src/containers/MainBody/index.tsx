@@ -1,21 +1,20 @@
 import { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Chart from "../PingChart";
 import CheckBox from "../../components/CheckBox";
 import Text from "../../components/Text";
 import { ThemeContext } from "../../contexts/theme";
-import { useServers } from "../../states/servers";
+import {
+  useGenericPersistentState,
+  useGenericTempState,
+} from "../../states/genericStates";
 import { ListType, SearchData } from "../../utils/types";
+import BottomBar from "./BottomBar";
 import ServerInfo from "./ServerInfo";
 import SearchBar from "./ServerList/SearchBar";
 import Favorites from "./ServerList/Tabs/Favorites";
 import Internet from "./ServerList/Tabs/Internet";
 import Partners from "./ServerList/Tabs/Partners";
 import RecentlyJoined from "./ServerList/Tabs/RecentlyJoined";
-import {
-  useGenericTempState,
-  useGenericPersistentState,
-} from "../../states/genericStates";
 
 interface IProps {
   listType: ListType;
@@ -91,8 +90,6 @@ const MainView = (props: IProps) => {
     ompOnly: false,
   });
 
-  const { selected } = useServers();
-  const { theme } = useContext(ThemeContext);
   const { filterMenu } = useGenericTempState();
   const { sideLists } = useGenericPersistentState();
 
@@ -116,19 +113,7 @@ const MainView = (props: IProps) => {
         {renderList()}
         {sideLists && <ServerInfo />}
       </View>
-      {selected && (
-        <View
-          style={[
-            styles.serverProperties,
-            {
-              backgroundColor: theme.itemContainerBackgroundColor,
-              borderTopColor: theme.separatorBorderColor,
-            },
-          ]}
-        >
-          <Chart containerStyle={styles.chartContainer} />
-        </View>
-      )}
+      <BottomBar />
       {filterMenu && (
         <FiltersModal
           ompOnly={searchData.ompOnly}
@@ -151,17 +136,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     flexDirection: "row",
-  },
-  serverProperties: {
-    width: "100%",
-    height: 80,
-    paddingHorizontal: 8,
-    alignItems: "flex-end",
-    borderTopWidth: 1,
-  },
-  chartContainer: {
-    width: "40%",
-    height: 90,
   },
 });
 
