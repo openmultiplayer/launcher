@@ -1,15 +1,8 @@
 import { useContext, useMemo } from "react";
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  ListRenderItemInfo,
-  Pressable,
-} from "react-native";
-import { Server } from "../../../utils/types";
-import { ThemeContext } from "../../../contexts/theme";
+import { FlatList, ListRenderItemInfo, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
-import { shell } from "@tauri-apps/api";
+import { ThemeContext } from "../../../contexts/theme";
+import { Server } from "../../../utils/types";
 
 interface IProps {
   server: Server | undefined;
@@ -33,16 +26,6 @@ const AdditionalInfo = (props: IProps) => {
       return [] as RuleList;
     }
   }, [props.server?.rules]);
-
-  const webUrl = useMemo(() => {
-    let webUrl = "";
-    rules.forEach((rule) => {
-      if (rule.name === "weburl") {
-        webUrl = rule.value;
-      }
-    });
-    return webUrl;
-  }, [rules]);
 
   const renderRule = ({ item: rule, index }: ListRenderItemInfo<Rule>) => {
     return (
@@ -108,26 +91,6 @@ const AdditionalInfo = (props: IProps) => {
         renderItem={renderRule}
         contentContainerStyle={{ paddingHorizontal: 3, paddingBottom: 3 }}
       />
-      <View
-        style={[
-          {
-            height: 40,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 5,
-            backgroundColor: theme.itemContainerBackgroundColor,
-          },
-          {
-            borderColor: theme.separatorBorderColor,
-          },
-        ]}
-      >
-        <Pressable onPress={() => shell.open(webUrl)}>
-          <Text semibold color={theme.primary} size={1}>
-            {webUrl}
-          </Text>
-        </Pressable>
-      </View>
     </View>
   );
 };
