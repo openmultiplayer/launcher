@@ -21,5 +21,8 @@ export const images = {
     windowMaximize: "icons/window_maximize.svg",
     openSideLists: "icons/open_side_lists.svg",
     closeSideLists: "icons/close_side_lists.svg",
+    language: "icons/language.svg",
+    users: "icons/users.svg",
+    game: "icons/game.svg",
   },
 };
