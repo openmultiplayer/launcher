@@ -19,5 +19,7 @@ export const images = {
     windowClose: "icons/window_close.svg",
     windowMinimize: "icons/window_minimize.svg",
     windowMaximize: "icons/window_maximize.svg",
+    openSideLists: "icons/open_side_lists.svg",
+    closeSideLists: "icons/close_side_lists.svg",
   },
 };
