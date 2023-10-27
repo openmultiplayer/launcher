@@ -10,7 +10,10 @@ import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
-import { useRenderState } from "../../../states/renderStates";
+import {
+  useGenericPersistentState,
+  useGenericTempState,
+} from "../../../states/genericStates";
 
 interface IProps {
   onChange: (query: string) => void;
@@ -20,8 +23,8 @@ const SearchBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const { filterMenu, showFilterMenu, sideLists, showSideLists } =
-    useRenderState();
+  const { filterMenu, showFilterMenu } = useGenericTempState();
+  const { sideLists, showSideLists } = useGenericPersistentState();
 
   useEffect(() => {
     props.onChange(searchQuery);

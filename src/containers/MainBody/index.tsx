@@ -12,7 +12,10 @@ import Favorites from "./ServerList/Tabs/Favorites";
 import Internet from "./ServerList/Tabs/Internet";
 import Partners from "./ServerList/Tabs/Partners";
 import RecentlyJoined from "./ServerList/Tabs/RecentlyJoined";
-import { useRenderState } from "../../states/renderStates";
+import {
+  useGenericTempState,
+  useGenericPersistentState,
+} from "../../states/genericStates";
 
 interface IProps {
   listType: ListType;
@@ -90,7 +93,8 @@ const MainView = (props: IProps) => {
 
   const { selected } = useServers();
   const { theme } = useContext(ThemeContext);
-  const { filterMenu } = useRenderState();
+  const { filterMenu } = useGenericTempState();
+  const { sideLists } = useGenericPersistentState();
 
   const renderList = () => {
     if (props.listType === "favorites")
@@ -110,7 +114,7 @@ const MainView = (props: IProps) => {
       />
       <View style={styles.serverSection}>
         {renderList()}
-        <ServerInfo />
+        {sideLists && <ServerInfo />}
       </View>
       {selected && (
         <View
