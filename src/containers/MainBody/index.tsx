@@ -12,6 +12,7 @@ import Favorites from "./ServerList/Tabs/Favorites";
 import Internet from "./ServerList/Tabs/Internet";
 import Partners from "./ServerList/Tabs/Partners";
 import RecentlyJoined from "./ServerList/Tabs/RecentlyJoined";
+import { useRenderState } from "../../states/renderStates";
 
 interface IProps {
   listType: ListType;
@@ -86,9 +87,10 @@ const MainView = (props: IProps) => {
     nonEmpty: false,
     ompOnly: false,
   });
-  const [showFilter, setShowFilter] = useState(false);
+
   const { selected } = useServers();
   const { theme } = useContext(ThemeContext);
+  const { filterMenu } = useRenderState();
 
   const renderList = () => {
     if (props.listType === "favorites")
@@ -105,7 +107,6 @@ const MainView = (props: IProps) => {
     <View style={styles.body}>
       <SearchBar
         onChange={(query) => setSearchData({ ...searchData, query })}
-        onClickFilter={(showFilter) => setShowFilter(showFilter)}
       />
       <View style={styles.serverSection}>
         {renderList()}
@@ -124,7 +125,7 @@ const MainView = (props: IProps) => {
           <Chart containerStyle={styles.chartContainer} />
         </View>
       )}
-      {showFilter && (
+      {filterMenu && (
         <FiltersModal
           ompOnly={searchData.ompOnly}
           nonEmpty={searchData.nonEmpty}

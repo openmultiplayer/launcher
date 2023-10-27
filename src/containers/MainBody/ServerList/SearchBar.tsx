@@ -10,27 +10,22 @@ import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
+import { useRenderState } from "../../../states/renderStates";
 
 interface IProps {
   onChange: (query: string) => void;
-  onClickFilter?: (showFilter: boolean) => void;
 }
 
 const SearchBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [showFilter, setShowFilter] = useState(false);
+  const { filterMenu, showFilterMenu, sideLists, showSideLists } =
+    useRenderState();
 
   useEffect(() => {
     props.onChange(searchQuery);
   }, [searchQuery]);
-
-  useEffect(() => {
-    if (props.onClickFilter) {
-      props.onClickFilter(showFilter);
-    }
-  }, [showFilter]);
 
   return (
     <View
@@ -43,7 +38,7 @@ const SearchBar = (props: IProps) => {
           justifyContent: "center",
           alignItems: "center",
         }}
-        onPress={() => setShowFilter(!showFilter)}
+        onPress={() => showFilterMenu(!filterMenu)}
       >
         <Icon
           image={images.icons.filter}
@@ -107,6 +102,22 @@ const SearchBar = (props: IProps) => {
           </Pressable>
         )}
       </View>
+      <TouchableOpacity
+        style={{
+          height: "100%",
+          aspectRatio: 1,
+          left: 5,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={() => showSideLists(!sideLists)}
+      >
+        <Icon
+          image={images.icons.filter}
+          size={20}
+          color={theme.textPlaceholder}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
