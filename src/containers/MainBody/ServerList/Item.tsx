@@ -5,10 +5,10 @@ import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
 import { useContextMenu } from "../../../states/contextMenu";
+import { usePasswordModal } from "../../../states/passwordModal";
 import { useSettingsStore } from "../../../states/settings";
 import { startGame } from "../../../utils/helpers";
 import { Server } from "../../../utils/types";
-import { usePasswordModal } from "../../../states/passwordModal";
 
 interface IProps {
   server: Server;

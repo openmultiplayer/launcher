@@ -1,24 +1,32 @@
-import { useContext, useState } from "react";
+import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
+import { useContext, useMemo, useState } from "react";
 import { Pressable, View, useWindowDimensions } from "react-native";
+import Icon from "../../components/Icon";
 import Text from "../../components/Text";
+import { images } from "../../constants/images";
 import { useContextMenu } from "../../states/contextMenu";
 import { usePersistentServersStore } from "../../states/servers";
 import { ThemeContext } from "./../../contexts/theme";
-import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
-import Icon from "../../components/Icon";
-import { images } from "../../constants/images";
 
 const ContextMenu = () => {
   const { width, height } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const { visible, position, server, hide } = useContextMenu();
-  const { addToFavorites } = usePersistentServersStore();
+  const { addToFavorites, removeFromFavorites, favorites } =
+    usePersistentServersStore();
   const [favBtnBgCol, setFavBtnBgCol] = useState(
     theme.listHeaderBackgroundColor
   );
   const [cpyBtnBgCol, setCpyBtnBgCol] = useState(
     theme.listHeaderBackgroundColor
   );
+
+  const favorited = useMemo(() => {
+    const find = favorites.find(
+      (fav) => server && fav.ip === server.ip && fav.port == server.port
+    );
+    return find !== undefined;
+  }, [server, favorites]);
 
   const hideMenu = () => {
     setFavBtnBgCol(theme.listHeaderBackgroundColor);
@@ -68,8 +76,13 @@ const ContextMenu = () => {
             onHoverIn={() => setFavBtnBgCol(theme.selectedItemBackgroundColor)}
             onHoverOut={() => setFavBtnBgCol(theme.listHeaderBackgroundColor)}
             onPress={() => {
-              addToFavorites(server);
-              hideMenu();
+              if (favorited) {
+                removeFromFavorites(server);
+                hideMenu();
+              } else {
+                addToFavorites(server);
+                hideMenu();
+              }
             }}
             style={{
               backgroundColor: favBtnBgCol,
@@ -82,11 +95,13 @@ const ContextMenu = () => {
           >
             <Icon
               style={{ marginRight: 5 }}
-              image={images.icons.favorite}
+              image={
+                favorited ? images.icons.unfavorite : images.icons.favorite
+              }
               size={14}
             />
             <Text bold color={"white"}>
-              Add to Favorites
+              {favorited ? "Remove from Favorites" : "Add to Favorites"}
             </Text>
           </Pressable>
           <Pressable
