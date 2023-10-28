@@ -10,6 +10,7 @@ import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
 import { useAppState } from "./states/app";
 import WindowTitleBar from "./containers/WindowTitleBar";
+import PasswordModal from "./containers/PasswordModal";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
@@ -36,6 +37,7 @@ const App = () => {
           <MainView listType={currentListType} />
         </View>
         <ContextMenu />
+        <PasswordModal />
         <SettingsModal />
       </ThemeContext.Provider>
     </View>
