@@ -27,7 +27,7 @@ const ServerItem = memo((props: IProps) => {
   const lastPressTime = useRef(0);
 
   const { nickName, gtasaPath } = useSettingsStore();
-  const { showPasswordModal } = usePasswordModal();
+  const { showPasswordModal, setServerInfo } = usePasswordModal();
   const { show: showContextMenu } = useContextMenu();
 
   useEffect(() => {
@@ -66,6 +66,7 @@ const ServerItem = memo((props: IProps) => {
     lastPressTime.current = 0;
 
     if (server.hasPassword) {
+      setServerInfo(server.ip, server.port);
       showPasswordModal(true);
     } else {
       startGame(
