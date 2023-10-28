@@ -32,6 +32,7 @@ export const options: ChartOptions<"line"> = {
   responsive: true,
   maintainAspectRatio: false,
   showLine: true,
+  animation: false,
   scales: {
     y: {
       grid: {
