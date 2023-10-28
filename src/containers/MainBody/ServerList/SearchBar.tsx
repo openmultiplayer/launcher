@@ -117,6 +117,11 @@ const SearchBar = (props: IProps) => {
         onPress={() => showSideLists(!sideLists)}
       >
         <Icon
+          title={
+            sideLists
+              ? "Hide player and rule list"
+              : "Show player and rule list"
+          }
           image={
             sideLists ? images.icons.closeSideLists : images.icons.openSideLists
           }
