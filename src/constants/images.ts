@@ -12,6 +12,7 @@ export const images = {
     search: "icons/search.png",
     filter: "icons/filter.png",
     favorite: "icons/favorite.png",
+    unfavorite: "icons/unfavorite.png",
     partner: "icons/partner.png",
     internet: "icons/internet.png",
     recently: "icons/recently.png",
