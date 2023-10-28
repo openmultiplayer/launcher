@@ -1,6 +1,7 @@
+import { invoke } from "@tauri-apps/api";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
-import { useServers } from "../states/servers";
+import { usePersistentServersStore, useServers } from "../states/servers";
 import { Player, Server, APIResponseServer } from "./types";
 
 export const mapAPIResponseServerListToAppStructure = (
@@ -44,4 +45,24 @@ export const fetchUpdateInfo = async (cached: boolean = true) => {
     }
     console.log(response);
   }
+};
+
+export const startGame = (
+  nickname: string,
+  ip: string,
+  port: number,
+  gtasaPath: string,
+  sampDllPath: string,
+  password: string
+) => {
+  const { addToRecentlyJoined } = usePersistentServersStore.getState();
+  addToRecentlyJoined(`${ip}:${port}`);
+  invoke("inject", {
+    name: nickname,
+    ip: ip,
+    port: port,
+    exe: gtasaPath,
+    dll: sampDllPath,
+    password: password,
+  });
 };
