@@ -1,14 +1,14 @@
-import { useContext, useEffect, useRef, memo } from "react";
-import { StyleSheet, View, Pressable, Animated } from "react-native";
-import { Server } from "../../../utils/types";
+import { memo, useContext, useEffect, useRef } from "react";
+import { Animated, Pressable, StyleSheet, View } from "react-native";
 import Icon from "../../../components/Icon";
-import { images } from "../../../constants/images";
 import Text from "../../../components/Text";
+import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
-import { invoke } from "@tauri-apps/api";
-import { useSettingsStore } from "../../../states/settings";
-import { usePersistentServersStore } from "../../../states/servers";
 import { useContextMenu } from "../../../states/contextMenu";
+import { useSettingsStore } from "../../../states/settings";
+import { startGame } from "../../../utils/helpers";
+import { Server } from "../../../utils/types";
+import { usePasswordModal } from "../../../states/passwordModal";
 
 interface IProps {
   server: Server;
@@ -27,7 +27,7 @@ const ServerItem = memo((props: IProps) => {
   const lastPressTime = useRef(0);
 
   const { nickName, gtasaPath } = useSettingsStore();
-  const { addToRecentlyJoined } = usePersistentServersStore();
+  const { showPasswordModal } = usePasswordModal();
   const { show: showContextMenu } = useContextMenu();
 
   useEffect(() => {
@@ -62,21 +62,28 @@ const ServerItem = memo((props: IProps) => {
     if (!isSelectedRef.current) fadeInAnim.start();
   };
 
+  const onDoublePress = () => {
+    lastPressTime.current = 0;
+
+    if (server.hasPassword) {
+      showPasswordModal(true);
+    } else {
+      startGame(
+        nickName,
+        server.ip,
+        server.port,
+        gtasaPath,
+        `${gtasaPath}/samp.dll`,
+        ""
+      );
+    }
+  };
+
   const onPress = () => {
     var delta = new Date().getTime() - lastPressTime.current;
 
     if (delta < 500) {
-      // double tap happend
-      lastPressTime.current = 0;
-
-      addToRecentlyJoined(`${server.ip}:${server.port}`);
-      invoke("inject", {
-        name: nickName,
-        ip: server.ip,
-        port: server.port,
-        exe: gtasaPath,
-        dll: `${gtasaPath}/samp.dll`,
-      });
+      onDoublePress();
     } else {
       lastPressTime.current = new Date().getTime();
       if (props.onSelect) {
