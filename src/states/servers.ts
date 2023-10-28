@@ -17,6 +17,7 @@ interface ServersPersistentState {
   updateInFavoritesList: (server: Server) => void;
   addToRecentlyJoined: (address: string) => void;
   addToFavorites: (server: Server) => void;
+  removeFromFavorites: (server: Server) => void;
 }
 
 const useServers = create<ServersState>()((set, get) => ({
@@ -81,6 +82,17 @@ const usePersistentServersStore = create<ServersPersistentState>()(
             cpy.push(server);
           } else {
             cpy.push(server);
+          }
+          return { favorites: cpy };
+        }),
+      removeFromFavorites: (server) =>
+        set(() => {
+          const cpy = [...get().favorites];
+          const findIndex = cpy.findIndex(
+            (srv) => srv.ip === server.ip && srv.port === server.port
+          );
+          if (findIndex !== -1) {
+            cpy.splice(findIndex, 1);
           }
           return { favorites: cpy };
         }),
