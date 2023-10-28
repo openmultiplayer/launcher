@@ -1,16 +1,25 @@
 import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
-import { useServers } from "../../states/servers";
+import { usePersistentServersStore, useServers } from "../../states/servers";
 import Chart from "../PingChart";
 
 const BottomBar = () => {
   const { selected: server } = useServers();
+  const { favorites, addToFavorites, removeFromFavorites } =
+    usePersistentServersStore();
   const { theme } = useContext(ThemeContext);
+
+  const favorited = useMemo(() => {
+    const find = favorites.find(
+      (fav) => server && fav.ip === server.ip && fav.port == server.port
+    );
+    return find !== undefined;
+  }, [server, favorites]);
 
   if (!server) {
     return null;
@@ -27,9 +36,9 @@ const BottomBar = () => {
       ]}
     >
       <View
-        style={{ marginVertical: 6, marginLeft: 5, marginRight: 15, flex: 1 }}
+        style={{ marginVertical: 6, marginLeft: 5, marginRight: 10, flex: 1 }}
       >
-        <Text semibold color={theme.primary} size={2} style={{}}>
+        <Text semibold color={theme.primary} size={2}>
           {server.hostname}
         </Text>
         <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
@@ -52,6 +61,42 @@ const BottomBar = () => {
           >
             <Text semibold color={theme.textPrimary} style={{ fontSize: 10 }}>
               Copy
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              paddingVertical: 1,
+              paddingHorizontal: 5,
+              borderRadius: 5,
+              borderWidth: 1,
+              backgroundColor: theme.primary,
+              borderColor: theme.separatorBorderColor,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+            onPress={() => {
+              if (favorited) {
+                removeFromFavorites(server);
+              } else {
+                addToFavorites(server);
+              }
+            }}
+          >
+            <Icon
+              image={
+                favorited ? images.icons.unfavorite : images.icons.favorite
+              }
+              size={12}
+            />
+            <Text
+              semibold
+              color={theme.textPrimary}
+              style={{ marginLeft: 2, fontSize: 10 }}
+            >
+              {favorited ? "Remove from Favorites" : "Add to Favorites"}
             </Text>
           </TouchableOpacity>
         </View>
