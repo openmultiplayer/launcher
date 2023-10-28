@@ -24,5 +24,6 @@ export const images = {
     language: "icons/language.svg",
     users: "icons/users.svg",
     game: "icons/game.svg",
+    close: "icons/close.svg",
   },
 };
