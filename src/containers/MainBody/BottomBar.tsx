@@ -50,11 +50,7 @@ const BottomBar = () => {
               Clipboard.setString(`${server.ip}:${server.port}`);
             }}
           >
-            <Text
-              semibold
-              color={theme.separatorBorderColor}
-              style={{ fontSize: 10 }}
-            >
+            <Text semibold color={theme.textPrimary} style={{ fontSize: 10 }}>
               Copy
             </Text>
           </TouchableOpacity>
