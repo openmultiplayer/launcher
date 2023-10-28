@@ -114,6 +114,8 @@ const NavBar = (props: IProps) => {
                 marginLeft: 10,
                 height: "80%",
                 paddingHorizontal: 5,
+                borderColor: theme.primary,
+                borderWidth: 1,
                 borderRadius: 3,
                 // @ts-ignore
                 outlineStyle: "none",
