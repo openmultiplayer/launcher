@@ -1,9 +1,10 @@
 import { invoke } from "@tauri-apps/api";
+import { getVersion } from "@tauri-apps/api/app";
+import { type } from "@tauri-apps/api/os";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { usePersistentServersStore, useServers } from "../states/servers";
-import { Player, Server, APIResponseServer } from "./types";
-import { getVersion } from "@tauri-apps/api/app";
+import { APIResponseServer, Player, Server } from "./types";
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -40,10 +41,12 @@ export const fetchServers = async (cached: boolean = true) => {
 
 export const fetchUpdateInfo = async () => {
   const nativeVer = await getVersion();
+  const hostOS = await type();
   const response = await getUpdateInfo();
   if (response.info) {
     useAppState.getState().setUpdateInfo(response.info);
     useAppState.getState().setNativeAppVersionValue(nativeVer);
+    useAppState.getState().setHostOSValue(hostOS);
   }
   console.log(response);
 };

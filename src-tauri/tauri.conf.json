@@ -24,6 +24,15 @@
         "unminimize": true,
         "startDragging": true
       },
+      "dialog": {
+        "all": true
+      },
+      "os": {
+        "all": true
+      },
+      "fs": {
+        "exists": true
+      },
       "shell": {
         "all": false,
         "open": true
