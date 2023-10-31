@@ -31,10 +31,10 @@ async fn request_server_players(ip: &str, port: i32) -> Result<String, String> {
             let _ = q.send('c').await;
             match q.recv().await {
                 Ok(p) => Ok(format!("{}", p)),
-                Err(e) => Err(e.to_string()),
+                Err(_) => Ok("[]".to_string()),
             }
         }
-        Err(e) => Err(e.to_string()),
+        Err(_) => Ok("[]".to_string()),
     }
 }
 
@@ -59,10 +59,10 @@ async fn request_server_is_omp(ip: &str, port: i32) -> Result<String, String> {
             let _ = q.send('o').await;
             match q.recv().await {
                 Ok(p) => Ok(format!("{}", p)),
-                Err(e) => Err(e.to_string()),
+                Err(_) => Ok("{\"isOmp\": false}".to_string()),
             }
         }
-        Err(e) => Err(e.to_string()),
+        Err(_) => Ok("{\"isOmp\": false}".to_string()),
     }
 }
 
@@ -74,10 +74,10 @@ async fn ping_server(ip: &str, port: i32) -> Result<u32, String> {
             let before = Instant::now();
             match q.recv().await {
                 Ok(_p) => Ok(before.elapsed().as_millis() as u32),
-                Err(e) => Err(e.to_string()),
+                Err(_) => Ok(0),
             }
         }
-        Err(e) => Err(e.to_string()),
+        Err(_) => Ok(0),
     }
 }
 
