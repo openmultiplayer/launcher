@@ -34,8 +34,7 @@ export default defineConfig(async () => ({
     {
       name: "treat-js-files-as-jsx",
       async transform(code, id) {
-        if (!id.match(/src\/.*\.js$/)) return null;
-
+        if (!id.match(/node_modules\/.*\.js$/)) return null;
         // Use the exposed transform from vite, instead of directly
         // transforming with esbuild
         return transformWithEsbuild(code, id, {
