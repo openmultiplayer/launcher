@@ -11,8 +11,9 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
 import { usePasswordModal } from "../../states/passwordModal";
-import { useSettingsStore } from "../../states/settings";
+import { useSettings } from "../../states/settings";
 import { startGame } from "../../utils/helpers";
+import * as Animatable from "react-native-animatable";
 
 const PasswordModal = () => {
   const { visible, serverIP, serverPort, showPasswordModal } =
@@ -20,7 +21,7 @@ const PasswordModal = () => {
   const { height, width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const [password, setPassword] = useState("");
-  const { nickName, gtasaPath } = useSettingsStore();
+  const { nickName, gtasaPath } = useSettings();
 
   if (!visible) {
     return null;
@@ -44,7 +45,9 @@ const PasswordModal = () => {
         }}
         onPress={() => showPasswordModal(false)}
       />
-      <View
+      <Animatable.View
+        animation={"bounceIn"}
+        duration={500}
         style={{
           position: "absolute",
           top: height / 2 - 75,
@@ -127,7 +130,7 @@ const PasswordModal = () => {
             style={{ opacity: 0.5 }}
           />
         </TouchableOpacity>
-      </View>
+      </Animatable.View>
     </View>
   );
 };
