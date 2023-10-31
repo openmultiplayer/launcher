@@ -1,6 +1,5 @@
-import { shell } from "@tauri-apps/api";
-import { open, message, confirm } from "@tauri-apps/api/dialog";
-import { exists } from "@tauri-apps/api/fs";
+import { invoke, shell } from "@tauri-apps/api";
+import { open } from "@tauri-apps/api/dialog";
 import { useContext } from "react";
 import {
   Pressable,
@@ -18,6 +17,7 @@ import { ThemeContext } from "../../contexts/theme";
 import { useAppState } from "../../states/app";
 import { useSettings } from "../../states/settings";
 import { useSettingsModal } from "../../states/settingsModal";
+import { checkDirectoryValidity } from "../../utils/helpers";
 
 const MODAL_WIDTH = 500;
 const MODAL_HEIGHT = 200;
@@ -26,7 +26,7 @@ const SettingsModal = () => {
   const { height, width } = useWindowDimensions();
   const { nativeAppVersion, version, updateInfo, hostOS } = useAppState();
   const { theme } = useContext(ThemeContext);
-  const { gtasaPath, setGTASAPath } = useSettings();
+  const { gtasaPath, setGTASAPath, setNickName } = useSettings();
   const { hide, visible } = useSettingsModal();
 
   if (!visible) {
@@ -42,40 +42,21 @@ const SettingsModal = () => {
 
     const newPath = selected.replace(/\\/g, "/");
 
-    const gtasaExists = await exists(newPath + "/gta_sa.exe");
-    if (!gtasaExists) {
-      message(
-        `Can not find the right GTA San Andreas installation in this directory:
-    ${newPath}
-Unable to find "gta_sa.exe" in your given path.
-      `,
-        { title: "gta_sa.exe doesn't exist", type: "error" }
-      );
-      return;
+    const isDirValid = await checkDirectoryValidity(newPath);
+    if (isDirValid) setGTASAPath(newPath);
+  };
+
+  const importDataFromSAMP = async () => {
+    const path: string = await invoke("get_gtasa_path_from_samp");
+    if (path.length) {
+      const isDirValid = await checkDirectoryValidity(path);
+      if (isDirValid) setGTASAPath(path);
     }
 
-    const sampExists = await exists(newPath + "/samp.dll");
-    if (!sampExists) {
-      const download = await confirm(
-        `Can not find the right SA-MP installation in this directory:
-    ${newPath}
-Unable to find "samp.dll" in your given path.
-Please refer to https://sa-mp.mp/ to download SA-MP
-      `,
-        {
-          title: "samp.dll doesn't exist",
-          type: "error",
-          cancelLabel: "Close",
-          okLabel: "Download",
-        }
-      );
-      if (download) {
-        shell.open("https://sa-mp.mp/downloads/");
-      }
-      return;
+    const name: string = await invoke("get_nickname_from_samp");
+    if (name.length) {
+      setNickName(name);
     }
-
-    setGTASAPath(newPath);
   };
 
   return (
@@ -156,6 +137,7 @@ Please refer to https://sa-mp.mp/ to download SA-MP
               borderColor: theme.textSecondary,
             },
           ]}
+          onPress={() => importDataFromSAMP()}
         >
           <Text
             semibold
