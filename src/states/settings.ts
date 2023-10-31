@@ -8,7 +8,7 @@ interface SettingsPersistentState {
   setGTASAPath: (path: string) => void;
 }
 
-const useSettingsStore = create<SettingsPersistentState>()(
+const useSettings = create<SettingsPersistentState>()(
   persist(
     (set) => ({
       nickName: "",
@@ -23,4 +23,4 @@ const useSettingsStore = create<SettingsPersistentState>()(
   )
 );
 
-export { useSettingsStore };
+export { useSettings };

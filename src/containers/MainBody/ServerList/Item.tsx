@@ -6,7 +6,7 @@ import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
 import { useContextMenu } from "../../../states/contextMenu";
 import { usePasswordModal } from "../../../states/passwordModal";
-import { useSettingsStore } from "../../../states/settings";
+import { useSettings } from "../../../states/settings";
 import { startGame } from "../../../utils/helpers";
 import { Server } from "../../../utils/types";
 
@@ -26,7 +26,7 @@ const ServerItem = memo((props: IProps) => {
   const isSelectedRef = useRef(!!props.isSelected);
   const lastPressTime = useRef(0);
 
-  const { nickName, gtasaPath } = useSettingsStore();
+  const { nickName, gtasaPath } = useSettings();
   const { showPasswordModal, setServerInfo } = usePasswordModal();
   const { show: showContextMenu } = useContextMenu();
 

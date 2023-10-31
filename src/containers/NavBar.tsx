@@ -4,7 +4,7 @@ import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { images } from "../constants/images";
 import { ThemeContext } from "../contexts/theme";
-import { useSettingsStore } from "../states/settings";
+import { useSettings } from "../states/settings";
 import { ListType } from "../utils/types";
 
 interface IProps {
@@ -14,7 +14,7 @@ interface IProps {
 const NavBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
   const [selectedList, setSelectedList] = useState<ListType>("favorites");
-  const { nickName, setNickName } = useSettingsStore();
+  const { nickName, setNickName } = useSettings();
 
   const list: { icon: string; label: string; type: ListType }[] = [
     { icon: images.icons.favorite, label: "Favorites", type: "favorites" },
