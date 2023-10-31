@@ -47,15 +47,20 @@ const SettingsModal = () => {
   };
 
   const importDataFromSAMP = async () => {
-    const path: string = await invoke("get_gtasa_path_from_samp");
-    if (path.length) {
-      const isDirValid = await checkDirectoryValidity(path);
-      if (isDirValid) setGTASAPath(path);
-    }
+    try {
+      const path: string = await invoke("get_gtasa_path_from_samp");
+      if (path.length) {
+        const newPath = path.replace(/\\/g, "/");
+        const isDirValid = await checkDirectoryValidity(newPath);
+        if (isDirValid) setGTASAPath(newPath);
+      }
 
-    const name: string = await invoke("get_nickname_from_samp");
-    if (name.length) {
-      setNickName(name);
+      const name: string = await invoke("get_nickname_from_samp");
+      if (name.length) {
+        setNickName(name);
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 

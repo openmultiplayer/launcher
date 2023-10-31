@@ -80,6 +80,7 @@ export const checkDirectoryValidity = async (path: string) => {
       `Can not find the right GTA San Andreas installation in this directory:
   ${path}
 Unable to find "gta_sa.exe" in your given path.
+  ${path}/gta_sa.exe does not exist.
     `,
       { title: "gta_sa.exe doesn't exist", type: "error" }
     );
@@ -92,6 +93,8 @@ Unable to find "gta_sa.exe" in your given path.
       `Can not find the right SA-MP installation in this directory:
   ${path}
 Unable to find "samp.dll" in your given path.
+  ${path}/samp.dll does not exist.
+
 Please refer to https://sa-mp.mp/ to download SA-MP
     `,
       {
