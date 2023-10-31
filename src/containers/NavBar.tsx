@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 30,
     flexDirection: "row",
-    zIndex: 1000,
+    zIndex: 50,
   },
   iconsContainer: {
     height: "100%",

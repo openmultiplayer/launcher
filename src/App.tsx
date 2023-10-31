@@ -33,12 +33,14 @@ const App = () => {
       >
         <View style={[styles.appView, { borderRadius: maximized ? 0 : 8 }]}>
           <WindowTitleBar />
-          <NavBar onListChange={(type) => setCurrentListType(type)} />
-          <MainView listType={currentListType} />
+          <View style={{ height: "100%", width: "100%" }}>
+            <NavBar onListChange={(type) => setCurrentListType(type)} />
+            <MainView listType={currentListType} />
+            <ContextMenu />
+            <PasswordModal />
+            <SettingsModal />
+          </View>
         </View>
-        <ContextMenu />
-        <PasswordModal />
-        <SettingsModal />
       </ThemeContext.Provider>
     </View>
   );

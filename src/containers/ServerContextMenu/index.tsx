@@ -43,6 +43,7 @@ const ContextMenu = () => {
           width: width,
           top: 0,
           left: 0,
+          zIndex: 60,
         }}
       >
         <Pressable

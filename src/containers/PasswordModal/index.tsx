@@ -35,6 +35,7 @@ const PasswordModal = () => {
         width: width,
         top: 0,
         left: 0,
+        zIndex: 61,
       }}
     >
       <Pressable

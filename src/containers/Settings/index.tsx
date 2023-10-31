@@ -54,6 +54,7 @@ const SettingsModal = () => {
         width: width,
         top: 0,
         left: 0,
+        zIndex: 100,
       }}
     >
       <Pressable
