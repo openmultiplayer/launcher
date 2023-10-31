@@ -136,13 +136,31 @@ Please refer to https://sa-mp.mp/ to download SA-MP
   return true;
 };
 
-export const validateIPaddress = (ipaddress: string) => {
+export const validateServerAddress = (address: string) => {
   if (
     /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
-      ipaddress
+      address
     )
   ) {
     return true;
+  } else {
+    // Check if it's a valid domain
+    let regex = new RegExp(
+      /^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,6}$/
+    );
+
+    // if str
+    // is empty return false
+    if (address == null) {
+      return false;
+    }
+
+    // Return true if the str
+    // matched the ReGex
+    if (regex.test(address) == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
-  return false;
 };

@@ -2,10 +2,11 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use chardet::{charset2encoding, detect};
 use encoding::label::encoding_from_whatwg_label;
 use encoding::DecoderTrap;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::io::{Cursor, Read};
 use std::{net::Ipv4Addr, time::Duration};
-use tokio::net::UdpSocket;
+use tokio::net::{lookup_host, UdpSocket};
 use tokio::time::timeout_at;
 use tokio::time::Instant;
 
@@ -68,11 +69,45 @@ fn decode_buffer(buf: Vec<u8>) -> String {
 
 impl Query {
     pub async fn new(addr: &str, port: i32) -> Result<Self, std::io::Error> {
+        let regex = Regex::new(r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$").unwrap();
+
+        let address = match regex.captures(addr) {
+            Some(_) => {
+                // it's valid ipv4, move on
+                addr.to_string()
+            }
+            None => {
+                println!("{}", format!("{}:{}", addr, port));
+                let socket_addresses = lookup_host(format!("{}:{}", addr, port)).await;
+                match socket_addresses {
+                    Ok(s) => {
+                        let mut ipv4 = "".to_string();
+                        for socket_address in s {
+                            if socket_address.is_ipv4() {
+                                // hostname is resolved to ipv4:port, lets split it by ":" and get ipv4 only
+                                let ip_port = socket_address.to_string();
+                                let vec: Vec<&str> = ip_port.split(':').collect();
+                                ipv4 = vec[0].to_string();
+                            }
+                        }
+                        ipv4
+                    }
+                    Err(e) => {
+                        println!("{}", e.to_string());
+                        "".to_string()
+                    }
+                }
+            }
+        };
+
+        println!("ip is {}", address);
+
         let data = Self {
-            address: addr.parse::<Ipv4Addr>().unwrap(),
+            address: address.parse::<Ipv4Addr>().unwrap(),
             port,
             socket: UdpSocket::bind("0.0.0.0:0").await.unwrap(),
         };
+
         data.socket
             .connect(format!("{}:{}", addr, port))
             .await

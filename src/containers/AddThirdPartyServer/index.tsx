@@ -12,7 +12,7 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../states/addThirdPartyServerModal";
-import { validateIPaddress } from "../../utils/helpers";
+import { validateServerAddress } from "../../utils/helpers";
 import { Server } from "../../utils/types";
 import { usePersistentServersStore } from "../../states/servers";
 
@@ -52,7 +52,7 @@ const AddThirdPartyServerModal = () => {
         serverInfo.port = parseInt(data[1]);
         serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
       } else {
-        if (validateIPaddress(serverAddress)) {
+        if (validateServerAddress(serverAddress)) {
           serverInfo.ip = serverAddress;
           serverInfo.port = 7777;
           serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
