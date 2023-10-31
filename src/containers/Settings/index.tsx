@@ -2,12 +2,14 @@ import { shell } from "@tauri-apps/api";
 import { useContext } from "react";
 import {
   Pressable,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
+import { open } from "@tauri-apps/api/dialog";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
@@ -30,6 +32,20 @@ const SettingsModal = () => {
     return null;
   }
 
+  const selectPath = async () => {
+    const selected = await open({
+      defaultPath: gtasaPath,
+      directory: true,
+    });
+    if (Array.isArray(selected)) {
+      // user selected multiple files
+    } else if (selected === null) {
+      // user cancelled the selection
+    } else {
+      // user selected a single file
+    }
+  };
+
   return (
     <View
       style={{
@@ -51,69 +67,41 @@ const SettingsModal = () => {
       <Animatable.View
         animation={"bounceIn"}
         duration={500}
-        style={{
-          position: "absolute",
-          top: height / 2 - MODAL_HEIGHT / 2,
-          left: width / 2 - MODAL_WIDTH / 2,
-          height: MODAL_HEIGHT,
-          width: MODAL_WIDTH,
-          borderRadius: 4,
-          backgroundColor: theme.listHeaderBackgroundColor,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 3,
+        style={[
+          styles.container,
+          {
+            top: height / 2 - MODAL_HEIGHT / 2,
+            left: width / 2 - MODAL_WIDTH / 2,
+            height: MODAL_HEIGHT,
+            width: MODAL_WIDTH,
+            backgroundColor: theme.listHeaderBackgroundColor,
           },
-          shadowOpacity: 0.8,
-          shadowRadius: 4.65,
-          paddingHorizontal: 10,
-          overflow: "hidden",
-          paddingVertical: 15,
-        }}
+        ]}
       >
-        {/* <Icon image={images.icons.locked} size={30} />
-        <Text color={theme.textPrimary} size={1}>
-          This server is protected, please enter password.
-        </Text> */}
         <Text size={1} color={theme.textPrimary}>
           GTA: San Andreas path (where also SA-MP is installed):
         </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            width: "100%",
-            marginTop: 7,
-          }}
-        >
+        <View style={styles.pathInputContainer}>
           <TextInput
             value={gtasaPath}
             onChangeText={(text) => setGTASAPath(text)}
-            style={{
-              color: theme.textSecondary,
-              paddingHorizontal: 5,
-              flex: 1,
-              backgroundColor: "white",
-              borderColor: theme.primary,
-              height: 29,
-              borderRadius: 8,
-              borderWidth: 2,
-              // @ts-ignore
-              outlineStyle: "none",
-            }}
+            style={[
+              styles.pathInput,
+              {
+                color: theme.textSecondary,
+                borderColor: theme.primary,
+              },
+            ]}
           />
           <TouchableOpacity
-            style={{
-              height: 30,
-              paddingHorizontal: 10,
-              backgroundColor: theme.primary,
-              borderRadius: 8,
-              marginLeft: 5,
-              justifyContent: "center",
-              alignItems: "center",
-              borderColor: theme.textSecondary,
-              borderWidth: 2,
-            }}
+            style={[
+              styles.browseButton,
+              {
+                backgroundColor: theme.primary,
+                borderColor: theme.textSecondary,
+              },
+            ]}
+            onPress={() => selectPath()}
           >
             <Text
               semibold
@@ -128,17 +116,13 @@ const SettingsModal = () => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          style={{
-            marginTop: 10,
-            height: 30,
-            paddingHorizontal: 10,
-            backgroundColor: theme.primary,
-            borderRadius: 8,
-            justifyContent: "center",
-            alignItems: "center",
-            borderColor: theme.textSecondary,
-            borderWidth: 2,
-          }}
+          style={[
+            styles.importButton,
+            {
+              backgroundColor: theme.primary,
+              borderColor: theme.textSecondary,
+            },
+          ]}
         >
           <Text
             semibold
@@ -151,14 +135,7 @@ const SettingsModal = () => {
             Import nickname and gtasa path from SA-MP settings
           </Text>
         </TouchableOpacity>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
-            width: "100%",
-            alignItems: "center",
-          }}
-        >
+        <View style={styles.appInfoContainer}>
           {updateInfo && updateInfo.version != version && (
             <Text
               style={{ marginBottom: 10 }}
@@ -212,13 +189,60 @@ const SettingsModal = () => {
   );
 };
 
-// const styles = StyleSheet.create({
-//   app: {
-//     // @ts-ignore
-//     height: "100vh",
-//     // @ts-ignore
-//     width: "100vw",
-//   },
-// });
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 4,
+    position: "absolute",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 4.65,
+    paddingHorizontal: 10,
+    overflow: "hidden",
+    paddingVertical: 15,
+  },
+  pathInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginTop: 7,
+  },
+  pathInput: {
+    paddingHorizontal: 5,
+    flex: 1,
+    backgroundColor: "white",
+    height: 29,
+    borderRadius: 8,
+    borderWidth: 2,
+    outlineStyle: "none",
+  },
+  browseButton: {
+    height: 30,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginLeft: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+  },
+  importButton: {
+    marginTop: 10,
+    height: 30,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+  },
+  appInfoContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    width: "100%",
+    alignItems: "center",
+  },
+});
 
 export default SettingsModal;
