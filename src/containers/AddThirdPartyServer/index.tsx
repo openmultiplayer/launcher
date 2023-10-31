@@ -60,6 +60,7 @@ const AddThirdPartyServerModal = () => {
       }
 
       addToFavorites(serverInfo);
+      showAddThirdPartyServer(false);
     }
   };
 
