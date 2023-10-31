@@ -41,7 +41,6 @@ const ContextMenu = () => {
           position: "absolute",
           height: height,
           width: width,
-          top: 0,
           left: 0,
           zIndex: 60,
         }}
@@ -57,7 +56,7 @@ const ContextMenu = () => {
         <View
           style={{
             position: "absolute",
-            top: position.y,
+            top: position.y - 25, // titlebar height is 25
             left: position.x,
             borderRadius: 4,
             backgroundColor: theme.listHeaderBackgroundColor,

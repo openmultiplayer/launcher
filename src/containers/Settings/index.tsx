@@ -89,7 +89,7 @@ const SettingsModal = () => {
         style={[
           styles.container,
           {
-            top: height / 2 - MODAL_HEIGHT / 2,
+            top: height / 2 - MODAL_HEIGHT / 2 - 25, // titlebar height is 25
             left: width / 2 - MODAL_WIDTH / 2,
             height: MODAL_HEIGHT,
             width: MODAL_WIDTH,

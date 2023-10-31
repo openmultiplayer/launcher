@@ -51,7 +51,7 @@ const PasswordModal = () => {
         duration={500}
         style={{
           position: "absolute",
-          top: height / 2 - 75,
+          top: height / 2 - 75 - 25, // titlebar height is 25
           left: width / 2 - 160,
           height: 150,
           width: 320,
