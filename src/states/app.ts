@@ -1,6 +1,6 @@
+import { OsType } from "@tauri-apps/api/os";
 import { create } from "zustand";
 import { VERSION } from "../constants/app";
-import { OsType } from "@tauri-apps/api/os";
 
 export interface UpdateInfo {
   version: string;

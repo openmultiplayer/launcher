@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -10,10 +10,15 @@ import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
+import { useAddThirdPartyServerModal } from "../../../states/addThirdPartyServerModal";
 import {
   useGenericPersistentState,
   useGenericTempState,
 } from "../../../states/genericStates";
+import { usePasswordModal } from "../../../states/passwordModal";
+import { usePersistentServersStore, useServers } from "../../../states/servers";
+import { useSettings } from "../../../states/settings";
+import { startGame } from "../../../utils/helpers";
 
 interface IProps {
   onChange: (query: string) => void;
@@ -25,10 +30,41 @@ const SearchBar = (props: IProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { filterMenu, showFilterMenu } = useGenericTempState();
   const { sideLists, showSideLists } = useGenericPersistentState();
+  const { selected } = useServers();
+  const { favorites, removeFromFavorites, addToFavorites } =
+    usePersistentServersStore();
+  const { nickName, gtasaPath } = useSettings();
+  const { showPasswordModal, setServerInfo } = usePasswordModal();
+  const { showAddThirdPartyServer } = useAddThirdPartyServerModal();
+
+  const favorited = useMemo(() => {
+    const find = favorites.find(
+      (fav) => selected && fav.ip === selected.ip && fav.port == selected.port
+    );
+    return find !== undefined;
+  }, [selected, favorites]);
 
   useEffect(() => {
     props.onChange(searchQuery);
   }, [searchQuery]);
+
+  const playSelectedServer = () => {
+    if (selected) {
+      if (selected.hasPassword) {
+        setServerInfo(selected.ip, selected.port);
+        showPasswordModal(true);
+      } else {
+        startGame(
+          nickName,
+          selected.ip,
+          selected.port,
+          gtasaPath,
+          `${gtasaPath}/samp.dll`,
+          ""
+        );
+      }
+    }
+  };
 
   return (
     <View
@@ -105,6 +141,66 @@ const SearchBar = (props: IProps) => {
           </Pressable>
         )}
       </View>
+      <TouchableOpacity
+        style={{
+          height: "100%",
+          aspectRatio: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={() => playSelectedServer()}
+      >
+        <Icon
+          title={"Play"}
+          image={images.icons.play}
+          size={22}
+          color={theme.primary}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          height: "100%",
+          aspectRatio: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={() => {
+          if (selected) {
+            if (favorited) {
+              removeFromFavorites(selected);
+            } else {
+              addToFavorites(selected);
+            }
+          }
+        }}
+      >
+        <Icon
+          title={
+            favorited
+              ? "Remove Selected Server from Favorites"
+              : "Add Selected Server to Favorites"
+          }
+          image={favorited ? images.icons.favRemove : images.icons.favAdd}
+          size={20}
+          color={"#FF2D2D"}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          height: "100%",
+          aspectRatio: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={() => showAddThirdPartyServer(true)}
+      >
+        <Icon
+          title={"Add Your Server"}
+          image={images.icons.add}
+          size={20}
+          color={"#3B833D"}
+        />
+      </TouchableOpacity>
       <TouchableOpacity
         style={{
           height: "100%",

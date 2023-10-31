@@ -63,8 +63,6 @@ const ServerItem = memo((props: IProps) => {
   };
 
   const onDoublePress = () => {
-    lastPressTime.current = 0;
-
     if (server.hasPassword) {
       setServerInfo(server.ip, server.port);
       showPasswordModal(true);
@@ -84,6 +82,7 @@ const ServerItem = memo((props: IProps) => {
     var delta = new Date().getTime() - lastPressTime.current;
 
     if (delta < 500) {
+      lastPressTime.current = 0;
       onDoublePress();
     } else {
       lastPressTime.current = new Date().getTime();

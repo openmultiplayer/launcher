@@ -12,7 +12,7 @@ const useSettings = create<SettingsPersistentState>()(
   persist(
     (set) => ({
       nickName: "",
-      gtasaPath: "F:/Games/GTA San Andreas BU/GTA San Andreas",
+      gtasaPath: "",
       setNickName: (name) => set({ nickName: name }),
       setGTASAPath: (path) => set({ gtasaPath: path }),
     }),
@@ -24,3 +24,4 @@ const useSettings = create<SettingsPersistentState>()(
 );
 
 export { useSettings };
+

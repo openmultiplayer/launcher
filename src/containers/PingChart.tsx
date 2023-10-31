@@ -12,10 +12,10 @@ import {
   Tooltip,
 } from "chart.js";
 import { useContext, useMemo, useRef } from "react";
-import { useServers } from "../states/servers";
 import { Line } from "react-chartjs-2";
-import { View, StyleProp, ViewStyle } from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
 import { ThemeContext } from "../contexts/theme";
+import { useServers } from "../states/servers";
 
 ChartJS.register(
   CategoryScale,
