@@ -77,6 +77,6 @@ export default defineConfig(async () => ({
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
   envPrefix: ["VITE_", "TAURI_"],
   build: {
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 700,
   },
 }));
