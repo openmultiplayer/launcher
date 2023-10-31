@@ -33,7 +33,7 @@ const App = () => {
       >
         <View style={[styles.appView, { borderRadius: maximized ? 0 : 8 }]}>
           <WindowTitleBar />
-          <View style={{ height: "100%", width: "100%" }}>
+          <View style={{ height: "100%", width: "100%", paddingBottom: 25 }}>
             <NavBar onListChange={(type) => setCurrentListType(type)} />
             <MainView listType={currentListType} />
             <ContextMenu />

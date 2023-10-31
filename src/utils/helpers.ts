@@ -5,7 +5,7 @@ import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { usePersistentServersStore, useServers } from "../states/servers";
 import { APIResponseServer, Player, Server } from "./types";
-import { confirm, message } from "@tauri-apps/api/dialog";
+import { ask, confirm, message } from "@tauri-apps/api/dialog";
 import { exists } from "@tauri-apps/api/fs";
 
 export const mapAPIResponseServerListToAppStructure = (
@@ -50,6 +50,29 @@ export const fetchUpdateInfo = async () => {
     useAppState.getState().setNativeAppVersionValue(nativeVer);
     useAppState.getState().setHostOSValue(hostOS);
   }
+
+  setTimeout(async () => {
+    const updateInfo = useAppState.getState().updateInfo;
+    const version = useAppState.getState().version;
+    if (updateInfo && updateInfo.version != version) {
+      const download = await ask(
+        `New launcher build is available!
+      Your launcher build version: #${version}
+      Current launcher vuild version: #${updateInfo.version}
+Click "Download" to open release page`,
+        {
+          type: "info",
+          title: "Update Available",
+          cancelLabel: "Ignore",
+          okLabel: "Download",
+        }
+      );
+
+      if (download) {
+        shell.open(updateInfo.download);
+      }
+    }
+  }, 1000);
   console.log(response);
 };
 
