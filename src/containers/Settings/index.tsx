@@ -1,4 +1,6 @@
 import { shell } from "@tauri-apps/api";
+import { open, message, confirm } from "@tauri-apps/api/dialog";
+import { exists } from "@tauri-apps/api/fs";
 import { useContext } from "react";
 import {
   Pressable,
@@ -9,7 +11,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { open } from "@tauri-apps/api/dialog";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
@@ -23,7 +24,7 @@ const MODAL_HEIGHT = 200;
 
 const SettingsModal = () => {
   const { height, width } = useWindowDimensions();
-  const { nativeAppVersion, version, updateInfo } = useAppState();
+  const { nativeAppVersion, version, updateInfo, hostOS } = useAppState();
   const { theme } = useContext(ThemeContext);
   const { gtasaPath, setGTASAPath } = useSettings();
   const { hide, visible } = useSettingsModal();
@@ -33,17 +34,48 @@ const SettingsModal = () => {
   }
 
   const selectPath = async () => {
-    const selected = await open({
-      defaultPath: gtasaPath,
+    const selected: string = (await open({
+      defaultPath:
+        hostOS === "Windows_NT" ? gtasaPath.replace(/\//g, "\\") : gtasaPath,
       directory: true,
-    });
-    if (Array.isArray(selected)) {
-      // user selected multiple files
-    } else if (selected === null) {
-      // user cancelled the selection
-    } else {
-      // user selected a single file
+    })) as string;
+
+    const newPath = selected.replace(/\\/g, "/");
+
+    const gtasaExists = await exists(newPath + "/gta_sa.exe");
+    if (!gtasaExists) {
+      message(
+        `Can not find the right GTA San Andreas installation in this directory:
+    ${newPath}
+Unable to find "gta_sa.exe" in your given path.
+      `,
+        { title: "gta_sa.exe doesn't exist", type: "error" }
+      );
+      return;
     }
+
+    const sampExists = await exists(newPath + "/samp.dll");
+    if (!sampExists) {
+      const download = await confirm(
+        `Can not find the right SA-MP installation in this directory:
+    ${newPath}
+Unable to find "samp.dll" in your given path.
+Please refer to https://sa-mp.mp/ to download SA-MP
+      `,
+        {
+          title: "samp.dll doesn't exist",
+          type: "error",
+          cancelLabel: "Close",
+          okLabel: "Download",
+        }
+      );
+      if (download) {
+        shell.open("https://sa-mp.mp/downloads/");
+      }
+      return;
+    }
+
+    setGTASAPath(newPath);
   };
 
   return (
