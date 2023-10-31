@@ -3,6 +3,7 @@ import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { usePersistentServersStore, useServers } from "../states/servers";
 import { Player, Server, APIResponseServer } from "./types";
+import { getVersion } from "@tauri-apps/api/app";
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -37,14 +38,14 @@ export const fetchServers = async (cached: boolean = true) => {
   }
 };
 
-export const fetchUpdateInfo = async (cached: boolean = true) => {
-  if (cached) {
-    const response = await getUpdateInfo();
-    if (response.info) {
-      useAppState.getState().setUpdateInfo(response.info);
-    }
-    console.log(response);
+export const fetchUpdateInfo = async () => {
+  const nativeVer = await getVersion();
+  const response = await getUpdateInfo();
+  if (response.info) {
+    useAppState.getState().setUpdateInfo(response.info);
+    useAppState.getState().setNativeAppVersionValue(nativeVer);
   }
+  console.log(response);
 };
 
 export const startGame = (
