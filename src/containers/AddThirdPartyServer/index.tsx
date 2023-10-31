@@ -12,16 +12,56 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../states/addThirdPartyServerModal";
+import { validateIPaddress } from "../../utils/helpers";
+import { Server } from "../../utils/types";
+import { usePersistentServersStore } from "../../states/servers";
 
 const AddThirdPartyServerModal = () => {
   const { visible, showAddThirdPartyServer } = useAddThirdPartyServerModal();
   const { height, width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const [serverAddress, setServerAddress] = useState("");
+  const { addToFavorites } = usePersistentServersStore();
 
   if (!visible) {
     return null;
   }
+
+  const addServer = () => {
+    const serverInfo: Server = {
+      ip: "",
+      port: 0,
+      hostname: "No information",
+      playerCount: 0,
+      maxPlayers: 0,
+      gameMode: "-",
+      language: "-",
+      hasPassword: false,
+      version: "-",
+      usingOmp: false,
+      partner: false,
+      ping: 0,
+      players: [],
+      rules: {} as Server["rules"],
+    };
+
+    if (serverAddress.length) {
+      if (serverAddress.includes(":")) {
+        const data = serverAddress.split(":");
+        serverInfo.ip = data[0];
+        serverInfo.port = parseInt(data[1]);
+        serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
+      } else {
+        if (validateIPaddress(serverAddress)) {
+          serverInfo.ip = serverAddress;
+          serverInfo.port = 7777;
+          serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
+        }
+      }
+
+      addToFavorites(serverInfo);
+    }
+  };
 
   return (
     <View
@@ -102,7 +142,7 @@ const AddThirdPartyServerModal = () => {
             justifyContent: "center",
             alignItems: "center",
           }}
-          onPress={() => {}}
+          onPress={() => addServer()}
         >
           <Text color={theme.textPrimary} size={1}>
             Add
