@@ -3,6 +3,7 @@
 // use serde_json::json;
 mod injector;
 mod query;
+mod samp;
 
 use std::time::Instant;
 use tauri::Manager;
@@ -85,6 +86,16 @@ fn inject(name: &str, ip: &str, port: i32, exe: &str, dll: &str, password: &str)
     injector::run_samp(name, ip, port, exe, dll, password).unwrap();
 }
 
+#[tauri::command]
+fn get_gtasa_path_from_samp() -> String {
+    samp::get_gtasa_path().to_string()
+}
+
+#[tauri::command]
+fn get_nickname_from_samp() -> String {
+    samp::get_nickname().to_string()
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -100,7 +111,9 @@ fn main() {
             request_server_rules,
             request_server_is_omp,
             ping_server,
-            inject
+            inject,
+            get_gtasa_path_from_samp,
+            get_nickname_from_samp
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
