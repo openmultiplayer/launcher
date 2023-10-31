@@ -1,16 +1,17 @@
-import { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
-import NavBar from "./containers/NavBar";
-import MainView from "./containers/MainBody";
-import { ThemeContext } from "./contexts/theme";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { darkThemeColors, lightThemeColors } from "./constants/theme";
-import { ListType } from "./utils/types";
-import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
+import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
+import MainView from "./containers/MainBody";
+import NavBar from "./containers/NavBar";
+import PasswordModal from "./containers/PasswordModal";
 import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
-import { useAppState } from "./states/app";
 import WindowTitleBar from "./containers/WindowTitleBar";
-import PasswordModal from "./containers/PasswordModal";
+import { ThemeContext } from "./contexts/theme";
+import { useAppState } from "./states/app";
+import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
+import { ListType } from "./utils/types";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
@@ -39,6 +40,7 @@ const App = () => {
             <ContextMenu />
             <PasswordModal />
             <SettingsModal />
+            <AddThirdPartyServerModal />
           </View>
         </View>
       </ThemeContext.Provider>
