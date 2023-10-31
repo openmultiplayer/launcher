@@ -1,6 +1,22 @@
+#[cfg(target_os = "windows")]
 use dll_syringe::{process::OwnedProcess, Syringe};
 use std::process::Command;
 
+#[cfg(not(target_os = "windows"))]
+#[tauri::command]
+pub fn run_samp(
+    name: &str,
+    ip: &str,
+    port: i32,
+    executable_dir: &str,
+    dll_path: &str,
+    password: &str,
+) -> Result<(), String> {
+    ""
+}
+
+#[cfg(target_os = "windows")]
+#[tauri::command]
 pub fn run_samp(
     name: &str,
     ip: &str,
