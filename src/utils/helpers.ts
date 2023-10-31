@@ -1,10 +1,12 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke, shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
 import { type } from "@tauri-apps/api/os";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { usePersistentServersStore, useServers } from "../states/servers";
 import { APIResponseServer, Player, Server } from "./types";
+import { confirm, message } from "@tauri-apps/api/dialog";
+import { exists } from "@tauri-apps/api/fs";
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -69,4 +71,41 @@ export const startGame = (
     dll: sampDllPath,
     password: password,
   });
+};
+
+export const checkDirectoryValidity = async (path: string) => {
+  const gtasaExists = await exists(path + "/gta_sa.exe");
+  if (!gtasaExists) {
+    message(
+      `Can not find the right GTA San Andreas installation in this directory:
+  ${path}
+Unable to find "gta_sa.exe" in your given path.
+    `,
+      { title: "gta_sa.exe doesn't exist", type: "error" }
+    );
+    return false;
+  }
+
+  const sampExists = await exists(path + "/samp.dll");
+  if (!sampExists) {
+    const download = await confirm(
+      `Can not find the right SA-MP installation in this directory:
+  ${path}
+Unable to find "samp.dll" in your given path.
+Please refer to https://sa-mp.mp/ to download SA-MP
+    `,
+      {
+        title: "samp.dll doesn't exist",
+        type: "error",
+        cancelLabel: "Close",
+        okLabel: "Download",
+      }
+    );
+    if (download) {
+      shell.open("https://sa-mp.mp/downloads/");
+    }
+    return false;
+  }
+
+  return true;
 };
