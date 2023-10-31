@@ -1873,6 +1873,7 @@ version = "0.0.1"
 dependencies = [
  "byteorder",
  "chardet",
+ "dirs-next",
  "dll-syringe",
  "encoding",
  "serde",

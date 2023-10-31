@@ -81,9 +81,8 @@ async fn ping_server(ip: &str, port: i32) -> Result<u32, String> {
 }
 
 #[tauri::command]
-fn inject(name: &str, ip: &str, port: i32, exe: &str, dll: &str) -> u32 {
-    injector::run_samp(name, ip, port, exe, dll).unwrap();
-    2
+fn inject(name: &str, ip: &str, port: i32, exe: &str, dll: &str, password: &str) -> () {
+    injector::run_samp(name, ip, port, exe, dll, password).unwrap();
 }
 
 fn main() {

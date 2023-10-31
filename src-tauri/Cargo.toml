@@ -21,6 +21,7 @@ byteorder = "1.4.3"
 chardet = "0.2.4"
 encoding = "0.2.33"
 dll-syringe = "0.15.2"
+dirs-next = "2.0.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

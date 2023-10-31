@@ -7,14 +7,17 @@ pub fn run_samp(
     port: i32,
     executable_dir: &str,
     dll_path: &str,
+    password: &str,
 ) -> Result<(), String> {
     // Prepare the command to spawn the executable
     let mut cmd = Command::new(format!("{}/gta_sa.exe", executable_dir));
 
-    let process = cmd
-        .arg(format!("-c -n {} -h {} -p {}", name, ip, port))
-        .current_dir(executable_dir)
-        .spawn();
+    let mut args = format!("-c -n {} -h {} -p {}", name, ip, port);
+    if password.len() > 0 {
+        args = format!("-c -n {} -h {} -p {} -z {}", name, ip, port, password);
+    }
+
+    let process = cmd.arg(args).current_dir(executable_dir).spawn();
 
     if process.is_ok() {
         let target_process = OwnedProcess::from_pid(process.unwrap().id()).unwrap();
