@@ -77,7 +77,6 @@ impl Query {
                 addr.to_string()
             }
             None => {
-                println!("{}", format!("{}:{}", addr, port));
                 let socket_addresses = lookup_host(format!("{}:{}", addr, port)).await;
                 match socket_addresses {
                     Ok(s) => {
@@ -99,8 +98,6 @@ impl Query {
                 }
             }
         };
-
-        println!("ip is {}", address);
 
         let data = Self {
             address: address.parse::<Ipv4Addr>().unwrap(),
