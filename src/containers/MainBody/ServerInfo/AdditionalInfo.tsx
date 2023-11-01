@@ -98,8 +98,7 @@ const AdditionalInfo = (props: IProps) => {
 const styles = StyleSheet.create({
   additionalInfoView: {
     width: "100%",
-    height: "45%",
-    // borderTopWidth: 3,
+    height: "38%",
   },
   rulesContainer: {
     height: 25,

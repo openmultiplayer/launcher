@@ -1,12 +1,12 @@
 import { invoke, shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
+import { ask, confirm, message } from "@tauri-apps/api/dialog";
+import { exists } from "@tauri-apps/api/fs";
 import { type } from "@tauri-apps/api/os";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { usePersistentServersStore, useServers } from "../states/servers";
 import { APIResponseServer, Player, Server } from "./types";
-import { ask, confirm, message } from "@tauri-apps/api/dialog";
-import { exists } from "@tauri-apps/api/fs";
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -163,4 +163,15 @@ export const validateServerAddress = (address: string) => {
       return false;
     }
   }
+};
+
+export const validateWebUrl = (url: string) => {
+  if (
+    /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+      url
+    )
+  ) {
+    return true;
+  }
+  return false;
 };
