@@ -14,7 +14,7 @@ interface IProps {
 
 const RecentlyJoined = (props: IProps) => {
   const { startQuery, stopQuery } = useQuery();
-  const { selected, servers, setSelected } = useServers();
+  const { selected, setSelected } = useServers();
   const { recentlyJoined } = usePersistentServersStore();
 
   useEffect(() => {
@@ -26,15 +26,11 @@ const RecentlyJoined = (props: IProps) => {
 
   const list = useMemo(() => {
     const { ompOnly, nonEmpty, query } = props.searchData;
-    const list = servers.filter((server) => {
-      const existsInRecentlyJoined = recentlyJoined.includes(
-        `${server.ip}:${server.port}`
-      );
+    const list = recentlyJoined.filter((server) => {
       const ompCheck = ompOnly ? server.usingOmp === true : true;
       const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
 
       return (
-        existsInRecentlyJoined &&
         ompCheck &&
         nonEmptyCheck &&
         server.hostname.toLowerCase().includes(query.toLowerCase())
@@ -46,7 +42,7 @@ const RecentlyJoined = (props: IProps) => {
     props.searchData.query,
     props.searchData.ompOnly,
     props.searchData.nonEmpty,
-    servers,
+    recentlyJoined,
   ]);
 
   const onSelect = (server: Server) => {

@@ -12,12 +12,14 @@ interface ServersState {
 
 interface ServersPersistentState {
   favorites: Server[];
-  recentlyJoined: string[];
+  recentlyJoined: Server[];
   setFavoritesList: (list: Server[]) => void;
   updateInFavoritesList: (server: Server) => void;
-  addToRecentlyJoined: (address: string) => void;
   addToFavorites: (server: Server) => void;
   removeFromFavorites: (server: Server) => void;
+  addToRecentlyJoined: (address: Server) => void;
+  clearRecentlyJoined: () => void;
+  updateInRecentlyJoinedList: (server: Server) => void;
 }
 
 const useServers = create<ServersState>()((set, get) => ({
@@ -59,18 +61,6 @@ const usePersistentServersStore = create<ServersPersistentState>()(
 
           return { favorites: list };
         }),
-      addToRecentlyJoined: (address) =>
-        set(() => {
-          const cpy = [...get().recentlyJoined];
-          const findIndex = cpy.findIndex((addr) => addr === address);
-          if (findIndex !== -1) {
-            cpy.splice(findIndex, 1);
-            cpy.push(address);
-          } else {
-            cpy.push(address);
-          }
-          return { recentlyJoined: cpy };
-        }),
       addToFavorites: (server) =>
         set(() => {
           const cpy = [...get().favorites];
@@ -95,6 +85,36 @@ const usePersistentServersStore = create<ServersPersistentState>()(
             cpy.splice(findIndex, 1);
           }
           return { favorites: cpy };
+        }),
+      addToRecentlyJoined: (server) =>
+        set(() => {
+          const cpy = [...get().recentlyJoined];
+          const findIndex = cpy.findIndex(
+            (srv) => srv.ip === server.ip && srv.port === server.port
+          );
+          if (findIndex !== -1) {
+            cpy.splice(findIndex, 1);
+            cpy.push(server);
+          } else {
+            cpy.push(server);
+          }
+
+          console.log(cpy);
+          return { recentlyJoined: cpy };
+        }),
+      clearRecentlyJoined: () => set(() => ({ recentlyJoined: [] })),
+      updateInRecentlyJoinedList: (server) =>
+        set(() => {
+          const list = [...get().recentlyJoined];
+
+          const index = list.findIndex(
+            (srv) => srv.ip === server.ip && srv.port === server.port
+          );
+          if (index !== -1) {
+            list[index] = { ...server };
+          }
+
+          return { recentlyJoined: list };
         }),
     }),
     {

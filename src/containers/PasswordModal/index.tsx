@@ -16,8 +16,7 @@ import { startGame } from "../../utils/helpers";
 import * as Animatable from "react-native-animatable";
 
 const PasswordModal = () => {
-  const { visible, serverIP, serverPort, showPasswordModal } =
-    usePasswordModal();
+  const { visible, server, showPasswordModal } = usePasswordModal();
   const { height, width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const [password, setPassword] = useState("");
@@ -100,14 +99,15 @@ const PasswordModal = () => {
             alignItems: "center",
           }}
           onPress={() => {
-            startGame(
-              nickName,
-              serverIP,
-              serverPort,
-              gtasaPath,
-              `${gtasaPath}/samp.dll`,
-              password
-            );
+            if (server) {
+              startGame(
+                server,
+                nickName,
+                gtasaPath,
+                `${gtasaPath}/samp.dll`,
+                password
+              );
+            }
           }}
         >
           <Text color={theme.textPrimary} size={1}>

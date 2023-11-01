@@ -1,20 +1,18 @@
 import { create } from "zustand";
+import { Server } from "../utils/types";
 
 interface PasswordModalState {
   visible: boolean;
-  serverIP: string;
-  serverPort: number;
+  server: Server | undefined;
   showPasswordModal: (show: boolean) => void;
-  setServerInfo: (ip: string, port: number) => void;
+  setServer: (server: Server) => void;
 }
 
 const usePasswordModal = create<PasswordModalState>()((set) => ({
   visible: false,
-  serverIP: "",
-  serverPort: 0,
+  server: undefined,
   showPasswordModal: (show) => set(() => ({ visible: show })),
-  setServerInfo: (ip: string, port: number) =>
-    set(() => ({ serverIP: ip, serverPort: port })),
+  setServer: (server) => set(() => ({ server })),
 }));
 
 export { usePasswordModal };

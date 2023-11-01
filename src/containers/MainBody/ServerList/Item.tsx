@@ -27,7 +27,7 @@ const ServerItem = memo((props: IProps) => {
   const lastPressTime = useRef(0);
 
   const { nickName, gtasaPath } = useSettings();
-  const { showPasswordModal, setServerInfo } = usePasswordModal();
+  const { showPasswordModal, setServer } = usePasswordModal();
   const { show: showContextMenu } = useContextMenu();
 
   useEffect(() => {
@@ -64,17 +64,10 @@ const ServerItem = memo((props: IProps) => {
 
   const onDoublePress = () => {
     if (server.hasPassword) {
-      setServerInfo(server.ip, server.port);
+      setServer(server);
       showPasswordModal(true);
     } else {
-      startGame(
-        nickName,
-        server.ip,
-        server.port,
-        gtasaPath,
-        `${gtasaPath}/samp.dll`,
-        ""
-      );
+      startGame(server, nickName, gtasaPath, `${gtasaPath}/samp.dll`, "");
     }
   };
 

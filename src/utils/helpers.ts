@@ -77,19 +77,18 @@ Click "Download" to open release page`,
 };
 
 export const startGame = (
+  server: Server,
   nickname: string,
-  ip: string,
-  port: number,
   gtasaPath: string,
   sampDllPath: string,
   password: string
 ) => {
   const { addToRecentlyJoined } = usePersistentServersStore.getState();
-  addToRecentlyJoined(`${ip}:${port}`);
+  addToRecentlyJoined(server);
   invoke("inject", {
     name: nickname,
-    ip: ip,
-    port: port,
+    ip: server.ip,
+    port: server.port,
     exe: gtasaPath,
     dll: sampDllPath,
     password: password,
