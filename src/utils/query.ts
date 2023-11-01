@@ -10,10 +10,12 @@ export const queryServer = async (server: Server) => {
       newSrv = { ...newSrv, ...(await getServerInfo(ip, port)) };
       newSrv.ip = ip;
       newSrv.port = port;
-      newSrv.players = await getServerPlayers(ip, port);
+      const players = await getServerPlayers(ip, port);
+      newSrv.players = players.length ? [...players] : server.players;
       newSrv.rules = await getServerRules(ip, port);
       newSrv.usingOmp = await getServerOmpStatus(ip, port);
-      newSrv.ping = await getServerPing(ip, port);
+      const ping = await getServerPing(ip, port);
+      newSrv.ping = ping == 0 ? server.ping : ping;
 
       return resolve(newSrv);
     } catch (error) {
