@@ -31,10 +31,10 @@ async fn request_server_players(ip: &str, port: i32) -> Result<String, String> {
             let _ = q.send('c').await;
             match q.recv().await {
                 Ok(p) => Ok(format!("{}", p)),
-                Err(_) => Ok("[]".to_string()),
+                Err(_) => Ok("{\"error\": true}".to_string()),
             }
         }
-        Err(_) => Ok("[]".to_string()),
+        Err(_) => Ok("{\"error\": true}".to_string()),
     }
 }
 

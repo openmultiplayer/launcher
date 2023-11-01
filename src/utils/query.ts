@@ -11,7 +11,12 @@ export const queryServer = async (server: Server) => {
       newSrv.ip = ip;
       newSrv.port = port;
       const players = await getServerPlayers(ip, port);
-      newSrv.players = players.length ? [...players] : server.players;
+      if (players === false) {
+        newSrv.players = server.players;
+      } else {
+        newSrv.players = [...players];
+      }
+
       newSrv.rules = await getServerRules(ip, port);
       newSrv.usingOmp = await getServerOmpStatus(ip, port);
       const ping = await getServerPing(ip, port);
@@ -61,6 +66,9 @@ const getServerPlayers = async (ip: string, port: number) => {
   }
 
   let queryObj = JSON.parse(serverPlayers);
+  if (queryObj.error) {
+    return false;
+  }
   const players: Player[] = [...queryObj];
   return players;
 };
