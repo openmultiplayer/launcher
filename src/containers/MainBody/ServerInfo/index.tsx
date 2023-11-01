@@ -6,6 +6,7 @@ import { useServers } from "../../../states/servers";
 import { validateWebUrl } from "../../../utils/helpers";
 import AdditionalInfo from "./AdditionalInfo";
 import PlayerList from "./PlayerList";
+import { shell } from "@tauri-apps/api";
 
 const ServerInfo = () => {
   const { theme } = useContext(ThemeContext);
@@ -46,7 +47,9 @@ const ServerInfo = () => {
             width: "100%",
             height: "100%",
           }}
-          onPress={() => {}}
+          onPress={() =>
+            shell.open(webUrl.includes("http") ? webUrl : "https://" + webUrl)
+          }
         >
           <Text
             style={{ textDecorationLine: "underline" }}
