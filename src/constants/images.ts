@@ -31,5 +31,6 @@ export const images = {
     game: "icons/game.svg",
     close: "icons/close.svg",
     refresh: "icons/refresh.png",
+    clean: "icons/clean.png",
   },
 };

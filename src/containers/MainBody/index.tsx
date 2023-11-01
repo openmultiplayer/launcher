@@ -107,6 +107,7 @@ const MainView = (props: IProps) => {
   return (
     <View style={styles.body}>
       <SearchBar
+        listType={props.listType}
         onChange={(query) => setSearchData({ ...searchData, query })}
       />
       <View style={styles.serverSection}>

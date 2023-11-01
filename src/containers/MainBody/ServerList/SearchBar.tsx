@@ -20,9 +20,11 @@ import { usePasswordModal } from "../../../states/passwordModal";
 import { usePersistentServersStore, useServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
 import { fetchServers, startGame } from "../../../utils/helpers";
+import { ListType } from "../../../utils/types";
 
 interface IProps {
   onChange: (query: string) => void;
+  listType: ListType;
 }
 
 const AnimatedTouchableOpacity =
@@ -35,10 +37,14 @@ const SearchBar = (props: IProps) => {
   const { filterMenu, showFilterMenu } = useGenericTempState();
   const { sideLists, showSideLists } = useGenericPersistentState();
   const { selected } = useServers();
-  const { favorites, removeFromFavorites, addToFavorites } =
-    usePersistentServersStore();
+  const {
+    favorites,
+    removeFromFavorites,
+    addToFavorites,
+    clearRecentlyJoined,
+  } = usePersistentServersStore();
   const { nickName, gtasaPath } = useSettings();
-  const { showPasswordModal, setServerInfo } = usePasswordModal();
+  const { showPasswordModal, setServer } = usePasswordModal();
   const { showAddThirdPartyServer } = useAddThirdPartyServerModal();
   const refreshIconSpinAnim = useRef(new Animated.Value(0)).current;
 
@@ -56,17 +62,10 @@ const SearchBar = (props: IProps) => {
   const playSelectedServer = () => {
     if (selected) {
       if (selected.hasPassword) {
-        setServerInfo(selected.ip, selected.port);
+        setServer(selected);
         showPasswordModal(true);
       } else {
-        startGame(
-          nickName,
-          selected.ip,
-          selected.port,
-          gtasaPath,
-          `${gtasaPath}/samp.dll`,
-          ""
-        );
+        startGame(selected, nickName, gtasaPath, `${gtasaPath}/samp.dll`, "");
       }
     }
   };
@@ -170,6 +169,19 @@ const SearchBar = (props: IProps) => {
           </Pressable>
         )}
       </View>
+      {props.listType === "recentlyjoined" && (
+        <TouchableOpacity
+          style={styles.rightSideIcons}
+          onPress={() => clearRecentlyJoined()}
+        >
+          <Icon
+            title={"Clear Recently Joined List"}
+            image={images.icons.clean}
+            size={18}
+            color={"#D2691E"}
+          />
+        </TouchableOpacity>
+      )}
       <AnimatedTouchableOpacity
         style={[
           styles.rightSideIcons,
