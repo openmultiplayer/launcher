@@ -1,5 +1,6 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState, useRef } from "react";
 import {
+  Animated,
   Pressable,
   StyleSheet,
   TextInput,
@@ -18,11 +19,14 @@ import {
 import { usePasswordModal } from "../../../states/passwordModal";
 import { usePersistentServersStore, useServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
-import { startGame } from "../../../utils/helpers";
+import { fetchServers, startGame } from "../../../utils/helpers";
 
 interface IProps {
   onChange: (query: string) => void;
 }
+
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
 
 const SearchBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
@@ -36,6 +40,7 @@ const SearchBar = (props: IProps) => {
   const { nickName, gtasaPath } = useSettings();
   const { showPasswordModal, setServerInfo } = usePasswordModal();
   const { showAddThirdPartyServer } = useAddThirdPartyServerModal();
+  const refreshIconSpinAnim = useRef(new Animated.Value(0)).current;
 
   const favorited = useMemo(() => {
     const find = favorites.find(
@@ -65,6 +70,30 @@ const SearchBar = (props: IProps) => {
       }
     }
   };
+
+  const refreshServers = async () => {
+    const animation = Animated.timing(refreshIconSpinAnim, {
+      toValue: 1,
+      duration: 5000,
+      useNativeDriver: false,
+    });
+
+    animation.start(() => {
+      refreshIconSpinAnim.setValue(0);
+    });
+
+    fetchServers().finally(() => {
+      setTimeout(() => {
+        animation.stop();
+        refreshIconSpinAnim.setValue(0);
+      }, 1000);
+    });
+  };
+
+  const interpolateRotating = refreshIconSpinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["3600deg", "0deg"],
+  });
 
   return (
     <View
@@ -141,13 +170,27 @@ const SearchBar = (props: IProps) => {
           </Pressable>
         )}
       </View>
+      <AnimatedTouchableOpacity
+        style={[
+          styles.rightSideIcons,
+          {
+            transform: [
+              {
+                rotate: interpolateRotating,
+              },
+            ],
+          },
+        ]}
+        onPress={() => refreshServers()}
+      >
+        <Icon
+          title={"Refresh Internet List"}
+          image={images.icons.refresh}
+          size={20}
+        />
+      </AnimatedTouchableOpacity>
       <TouchableOpacity
-        style={{
-          height: "100%",
-          aspectRatio: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+        style={styles.rightSideIcons}
         onPress={() => playSelectedServer()}
       >
         <Icon
@@ -158,12 +201,7 @@ const SearchBar = (props: IProps) => {
         />
       </TouchableOpacity>
       <TouchableOpacity
-        style={{
-          height: "100%",
-          aspectRatio: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+        style={styles.rightSideIcons}
         onPress={() => {
           if (selected) {
             if (favorited) {
@@ -186,12 +224,7 @@ const SearchBar = (props: IProps) => {
         />
       </TouchableOpacity>
       <TouchableOpacity
-        style={{
-          height: "100%",
-          aspectRatio: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+        style={styles.rightSideIcons}
         onPress={() => showAddThirdPartyServer(true)}
       >
         <Icon
@@ -202,14 +235,13 @@ const SearchBar = (props: IProps) => {
         />
       </TouchableOpacity>
       <TouchableOpacity
-        style={{
-          height: "100%",
-          aspectRatio: 1,
-          opacity: 0.5,
-          left: 5,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+        style={[
+          styles.rightSideIcons,
+          {
+            opacity: 0.5,
+            left: 5,
+          },
+        ]}
         onPress={() => showSideLists(!sideLists)}
       >
         <Icon
@@ -241,6 +273,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
     flexDirection: "row",
+    alignItems: "center",
+  },
+  rightSideIcons: {
+    height: "100%",
+    aspectRatio: 1,
+    justifyContent: "center",
     alignItems: "center",
   },
 });

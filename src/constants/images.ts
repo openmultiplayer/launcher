@@ -30,5 +30,6 @@ export const images = {
     users: "icons/users.svg",
     game: "icons/game.svg",
     close: "icons/close.svg",
+    refresh: "icons/refresh.png",
   },
 };
