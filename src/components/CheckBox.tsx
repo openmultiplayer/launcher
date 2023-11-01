@@ -10,9 +10,10 @@ interface IProps extends ViewProps {
 
 const CheckBox = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
+  const Wrapper = props.onChange ? Pressable : View;
 
   return (
-    <Pressable
+    <Wrapper
       style={[
         {
           height: 17,
@@ -39,7 +40,7 @@ const CheckBox = (props: IProps) => {
           }}
         />
       )}
-    </Pressable>
+    </Wrapper>
   );
 };
 
