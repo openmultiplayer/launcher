@@ -10,13 +10,13 @@ import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
-import { usePasswordModal } from "../../states/passwordModal";
+import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { useSettings } from "../../states/settings";
 import { startGame } from "../../utils/helpers";
 import * as Animatable from "react-native-animatable";
 
-const PasswordModal = () => {
-  const { visible, server, showPasswordModal } = usePasswordModal();
+const JoinServerPrompt = () => {
+  const { visible, server, showPrompt } = useJoinServerPrompt();
   const { height, width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const [password, setPassword] = useState("");
@@ -25,6 +25,9 @@ const PasswordModal = () => {
   if (!visible) {
     return null;
   }
+
+  const HEIGHT = server?.hasPassword ? 240 : 160;
+  const WIDTH = 320;
 
   return (
     <View
@@ -43,17 +46,17 @@ const PasswordModal = () => {
           width: "100%", // @ts-ignore
           cursor: "default",
         }}
-        onPress={() => showPasswordModal(false)}
+        onPress={() => showPrompt(false)}
       />
       <Animatable.View
         animation={"bounceIn"}
         duration={500}
         style={{
           position: "absolute",
-          top: height / 2 - 75 - 25, // titlebar height is 25
-          left: width / 2 - 160,
-          height: 150,
-          width: 320,
+          top: height / 2 - HEIGHT / 2 - 25, // titlebar height is 25
+          left: width / 2 - WIDTH / 2,
+          height: HEIGHT,
+          width: WIDTH,
           borderRadius: 4,
           backgroundColor: theme.listHeaderBackgroundColor,
           shadowColor: "#000",
@@ -63,32 +66,66 @@ const PasswordModal = () => {
           },
           shadowOpacity: 0.8,
           shadowRadius: 4.65,
-          justifyContent: "space-between",
           alignItems: "center",
           overflow: "hidden",
           paddingVertical: 10,
         }}
       >
-        <Icon image={images.icons.locked} size={30} />
-        <Text color={theme.textPrimary} size={1}>
-          This server is protected, please enter password.
-        </Text>
-        <TextInput
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          style={{
-            color: theme.textSecondary,
-            paddingHorizontal: 5,
-            width: 300,
-            backgroundColor: "white",
-            borderColor: theme.primary,
-            height: 30,
-            borderRadius: 8,
-            borderWidth: 2,
-            // @ts-ignore
-            outlineStyle: "none",
-          }}
+        <Icon
+          image={server?.hasPassword ? images.icons.locked : images.icons.play}
+          size={30}
+          color={server?.hasPassword ? undefined : theme.primary}
         />
+        <View
+          style={{
+            width: "100%",
+            paddingHorizontal: 15,
+            marginTop: 10,
+          }}
+        >
+          <Text semibold color={theme.textPrimary} size={1}>
+            Server:{" "}
+            <Text medium color={theme.textPrimary} size={1}>
+              {server?.hostname}
+            </Text>
+          </Text>
+          <Text semibold color={theme.textPrimary} size={1}>
+            Address:{" "}
+            <Text medium color={theme.textPrimary} size={1}>
+              {server?.ip}:{server?.port}
+            </Text>
+          </Text>
+          <Text semibold color={theme.textPrimary} size={1}>
+            Players:{" "}
+            <Text medium color={theme.textPrimary} size={1}>
+              {server?.playerCount}/{server?.maxPlayers}
+            </Text>
+          </Text>
+        </View>
+        {server?.hasPassword && (
+          <View style={{ marginTop: 20 }}>
+            <Text color={theme.textPrimary} size={1}>
+              This server is protected, please enter password.
+            </Text>
+            <TextInput
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              style={{
+                color: theme.textSecondary,
+                paddingHorizontal: 5,
+                marginTop: 8,
+                width: 300,
+                backgroundColor: "white",
+                borderColor: theme.primary,
+                height: 30,
+                borderRadius: 8,
+                borderWidth: 2,
+                // @ts-ignore
+                outlineStyle: "none",
+              }}
+            />
+          </View>
+        )}
         <TouchableOpacity
           style={{
             width: 300,
@@ -97,6 +134,7 @@ const PasswordModal = () => {
             borderRadius: 8,
             justifyContent: "center",
             alignItems: "center",
+            marginTop: 10,
           }}
           onPress={() => {
             if (server) {
@@ -122,7 +160,7 @@ const PasswordModal = () => {
             height: 25,
             width: 25,
           }}
-          onPress={() => showPasswordModal(false)}
+          onPress={() => showPrompt(false)}
         >
           <Icon
             image={images.icons.close}
@@ -136,13 +174,4 @@ const PasswordModal = () => {
   );
 };
 
-// const styles = StyleSheet.create({
-//   app: {
-//     // @ts-ignore
-//     height: "100vh",
-//     // @ts-ignore
-//     width: "100vw",
-//   },
-// });
-
-export default PasswordModal;
+export default JoinServerPrompt;

@@ -1,18 +1,18 @@
 import { create } from "zustand";
 import { Server } from "../utils/types";
 
-interface PasswordModalState {
+interface JoinServerPromptState {
   visible: boolean;
   server: Server | undefined;
-  showPasswordModal: (show: boolean) => void;
+  showPrompt: (show: boolean) => void;
   setServer: (server: Server) => void;
 }
 
-const usePasswordModal = create<PasswordModalState>()((set) => ({
+const useJoinServerPrompt = create<JoinServerPromptState>()((set) => ({
   visible: false,
   server: undefined,
-  showPasswordModal: (show) => set(() => ({ visible: show })),
+  showPrompt: (show) => set(() => ({ visible: show })),
   setServer: (server) => set(() => ({ server })),
 }));
 
-export { usePasswordModal };
+export { useJoinServerPrompt };

@@ -4,7 +4,7 @@ import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import MainView from "./containers/MainBody";
 import NavBar from "./containers/NavBar";
-import PasswordModal from "./containers/PasswordModal";
+import JoinServerPrompt from "./containers/JoinServerPrompt";
 import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
 import WindowTitleBar from "./containers/WindowTitleBar";
@@ -38,7 +38,7 @@ const App = () => {
             <NavBar onListChange={(type) => setCurrentListType(type)} />
             <MainView listType={currentListType} />
             <ContextMenu />
-            <PasswordModal />
+            <JoinServerPrompt />
             <SettingsModal />
             <AddThirdPartyServerModal />
           </View>

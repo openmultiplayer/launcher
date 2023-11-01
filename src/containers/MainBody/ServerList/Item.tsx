@@ -5,9 +5,7 @@ import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
 import { useContextMenu } from "../../../states/contextMenu";
-import { usePasswordModal } from "../../../states/passwordModal";
-import { useSettings } from "../../../states/settings";
-import { startGame } from "../../../utils/helpers";
+import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { Server } from "../../../utils/types";
 
 interface IProps {
@@ -25,9 +23,7 @@ const ServerItem = memo((props: IProps) => {
   const { theme } = useContext(ThemeContext);
   const isSelectedRef = useRef(!!props.isSelected);
   const lastPressTime = useRef(0);
-
-  const { nickName, gtasaPath } = useSettings();
-  const { showPasswordModal, setServer } = usePasswordModal();
+  const { showPrompt, setServer } = useJoinServerPrompt();
   const { show: showContextMenu } = useContextMenu();
 
   useEffect(() => {
@@ -63,12 +59,8 @@ const ServerItem = memo((props: IProps) => {
   };
 
   const onDoublePress = () => {
-    if (server.hasPassword) {
-      setServer(server);
-      showPasswordModal(true);
-    } else {
-      startGame(server, nickName, gtasaPath, `${gtasaPath}/samp.dll`, "");
-    }
+    setServer(server);
+    showPrompt(true);
   };
 
   const onPress = () => {

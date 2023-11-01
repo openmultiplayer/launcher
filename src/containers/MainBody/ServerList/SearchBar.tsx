@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState, useRef } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Pressable,
@@ -16,10 +16,9 @@ import {
   useGenericPersistentState,
   useGenericTempState,
 } from "../../../states/genericStates";
-import { usePasswordModal } from "../../../states/passwordModal";
+import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { usePersistentServersStore, useServers } from "../../../states/servers";
-import { useSettings } from "../../../states/settings";
-import { fetchServers, startGame } from "../../../utils/helpers";
+import { fetchServers } from "../../../utils/helpers";
 import { ListType } from "../../../utils/types";
 
 interface IProps {
@@ -43,8 +42,7 @@ const SearchBar = (props: IProps) => {
     addToFavorites,
     clearRecentlyJoined,
   } = usePersistentServersStore();
-  const { nickName, gtasaPath } = useSettings();
-  const { showPasswordModal, setServer } = usePasswordModal();
+  const { showPrompt, setServer } = useJoinServerPrompt();
   const { showAddThirdPartyServer } = useAddThirdPartyServerModal();
   const refreshIconSpinAnim = useRef(new Animated.Value(0)).current;
 
@@ -61,12 +59,8 @@ const SearchBar = (props: IProps) => {
 
   const playSelectedServer = () => {
     if (selected) {
-      if (selected.hasPassword) {
-        setServer(selected);
-        showPasswordModal(true);
-      } else {
-        startGame(selected, nickName, gtasaPath, `${gtasaPath}/samp.dll`, "");
-      }
+      setServer(selected);
+      showPrompt(true);
     }
   };
 
