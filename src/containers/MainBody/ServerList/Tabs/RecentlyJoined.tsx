@@ -25,8 +25,8 @@ const RecentlyJoined = (props: IProps) => {
   }, []);
 
   const list = useMemo(() => {
-    const { ompOnly, nonEmpty, query } = props.searchData;
-    const list = recentlyJoined.filter((server) => {
+    const { ompOnly, nonEmpty, query, sortPing, sortPlayer } = props.searchData;
+    let list = recentlyJoined.filter((server) => {
       const ompCheck = ompOnly ? server.usingOmp === true : true;
       const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
 
@@ -37,7 +37,31 @@ const RecentlyJoined = (props: IProps) => {
       );
     });
 
-    return list.reverse();
+    if (sortPing !== "none") {
+      list = list.sort((a, b) => {
+        if (sortPing === "descending") {
+          return a.ping - b.ping;
+        } else {
+          return b.ping - a.ping;
+        }
+      });
+    }
+
+    if (sortPlayer !== "none") {
+      list = list.sort((a, b) => {
+        if (sortPlayer === "descending") {
+          return a.playerCount - b.playerCount;
+        } else {
+          return b.playerCount - a.playerCount;
+        }
+      });
+    }
+
+    if (sortPlayer === "none" && sortPing === "none") {
+      list = list.reverse();
+    }
+
+    return list;
   }, [
     props.searchData.query,
     props.searchData.ompOnly,

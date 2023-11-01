@@ -8,6 +8,7 @@ export type Rule =
   | "worldtime";
 
 export type ListType = "favorites" | "internet" | "partners" | "recentlyjoined";
+export type SortType = "none" | "ascending" | "descending";
 
 export interface Server {
   ip: string;
@@ -45,6 +46,8 @@ export interface SearchData {
   query: string;
   ompOnly: boolean;
   nonEmpty: boolean;
+  sortPlayer: SortType;
+  sortPing: SortType;
 }
 
 export interface APIResponseServer {

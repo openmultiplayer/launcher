@@ -99,7 +99,6 @@ const usePersistentServersStore = create<ServersPersistentState>()(
             cpy.push(server);
           }
 
-          console.log(cpy);
           return { recentlyJoined: cpy };
         }),
       clearRecentlyJoined: () => set(() => ({ recentlyJoined: [] })),
