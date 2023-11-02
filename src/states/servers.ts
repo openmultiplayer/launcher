@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Server } from "../utils/types";
+import { useNotification } from "./notification";
 
 interface ServersState {
   servers: Server[];
@@ -73,6 +74,13 @@ const usePersistentServersStore = create<ServersPersistentState>()(
           } else {
             cpy.push(server);
           }
+
+          const { showNotification } = useNotification.getState();
+          showNotification(
+            "Added to Favorites!",
+            `${server.ip}:${server.port} has been added to your favorite list`
+          );
+
           return { favorites: cpy };
         }),
       removeFromFavorites: (server) =>

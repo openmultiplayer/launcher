@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 import * as Animatable from "react-native-animatable";
 import Text from "../../components/Text";
 import { ThemeContext } from "../../contexts/theme";
@@ -7,8 +7,14 @@ import { useNotification } from "../../states/notification";
 
 const Notification = () => {
   const { theme } = useContext(ThemeContext);
-  const { visible, title, description, slideDown, deleteNotification } =
-    useNotification();
+  const {
+    visible,
+    title,
+    description,
+    onPress,
+    slideDown,
+    deleteNotification,
+  } = useNotification();
 
   useEffect(() => {
     if (visible) {
@@ -18,6 +24,8 @@ const Notification = () => {
       }, 2000);
     }
   }, [visible]);
+
+  const Wrapper = onPress ? Pressable : View;
 
   return (
     <Animatable.View
@@ -40,10 +48,15 @@ const Notification = () => {
         zIndex: 60,
       }}
     >
-      <Pressable
+      <Wrapper
         style={{
           paddingVertical: 7,
           paddingHorizontal: 10,
+        }}
+        onPress={() => {
+          if (onPress) {
+            onPress();
+          }
         }}
       >
         <Text semibold size={2} color={theme.textPrimary}>
@@ -57,7 +70,7 @@ const Notification = () => {
         >
           {description}
         </Text>
-      </Pressable>
+      </Wrapper>
     </Animatable.View>
   );
 };

@@ -4,7 +4,12 @@ interface NotificationState {
   visible: boolean;
   title: string;
   description: string;
-  showNotification: (title: string, description: string) => void;
+  onPress?: () => void;
+  showNotification: (
+    title: string,
+    description: string,
+    onPress?: () => void
+  ) => void;
   slideDown: () => void;
   deleteNotification: () => void;
 }
@@ -13,8 +18,9 @@ const useNotification = create<NotificationState>()((set) => ({
   visible: false,
   title: "",
   description: "",
-  showNotification: (title, description) =>
-    set(() => ({ title, description, visible: true })),
+  onPress: undefined,
+  showNotification: (title, description, onPress) =>
+    set(() => ({ title, description, visible: true, onPress })),
   slideDown: () => set(() => ({ visible: false })),
   deleteNotification: () =>
     set(() => ({ title: "", description: "", visible: false })),
