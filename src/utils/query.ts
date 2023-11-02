@@ -58,19 +58,18 @@ const getServerPlayers = async (ip: string, port: number) => {
     port: port,
   });
 
-  if (
-    serverPlayers === "no_data" ||
-    !Array.isArray(JSON.parse(serverPlayers))
-  ) {
+  if (serverPlayers === "no_data") {
     throw new Error("[Query] There was a problem getting server player list");
   }
 
   let queryObj = JSON.parse(serverPlayers);
   if (queryObj.error) {
     return false;
+  } else if (Array.isArray(queryObj)) {
+    const players: Player[] = [...queryObj];
+    return players;
   }
-  const players: Player[] = [...queryObj];
-  return players;
+  return [];
 };
 
 const getServerRules = async (ip: string, port: number) => {
