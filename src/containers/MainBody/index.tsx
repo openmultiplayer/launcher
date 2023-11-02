@@ -35,7 +35,7 @@ interface FiltersModalProps {
 
 const FiltersModal = (props: FiltersModalProps) => {
   const { theme } = useContext(ThemeContext);
-
+  const { showFilterMenu } = useGenericTempState();
   const [ompOnly, setOmpOnly] = useState(props.ompOnly);
   const [nonEmpty, setNonEmpty] = useState(props.nonEmpty);
   const [sortPlayer, setSortPlayer] = useState(props.sortPlayer);
@@ -51,115 +51,137 @@ const FiltersModal = (props: FiltersModalProps) => {
     <View
       style={{
         position: "absolute",
-        top: 25,
-        left: 6,
-        width: 200,
-        padding: 5,
-        paddingBottom: 6,
-        backgroundColor: theme.itemContainerBackgroundColor,
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 3,
-        },
-        shadowOpacity: 0.29,
-        shadowRadius: 4.65,
-        borderRadius: 3,
+        top: 0,
+        left: 0,
+        height: "100%",
+        width: "100%",
       }}
     >
-      <Text semibold size={1} color={theme.textPrimary}>
-        Filters:
-      </Text>
       <Pressable
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
-        onPress={() => setOmpOnly(!ompOnly)}
-      >
-        <CheckBox value={ompOnly} style={{ marginRight: 5 }} />
-        <Text size={1} color={theme.textPrimary}>
-          open.mp servers
-        </Text>
-      </Pressable>
-      <Pressable
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 2 }}
-        onPress={() => setNonEmpty(!nonEmpty)}
-      >
-        <CheckBox value={nonEmpty} style={{ marginRight: 5 }} />
-        <Text size={1} color={theme.textPrimary}>
-          Non-empty Servers
-        </Text>
-      </Pressable>
-      <Text
-        semibold
-        size={1}
-        color={theme.textPrimary}
-        style={{ marginTop: 7 }}
-      >
-        Sort By:
-      </Text>
-      <Pressable
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
-        onPress={() => {
-          setSortPing("none");
-          if (sortPlayer === "none") {
-            setSortPlayer("descending");
-          } else if (sortPlayer === "descending") {
-            setSortPlayer("ascending");
-          } else {
-            setSortPlayer("none");
-          }
+        style={{
+          height: "100%",
+          width: "100%", // @ts-ignore
+          cursor: "default",
+        }}
+        onPress={() => showFilterMenu(false)}
+      />
+      <View
+        style={{
+          position: "absolute",
+          top: 25,
+          left: 6,
+          width: 200,
+          padding: 5,
+          paddingBottom: 6,
+          backgroundColor: theme.itemContainerBackgroundColor,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 3,
+          },
+          shadowOpacity: 0.29,
+          shadowRadius: 4.65,
+          borderRadius: 3,
         }}
       >
-        <Text
-          bold
-          size={3}
-          color={
-            sortPlayer === "descending" ? theme.primary : theme.textPrimary
-          }
+        <Text semibold size={1} color={theme.textPrimary}>
+          Filters:
+        </Text>
+        <Pressable
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
+          onPress={() => setOmpOnly(!ompOnly)}
         >
-          ↓
-        </Text>
-        <Text
-          bold
-          size={3}
-          color={sortPlayer === "ascending" ? theme.primary : theme.textPrimary}
+          <CheckBox value={ompOnly} style={{ marginRight: 5 }} />
+          <Text size={1} color={theme.textPrimary}>
+            open.mp servers
+          </Text>
+        </Pressable>
+        <Pressable
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 2 }}
+          onPress={() => setNonEmpty(!nonEmpty)}
         >
-          ↑
+          <CheckBox value={nonEmpty} style={{ marginRight: 5 }} />
+          <Text size={1} color={theme.textPrimary}>
+            Non-empty Servers
+          </Text>
+        </Pressable>
+        <Text
+          semibold
+          size={1}
+          color={theme.textPrimary}
+          style={{ marginTop: 7 }}
+        >
+          Sort By:
         </Text>
-        <Text size={1} color={theme.textPrimary} style={{ marginLeft: 5 }}>
-          Players
-        </Text>
-      </Pressable>
-      <Pressable
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 1 }}
-        onPress={() => {
-          setSortPlayer("none");
-          if (sortPing === "none") {
-            setSortPing("descending");
-          } else if (sortPing === "descending") {
-            setSortPing("ascending");
-          } else {
+        <Pressable
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
+          onPress={() => {
             setSortPing("none");
-          }
-        }}
-      >
-        <Text
-          bold
-          size={3}
-          color={sortPing === "descending" ? theme.primary : theme.textPrimary}
+            if (sortPlayer === "none") {
+              setSortPlayer("descending");
+            } else if (sortPlayer === "descending") {
+              setSortPlayer("ascending");
+            } else {
+              setSortPlayer("none");
+            }
+          }}
         >
-          ↓
-        </Text>
-        <Text
-          bold
-          size={3}
-          color={sortPing === "ascending" ? theme.primary : theme.textPrimary}
+          <Text
+            bold
+            size={3}
+            color={
+              sortPlayer === "descending" ? theme.primary : theme.textPrimary
+            }
+          >
+            ↓
+          </Text>
+          <Text
+            bold
+            size={3}
+            color={
+              sortPlayer === "ascending" ? theme.primary : theme.textPrimary
+            }
+          >
+            ↑
+          </Text>
+          <Text size={1} color={theme.textPrimary} style={{ marginLeft: 5 }}>
+            Players
+          </Text>
+        </Pressable>
+        <Pressable
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 1 }}
+          onPress={() => {
+            setSortPlayer("none");
+            if (sortPing === "none") {
+              setSortPing("descending");
+            } else if (sortPing === "descending") {
+              setSortPing("ascending");
+            } else {
+              setSortPing("none");
+            }
+          }}
         >
-          ↑
-        </Text>
-        <Text size={1} color={theme.textPrimary} style={{ marginLeft: 5 }}>
-          Ping
-        </Text>
-      </Pressable>
+          <Text
+            bold
+            size={3}
+            color={
+              sortPing === "descending" ? theme.primary : theme.textPrimary
+            }
+          >
+            ↓
+          </Text>
+          <Text
+            bold
+            size={3}
+            color={sortPing === "ascending" ? theme.primary : theme.textPrimary}
+          >
+            ↑
+          </Text>
+          <Text size={1} color={theme.textPrimary} style={{ marginLeft: 5 }}>
+            Ping
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
