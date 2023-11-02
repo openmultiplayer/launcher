@@ -12,6 +12,7 @@ import { ThemeContext } from "./contexts/theme";
 import { useAppState } from "./states/app";
 import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
 import { ListType } from "./utils/types";
+import Notification from "./containers/Notification";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
@@ -41,6 +42,7 @@ const App = () => {
             <JoinServerPrompt />
             <SettingsModal />
             <AddThirdPartyServerModal />
+            <Notification />
           </View>
         </View>
       </ThemeContext.Provider>
