@@ -20,7 +20,7 @@ import { useSettingsModal } from "../../states/settingsModal";
 import { checkDirectoryValidity } from "../../utils/helpers";
 
 const MODAL_WIDTH = 500;
-const MODAL_HEIGHT = 200;
+const MODAL_HEIGHT = 220;
 
 const SettingsModal = () => {
   const { height, width } = useWindowDimensions();
@@ -155,6 +155,30 @@ const SettingsModal = () => {
             Import nickname and gtasa path from SA-MP settings
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.resetButton,
+            {
+              backgroundColor: "red",
+              borderColor: theme.textSecondary,
+            },
+          ]}
+          onPress={() => {
+            localStorage.clear();
+            window.location.reload();
+          }}
+        >
+          <Text
+            semibold
+            color={theme.textPrimary}
+            size={1}
+            style={{
+              top: -1,
+            }}
+          >
+            Reset application data
+          </Text>
+        </TouchableOpacity>
         <View style={styles.appInfoContainer}>
           {updateInfo && updateInfo.version != version && (
             <Text
@@ -250,6 +274,15 @@ const styles = StyleSheet.create({
   },
   importButton: {
     marginTop: 10,
+    height: 30,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+  },
+  resetButton: {
+    marginTop: 5,
     height: 30,
     paddingHorizontal: 10,
     borderRadius: 8,
