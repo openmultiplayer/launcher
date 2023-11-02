@@ -145,6 +145,7 @@ const JoinServerPrompt = () => {
                 `${gtasaPath}/samp.dll`,
                 password
               );
+              showPrompt(false);
             }
           }}
         >
