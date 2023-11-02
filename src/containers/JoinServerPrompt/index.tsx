@@ -20,13 +20,13 @@ const JoinServerPrompt = () => {
   const { height, width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const [password, setPassword] = useState("");
-  const { nickName, gtasaPath } = useSettings();
+  const { nickName, gtasaPath, setNickName } = useSettings();
 
   if (!visible) {
     return null;
   }
 
-  const HEIGHT = server?.hasPassword ? 240 : 160;
+  const HEIGHT = server?.hasPassword ? 285 : 227;
   const WIDTH = 320;
 
   return (
@@ -103,17 +103,19 @@ const JoinServerPrompt = () => {
           </Text>
         </View>
         {server?.hasPassword && (
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: 15 }}>
             <Text color={theme.textPrimary} size={1}>
               This server is protected, please enter password.
             </Text>
             <TextInput
+              placeholderTextColor={theme.textPlaceholder}
+              placeholder={"Enter password..."}
               value={password}
               onChangeText={(text) => setPassword(text)}
               style={{
                 color: theme.textSecondary,
                 paddingHorizontal: 5,
-                marginTop: 8,
+                marginTop: 4,
                 width: 300,
                 backgroundColor: "white",
                 borderColor: theme.primary,
@@ -126,6 +128,30 @@ const JoinServerPrompt = () => {
             />
           </View>
         )}
+        <View style={{ marginTop: server?.hasPassword ? 5 : 15 }}>
+          <Text color={theme.textPrimary} size={1}>
+            Nickname:
+          </Text>
+          <TextInput
+            placeholderTextColor={theme.textPlaceholder}
+            placeholder={"Enter Nickname..."}
+            value={nickName}
+            onChangeText={(text) => setNickName(text)}
+            style={{
+              color: theme.textSecondary,
+              paddingHorizontal: 5,
+              marginTop: 4,
+              width: 300,
+              backgroundColor: "white",
+              borderColor: theme.primary,
+              height: 30,
+              borderRadius: 8,
+              borderWidth: 2,
+              // @ts-ignore
+              outlineStyle: "none",
+            }}
+          />
+        </View>
         <TouchableOpacity
           style={{
             width: 300,
