@@ -6,7 +6,7 @@ import { type } from "@tauri-apps/api/os";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { usePersistentServersStore, useServers } from "../states/servers";
-import { APIResponseServer, Player, Server } from "./types";
+import { APIResponseServer, Player, SearchData, Server } from "./types";
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -173,4 +173,84 @@ export const validateWebUrl = (url: string) => {
     return true;
   }
   return false;
+};
+
+export const sortAndSearchInServerList = (
+  servers: Server[],
+  searchData: SearchData,
+  checkForPartnership = false
+) => {
+  const { ompOnly, nonEmpty, query, sortPing, sortPlayer, sortName, sortMode } =
+    searchData;
+  let list = servers.filter((server) => {
+    const ompCheck = ompOnly ? server.usingOmp === true : true;
+    const partnershipCheck = checkForPartnership
+      ? server.partner === true
+      : true;
+    const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
+
+    return (
+      server.ip &&
+      partnershipCheck &&
+      ompCheck &&
+      nonEmptyCheck &&
+      server.hostname.toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
+  if (sortPing !== "none") {
+    list = list.sort((a, b) => {
+      if (sortPing === "descending") {
+        return a.ping - b.ping;
+      } else {
+        return b.ping - a.ping;
+      }
+    });
+  }
+
+  if (sortPlayer !== "none") {
+    list = list.sort((a, b) => {
+      if (sortPlayer === "descending") {
+        return a.playerCount - b.playerCount;
+      } else {
+        return b.playerCount - a.playerCount;
+      }
+    });
+  }
+
+  if (sortName !== "none") {
+    list = list.sort((a, b) => {
+      const nameA = a.hostname.toUpperCase();
+      const nameB = b.hostname.toUpperCase();
+      let aFirst = false;
+      if (nameA < nameB) {
+        aFirst = true;
+      }
+
+      if (sortName === "descending") {
+        return aFirst ? -1 : 1;
+      } else {
+        return aFirst ? 1 : -1;
+      }
+    });
+  }
+
+  if (sortMode !== "none") {
+    list = list.sort((a, b) => {
+      const nameA = a.gameMode.toUpperCase();
+      const nameB = b.gameMode.toUpperCase();
+      let aFirst = false;
+      if (nameA < nameB) {
+        aFirst = true;
+      }
+
+      if (sortMode === "descending") {
+        return aFirst ? -1 : 1;
+      } else {
+        return aFirst ? 1 : -1;
+      }
+    });
+  }
+
+  return list;
 };

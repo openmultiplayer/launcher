@@ -48,6 +48,8 @@ export interface SearchData {
   nonEmpty: boolean;
   sortPlayer: SortType;
   sortPing: SortType;
+  sortName: SortType;
+  sortMode: SortType;
 }
 
 export interface APIResponseServer {
