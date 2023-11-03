@@ -17,6 +17,8 @@ const useGenericTempState = create<GenericTempStates>()((set, get) => ({
     ompOnly: false,
     sortPing: "none",
     sortPlayer: "none",
+    sortName: "none",
+    sortMode: "none",
   },
   showFilterMenu: (show) => set(() => ({ filterMenu: show })),
   setSearchData: (key, value) =>
