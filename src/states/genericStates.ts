@@ -1,14 +1,31 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { SearchData } from "../utils/types";
 
 interface GenericTempStates {
   filterMenu: boolean;
+  searchData: SearchData;
   showFilterMenu: (show: boolean) => void;
+  setSearchData: (key: keyof SearchData, value: any) => void;
 }
 
-const useGenericTempState = create<GenericTempStates>()((set) => ({
+const useGenericTempState = create<GenericTempStates>()((set, get) => ({
   filterMenu: false,
-  showFilterMenu: (show: boolean) => set(() => ({ filterMenu: show })),
+  searchData: {
+    query: "",
+    nonEmpty: false,
+    ompOnly: false,
+    sortPing: "none",
+    sortPlayer: "none",
+  },
+  showFilterMenu: (show) => set(() => ({ filterMenu: show })),
+  setSearchData: (key, value) =>
+    set(() => {
+      const data = { ...get().searchData };
+      // @ts-ignore
+      data[key] = value;
+      return { searchData: { ...data } };
+    }),
 }));
 
 interface GenericPersistentStates {
@@ -29,4 +46,4 @@ const useGenericPersistentState = create<GenericPersistentStates>()(
   )
 );
 
-export { useGenericTempState, useGenericPersistentState };
+export { useGenericPersistentState, useGenericTempState };

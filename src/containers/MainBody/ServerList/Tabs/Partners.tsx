@@ -1,17 +1,15 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
+import { useGenericTempState } from "../../../../states/genericStates";
 import { useServers } from "../../../../states/servers";
-import { SearchData, Server } from "../../../../utils/types";
+import { Server } from "../../../../utils/types";
 import List from "../List";
 import ServerItem from "./../Item";
 
-interface IProps {
-  searchData: SearchData;
-}
-
-const Partners = (props: IProps) => {
+const Partners = () => {
   const { startQuery, stopQuery } = useQuery();
   const { selected, servers, setSelected } = useServers();
+  const { searchData } = useGenericTempState();
 
   useEffect(() => {
     return () => {
@@ -21,7 +19,7 @@ const Partners = (props: IProps) => {
   }, []);
 
   const list = useMemo(() => {
-    const { ompOnly, nonEmpty, query, sortPing, sortPlayer } = props.searchData;
+    const { ompOnly, nonEmpty, query, sortPing, sortPlayer } = searchData;
     let list = servers.filter((server) => {
       const ompCheck = ompOnly ? server.usingOmp === true : true;
       const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
@@ -56,11 +54,11 @@ const Partners = (props: IProps) => {
 
     return list;
   }, [
-    props.searchData.query,
-    props.searchData.ompOnly,
-    props.searchData.nonEmpty,
-    props.searchData.sortPing,
-    props.searchData.sortPlayer,
+    searchData.query,
+    searchData.ompOnly,
+    searchData.nonEmpty,
+    searchData.sortPing,
+    searchData.sortPlayer,
     servers,
   ]);
 

@@ -1,21 +1,19 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
+import { useGenericTempState } from "../../../../states/genericStates";
 import {
   usePersistentServersStore,
   useServers,
 } from "../../../../states/servers";
-import { SearchData, Server } from "../../../../utils/types";
+import { Server } from "../../../../utils/types";
 import List from "../List";
 import ServerItem from "./../Item";
 
-interface IProps {
-  searchData: SearchData;
-}
-
-const RecentlyJoined = (props: IProps) => {
+const RecentlyJoined = () => {
   const { startQuery, stopQuery } = useQuery();
   const { selected, setSelected } = useServers();
   const { recentlyJoined } = usePersistentServersStore();
+  const { searchData } = useGenericTempState();
 
   useEffect(() => {
     return () => {
@@ -25,7 +23,7 @@ const RecentlyJoined = (props: IProps) => {
   }, []);
 
   const list = useMemo(() => {
-    const { ompOnly, nonEmpty, query, sortPing, sortPlayer } = props.searchData;
+    const { ompOnly, nonEmpty, query, sortPing, sortPlayer } = searchData;
     let list = recentlyJoined.filter((server) => {
       const ompCheck = ompOnly ? server.usingOmp === true : true;
       const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
@@ -63,9 +61,9 @@ const RecentlyJoined = (props: IProps) => {
 
     return list;
   }, [
-    props.searchData.query,
-    props.searchData.ompOnly,
-    props.searchData.nonEmpty,
+    searchData.query,
+    searchData.ompOnly,
+    searchData.nonEmpty,
     recentlyJoined,
   ]);
 

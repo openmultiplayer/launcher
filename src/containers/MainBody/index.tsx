@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, Pressable } from "react-native";
+import { useContext } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import CheckBox from "../../components/CheckBox";
 import Text from "../../components/Text";
 import { ThemeContext } from "../../contexts/theme";
@@ -7,7 +7,7 @@ import {
   useGenericPersistentState,
   useGenericTempState,
 } from "../../states/genericStates";
-import { ListType, SearchData, SortType } from "../../utils/types";
+import { ListType } from "../../utils/types";
 import BottomBar from "./BottomBar";
 import ServerInfo from "./ServerInfo";
 import SearchBar from "./ServerList/SearchBar";
@@ -20,32 +20,10 @@ interface IProps {
   listType: ListType;
 }
 
-interface FiltersModalProps {
-  ompOnly: boolean;
-  nonEmpty: boolean;
-  sortPlayer: SortType;
-  sortPing: SortType;
-  onChange: (
-    ompOnly: boolean,
-    nonEmpty: boolean,
-    sortPlayer: SortType,
-    sortPing: SortType
-  ) => void;
-}
-
-const FiltersModal = (props: FiltersModalProps) => {
+const FiltersModal = () => {
   const { theme } = useContext(ThemeContext);
-  const { showFilterMenu } = useGenericTempState();
-  const [ompOnly, setOmpOnly] = useState(props.ompOnly);
-  const [nonEmpty, setNonEmpty] = useState(props.nonEmpty);
-  const [sortPlayer, setSortPlayer] = useState(props.sortPlayer);
-  const [sortPing, setSortPing] = useState(props.sortPing);
-
-  useEffect(() => {
-    if (props.onChange) {
-      props.onChange(ompOnly, nonEmpty, sortPlayer, sortPing);
-    }
-  }, [ompOnly, nonEmpty, sortPlayer, sortPing]);
+  const { showFilterMenu, searchData, setSearchData } = useGenericTempState();
+  const { ompOnly, nonEmpty, sortPlayer, sortPing } = searchData;
 
   return (
     <View
@@ -89,7 +67,7 @@ const FiltersModal = (props: FiltersModalProps) => {
         </Text>
         <Pressable
           style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
-          onPress={() => setOmpOnly(!ompOnly)}
+          onPress={() => setSearchData("ompOnly", !ompOnly)}
         >
           <CheckBox value={ompOnly} style={{ marginRight: 5 }} />
           <Text size={1} color={theme.textPrimary}>
@@ -98,7 +76,7 @@ const FiltersModal = (props: FiltersModalProps) => {
         </Pressable>
         <Pressable
           style={{ flexDirection: "row", alignItems: "center", marginTop: 2 }}
-          onPress={() => setNonEmpty(!nonEmpty)}
+          onPress={() => setSearchData("nonEmpty", !nonEmpty)}
         >
           <CheckBox value={nonEmpty} style={{ marginRight: 5 }} />
           <Text size={1} color={theme.textPrimary}>
@@ -116,13 +94,13 @@ const FiltersModal = (props: FiltersModalProps) => {
         <Pressable
           style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
           onPress={() => {
-            setSortPing("none");
+            setSearchData("sortPing", "none");
             if (sortPlayer === "none") {
-              setSortPlayer("descending");
+              setSearchData("sortPlayer", "descending");
             } else if (sortPlayer === "descending") {
-              setSortPlayer("ascending");
+              setSearchData("sortPlayer", "ascending");
             } else {
-              setSortPlayer("none");
+              setSearchData("sortPlayer", "none");
             }
           }}
         >
@@ -151,13 +129,13 @@ const FiltersModal = (props: FiltersModalProps) => {
         <Pressable
           style={{ flexDirection: "row", alignItems: "center", marginTop: 1 }}
           onPress={() => {
-            setSortPlayer("none");
+            setSearchData("sortPlayer", "none");
             if (sortPing === "none") {
-              setSortPing("descending");
+              setSearchData("sortPing", "descending");
             } else if (sortPing === "descending") {
-              setSortPing("ascending");
+              setSearchData("sortPing", "ascending");
             } else {
-              setSortPing("none");
+              setSearchData("sortPing", "none");
             }
           }}
         >
@@ -187,56 +165,28 @@ const FiltersModal = (props: FiltersModalProps) => {
 };
 
 const MainView = (props: IProps) => {
-  const [searchData, setSearchData] = useState<SearchData>({
-    query: "",
-    nonEmpty: false,
-    ompOnly: false,
-    sortPing: "none",
-    sortPlayer: "none",
-  });
-
-  const { filterMenu } = useGenericTempState();
+  const { filterMenu, setSearchData } = useGenericTempState();
   const { sideLists } = useGenericPersistentState();
 
   const renderList = () => {
-    if (props.listType === "favorites")
-      return <Favorites searchData={searchData} />;
-    else if (props.listType === "partners")
-      return <Partners searchData={searchData} />;
-    else if (props.listType === "internet")
-      return <Internet searchData={searchData} />;
-    else if (props.listType === "recentlyjoined")
-      return <RecentlyJoined searchData={searchData} />;
+    if (props.listType === "favorites") return <Favorites />;
+    else if (props.listType === "partners") return <Partners />;
+    else if (props.listType === "internet") return <Internet />;
+    else if (props.listType === "recentlyjoined") return <RecentlyJoined />;
   };
 
   return (
     <View style={styles.body}>
       <SearchBar
         listType={props.listType}
-        onChange={(query) => setSearchData({ ...searchData, query })}
+        onChange={(query) => setSearchData("query", query)}
       />
       <View style={styles.serverSection}>
         {renderList()}
         {sideLists && <ServerInfo />}
       </View>
       <BottomBar />
-      {filterMenu && (
-        <FiltersModal
-          ompOnly={searchData.ompOnly}
-          nonEmpty={searchData.nonEmpty}
-          sortPing={searchData.sortPing}
-          sortPlayer={searchData.sortPlayer}
-          onChange={(ompOnly, nonEmpty, sortPlayer, sortPing) =>
-            setSearchData({
-              ...searchData,
-              ompOnly,
-              nonEmpty,
-              sortPing,
-              sortPlayer,
-            })
-          }
-        />
-      )}
+      {filterMenu && <FiltersModal />}
     </View>
   );
 };
