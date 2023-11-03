@@ -5,6 +5,7 @@ import { useServers } from "../../../../states/servers";
 import { Server } from "../../../../utils/types";
 import List from "../List";
 import ServerItem from "./../Item";
+import { sortAndSearchInServerList } from "../../../../utils/helpers";
 
 const Internet = () => {
   const { startQuery, stopQuery } = useQuery();
@@ -19,45 +20,15 @@ const Internet = () => {
   }, []);
 
   const list = useMemo(() => {
-    const { ompOnly, nonEmpty, query, sortPing, sortPlayer } = searchData;
-    let list = servers.filter((server) => {
-      const ompCheck = ompOnly ? server.usingOmp === true : true;
-      const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
-
-      return (
-        ompCheck &&
-        nonEmptyCheck &&
-        server.hostname.toLowerCase().includes(query.toLowerCase())
-      );
-    });
-
-    if (sortPing !== "none") {
-      list = list.sort((a, b) => {
-        if (sortPing === "descending") {
-          return a.ping - b.ping;
-        } else {
-          return b.ping - a.ping;
-        }
-      });
-    }
-
-    if (sortPlayer !== "none") {
-      list = list.sort((a, b) => {
-        if (sortPlayer === "descending") {
-          return a.playerCount - b.playerCount;
-        } else {
-          return b.playerCount - a.playerCount;
-        }
-      });
-    }
-
-    return list;
+    return sortAndSearchInServerList(servers, searchData);
   }, [
     searchData.query,
     searchData.ompOnly,
     searchData.nonEmpty,
     searchData.sortPing,
     searchData.sortPlayer,
+    searchData.sortName,
+    searchData.sortMode,
     servers,
   ]);
 
