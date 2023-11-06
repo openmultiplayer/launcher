@@ -23,7 +23,7 @@ interface IProps {
 const FiltersModal = () => {
   const { theme } = useContext(ThemeContext);
   const { showFilterMenu, searchData, setSearchData } = useGenericTempState();
-  const { ompOnly, nonEmpty, sortPlayer, sortPing } = searchData;
+  const { ompOnly, nonEmpty } = searchData;
 
   return (
     <View
