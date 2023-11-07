@@ -1,4 +1,4 @@
-import { invoke, shell } from "@tauri-apps/api";
+import { invoke, process, shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
 import { ask, confirm, message } from "@tauri-apps/api/dialog";
 import { exists } from "@tauri-apps/api/fs";
@@ -92,6 +92,12 @@ export const startGame = (
     exe: gtasaPath,
     dll: sampDllPath,
     password: password,
+  }).catch(async (e) => {
+    if (e == "need_admin") {
+      await invoke("rerun_as_admin").then(() => {
+        process.exit();
+      });
+    }
   });
 };
 
