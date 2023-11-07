@@ -198,7 +198,7 @@ impl Query {
             let player_name_len = packet.read_u8().unwrap();
             let mut player_name_buf = vec![0u8; player_name_len as usize];
             packet.read_exact(&mut player_name_buf).unwrap();
-            player.name = String::from_utf8(player_name_buf).unwrap();
+            player.name = decode_buffer(player_name_buf);
 
             player.score = packet.read_u16::<LittleEndian>().unwrap();
             let _ = packet.read_u16::<LittleEndian>();
