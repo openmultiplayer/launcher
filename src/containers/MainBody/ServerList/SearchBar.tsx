@@ -103,7 +103,7 @@ const SearchBar = (props: IProps) => {
       >
         <Icon
           image={images.icons.filter}
-          size={20}
+          size={16}
           color={theme.textPlaceholder}
         />
       </TouchableOpacity>
@@ -111,6 +111,7 @@ const SearchBar = (props: IProps) => {
         style={{
           height: "100%",
           aspectRatio: 1,
+          marginLeft: -5,
           justifyContent: "center",
           alignItems: "center",
         }}

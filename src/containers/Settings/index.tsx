@@ -81,7 +81,7 @@ const SettingsModal = () => {
         ]}
       >
         <Text size={1} color={theme.textPrimary}>
-          GTA: San Andreas path (where also SA-MP is installed):
+          GTA: San Andreas path (where SA-MP is also installed):
         </Text>
         <View style={styles.pathInputContainer}>
           <TextInput
@@ -159,7 +159,7 @@ const SettingsModal = () => {
               top: -1,
             }}
           >
-            Reset application data
+            Reset application data (clears settings and lists)
           </Text>
         </TouchableOpacity>
         <View style={styles.appInfoContainer}>
