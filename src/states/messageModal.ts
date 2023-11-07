@@ -13,6 +13,7 @@ interface MessageModalState {
   visible: boolean;
   args: MessageBoxArgs;
   showMessageBox: (args: MessageBoxArgs) => void;
+  _hideMessageBox: () => void;
 }
 
 const useMessageBox = create<MessageModalState>()((set) => ({
@@ -23,6 +24,15 @@ const useMessageBox = create<MessageModalState>()((set) => ({
     buttons: [],
   },
   showMessageBox: (args) => set(() => ({ visible: true, args })),
+  _hideMessageBox: () =>
+    set(() => ({
+      visible: false,
+      args: {
+        title: "",
+        description: "",
+        buttons: [],
+      },
+    })),
 }));
 
 export { useMessageBox };
