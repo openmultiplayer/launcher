@@ -24,6 +24,7 @@ dirs-next = "2.0.0"
 discord-rich-presence = "0.2.3"
 regex = "1.10.2"
 runas = "1.1.0"
+sysinfo = "0.29.10"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 dll-syringe = "0.15.2"
