@@ -1,19 +1,19 @@
 import { useContext, useState } from "react";
 import {
-  Pressable,
   TextInput,
   TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
+import * as Animatable from "react-native-animatable";
 import Icon from "../../components/Icon";
+import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { useSettings } from "../../states/settings";
 import { startGame } from "../../utils/helpers";
-import * as Animatable from "react-native-animatable";
 
 const JoinServerPrompt = () => {
   const { visible, server, showPrompt } = useJoinServerPrompt();
@@ -30,27 +30,10 @@ const JoinServerPrompt = () => {
   const WIDTH = 320;
 
   return (
-    <View
-      style={{
-        position: "absolute",
-        height: height,
-        width: width,
-        top: 0,
-        left: 0,
-        zIndex: 61,
-      }}
-    >
-      <Pressable
-        style={{
-          height: "100%",
-          width: "100%", // @ts-ignore
-          cursor: "default",
-        }}
-        onPress={() => showPrompt(false)}
-      />
+    <StaticModal onDismiss={() => showPrompt(false)}>
       <Animatable.View
-        animation={"bounceIn"}
-        duration={500}
+        animation={"zoomInUp"}
+        duration={700}
         style={{
           position: "absolute",
           top: height / 2 - HEIGHT / 2 - 25, // titlebar height is 25
@@ -197,7 +180,7 @@ const JoinServerPrompt = () => {
           />
         </TouchableOpacity>
       </Animatable.View>
-    </View>
+    </StaticModal>
   );
 };
 

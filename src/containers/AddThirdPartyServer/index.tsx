@@ -1,20 +1,20 @@
 import { useContext, useState } from "react";
 import {
-  Pressable,
   TextInput,
   TouchableOpacity,
   View,
-  useWindowDimensions,
+  useWindowDimensions
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import Icon from "../../components/Icon";
+import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../states/addThirdPartyServerModal";
+import { usePersistentServersStore } from "../../states/servers";
 import { validateServerAddress } from "../../utils/helpers";
 import { Server } from "../../utils/types";
-import { usePersistentServersStore } from "../../states/servers";
 
 const AddThirdPartyServerModal = () => {
   const { visible, showAddThirdPartyServer } = useAddThirdPartyServerModal();
@@ -65,27 +65,10 @@ const AddThirdPartyServerModal = () => {
   };
 
   return (
-    <View
-      style={{
-        position: "absolute",
-        height: height,
-        width: width,
-        top: 0,
-        left: 0,
-        zIndex: 61,
-      }}
-    >
-      <Pressable
-        style={{
-          height: "100%",
-          width: "100%", // @ts-ignore
-          cursor: "default",
-        }}
-        onPress={() => showAddThirdPartyServer(false)}
-      />
+    <StaticModal onDismiss={() => showAddThirdPartyServer(false)}>
       <Animatable.View
-        animation={"bounceIn"}
-        duration={500}
+        animation={"zoomInUp"}
+        duration={700}
         style={{
           position: "absolute",
           top: height / 2 - 90 - 25, // titlebar height is 25
@@ -167,7 +150,7 @@ const AddThirdPartyServerModal = () => {
           />
         </TouchableOpacity>
       </Animatable.View>
-    </View>
+    </StaticModal>
   );
 };
 

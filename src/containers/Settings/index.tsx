@@ -2,7 +2,6 @@ import { invoke, shell } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 import { useContext } from "react";
 import {
-  Pressable,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import Icon from "../../components/Icon";
+import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
@@ -65,27 +65,10 @@ const SettingsModal = () => {
   };
 
   return (
-    <View
-      style={{
-        position: "absolute",
-        height: height,
-        width: width,
-        top: 0,
-        left: 0,
-        zIndex: 100,
-      }}
-    >
-      <Pressable
-        style={{
-          height: "100%",
-          width: "100%", // @ts-ignore
-          cursor: "default",
-        }}
-        onPress={() => hide()}
-      />
+    <StaticModal onDismiss={() => hide()}>
       <Animatable.View
-        animation={"bounceIn"}
-        duration={500}
+        animation={"zoomInUp"}
+        duration={700}
         style={[
           styles.container,
           {
@@ -229,7 +212,7 @@ const SettingsModal = () => {
           />
         </TouchableOpacity>
       </Animatable.View>
-    </View>
+    </StaticModal>
   );
 };
 
