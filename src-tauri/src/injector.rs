@@ -64,20 +64,32 @@ pub async fn run_samp(
 
     let process = cmd.arg(args).current_dir(executable_dir).spawn();
 
-    if process.is_ok() {
-        let target_process = OwnedProcess::from_pid(process.unwrap().id()).unwrap();
+    match process {
+        Ok(p) => {
+            let target_process = OwnedProcess::from_pid(p.id()).unwrap();
 
-        // create a new syringe for the target process
-        let syringe = Syringe::for_process(target_process);
+            // create a new syringe for the target process
+            let syringe = Syringe::for_process(target_process);
 
-        // inject the payload into the target process
-        let module = syringe.inject(dll_path);
-        if module.is_ok() {
-            return Ok(());
-        } else {
-            return Err("injecting dll failed".to_owned());
+            // inject the payload into the target process
+            let module = syringe.inject(dll_path);
+            if module.is_ok() {
+                return Ok(());
+            } else {
+                return Err("injecting dll failed".to_owned());
+            }
         }
-    } else {
-        return Err("spawning process failed".to_owned());
+        Err(e) => {
+            let mut raw_os_err = 0;
+            if e.raw_os_error().is_some() {
+                raw_os_err = e.raw_os_error().get_or_insert(0).to_owned();
+            }
+
+            if raw_os_err == 740 {
+                return Err("need_admin".to_string());
+            }
+
+            return Err(format!("spawning process failed (error code: {})", raw_os_err).to_owned());
+        }
     }
 }

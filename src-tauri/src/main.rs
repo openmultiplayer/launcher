@@ -5,6 +5,7 @@ mod injector;
 mod query;
 mod samp;
 
+use runas;
 use std::time::Instant;
 use tauri::Manager;
 use tauri::PhysicalSize;
@@ -103,6 +104,19 @@ fn get_nickname_from_samp() -> String {
     samp::get_nickname().to_string()
 }
 
+#[tauri::command]
+fn rerun_as_admin() -> Result<String, String> {
+    let res = std::env::current_exe();
+    match res {
+        Ok(p) => {
+            let path = p.into_os_string().into_string().unwrap();
+            runas::Command::new(path).arg("").status().unwrap();
+            Ok("SUCCESS".to_string())
+        }
+        Err(_) => Err("FAILED".to_string()),
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -120,7 +134,8 @@ fn main() {
             ping_server,
             inject,
             get_gtasa_path_from_samp,
-            get_nickname_from_samp
+            get_nickname_from_samp,
+            rerun_as_admin
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
