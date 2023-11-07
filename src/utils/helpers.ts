@@ -8,6 +8,7 @@ import { useAppState } from "../states/app";
 import { usePersistentServersStore, useServers } from "../states/servers";
 import { APIResponseServer, Player, SearchData, Server } from "./types";
 import { useMessageBox } from "../states/messageModal";
+import { queryServer } from "./query";
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -36,9 +37,50 @@ export const mapAPIResponseServerListToAppStructure = (
 
 export const fetchServers = async (cached: boolean = true) => {
   if (cached) {
+    const { updateServer } = useServers.getState();
+    const { updateInFavoritesList, updateInRecentlyJoinedList, favorites } =
+      usePersistentServersStore.getState();
+
+    if (Array.isArray(favorites)) {
+      // let's query servers from server list so players have updated data
+      for (let i = 0; i < favorites.length; i += 10) {
+        setTimeout(() => {
+          for (let offset = 0; offset < 10; offset++) {
+            if (favorites[i + offset]) {
+              queryServer(favorites[i + offset])
+                .then((server) => {
+                  updateServer(server);
+                  updateInFavoritesList(server);
+                  updateInRecentlyJoinedList(server);
+                })
+                .catch((e) => console.log(e));
+            }
+          }
+        }, 500 + (i % 10) * 1000);
+      }
+    }
+
     const response = await getCachedList();
     useServers.getState().setServers(response.servers);
+
     console.log(response);
+    if (Array.isArray(response.servers)) {
+      // let's query servers from server list so players have updated data
+      for (let i = 0; i < response.servers.length; i += 15) {
+        setTimeout(() => {
+          for (let offset = 0; offset < 15; offset++) {
+            if (response.servers[i + offset])
+              queryServer(response.servers[i + offset])
+                .then((server) => {
+                  updateServer(server);
+                  updateInFavoritesList(server);
+                  updateInRecentlyJoinedList(server);
+                })
+                .catch((e) => console.log(e));
+          }
+        }, 500 + (i / 15) * 1000);
+      }
+    }
   }
 };
 
