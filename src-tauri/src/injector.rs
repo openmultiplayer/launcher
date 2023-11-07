@@ -57,12 +57,20 @@ pub async fn run_samp(
         }
     };
 
-    let mut args = format!("-c -n {} -h {} -p {}", name, address, port);
+    let mut ready_for_exec = cmd
+        .arg("-c")
+        .arg("-n")
+        .arg(name)
+        .arg("-h")
+        .arg(address)
+        .arg("-p")
+        .arg(format!("{}", port));
+
     if password.len() > 0 {
-        args = format!("-c -n {} -h {} -p {} -z {}", name, address, port, password);
+        ready_for_exec = ready_for_exec.arg("-z").arg(password);
     }
 
-    let process = cmd.arg(args).current_dir(executable_dir).spawn();
+    let process = ready_for_exec.current_dir(executable_dir).spawn();
 
     match process {
         Ok(p) => {
