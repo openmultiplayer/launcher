@@ -7,6 +7,7 @@ import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { usePersistentServersStore, useServers } from "../states/servers";
 import { APIResponseServer, Player, SearchData, Server } from "./types";
+import { useMessageBox } from "../states/messageModal";
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -84,6 +85,7 @@ export const startGame = (
   password: string
 ) => {
   const { addToRecentlyJoined } = usePersistentServersStore.getState();
+  const { showMessageBox, _hideMessageBox } = useMessageBox.getState();
   addToRecentlyJoined(server);
   invoke("inject", {
     name: nickname,
@@ -94,8 +96,24 @@ export const startGame = (
     password: password,
   }).catch(async (e) => {
     if (e == "need_admin") {
-      await invoke("rerun_as_admin").then(() => {
-        process.exit();
+      showMessageBox({
+        title: "Admin perms required!",
+        description:
+          'It seems like your GTA: San Andreas game requires administration permissions to run. This can be due to many causes, like having your game installed in "C" drive. Please re-open open.mp launcher as administrator either using "Run as Admin" button or manually by yourself',
+        buttons: [
+          {
+            title: "Run as Admin",
+            onPress: async () => {
+              await invoke("rerun_as_admin").then(() => {
+                process.exit();
+              });
+            },
+          },
+          {
+            title: "Cancel",
+            onPress: () => _hideMessageBox(),
+          },
+        ],
       });
     }
   });

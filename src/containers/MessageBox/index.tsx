@@ -42,7 +42,12 @@ const MessageBox = () => {
           paddingBottom: 15,
         }}
       >
-        <Text bold size={3} color={theme.primary} style={{ width: 250 }}>
+        <Text
+          bold
+          size={3}
+          color={theme.primary}
+          style={{ width: 250, textAlign: "center" }}
+        >
           {args.title}
         </Text>
         <View style={{ width: 300, marginTop: 5 }}>
@@ -53,7 +58,7 @@ const MessageBox = () => {
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-around",
+            justifyContent: "space-evenly",
             alignItems: "center",
             height: 30,
             width: 300,
