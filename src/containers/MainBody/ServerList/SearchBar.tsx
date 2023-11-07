@@ -225,8 +225,8 @@ const SearchBar = (props: IProps) => {
               ? "Remove Selected Server from Favorites"
               : "Add Selected Server to Favorites"
           }
-          image={favorited ? images.icons.favRemove : images.icons.favAdd}
-          size={20}
+          image={favorited ? images.icons.unfavorite : images.icons.favorite}
+          size={19}
           color={"#FF2D2D"}
         />
       </TouchableOpacity>
