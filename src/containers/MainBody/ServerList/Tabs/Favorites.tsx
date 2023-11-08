@@ -1,14 +1,11 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
 import { useGenericTempState } from "../../../../states/genericStates";
-import {
-  usePersistentServers,
-  useServers,
-} from "../../../../states/servers";
+import { usePersistentServers, useServers } from "../../../../states/servers";
+import { sortAndSearchInServerList } from "../../../../utils/helpers";
 import { Server } from "../../../../utils/types";
 import List from "../List";
 import ServerItem from "./../Item";
-import { sortAndSearchInServerList } from "../../../../utils/helpers";
 
 const Favorites = () => {
   const { startQuery, stopQuery } = useQuery();
@@ -35,6 +32,7 @@ const Favorites = () => {
     searchData.query,
     searchData.ompOnly,
     searchData.nonEmpty,
+    searchData.unpassworded,
     searchData.sortPing,
     searchData.sortPlayer,
     searchData.sortName,

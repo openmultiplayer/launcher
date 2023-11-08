@@ -47,6 +47,7 @@ export interface SearchData {
   query: string;
   ompOnly: boolean;
   nonEmpty: boolean;
+  unpassworded: boolean;
   sortPlayer: SortType;
   sortPing: SortType;
   sortName: SortType;

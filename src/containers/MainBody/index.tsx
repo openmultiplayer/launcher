@@ -23,7 +23,7 @@ interface IProps {
 const FiltersModal = () => {
   const { theme } = useContext(ThemeContext);
   const { showFilterMenu, searchData, setSearchData } = useGenericTempState();
-  const { ompOnly, nonEmpty } = searchData;
+  const { ompOnly, nonEmpty, unpassworded } = searchData;
 
   return (
     <View
@@ -81,6 +81,15 @@ const FiltersModal = () => {
           <CheckBox value={nonEmpty} style={{ marginRight: 5 }} />
           <Text size={1} color={theme.textPrimary}>
             Non-empty Servers
+          </Text>
+        </Pressable>
+        <Pressable
+          style={{ flexDirection: "row", alignItems: "center", marginTop: 2 }}
+          onPress={() => setSearchData("unpassworded", !unpassworded)}
+        >
+          <CheckBox value={unpassworded} style={{ marginRight: 5 }} />
+          <Text size={1} color={theme.textPrimary}>
+            unpassworded Servers
           </Text>
         </Pressable>
       </View>

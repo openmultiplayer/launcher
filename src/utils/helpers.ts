@@ -355,19 +355,31 @@ export const sortAndSearchInServerList = (
   searchData: SearchData,
   checkForPartnership = false
 ) => {
-  const { ompOnly, nonEmpty, query, sortPing, sortPlayer, sortName, sortMode } =
-    searchData;
+  const {
+    ompOnly,
+    nonEmpty,
+    unpassworded,
+    query,
+    sortPing,
+    sortPlayer,
+    sortName,
+    sortMode,
+  } = searchData;
   let list = servers.filter((server) => {
     const ompCheck = ompOnly ? server.usingOmp === true : true;
     const partnershipCheck = checkForPartnership
       ? server.partner === true
       : true;
     const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
+    const unpasswordedCheck = unpassworded
+      ? server.hasPassword === false
+      : true;
 
     return (
       server.ip &&
       partnershipCheck &&
       ompCheck &&
+      unpasswordedCheck &&
       nonEmptyCheck &&
       server.hostname.toLowerCase().includes(query.toLowerCase())
     );

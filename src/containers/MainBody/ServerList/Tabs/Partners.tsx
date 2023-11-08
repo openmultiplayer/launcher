@@ -2,10 +2,10 @@ import { useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
 import { useGenericTempState } from "../../../../states/genericStates";
 import { useServers } from "../../../../states/servers";
+import { sortAndSearchInServerList } from "../../../../utils/helpers";
 import { Server } from "../../../../utils/types";
 import List from "../List";
 import ServerItem from "./../Item";
-import { sortAndSearchInServerList } from "../../../../utils/helpers";
 
 const Partners = () => {
   const { startQuery, stopQuery } = useQuery();
@@ -25,6 +25,7 @@ const Partners = () => {
     searchData.query,
     searchData.ompOnly,
     searchData.nonEmpty,
+    searchData.unpassworded,
     searchData.sortPing,
     searchData.sortPlayer,
     searchData.sortName,

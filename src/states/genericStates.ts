@@ -15,6 +15,7 @@ const useGenericTempState = create<GenericTempStates>()((set, get) => ({
     query: "",
     nonEmpty: false,
     ompOnly: false,
+    unpassworded: false,
     sortPing: "none",
     sortPlayer: "none",
     sortName: "none",
@@ -49,3 +50,4 @@ const useGenericPersistentState = create<GenericPersistentStates>()(
 );
 
 export { useGenericPersistentState, useGenericTempState };
+
