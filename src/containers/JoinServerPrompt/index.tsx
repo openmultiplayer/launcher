@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -21,6 +21,10 @@ const JoinServerPrompt = () => {
   const { theme } = useContext(ThemeContext);
   const [password, setPassword] = useState("");
   const { nickName, gtasaPath, setNickName } = useSettings();
+
+  useEffect(() => {
+    setPassword(server && server.password ? server.password : "");
+  }, [server]);
 
   if (!visible) {
     return null;

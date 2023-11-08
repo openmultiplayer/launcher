@@ -24,6 +24,7 @@ export interface Server {
   partner: boolean;
   ping: number;
   players: Player[];
+  password: string;
   rules: {
     artwork: string;
     mapname: string;

@@ -42,6 +42,7 @@ const AddThirdPartyServerModal = () => {
       partner: false,
       ping: 0,
       players: [],
+      password: "",
       rules: {} as Server["rules"],
     };
 

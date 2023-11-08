@@ -73,11 +73,11 @@ const SettingsModal = () => {
         file_version: number;
         server_count: number;
         favorite_servers: {
-          ip_len: number;
           ip: string;
           port: number;
-          name_len: number;
           name: string;
+          password: string;
+          rcon: string;
         }[];
       } = JSON.parse(a as string);
 
@@ -97,6 +97,7 @@ const SettingsModal = () => {
             usingOmp: false,
             partner: false,
             ping: 0,
+            password: "",
             players: [],
             rules: {} as Server["rules"],
           };
@@ -108,6 +109,10 @@ const SettingsModal = () => {
               serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
             } else {
               serverInfo.hostname = server.name;
+            }
+
+            if (server.password.length) {
+              serverInfo.password = server.password;
             }
 
             addToFavorites(serverInfo);

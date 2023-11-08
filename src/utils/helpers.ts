@@ -27,6 +27,7 @@ export const mapAPIResponseServerListToAppStructure = (
       rules: server.ru,
       players: [] as Player[],
       ping: 0,
+      password: "",
       usingOmp: server.core.omp,
       partner: server.core.pr,
     } as Server;
@@ -126,9 +127,25 @@ export const startGame = (
   sampDllPath: string,
   password: string
 ) => {
-  const { addToRecentlyJoined } = usePersistentServers.getState();
+  const {
+    addToRecentlyJoined,
+    updateInFavoritesList,
+    updateInRecentlyJoinedList,
+  } = usePersistentServers.getState();
+  const { updateServer } = useServers.getState();
   const { showMessageBox, _hideMessageBox } = useMessageBox.getState();
+
   addToRecentlyJoined(server);
+
+  if (password.length) {
+    const srvCpy = { ...server };
+    srvCpy.password = password;
+
+    updateServer(srvCpy);
+    updateInFavoritesList(srvCpy);
+    updateInRecentlyJoinedList(srvCpy);
+  }
+
   invoke("inject", {
     name: nickname,
     ip: server.ip,
