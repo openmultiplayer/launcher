@@ -1,9 +1,10 @@
 use crate::helpers;
-use byteorder::ReadBytesExt;
+use byteorder::{LittleEndian, ReadBytesExt};
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Cursor;
 use std::io::Read;
+use std::path::Path;
 use tauri::api::path::document_dir;
 #[cfg(target_os = "windows")]
 use winreg::enums::*;
@@ -69,8 +70,6 @@ pub fn get_nickname() -> String {
 
 #[cfg(target_os = "windows")]
 pub fn get_samp_favorite_list() -> String {
-    use byteorder::LittleEndian;
-
     let mut samp_user_data: SAMPUserData = SAMPUserData {
         file_id: "none".to_string(),
         file_version: 0,
@@ -84,63 +83,59 @@ pub fn get_samp_favorite_list() -> String {
         .expect("couldn't convert Documents path to &str")
         .to_string();
 
-    println!(
-        "{}\\GTA San Andreas User Files\\SAMP\\USERDATA.DAT",
-        documents_path
-    );
-
     let userdata_path = format!(
         "{}\\GTA San Andreas User Files\\SAMP\\USERDATA.DAT",
         documents_path
     );
-    let mut file = File::open(userdata_path).unwrap();
 
-    let mut buffer = Vec::new();
-    file.read_to_end(&mut buffer).unwrap();
-    let mut r = Cursor::new(buffer.clone());
+    if Path::new(userdata_path.as_str()).exists() {
+        let mut file = File::open(userdata_path).unwrap();
 
-    // it's usually "SAMP"
-    let mut file_id = [0; 4];
-    r.read_exact(&mut file_id).unwrap();
-    samp_user_data.file_id = String::from_utf8(file_id.to_vec()).unwrap();
+        let mut buffer = Vec::new();
+        file.read_to_end(&mut buffer).unwrap();
+        let mut r = Cursor::new(buffer.clone());
 
-    samp_user_data.file_version = r.read_u32::<LittleEndian>().unwrap();
-    samp_user_data.server_count = r.read_u32::<LittleEndian>().unwrap();
+        // it's usually "SAMP"
+        let mut file_id = [0; 4];
+        r.read_exact(&mut file_id).unwrap();
+        samp_user_data.file_id = String::from_utf8(file_id.to_vec()).unwrap();
 
-    // println!(
-    //     "file id: {}\nversion: {}\nserver count: {}",
-    //     samp_user_data.file_id, samp_user_data.file_version, samp_user_data.server_count
-    // );
+        samp_user_data.file_version = r.read_u32::<LittleEndian>().unwrap();
+        samp_user_data.server_count = r.read_u32::<LittleEndian>().unwrap();
 
-    for _ in 0..samp_user_data.server_count {
-        let mut server_info = SAMPServerInfo {
-            ip_len: 0,
-            ip: "".to_string(),
-            port: 0,
-            name_len: 0,
-            name: "".to_string(),
-        };
+        // println!(
+        //     "file id: {}\nversion: {}\nserver count: {}",
+        //     samp_user_data.file_id, samp_user_data.file_version, samp_user_data.server_count
+        // );
 
-        server_info.ip_len = r.read_u32::<LittleEndian>().unwrap();
-        let mut pos: u32 = r.position().try_into().unwrap();
-        let server_ip = buffer[pos as usize..(pos + server_info.ip_len) as usize].to_vec();
-        server_info.ip = helpers::decode_buffer(server_ip);
-        r.set_position((pos + server_info.ip_len).try_into().unwrap());
+        for _ in 0..samp_user_data.server_count {
+            let mut server_info = SAMPServerInfo {
+                ip_len: 0,
+                ip: "".to_string(),
+                port: 0,
+                name_len: 0,
+                name: "".to_string(),
+            };
 
-        server_info.port = r.read_u32::<LittleEndian>().unwrap();
-        server_info.name_len = r.read_u32::<LittleEndian>().unwrap();
+            server_info.ip_len = r.read_u32::<LittleEndian>().unwrap();
+            let mut pos: u32 = r.position().try_into().unwrap();
+            let server_ip = buffer[pos as usize..(pos + server_info.ip_len) as usize].to_vec();
+            server_info.ip = helpers::decode_buffer(server_ip);
+            r.set_position((pos + server_info.ip_len).try_into().unwrap());
 
-        pos = r.position().try_into().unwrap();
-        let server_name = buffer[pos as usize..(pos + server_info.name_len) as usize].to_vec();
-        server_info.name = helpers::decode_buffer(server_name);
+            server_info.port = r.read_u32::<LittleEndian>().unwrap();
+            server_info.name_len = r.read_u32::<LittleEndian>().unwrap();
 
-        // This `+ 8` is due to some stupid 8 bytes padding who knows why or what for (always 0)
-        r.set_position((pos + server_info.name_len + 8).try_into().unwrap());
+            pos = r.position().try_into().unwrap();
+            let server_name = buffer[pos as usize..(pos + server_info.name_len) as usize].to_vec();
+            server_info.name = helpers::decode_buffer(server_name);
 
-        samp_user_data.favorite_servers.push(server_info);
+            // This `+ 8` is due to some stupid 8 bytes padding who knows why or what for (always 0)
+            r.set_position((pos + server_info.name_len + 8).try_into().unwrap());
+
+            samp_user_data.favorite_servers.push(server_info);
+        }
     }
 
     serde_json::to_string(&samp_user_data).unwrap()
 }
-
-// 4 + 14 + 4 + 4 + 33 + 4
