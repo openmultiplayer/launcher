@@ -18,9 +18,11 @@ import { useAppState } from "../../states/app";
 import { useSettings } from "../../states/settings";
 import { useSettingsModal } from "../../states/settingsModal";
 import { checkDirectoryValidity } from "../../utils/helpers";
+import { usePersistentServersStore } from "../../states/servers";
+import { Server } from "../../utils/types";
 
 const MODAL_WIDTH = 500;
-const MODAL_HEIGHT = 220;
+const MODAL_HEIGHT = 270;
 
 const SettingsModal = () => {
   const { height, width } = useWindowDimensions();
@@ -62,6 +64,57 @@ const SettingsModal = () => {
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const importFavListFromSAMP = async () => {
+    await invoke("get_samp_favorite_list").then((a) => {
+      const userData: {
+        file_id: string;
+        file_version: number;
+        server_count: number;
+        favorite_servers: {
+          ip_len: number;
+          ip: string;
+          port: number;
+          name_len: number;
+          name: string;
+        }[];
+      } = JSON.parse(a as string);
+
+      if (userData.file_id === "SAMP") {
+        const { addToFavorites } = usePersistentServersStore.getState();
+        userData.favorite_servers.forEach((server) => {
+          const serverInfo: Server = {
+            ip: "",
+            port: 0,
+            hostname: "No information",
+            playerCount: 0,
+            maxPlayers: 0,
+            gameMode: "-",
+            language: "-",
+            hasPassword: false,
+            version: "-",
+            usingOmp: false,
+            partner: false,
+            ping: 0,
+            players: [],
+            rules: {} as Server["rules"],
+          };
+
+          if (server.ip.length) {
+            serverInfo.ip = server.ip;
+            serverInfo.port = server.port;
+            if (server.name.includes("(Retrieving info...)")) {
+              serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
+            } else {
+              serverInfo.hostname = server.name;
+            }
+
+            addToFavorites(serverInfo);
+          }
+        });
+      }
+    });
   };
 
   return (
@@ -136,6 +189,28 @@ const SettingsModal = () => {
             }}
           >
             Import nickname and gtasa path from SA-MP settings
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.importButton,
+            {
+              marginTop: 5,
+              backgroundColor: theme.primary,
+              borderColor: theme.textSecondary,
+            },
+          ]}
+          onPress={() => importFavListFromSAMP()}
+        >
+          <Text
+            semibold
+            color={theme.textPrimary}
+            size={1}
+            style={{
+              top: -1,
+            }}
+          >
+            Import favorite list from SA-MP data
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
