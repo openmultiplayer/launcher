@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { usePersistentServersStore, useServers } from "../states/servers";
+import { usePersistentServers, useServers } from "../states/servers";
 import { queryServer } from "../utils/query";
 import { Server } from "../utils/types";
 
@@ -8,7 +8,7 @@ export const useQuery = () => {
 
   const { selected, updateServer, setSelected } = useServers();
   const { updateInFavoritesList, updateInRecentlyJoinedList } =
-    usePersistentServersStore();
+    usePersistentServers();
   const selectedServer = useRef<Server | undefined>(selected);
 
   useEffect(() => {

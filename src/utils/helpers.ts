@@ -5,7 +5,7 @@ import { exists } from "@tauri-apps/api/fs";
 import { type } from "@tauri-apps/api/os";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
-import { usePersistentServersStore, useServers } from "../states/servers";
+import { usePersistentServers, useServers } from "../states/servers";
 import { APIResponseServer, Player, SearchData, Server } from "./types";
 import { useMessageBox } from "../states/messageModal";
 import { queryServer } from "./query";
@@ -39,7 +39,7 @@ export const fetchServers = async (cached: boolean = true) => {
   if (cached) {
     const { updateServer } = useServers.getState();
     const { updateInFavoritesList, updateInRecentlyJoinedList, favorites } =
-      usePersistentServersStore.getState();
+      usePersistentServers.getState();
 
     if (Array.isArray(favorites)) {
       // let's query servers from server list so players have updated data
@@ -126,7 +126,7 @@ export const startGame = (
   sampDllPath: string,
   password: string
 ) => {
-  const { addToRecentlyJoined } = usePersistentServersStore.getState();
+  const { addToRecentlyJoined } = usePersistentServers.getState();
   const { showMessageBox, _hideMessageBox } = useMessageBox.getState();
   addToRecentlyJoined(server);
   invoke("inject", {

@@ -5,13 +5,13 @@ import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
-import { usePersistentServersStore, useServers } from "../../states/servers";
+import { usePersistentServers, useServers } from "../../states/servers";
 import Chart from "../PingChart";
 
 const BottomBar = () => {
   const { selected: server } = useServers();
   const { favorites, addToFavorites, removeFromFavorites } =
-    usePersistentServersStore();
+    usePersistentServers();
   const { theme } = useContext(ThemeContext);
 
   const favorited = useMemo(() => {

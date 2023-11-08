@@ -12,7 +12,7 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../states/addThirdPartyServerModal";
-import { usePersistentServersStore } from "../../states/servers";
+import { usePersistentServers } from "../../states/servers";
 import { validateServerAddress } from "../../utils/helpers";
 import { Server } from "../../utils/types";
 
@@ -21,7 +21,7 @@ const AddThirdPartyServerModal = () => {
   const { height, width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const [serverAddress, setServerAddress] = useState("");
-  const { addToFavorites } = usePersistentServersStore();
+  const { addToFavorites } = usePersistentServers();
 
   if (!visible) {
     return null;

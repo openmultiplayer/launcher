@@ -18,7 +18,7 @@ import { useAppState } from "../../states/app";
 import { useSettings } from "../../states/settings";
 import { useSettingsModal } from "../../states/settingsModal";
 import { checkDirectoryValidity } from "../../utils/helpers";
-import { usePersistentServersStore } from "../../states/servers";
+import { usePersistentServers } from "../../states/servers";
 import { Server } from "../../utils/types";
 
 const MODAL_WIDTH = 500;
@@ -82,7 +82,7 @@ const SettingsModal = () => {
       } = JSON.parse(a as string);
 
       if (userData.file_id === "SAMP") {
-        const { addToFavorites } = usePersistentServersStore.getState();
+        const { addToFavorites } = usePersistentServers.getState();
         userData.favorite_servers.forEach((server) => {
           const serverInfo: Server = {
             ip: "",

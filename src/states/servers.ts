@@ -43,7 +43,7 @@ const useServers = create<ServersState>()((set, get) => ({
     }),
 }));
 
-const usePersistentServersStore = create<ServersPersistentState>()(
+const usePersistentServers = create<ServersPersistentState>()(
   persist(
     (set, get) => ({
       favorites: [],
@@ -131,4 +131,4 @@ const usePersistentServersStore = create<ServersPersistentState>()(
   )
 );
 
-export { usePersistentServersStore, useServers };
+export { usePersistentServers, useServers };

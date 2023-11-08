@@ -17,7 +17,7 @@ import {
   useGenericTempState,
 } from "../../../states/genericStates";
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
-import { usePersistentServersStore, useServers } from "../../../states/servers";
+import { usePersistentServers, useServers } from "../../../states/servers";
 import { fetchServers } from "../../../utils/helpers";
 import { ListType } from "../../../utils/types";
 
@@ -41,7 +41,7 @@ const SearchBar = (props: IProps) => {
     removeFromFavorites,
     addToFavorites,
     clearRecentlyJoined,
-  } = usePersistentServersStore();
+  } = usePersistentServers();
   const { showPrompt, setServer } = useJoinServerPrompt();
   const { showAddThirdPartyServer } = useAddThirdPartyServerModal();
   const refreshIconSpinAnim = useRef(new Animated.Value(0)).current;

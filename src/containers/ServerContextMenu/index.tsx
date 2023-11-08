@@ -5,7 +5,7 @@ import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { useContextMenu } from "../../states/contextMenu";
-import { usePersistentServersStore } from "../../states/servers";
+import { usePersistentServers } from "../../states/servers";
 import { ThemeContext } from "./../../contexts/theme";
 
 const ContextMenu = () => {
@@ -13,7 +13,7 @@ const ContextMenu = () => {
   const { theme } = useContext(ThemeContext);
   const { visible, position, server, hide } = useContextMenu();
   const { addToFavorites, removeFromFavorites, favorites } =
-    usePersistentServersStore();
+    usePersistentServers();
   const [favBtnBgCol, setFavBtnBgCol] = useState(
     theme.listHeaderBackgroundColor
   );

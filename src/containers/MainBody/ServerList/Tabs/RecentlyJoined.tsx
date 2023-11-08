@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useQuery } from "../../../../hooks/query";
 import { useGenericTempState } from "../../../../states/genericStates";
 import {
-  usePersistentServersStore,
+  usePersistentServers,
   useServers,
 } from "../../../../states/servers";
 import { Server } from "../../../../utils/types";
@@ -13,7 +13,7 @@ import { sortAndSearchInServerList } from "../../../../utils/helpers";
 const RecentlyJoined = () => {
   const { startQuery, stopQuery } = useQuery();
   const { selected, setSelected } = useServers();
-  const { recentlyJoined } = usePersistentServersStore();
+  const { recentlyJoined } = usePersistentServers();
   const { searchData } = useGenericTempState();
 
   useEffect(() => {
