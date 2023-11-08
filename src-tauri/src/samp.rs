@@ -13,11 +13,11 @@ use winreg::RegKey;
 
 #[derive(Serialize, Deserialize)]
 pub struct SAMPServerInfo {
-    pub ip_len: u32,
     pub ip: String,
     pub port: u32,
-    pub name_len: u32,
     pub name: String,
+    pub password: String,
+    pub rcon: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -103,35 +103,50 @@ pub fn get_samp_favorite_list() -> String {
         samp_user_data.file_version = r.read_u32::<LittleEndian>().unwrap();
         samp_user_data.server_count = r.read_u32::<LittleEndian>().unwrap();
 
-        // println!(
-        //     "file id: {}\nversion: {}\nserver count: {}",
-        //     samp_user_data.file_id, samp_user_data.file_version, samp_user_data.server_count
-        // );
-
         for _ in 0..samp_user_data.server_count {
             let mut server_info = SAMPServerInfo {
-                ip_len: 0,
                 ip: "".to_string(),
                 port: 0,
-                name_len: 0,
                 name: "".to_string(),
+                password: "".to_string(),
+                rcon: "".to_string(),
             };
 
-            server_info.ip_len = r.read_u32::<LittleEndian>().unwrap();
+            let ip_len = r.read_u32::<LittleEndian>().unwrap();
             let mut pos: u32 = r.position().try_into().unwrap();
-            let server_ip = buffer[pos as usize..(pos + server_info.ip_len) as usize].to_vec();
+            let server_ip = buffer[pos as usize..(pos + ip_len) as usize].to_vec();
             server_info.ip = helpers::decode_buffer(server_ip);
-            r.set_position((pos + server_info.ip_len).try_into().unwrap());
+            r.set_position((pos + ip_len).try_into().unwrap());
 
             server_info.port = r.read_u32::<LittleEndian>().unwrap();
-            server_info.name_len = r.read_u32::<LittleEndian>().unwrap();
 
+            let name_len = r.read_u32::<LittleEndian>().unwrap();
             pos = r.position().try_into().unwrap();
-            let server_name = buffer[pos as usize..(pos + server_info.name_len) as usize].to_vec();
+            let server_name = buffer[pos as usize..(pos + name_len) as usize].to_vec();
             server_info.name = helpers::decode_buffer(server_name);
+            r.set_position((pos + name_len).try_into().unwrap());
 
-            // This `+ 8` is due to some stupid 8 bytes padding who knows why or what for (always 0)
-            r.set_position((pos + server_info.name_len + 8).try_into().unwrap());
+            let password_len = r.read_u32::<LittleEndian>().unwrap();
+            if password_len != 0 {
+                pos = r.position().try_into().unwrap();
+                let server_password = buffer[pos as usize..(pos + password_len) as usize].to_vec();
+                server_info.password = helpers::decode_buffer(server_password);
+                r.set_position((pos + password_len).try_into().unwrap());
+            }
+
+            let rcon_len = r.read_u32::<LittleEndian>().unwrap();
+            if rcon_len != 0 {
+                pos = r.position().try_into().unwrap();
+                let server_rcon = buffer[pos as usize..(pos + rcon_len) as usize].to_vec();
+                server_info.rcon = helpers::decode_buffer(server_rcon);
+                r.set_position((pos + rcon_len).try_into().unwrap());
+            }
+
+            println!(
+                "{} | + {}",
+                serde_json::to_string(&server_info).unwrap(),
+                r.position()
+            );
 
             samp_user_data.favorite_servers.push(server_info);
         }
