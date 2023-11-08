@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 // use serde_json::json;
 mod discord;
+mod helpers;
 mod injector;
 mod query;
 mod samp;
@@ -118,6 +119,11 @@ fn rerun_as_admin() -> Result<String, String> {
     }
 }
 
+#[tauri::command]
+fn get_samp_favorite_list() -> String {
+    samp::get_samp_favorite_list()
+}
+
 fn main() {
     discord::initialize_drpc();
     tauri::Builder::default()
@@ -137,7 +143,8 @@ fn main() {
             inject,
             get_gtasa_path_from_samp,
             get_nickname_from_samp,
-            rerun_as_admin
+            rerun_as_admin,
+            get_samp_favorite_list
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
