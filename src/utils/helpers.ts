@@ -1,14 +1,16 @@
 import { invoke, process, shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
-import { ask, confirm, message } from "@tauri-apps/api/dialog";
+import { ask } from "@tauri-apps/api/dialog";
 import { exists } from "@tauri-apps/api/fs";
 import { type } from "@tauri-apps/api/os";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
-import { usePersistentServers, useServers } from "../states/servers";
-import { APIResponseServer, Player, SearchData, Server } from "./types";
+import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
+import { usePersistentServers, useServers } from "../states/servers";
+import { useSettingsModal } from "../states/settingsModal";
 import { queryServer } from "./query";
+import { APIResponseServer, Player, SearchData, Server } from "./types";
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -120,7 +122,7 @@ Click "Download" to open release page`,
   console.log(response);
 };
 
-export const startGame = (
+export const startGame = async (
   server: Server,
   nickname: string,
   gtasaPath: string,
@@ -134,6 +136,8 @@ export const startGame = (
   } = usePersistentServers.getState();
   const { updateServer } = useServers.getState();
   const { showMessageBox, _hideMessageBox } = useMessageBox.getState();
+  const { show: showSettings } = useSettingsModal.getState();
+  const { showPrompt, setServer } = useJoinServerPrompt.getState();
 
   addToRecentlyJoined(server);
 
@@ -144,6 +148,61 @@ export const startGame = (
     updateServer(srvCpy);
     updateInFavoritesList(srvCpy);
     updateInRecentlyJoinedList(srvCpy);
+  }
+
+  if (!gtasaPath || gtasaPath.length < 1) {
+    showMessageBox({
+      title: "GTA San Andreas path is not set!",
+      description:
+        "You didn't set GTA San Andreas path, go to settings and search for game folder.",
+      buttons: [
+        {
+          title: "Open Settings",
+          onPress: () => {
+            showPrompt(false);
+            showSettings();
+            _hideMessageBox();
+          },
+        },
+        {
+          title: "Cancel",
+          onPress: () => {
+            showPrompt(true);
+            setServer(server);
+            _hideMessageBox();
+          },
+        },
+      ],
+    });
+    return;
+  }
+
+  if (!nickname || nickname.length < 1) {
+    showMessageBox({
+      title: "No Nickname!",
+      description:
+        "You must choose a nickname for yourself before joining a server.",
+      buttons: [
+        {
+          title: "Okay",
+          onPress: () => {
+            showPrompt(true);
+            setServer(server);
+            _hideMessageBox();
+          },
+        },
+      ],
+    });
+    return;
+  }
+
+  const dirValidity = await checkDirectoryValidity(gtasaPath, () => {
+    showPrompt(true);
+    setServer(server);
+  });
+
+  if (!dirValidity) {
+    return;
   }
 
   invoke("inject", {
@@ -178,40 +237,73 @@ export const startGame = (
   });
 };
 
-export const checkDirectoryValidity = async (path: string) => {
+export const checkDirectoryValidity = async (
+  path: string,
+  onFail?: () => void
+) => {
+  const { showMessageBox, _hideMessageBox } = useMessageBox.getState();
+  const { show: showSettings } = useSettingsModal.getState();
+  const { showPrompt } = useJoinServerPrompt.getState();
+
   const gtasaExists = await exists(path + "/gta_sa.exe");
   if (!gtasaExists) {
-    message(
-      `Can not find the right GTA San Andreas installation in this directory:
-  ${path}
+    showMessageBox({
+      title: "Can't find GTA San Andreas!",
+      description: `Can not find GTA San Andreas in this directory:
+${path}
 Unable to find "gta_sa.exe" in your given path.
-  ${path}/gta_sa.exe does not exist.
-    `,
-      { title: "gta_sa.exe doesn't exist", type: "error" }
-    );
+`,
+      buttons: [
+        {
+          title: "Open Settings",
+          onPress: () => {
+            showPrompt(false);
+            showSettings();
+            _hideMessageBox();
+          },
+        },
+        {
+          title: "Cancel",
+          onPress: () => {
+            if (onFail) {
+              onFail();
+            }
+            _hideMessageBox();
+          },
+        },
+      ],
+    });
     return false;
   }
 
   const sampExists = await exists(path + "/samp.dll");
-  if (!sampExists) {
-    const download = await confirm(
-      `Can not find the right SA-MP installation in this directory:
-  ${path}
+  if (sampExists) {
+    showMessageBox({
+      title: "Can't find SA-MP!",
+      description: `Can not find SA-MP installation in this directory:
+${path}
 Unable to find "samp.dll" in your given path.
-  ${path}/samp.dll does not exist.
 
-Please refer to https://sa-mp.mp/ to download SA-MP
-    `,
-      {
-        title: "samp.dll doesn't exist",
-        type: "error",
-        cancelLabel: "Close",
-        okLabel: "Download",
-      }
-    );
-    if (download) {
-      shell.open("https://sa-mp.mp/downloads/");
-    }
+If you don't have SA-MP installed, you can download it from https://sa-mp.mp/ by clicking **Download**.
+`,
+      buttons: [
+        {
+          title: "Download",
+          onPress: () => {
+            shell.open("https://sa-mp.mp/downloads/");
+          },
+        },
+        {
+          title: "Cancel",
+          onPress: () => {
+            if (onFail) {
+              onFail();
+            }
+            _hideMessageBox();
+          },
+        },
+      ],
+    });
     return false;
   }
 

@@ -11,7 +11,8 @@ interface JoinServerPromptState {
 const useJoinServerPrompt = create<JoinServerPromptState>()((set) => ({
   visible: false,
   server: undefined,
-  showPrompt: (show) => set(() => ({ visible: show })),
+  showPrompt: (show) =>
+    set(() => ({ visible: show, ...(show ? {} : { server: undefined }) })),
   setServer: (server) => set(() => ({ server })),
 }));
 
