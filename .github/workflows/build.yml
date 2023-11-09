@@ -34,8 +34,7 @@ jobs:
         id: vars
         shell: bash
         run: |
-          commit=$(git describe --always --tags "refs/remotes/origin/${HEAD_REF}")
-          artifact_name="open.mp-launcher-win-${commit}"
+          artifact_name="open.mp-launcher-win-${GITHUB_RUN_ID}"
           echo "artifact_name=${artifact_name}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
