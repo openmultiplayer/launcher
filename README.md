@@ -16,7 +16,7 @@ https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section
 ### For all OS's:
 
 - Install [nightly version](https://rust-lang.github.io/rustup/concepts/channels.html) of rust toolchain
-- Install [NodeJS](https://nodejs.org/en/download) and `npm` (or `yarn` or anything else) !Warning, install Node.JS version higher than 20.6.1 [Here's why!](https://github.com/vitejs/vite/issues/14299#issuecomment-1720736019)
+- Install [NodeJS](https://nodejs.org/en/download) and `npm` (or `yarn` or anything else) !Warning, install Node.JS version higher than 20.6.1 [Here's why!](https://github.com/vitejs/vite/issues/14299#issuecomment-1720736019) [Dont know how?](https://github.com/coreybutler/nvm-windows)
 - Clone repository:
 
 ```bash
