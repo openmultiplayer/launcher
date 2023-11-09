@@ -297,7 +297,7 @@ Unable to find "gta_sa.exe" in your given path.
   }
 
   const sampExists = await exists(path + "/samp.dll");
-  if (sampExists) {
+  if (!sampExists) {
     showMessageBox({
       title: "Can't find SA-MP!",
       description: `Can not find SA-MP installation in this directory:

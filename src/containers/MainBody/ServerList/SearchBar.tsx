@@ -102,6 +102,7 @@ const SearchBar = (props: IProps) => {
         onPress={() => showFilterMenu(!filterMenu)}
       >
         <Icon
+          title={"Filter Servers"}
           image={images.icons.filter}
           size={16}
           color={theme.textPlaceholder}
