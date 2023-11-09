@@ -34,7 +34,7 @@ jobs:
         id: vars
         shell: bash
         run: |
-          commit=$(git describe --always --tags "refs/remotes/origin/${HEAD_REF}")"
+          commit=$(git describe --always --tags "refs/remotes/origin/${HEAD_REF}")
           artifact_name="open.mp-launcher-win-${commit}"
           echo "artifact_name=${artifact_name}" >> $GITHUB_OUTPUT
 
