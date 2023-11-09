@@ -9,7 +9,7 @@ import { ThemeContext } from "../../contexts/theme";
 import { useMessageBox } from "../../states/messageModal";
 
 const MessageBox = () => {
-  const { args, visible, _hideMessageBox } = useMessageBox();
+  const { args, visible, hideMessageBox } = useMessageBox();
   const { height, width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
 
@@ -18,7 +18,7 @@ const MessageBox = () => {
   }
 
   return (
-    <StaticModal onDismiss={() => _hideMessageBox()}>
+    <StaticModal onDismiss={() => hideMessageBox()}>
       <Animatable.View
         animation={"zoomInUp"}
         duration={700}
@@ -26,7 +26,7 @@ const MessageBox = () => {
           position: "absolute",
           top: height / 2 - 90 - 25, // titlebar height is 25
           left: width / 2 - 160,
-          width: 320,
+          width: args.boxWidth,
           borderRadius: 4,
           backgroundColor: theme.listHeaderBackgroundColor,
           shadowColor: "#000",
@@ -46,11 +46,19 @@ const MessageBox = () => {
           bold
           size={3}
           color={theme.primary}
-          style={{ width: 250, textAlign: "center" }}
+          style={{
+            width: args.boxWidth ? args.boxWidth - 70 : 250,
+            textAlign: "center",
+          }}
         >
           {args.title}
         </Text>
-        <View style={{ width: 300, marginTop: 5 }}>
+        <View
+          style={{
+            width: args.boxWidth ? args.boxWidth - 30 : 300,
+            marginTop: 5,
+          }}
+        >
           <Text color={theme.textPrimary} size={1} numberOfLines={10}>
             {args.description}
           </Text>
@@ -60,8 +68,9 @@ const MessageBox = () => {
             flexDirection: "row",
             justifyContent: "space-evenly",
             alignItems: "center",
+            flexWrap: "wrap",
             height: 30,
-            width: 300,
+            width: args.boxWidth,
             marginTop: 10,
           }}
         >
@@ -95,7 +104,7 @@ const MessageBox = () => {
             height: 25,
             width: 25,
           }}
-          onPress={() => _hideMessageBox()}
+          onPress={() => hideMessageBox()}
         >
           <Icon
             image={images.icons.close}

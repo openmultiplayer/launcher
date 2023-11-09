@@ -1,6 +1,6 @@
 import { invoke, process, shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
-import { ask } from "@tauri-apps/api/dialog";
+
 import { exists } from "@tauri-apps/api/fs";
 import { type } from "@tauri-apps/api/os";
 import { getCachedList, getUpdateInfo } from "../api/apis";
@@ -98,25 +98,45 @@ export const fetchUpdateInfo = async () => {
   }
 
   setTimeout(async () => {
-    const updateInfo = useAppState.getState().updateInfo;
-    const version = useAppState.getState().version;
-    if (updateInfo && updateInfo.version != version) {
-      const download = await ask(
-        `New launcher build is available!
-      Your launcher build version: #${version}
-      Current launcher vuild version: #${updateInfo.version}
-Click "Download" to open release page`,
-        {
-          type: "info",
-          title: "Update Available",
-          cancelLabel: "Ignore",
-          okLabel: "Download",
-        }
-      );
+    const { updateInfo, version, skipUpdate, skippedUpdateVersion } =
+      useAppState.getState();
+    const { showMessageBox, hideMessageBox } = useMessageBox.getState();
 
-      if (download) {
-        shell.open(updateInfo.download);
-      }
+    if (
+      updateInfo &&
+      updateInfo.version != version &&
+      skippedUpdateVersion != updateInfo.version
+    ) {
+      showMessageBox({
+        title: "Update Available!",
+        description: `New launcher build is available!
+Your launcher build version: #${version}
+Current launcher vuild version: #${updateInfo.version}
+Click "Download" to open release page`,
+        boxWidth: 500,
+        buttons: [
+          {
+            title: "Download",
+            onPress: () => {
+              shell.open(updateInfo.download);
+              hideMessageBox();
+            },
+          },
+          {
+            title: "Remind Me Next Time",
+            onPress: () => {
+              hideMessageBox();
+            },
+          },
+          {
+            title: "Skip This Update",
+            onPress: () => {
+              skipUpdate(updateInfo.version);
+              hideMessageBox();
+            },
+          },
+        ],
+      });
     }
   }, 1000);
   console.log(response);
@@ -135,7 +155,7 @@ export const startGame = async (
     updateInRecentlyJoinedList,
   } = usePersistentServers.getState();
   const { updateServer } = useServers.getState();
-  const { showMessageBox, _hideMessageBox } = useMessageBox.getState();
+  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
 
@@ -161,7 +181,7 @@ export const startGame = async (
           onPress: () => {
             showPrompt(false);
             showSettings();
-            _hideMessageBox();
+            hideMessageBox();
           },
         },
         {
@@ -169,7 +189,7 @@ export const startGame = async (
           onPress: () => {
             showPrompt(true);
             setServer(server);
-            _hideMessageBox();
+            hideMessageBox();
           },
         },
       ],
@@ -188,7 +208,7 @@ export const startGame = async (
           onPress: () => {
             showPrompt(true);
             setServer(server);
-            _hideMessageBox();
+            hideMessageBox();
           },
         },
       ],
@@ -229,7 +249,7 @@ export const startGame = async (
           },
           {
             title: "Cancel",
-            onPress: () => _hideMessageBox(),
+            onPress: () => hideMessageBox(),
           },
         ],
       });
@@ -241,7 +261,7 @@ export const checkDirectoryValidity = async (
   path: string,
   onFail?: () => void
 ) => {
-  const { showMessageBox, _hideMessageBox } = useMessageBox.getState();
+  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
   const { showPrompt } = useJoinServerPrompt.getState();
 
@@ -250,7 +270,7 @@ export const checkDirectoryValidity = async (
     showMessageBox({
       title: "Can't find GTA San Andreas!",
       description: `Can not find GTA San Andreas in this directory:
-${path}
+  - "${path}"
 Unable to find "gta_sa.exe" in your given path.
 `,
       buttons: [
@@ -259,7 +279,7 @@ Unable to find "gta_sa.exe" in your given path.
           onPress: () => {
             showPrompt(false);
             showSettings();
-            _hideMessageBox();
+            hideMessageBox();
           },
         },
         {
@@ -268,7 +288,7 @@ Unable to find "gta_sa.exe" in your given path.
             if (onFail) {
               onFail();
             }
-            _hideMessageBox();
+            hideMessageBox();
           },
         },
       ],
@@ -281,7 +301,7 @@ Unable to find "gta_sa.exe" in your given path.
     showMessageBox({
       title: "Can't find SA-MP!",
       description: `Can not find SA-MP installation in this directory:
-${path}
+  - "${path}"
 Unable to find "samp.dll" in your given path.
 
 If you don't have SA-MP installed, you can download it from https://sa-mp.mp/ by clicking **Download**.
@@ -299,7 +319,7 @@ If you don't have SA-MP installed, you can download it from https://sa-mp.mp/ by
             if (onFail) {
               onFail();
             }
-            _hideMessageBox();
+            hideMessageBox();
           },
         },
       ],

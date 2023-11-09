@@ -7,14 +7,17 @@ export interface MessageBoxArgs {
     title: string;
     onPress: () => void;
   }[];
+  boxWidth?: number;
 }
 
 interface MessageModalState {
   visible: boolean;
   args: MessageBoxArgs;
   showMessageBox: (args: MessageBoxArgs) => void;
-  _hideMessageBox: () => void;
+  hideMessageBox: () => void;
 }
+
+const MESSAGE_BOX_WIDTH = 320;
 
 const useMessageBox = create<MessageModalState>()((set) => ({
   visible: false,
@@ -23,8 +26,15 @@ const useMessageBox = create<MessageModalState>()((set) => ({
     description: "",
     buttons: [],
   },
-  showMessageBox: (args) => set(() => ({ visible: true, args })),
-  _hideMessageBox: () =>
+  showMessageBox: (args) =>
+    set(() => ({
+      visible: true,
+      args: {
+        ...args,
+        boxWidth: args.boxWidth ? args.boxWidth : MESSAGE_BOX_WIDTH,
+      },
+    })),
+  hideMessageBox: () =>
     set(() => ({
       visible: false,
       args: {
