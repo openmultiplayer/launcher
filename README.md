@@ -39,6 +39,6 @@ yarn tauri build
 
 # Donations
 
-While open.mp is a totally free project and everyone in the team dedicates their time on this project to provide the best for the community, we can still use whatever contribution by anyone, to cover out costs or motivate developers.  
+While open.mp is a totally free project and everyone in the team dedicates their time on this project to provide the best for the community, we can still use whatever contribution by anyone, to cover our costs or motivate developers.  
 Here is our donation link you can use to show your generosity!  
 - **https://opencollective.com/openmultiplayer**
