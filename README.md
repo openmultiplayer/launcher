@@ -4,12 +4,15 @@ Made with Tauri + React-Native ❤️
 
 # Usage:
 
-Just download from [Releases](https://github.com/openmultiplayer/launcher/releases) page and run it!  
+Use open.mp launcher to enjoy a live, reliable, and populated server list to find any server you want to play on!  
+Just download it from [Releases](https://github.com/openmultiplayer/launcher/releases/latest) page and run it!
 
 For users using old Windows 10, Windows 8(.1), or Windows 7, if you do not have WebView2 installed (comes preinstalled in newer Windows 10 and 11 setups, and comes with Microsoft Edge), you must download **WebView2** from [Here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)  
 https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section
 
 **Note**: Download Evergreen Bootstrapper and let installer download the right version for you for best experience.
+
+**Note**: You still need samp installed to play, you can install samp from https://sa-mp.mp/downloads/ .
 
 # Development
 
@@ -41,5 +44,6 @@ yarn tauri build
 # Donations
 
 While open.mp is a totally free project and everyone in the team dedicates their time on this project to provide the best for the community, we can still use whatever contribution by anyone, to cover our costs or motivate developers.  
-Here is our donation link you can use to show your generosity!  
+Here is our donation link you can use to show your generosity!
+
 - **https://opencollective.com/openmultiplayer**
