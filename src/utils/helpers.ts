@@ -113,7 +113,8 @@ export const fetchUpdateInfo = async () => {
 Your launcher build version: #${version}
 Current launcher vuild version: #${updateInfo.version}
 Click "Download" to open release page`,
-        boxWidth: 500,
+        boxWidth: 550,
+        buttonWidth: 160,
         buttons: [
           {
             title: "Download",

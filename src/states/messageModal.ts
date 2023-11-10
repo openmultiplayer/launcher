@@ -8,6 +8,7 @@ export interface MessageBoxArgs {
     onPress: () => void;
   }[];
   boxWidth?: number;
+  buttonWidth?: number;
 }
 
 interface MessageModalState {
@@ -18,6 +19,7 @@ interface MessageModalState {
 }
 
 const MESSAGE_BOX_WIDTH = 320;
+const MESSAGE_BOX_BUTTON_WIDTH = 120;
 
 const useMessageBox = create<MessageModalState>()((set) => ({
   visible: false,
@@ -32,6 +34,9 @@ const useMessageBox = create<MessageModalState>()((set) => ({
       args: {
         ...args,
         boxWidth: args.boxWidth ? args.boxWidth : MESSAGE_BOX_WIDTH,
+        buttonWidth: args.buttonWidth
+          ? args.buttonWidth
+          : MESSAGE_BOX_BUTTON_WIDTH,
       },
     })),
   hideMessageBox: () =>

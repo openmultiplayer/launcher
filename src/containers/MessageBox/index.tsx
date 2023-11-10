@@ -25,7 +25,7 @@ const MessageBox = () => {
         style={{
           position: "absolute",
           top: height / 2 - 90 - 25, // titlebar height is 25
-          left: width / 2 - 160,
+          left: width / 2 - Number(args.boxWidth) / 2,
           width: args.boxWidth,
           borderRadius: 4,
           backgroundColor: theme.listHeaderBackgroundColor,
@@ -81,6 +81,7 @@ const MessageBox = () => {
                 style={{
                   paddingHorizontal: 10,
                   height: 30,
+                  width: args.buttonWidth,
                   marginTop: 5,
                   backgroundColor: theme.primary,
                   borderRadius: 8,
