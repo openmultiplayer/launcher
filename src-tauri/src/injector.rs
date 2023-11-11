@@ -1,5 +1,6 @@
 #[cfg(target_os = "windows")]
 use dll_syringe::{process::OwnedProcess, Syringe};
+use log::info;
 use regex::Regex;
 use std::process::Command;
 use tokio::net::lookup_host;
@@ -35,6 +36,10 @@ pub async fn run_samp(
             ip.to_string()
         }
         None => {
+            info!(
+                "[injector.rs] Address {} is not IPv4, trying to perform host lookup.",
+                ip
+            );
             let socket_addresses = lookup_host(format!("{}:{}", ip, port)).await;
             match socket_addresses {
                 Ok(s) => {
@@ -50,7 +55,11 @@ pub async fn run_samp(
                     ipv4
                 }
                 Err(e) => {
-                    println!("{}", e.to_string());
+                    info!(
+                        "[injector.rs] Host lookup for {} failed: {}",
+                        ip,
+                        e.to_string()
+                    );
                     "".to_string()
                 }
             }
@@ -74,20 +83,30 @@ pub async fn run_samp(
 
     match process {
         Ok(p) => {
-            let target_process = OwnedProcess::from_pid(p.id()).unwrap();
+            // let target_process = .unwrap();
+            match OwnedProcess::from_pid(p.id()) {
+                Ok(p) => {
+                    // create a new syringe for the target process
+                    let syringe = Syringe::for_process(p);
 
-            // create a new syringe for the target process
-            let syringe = Syringe::for_process(target_process);
-
-            // inject the payload into the target process
-            let module = syringe.inject(dll_path);
-            if module.is_ok() {
-                return Ok(());
-            } else {
-                return Err("injecting dll failed".to_owned());
+                    // inject the payload into the target process
+                    match syringe.inject(dll_path) {
+                        Ok(_) => Ok(()),
+                        Err(e) => {
+                            info!("[injector.rs] Dll injection failed: {}", e.to_string());
+                            Err(format!("Injecting dll failed: {}", e.to_string()).to_owned())
+                        }
+                    }
+                }
+                Err(e) => {
+                    info!("[injector.rs] Process creation failed: {}", e.to_string());
+                    Err(format!("Finding GTASA process failed: {}", e.to_string()).to_owned())
+                }
             }
         }
         Err(e) => {
+            info!("[injector.rs] Process creation failed: {}", e.to_string());
+
             let mut raw_os_err = 0;
             if e.raw_os_error().is_some() {
                 raw_os_err = e.raw_os_error().get_or_insert(0).to_owned();
@@ -97,7 +116,7 @@ pub async fn run_samp(
                 return Err("need_admin".to_string());
             }
 
-            return Err(format!("spawning process failed (error code: {})", raw_os_err).to_owned());
+            return Err(format!("Spawning process failed (error code: {})", raw_os_err).to_owned());
         }
     }
 }
