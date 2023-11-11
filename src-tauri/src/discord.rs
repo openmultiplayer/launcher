@@ -9,6 +9,7 @@ use tauri::async_runtime::block_on;
 
 pub fn initialize_drpc() -> () {
     std::thread::spawn(move || {
+        #[allow(unused_assignments)]
         let mut connected = false;
         let mut client = DiscordIpcClient::new("1057922416166305852").unwrap();
         match client.connect() {
@@ -48,6 +49,7 @@ pub fn initialize_drpc() -> () {
                 std::thread::sleep(std::time::Duration::from_millis(1000));
                 continue;
             }
+
             let s = System::new_all();
             let mut process_exists = false;
 
@@ -121,7 +123,20 @@ pub fn initialize_drpc() -> () {
                             .small_text(players.as_str()),
                     )
                     .timestamps(timestamp.clone().start(start_time.try_into().unwrap()));
-                client.set_activity(activity).unwrap();
+
+                match client.set_activity(activity) {
+                    Ok(_) => {}
+                    Err(_) => {
+                        match client.reconnect() {
+                            Ok(_) => {
+                                connected = true;
+                            }
+                            Err(_) => {
+                                connected = false;
+                            }
+                        };
+                    }
+                };
             } else {
                 if in_game {
                     in_game = false;
@@ -138,7 +153,20 @@ pub fn initialize_drpc() -> () {
                             .large_text("Idle"),
                     )
                     .timestamps(timestamp.clone().start(start_time.try_into().unwrap()));
-                client.set_activity(activity).unwrap();
+
+                match client.set_activity(activity) {
+                    Ok(_) => {}
+                    Err(_) => {
+                        match client.reconnect() {
+                            Ok(_) => {
+                                connected = true;
+                            }
+                            Err(_) => {
+                                connected = false;
+                            }
+                        };
+                    }
+                };
             }
 
             std::thread::sleep(std::time::Duration::from_millis(1000));
