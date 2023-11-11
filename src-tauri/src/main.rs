@@ -7,6 +7,7 @@ mod injector;
 mod query;
 mod samp;
 
+use log::LevelFilter;
 use runas;
 use std::time::Instant;
 use tauri::Manager;
@@ -125,6 +126,8 @@ fn get_samp_favorite_list() -> String {
 }
 
 fn main() {
+    simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
+
     discord::initialize_drpc();
     tauri::Builder::default()
         .setup(|app| {
