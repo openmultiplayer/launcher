@@ -4,7 +4,14 @@ use encoding::DecoderTrap;
 
 pub fn decode_buffer(buf: Vec<u8>) -> String {
     let result = detect(&buf);
-    let coder = encoding_from_whatwg_label(charset2encoding(&result.0));
+    let mut str_encoding = charset2encoding(&result.0);
+    // let's just say it's cp1251 if encoding is not detected
+    // FIXME: find a way to actually detect cp1251 and cp1252 from together
+    if str_encoding.len() < 1 {
+        str_encoding = "cp1251";
+    }
+
+    let coder = encoding_from_whatwg_label(str_encoding);
     if coder.is_some() {
         coder
             .unwrap()
