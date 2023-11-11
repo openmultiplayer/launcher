@@ -41,7 +41,7 @@ impl Default for InfoPacket {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Player {
     pub name: String,
-    pub score: u16,
+    pub score: i32,
 }
 
 impl Default for Player {
@@ -186,8 +186,7 @@ impl Query {
             packet.read_exact(&mut player_name_buf).unwrap();
             player.name = helpers::decode_buffer(player_name_buf);
 
-            player.score = packet.read_u16::<LittleEndian>().unwrap();
-            let _ = packet.read_u16::<LittleEndian>();
+            player.score = packet.read_i32::<LittleEndian>().unwrap();
         }
 
         Ok(serde_json::to_string(&players).unwrap())
