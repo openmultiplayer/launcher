@@ -17,21 +17,9 @@ const NavBar = (props: IProps) => {
   const { nickName, setNickName } = useSettings();
 
   const list: { icon: string; label: string; type: ListType }[] = [
-    { 
-      icon: images.icons.favorite,
-      label: "Favorites",
-      type: "favorites"
-    },
-    {
-      icon: images.icons.internet,
-      label: "Internet",
-      type: "internet"
-    },
-    {
-      icon: images.icons.partner,
-      label: "Partners",
-      type: "partners"
-    },
+    { icon: images.icons.favorite, label: "Favorites", type: "favorites" },
+    { icon: images.icons.internet, label: "Internet", type: "internet" },
+    { icon: images.icons.partner, label: "Partners", type: "partners" },
     {
       icon: images.icons.recently,
       label: "Recently Joined",
