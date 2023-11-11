@@ -9,8 +9,17 @@ use tauri::async_runtime::block_on;
 
 pub fn initialize_drpc() -> () {
     std::thread::spawn(move || {
+        let mut connected = false;
         let mut client = DiscordIpcClient::new("1057922416166305852").unwrap();
-        client.connect().unwrap();
+        match client.connect() {
+            Ok(_) => {
+                connected = true;
+            }
+            Err(_) => {
+                connected = false;
+            }
+        };
+
         let timestamp: Timestamps = Timestamps::new();
         let mut start_time: u64 = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -23,9 +32,22 @@ pub fn initialize_drpc() -> () {
         let mut ip: String = "Unknown".to_string();
         let mut port: String = "Unknown".to_string();
 
-        let mut connected = false;
+        let mut in_game = false;
 
         loop {
+            if !connected {
+                match client.reconnect() {
+                    Ok(_) => {
+                        connected = true;
+                    }
+                    Err(_) => {
+                        connected = false;
+                    }
+                };
+
+                std::thread::sleep(std::time::Duration::from_millis(1000));
+                continue;
+            }
             let s = System::new_all();
             let mut process_exists = false;
 
@@ -73,8 +95,8 @@ pub fn initialize_drpc() -> () {
             }
 
             if process_exists {
-                if !connected {
-                    connected = true;
+                if !in_game {
+                    in_game = true;
                     start_time = SystemTime::now()
                         .duration_since(UNIX_EPOCH)
                         .unwrap()
@@ -101,8 +123,8 @@ pub fn initialize_drpc() -> () {
                     .timestamps(timestamp.clone().start(start_time.try_into().unwrap()));
                 client.set_activity(activity).unwrap();
             } else {
-                if connected {
-                    connected = false;
+                if in_game {
+                    in_game = false;
                     start_time = SystemTime::now()
                         .duration_since(UNIX_EPOCH)
                         .unwrap()
