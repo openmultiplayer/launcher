@@ -72,8 +72,8 @@ export default {
   cancel: "Mégse",
   gta_path_modal_cant_find_samp_title: "Nem található a SA-MP!",
   gta_path_modal_cant_find_samp_description:
-    'Can not find SA-MP installation in this directory:\n  - "{{ path }}"\nUnable to find "samp.dll" in your given path.\n\nIf you don\'t have SA-MP installed, you can download it from https://sa-mp.mp/ by clicking **Download**.',
-  notification_add_to_favorites_title: "Added to Favorites!",
+    'Nem található telepített SA-MP ezen a helyen?\n  - "{{ path }}"\nNem található "samp.dll" a megadott útvonalon.\n\nAmennyiben nincs SA-MP telepítve, a **"Download"** gombra kattintva itt letöltheted: https://sa-mp.mp/',
+  notification_add_to_favorites_title: "Kedvencekhez ad",
   notification_add_to_favorites_description:
-    "{{ server }} has been added to your favorite list.",
+    "{{ server }} hozzáadva a kedvenceid közé.",
 };
