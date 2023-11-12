@@ -274,6 +274,8 @@ export const checkDirectoryValidity = async (
       description: t("gta_path_modal_cant_find_game_description", {
         path: path,
       }),
+      boxWidth: 360,
+      buttonWidth: 150,
       buttons: [
         {
           title: t("open_settings"),
@@ -304,6 +306,8 @@ export const checkDirectoryValidity = async (
       description: t("gta_path_modal_cant_find_samp_description", {
         path: path,
       }),
+      boxWidth: 360,
+      buttonWidth: 150,
       buttons: [
         {
           title: t("download"),
