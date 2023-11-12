@@ -42,8 +42,8 @@ export default {
   refresh_servers: "Обновить список серверов",
   play: "Играть",
   remove_selected_server_from_favorites:
-    "Удалить выбранный сервер из избранных",
-  add_selected_server_to_favorites: "Добавить выбранный сервер в избранные",
+    "Удалить сервер из избранных",
+  add_selected_server_to_favorites: "Добавить сервер в избранные",
   add_server: "Добавить сервер",
   hide_player_and_rule_list: "Скрыть список игроков и правил",
   show_player_and_rule_list: "Показать список игроков и правил",
