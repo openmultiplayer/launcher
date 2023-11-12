@@ -339,6 +339,11 @@ export const validateServerAddress = (address: string) => {
   ) {
     return true;
   } else {
+    // Check if it's localhost
+    if (address === "localhost") {
+      return true;
+    }
+
     // Check if it's a valid domain
     let regex = new RegExp(
       /^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,6}$/
