@@ -5,6 +5,7 @@ import Spanish from "./translations/es";
 import Farsi from "./translations/fa";
 import Filipino from "./translations/fil";
 import Italian from "./translations/it";
+import France from "./translations/fr";
 
 i18n.use(initReactI18next).init({
   // we init with resources
@@ -23,6 +24,9 @@ i18n.use(initReactI18next).init({
     },
     it: {
       translations: Italian,
+    },
+    fr: {
+      translations: France,
     },
   },
   fallbackLng: "en",
