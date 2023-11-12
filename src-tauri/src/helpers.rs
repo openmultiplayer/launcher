@@ -8,7 +8,9 @@ pub fn decode_buffer(buf: Vec<u8>) -> String {
     // let's just say it's cp1251 if encoding is not detected
     // FIXME: find a way to actually detect cp1251 and cp1252 from together
 
-    if result.0 == "KOI8-R" && result.1 < 0.7 && result.2 == "Russian" {
+    if result.0 == "MacCyrillic"
+        || (result.0 == "KOI8-R" && result.1 < 0.7 && result.2 == "Russian")
+    {
         str_encoding = "cp1251";
     }
 
