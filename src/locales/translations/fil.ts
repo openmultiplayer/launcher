@@ -72,7 +72,7 @@ export default {
   gta_path_modal_cant_find_game_title: "Hindi Makita ang GTA San Andreas!",
   gta_path_modal_cant_find_game_description:
     'Hindi mahanap ang GTA San Andreas sa direktoryong ito:\n  - "{{ path }}"\nHindi makita ang "gta_sa.exe" sa iyong ibinigay na landas.',
-  open_settings: "Buksan ang Mga Setting",
+  open_settings: "Buksan ang Setting",
   cancel: "Kanselahin",
   gta_path_modal_cant_find_samp_title: "Hindi Makita ang SA-MP!",
   gta_path_modal_cant_find_samp_description:
