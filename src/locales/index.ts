@@ -7,6 +7,7 @@ import Spanish from "./translations/es";
 import Farsi from "./translations/fa";
 import Filipino from "./translations/fil";
 import French from "./translations/fr";
+import German from "./translations/de";
 import Hindi from "./translations/hi";
 import Hungarian from "./translations/hu";
 import Indonesian from "./translations/id";
@@ -23,6 +24,7 @@ export type LanguageType =
   | "fa"
   | "fil"
   | "fr"
+  | "de"
   | "hi"
   | "it"
   | "ro"
@@ -122,6 +124,11 @@ export const getLanguages = (): {
       label: "Türkçe",
       type: "tr",
       translations: Turkish,
+    },
+    de: {
+      label: "Deutsch",
+      type: "de",
+      translations: German,
     },
   };
 };
