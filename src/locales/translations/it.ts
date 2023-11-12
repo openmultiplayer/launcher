@@ -8,7 +8,8 @@ export default {
   minimize: "Riduci a Icona",
   maximize: "Ingrandisci",
   close: "Chiudi",
-  add_server_modal_description_1: "Aggiungi manualmente un server alla lista dei preferiti.",
+  add_server_modal_description_1:
+    "Aggiungi manualmente un server alla lista dei preferiti.",
   add_server_modal_description_2: "Esempio: 127.0.0.1:7777",
   add: "Aggiungi",
   server: "Server",
@@ -16,7 +17,8 @@ export default {
   players: "Players",
   server_join_prompt_enter_password:
     "Questo server è protetto, inserisci la password.",
-  server_join_prompt_enter_password_input_placeholder: "Inserisci la password...",
+  server_join_prompt_enter_password_input_placeholder:
+    "Inserisci la password...",
   server_join_prompt_nickname_input_placeholder: "Inserisci un Nickname...",
   connect: "Play",
   copy: "Copia",
@@ -43,7 +45,8 @@ export default {
   play: "Play",
   remove_selected_server_from_favorites:
     "Rimuovi il Server Selezionato dai Preferiti",
-  add_selected_server_to_favorites: "Aggiungi il Server Selezionato ai Preferiti",
+  add_selected_server_to_favorites:
+    "Aggiungi il Server Selezionato ai Preferiti",
   add_server: "Aggiungi Server",
   hide_player_and_rule_list: "Nascondi lista player e regole",
   show_player_and_rule_list: "Mostra lista player e regole",
@@ -56,7 +59,8 @@ export default {
   settings_import_samp_favorite_list: "Imposta lista preferiti da SA-MP",
   settings_reset_application_data:
     "Ripristina dati dell'app (elimina impostazioni e liste)",
-  settings_new_update_available: "⚠ Nuovo Aggiornamento Disponibile. Clicca per Scaricare! ⚠",
+  settings_new_update_available:
+    "⚠ Nuovo Aggiornamento Disponibile. Clicca per Scaricare! ⚠",
   settings_credits_made_by: "Realizzato con ❤️ da",
   settings_credits_view_source_on_github: "Guarda il codice sorgente su GitHub",
   update_modal_update_available_title: "Aggiornamento Disponibile!",
