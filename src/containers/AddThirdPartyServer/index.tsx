@@ -1,9 +1,10 @@
+import { t } from "i18next";
 import { useContext, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
   View,
-  useWindowDimensions
+  useWindowDimensions,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import Icon from "../../components/Icon";
@@ -93,10 +94,10 @@ const AddThirdPartyServerModal = () => {
         <Icon image={images.icons.favorite} size={30} />
         <View style={{ width: 300, marginTop: 10 }}>
           <Text color={theme.textPrimary} size={1}>
-            Add your server manually to favorite list.
+            {t("add_server_modal_description_1")}
           </Text>
           <Text color={theme.textPrimary} size={1}>
-            Example: 127.0.0.1:7777
+            {t("add_server_modal_description_2")}
           </Text>
         </View>
         <TextInput
@@ -130,7 +131,7 @@ const AddThirdPartyServerModal = () => {
           onPress={() => addServer()}
         >
           <Text color={theme.textPrimary} size={1}>
-            Add
+            {t("add")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

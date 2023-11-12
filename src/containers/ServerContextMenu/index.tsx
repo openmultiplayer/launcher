@@ -1,4 +1,5 @@
 import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
+import { t } from "i18next";
 import { useContext, useMemo, useState } from "react";
 import { Pressable, View, useWindowDimensions } from "react-native";
 import Icon from "../../components/Icon";
@@ -101,7 +102,7 @@ const ContextMenu = () => {
               size={14}
             />
             <Text bold color={"white"}>
-              {favorited ? "Remove from Favorites" : "Add to Favorites"}
+              {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
             </Text>
           </Pressable>
           <Pressable
@@ -132,7 +133,7 @@ Using open.mp: ${server.usingOmp ? "Yes" : "No"}`);
               size={14}
             />
             <Text bold color={"white"}>
-              Copy Server Info
+              {t("copy_server_info")}
             </Text>
           </Pressable>
         </View>

@@ -1,5 +1,6 @@
 import { shell } from "@tauri-apps/api";
 import { appWindow } from "@tauri-apps/api/window";
+import { t } from "i18next";
 import { useContext } from "react";
 import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 import Icon from "../components/Icon";
@@ -89,18 +90,18 @@ const WindowTitleBar = () => {
         style={{ flexDirection: "row", alignItems: "center", height: "100%" }}
       >
         <WindowTitleBarButtons
-          title="Settings"
+          title={t("settings")}
           iconSize={17}
           image={images.icons.settings}
           onPress={() => showSettings()}
         />
         <WindowTitleBarButtons
-          title="Minimize"
+          title={t("minimize")}
           image={images.icons.windowMinimize}
           onPress={() => appWindow.minimize()}
         />
         <WindowTitleBarButtons
-          title="Maximize"
+          title={t("maximize")}
           image={images.icons.windowMaximize}
           onPress={async () => {
             await appWindow.toggleMaximize();
@@ -108,7 +109,7 @@ const WindowTitleBar = () => {
           }}
         />
         <WindowTitleBarButtons
-          title="Close"
+          title={t("close")}
           image={images.icons.windowClose}
           onPress={() => appWindow.close()}
         />

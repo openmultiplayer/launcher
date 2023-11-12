@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { useContext } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import CheckBox from "../../components/CheckBox";
@@ -63,7 +64,7 @@ const FiltersModal = () => {
         }}
       >
         <Text semibold size={1} color={theme.textPrimary}>
-          Filters:
+          {t("filters")}:
         </Text>
         <Pressable
           style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
@@ -71,7 +72,7 @@ const FiltersModal = () => {
         >
           <CheckBox value={ompOnly} style={{ marginRight: 5 }} />
           <Text size={1} color={theme.textPrimary}>
-            open.mp servers
+            {t("filter_only_omp_servers")}
           </Text>
         </Pressable>
         <Pressable
@@ -80,7 +81,7 @@ const FiltersModal = () => {
         >
           <CheckBox value={nonEmpty} style={{ marginRight: 5 }} />
           <Text size={1} color={theme.textPrimary}>
-            Non-empty Servers
+            {t("filter_non_empty_servers")}
           </Text>
         </Pressable>
         <Pressable
@@ -89,7 +90,7 @@ const FiltersModal = () => {
         >
           <CheckBox value={unpassworded} style={{ marginRight: 5 }} />
           <Text size={1} color={theme.textPrimary}>
-            unpassworded Servers
+            {t("filter_unpassworded_servers")}
           </Text>
         </Pressable>
       </View>

@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { memo, useContext, useEffect, useRef } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
 import Icon from "../../../components/Icon";
@@ -120,7 +121,7 @@ const ServerItem = memo((props: IProps) => {
           ]}
         >
           <Icon
-            title={server.hasPassword ? "Locked" : "Unlocked"}
+            title={server.hasPassword ? t("locked") : t("unlocked")}
             image={
               server.hasPassword ? images.icons.locked : images.icons.unlocked
             }
@@ -130,7 +131,7 @@ const ServerItem = memo((props: IProps) => {
         {server.usingOmp && (
           <View style={[styles.iconContainer]}>
             <Icon
-              title={"open.mp server"}
+              title={t("openmp_server")}
               image={images.icons.ompLight}
               size={20}
             />

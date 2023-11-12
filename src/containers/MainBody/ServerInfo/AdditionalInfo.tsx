@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { useContext, useMemo } from "react";
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
@@ -76,12 +77,12 @@ const AdditionalInfo = (props: IProps) => {
       >
         <View style={[styles.commonFieldContainer, styles.ruleFieldContainer]}>
           <Text semibold size={1} color={theme.textPrimary + "AA"}>
-            Rule
+            {t("rule")}
           </Text>
         </View>
         <View style={[styles.commonFieldContainer, styles.valueFieldContainer]}>
           <Text semibold size={1} color={theme.textPrimary + "AA"}>
-            Value
+            {t("value")}
           </Text>
         </View>
       </View>

@@ -1,4 +1,5 @@
-import { useContext, useState, useEffect } from "react";
+import { t } from "i18next";
+import { useContext, useEffect, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -71,19 +72,19 @@ const JoinServerPrompt = () => {
           }}
         >
           <Text semibold color={theme.textPrimary} size={1}>
-            Server:{" "}
+            {t("server")}:{" "}
             <Text medium color={theme.textPrimary} size={1}>
               {server?.hostname}
             </Text>
           </Text>
           <Text semibold color={theme.textPrimary} size={1}>
-            Address:{" "}
+            {t("address")}:{" "}
             <Text medium color={theme.textPrimary} size={1}>
               {server?.ip}:{server?.port}
             </Text>
           </Text>
           <Text semibold color={theme.textPrimary} size={1}>
-            Players:{" "}
+            {t("players")}:{" "}
             <Text medium color={theme.textPrimary} size={1}>
               {server?.playerCount}/{server?.maxPlayers}
             </Text>
@@ -92,11 +93,13 @@ const JoinServerPrompt = () => {
         {server?.hasPassword && (
           <View style={{ marginTop: 15 }}>
             <Text color={theme.textPrimary} size={1}>
-              This server is protected, please enter password.
+              {t("server_join_prompt_enter_password")}
             </Text>
             <TextInput
               placeholderTextColor={theme.textPlaceholder}
-              placeholder={"Enter password..."}
+              placeholder={t(
+                "server_join_prompt_enter_password_input_placeholder"
+              )}
               value={password}
               onChangeText={(text) => setPassword(text)}
               style={{
@@ -117,11 +120,11 @@ const JoinServerPrompt = () => {
         )}
         <View style={{ marginTop: server?.hasPassword ? 5 : 15 }}>
           <Text color={theme.textPrimary} size={1}>
-            Nickname:
+            {t("nickname")}:
           </Text>
           <TextInput
             placeholderTextColor={theme.textPlaceholder}
-            placeholder={"Enter Nickname..."}
+            placeholder={t("server_join_prompt_nickname_input_placeholder")}
             value={nickName}
             onChangeText={(text) => setNickName(text)}
             style={{
@@ -163,7 +166,7 @@ const JoinServerPrompt = () => {
           }}
         >
           <Text color={theme.textPrimary} size={1}>
-            Connect
+            {t("connect")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

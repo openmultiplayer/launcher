@@ -1,5 +1,6 @@
 import { invoke, shell } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
+import { t } from "i18next";
 import { useContext } from "react";
 import {
   StyleSheet,
@@ -15,10 +16,10 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
 import { useAppState } from "../../states/app";
+import { usePersistentServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { useSettingsModal } from "../../states/settingsModal";
 import { checkDirectoryValidity } from "../../utils/helpers";
-import { usePersistentServers } from "../../states/servers";
 import { Server } from "../../utils/types";
 
 const MODAL_WIDTH = 500;
@@ -42,10 +43,12 @@ const SettingsModal = () => {
       directory: true,
     })) as string;
 
-    const newPath = selected.replace(/\\/g, "/");
+    if (selected) {
+      const newPath = selected.replace(/\\/g, "/");
 
-    const isDirValid = await checkDirectoryValidity(newPath);
-    if (isDirValid) setGTASAPath(newPath);
+      const isDirValid = await checkDirectoryValidity(newPath);
+      if (isDirValid) setGTASAPath(newPath);
+    }
   };
 
   const importDataFromSAMP = async () => {
@@ -139,7 +142,7 @@ const SettingsModal = () => {
         ]}
       >
         <Text size={1} color={theme.textPrimary}>
-          GTA: San Andreas path (where SA-MP is also installed):
+          {t("settings_gta_path_input_label")}:
         </Text>
         <View style={styles.pathInputContainer}>
           <TextInput
@@ -171,7 +174,7 @@ const SettingsModal = () => {
                 top: -1,
               }}
             >
-              Browse
+              {t("browse")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -193,7 +196,7 @@ const SettingsModal = () => {
               top: -1,
             }}
           >
-            Import nickname and gtasa path from SA-MP settings
+            {t("settings_import_nickname_gta_path_from_samp")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -215,7 +218,7 @@ const SettingsModal = () => {
               top: -1,
             }}
           >
-            Import favorite list from SA-MP data
+            {t("settings_import_samp_favorite_list")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -239,7 +242,7 @@ const SettingsModal = () => {
               top: -1,
             }}
           >
-            Reset application data (clears settings and lists)
+            {t("settings_reset_application_data")}
           </Text>
         </TouchableOpacity>
         <View style={styles.appInfoContainer}>
@@ -251,11 +254,11 @@ const SettingsModal = () => {
               onPress={() => shell.open(updateInfo?.download)}
               color={theme.primary}
             >
-              ⚠ New Update Available. Click to Download! ⚠
+              {t("settings_new_update_available")}
             </Text>
           )}
           <Text color={theme.textPrimary}>
-            Made with ❤️ by{" "}
+            {t("settings_credits_made_by")}{" "}
             <Text
               onPress={() => shell.open("https://open.mp/")}
               color={theme.primary}
@@ -269,7 +272,7 @@ const SettingsModal = () => {
               }
               color={theme.primary}
             >
-              View source code on GitHub
+              {t("settings_credits_view_source_on_github")}
             </Text>{" "}
             | v{nativeAppVersion} Build {version}
           </Text>

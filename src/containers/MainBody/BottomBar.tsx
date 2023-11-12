@@ -1,4 +1,5 @@
 import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
+import { t } from "i18next";
 import { useContext, useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Icon from "../../components/Icon";
@@ -60,7 +61,7 @@ const BottomBar = () => {
             }}
           >
             <Text semibold color={theme.textPrimary} style={{ fontSize: 10 }}>
-              Copy
+              {t("copy")}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -96,7 +97,7 @@ const BottomBar = () => {
               color={theme.textPrimary}
               style={{ marginLeft: 2, fontSize: 10 }}
             >
-              {favorited ? "Remove from Favorites" : "Add to Favorites"}
+              {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
             </Text>
           </TouchableOpacity>
         </View>

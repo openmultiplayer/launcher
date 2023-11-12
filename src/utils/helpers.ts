@@ -3,6 +3,7 @@ import { getVersion } from "@tauri-apps/api/app";
 
 import { exists } from "@tauri-apps/api/fs";
 import { type } from "@tauri-apps/api/os";
+import { t } from "i18next";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { useJoinServerPrompt } from "../states/joinServerPrompt";
@@ -108,29 +109,29 @@ export const fetchUpdateInfo = async () => {
       skippedUpdateVersion != updateInfo.version
     ) {
       showMessageBox({
-        title: "Update Available!",
-        description: `New launcher build is available!
-Your launcher build version: #${version}
-Current launcher build version: #${updateInfo.version}
-Click "Download" to open release page`,
+        title: t("update_modal_update_available_title"),
+        description: t("update_modal_update_available_description", {
+          version,
+          newVersion: updateInfo.version,
+        }),
         boxWidth: 550,
         buttonWidth: 160,
         buttons: [
           {
-            title: "Download",
+            title: t("download"),
             onPress: () => {
               shell.open(updateInfo.download);
               hideMessageBox();
             },
           },
           {
-            title: "Remind Me Next Time",
+            title: t("update_modal_remind_me_next_time"),
             onPress: () => {
               hideMessageBox();
             },
           },
           {
-            title: "Skip This Update",
+            title: t("update_modal_skip_this_update"),
             onPress: () => {
               skipUpdate(updateInfo.version);
               hideMessageBox();
@@ -269,14 +270,13 @@ export const checkDirectoryValidity = async (
   const gtasaExists = await exists(path + "/gta_sa.exe");
   if (!gtasaExists) {
     showMessageBox({
-      title: "Can't find GTA San Andreas!",
-      description: `Can not find GTA San Andreas in this directory:
-  - "${path}"
-Unable to find "gta_sa.exe" in your given path.
-`,
+      title: t("gta_path_modal_cant_find_game_title"),
+      description: t("gta_path_modal_cant_find_game_description", {
+        path: path,
+      }),
       buttons: [
         {
-          title: "Open Settings",
+          title: t("open_settings"),
           onPress: () => {
             showPrompt(false);
             showSettings();
@@ -284,7 +284,7 @@ Unable to find "gta_sa.exe" in your given path.
           },
         },
         {
-          title: "Cancel",
+          title: t("cancel"),
           onPress: () => {
             if (onFail) {
               onFail();
@@ -300,22 +300,19 @@ Unable to find "gta_sa.exe" in your given path.
   const sampExists = await exists(path + "/samp.dll");
   if (!sampExists) {
     showMessageBox({
-      title: "Can't find SA-MP!",
-      description: `Can not find SA-MP installation in this directory:
-  - "${path}"
-Unable to find "samp.dll" in your given path.
-
-If you don't have SA-MP installed, you can download it from https://sa-mp.mp/ by clicking **Download**.
-`,
+      title: t("gta_path_modal_cant_find_samp_title"),
+      description: t("gta_path_modal_cant_find_samp_description", {
+        path: path,
+      }),
       buttons: [
         {
-          title: "Download",
+          title: t("download"),
           onPress: () => {
             shell.open("https://sa-mp.mp/downloads/");
           },
         },
         {
-          title: "Cancel",
+          title: t("Cancel"),
           onPress: () => {
             if (onFail) {
               onFail();

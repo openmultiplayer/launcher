@@ -20,6 +20,7 @@ import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../../states/servers";
 import { fetchServers } from "../../../utils/helpers";
 import { ListType } from "../../../utils/types";
+import { t } from "i18next";
 
 interface IProps {
   onChange: (query: string) => void;
@@ -102,7 +103,7 @@ const SearchBar = (props: IProps) => {
         onPress={() => showFilterMenu(!filterMenu)}
       >
         <Icon
-          title={"Filter Servers"}
+          title={t("filter_servers")}
           image={images.icons.filter}
           size={16}
           color={theme.textPlaceholder}
@@ -129,7 +130,7 @@ const SearchBar = (props: IProps) => {
         ]}
       >
         <TextInput
-          placeholder="Search for server hostname/mode"
+          placeholder={t("search_for_server_hostname_mode")}
           placeholderTextColor={theme.textPlaceholder}
           value={searchQuery}
           style={{
@@ -171,7 +172,7 @@ const SearchBar = (props: IProps) => {
           onPress={() => clearRecentlyJoined()}
         >
           <Icon
-            title={"Clear Recently Joined List"}
+            title={t("clear_recently_joined_list")}
             image={images.icons.clean}
             size={18}
             color={"#D2691E"}
@@ -192,7 +193,7 @@ const SearchBar = (props: IProps) => {
         onPress={() => refreshServers()}
       >
         <Icon
-          title={"Refresh Internet List"}
+          title={t("refresh_servers")}
           image={images.icons.refresh}
           size={20}
         />
@@ -202,7 +203,7 @@ const SearchBar = (props: IProps) => {
         onPress={() => playSelectedServer()}
       >
         <Icon
-          title={"Play"}
+          title={t("play")}
           image={images.icons.play}
           size={22}
           color={theme.primary}
@@ -223,8 +224,8 @@ const SearchBar = (props: IProps) => {
         <Icon
           title={
             favorited
-              ? "Remove Selected Server from Favorites"
-              : "Add Selected Server to Favorites"
+              ? t("remove_selected_server_from_favorites")
+              : t("add_selected_server_to_favorites")
           }
           image={favorited ? images.icons.unfavorite : images.icons.favorite}
           size={19}
@@ -236,7 +237,7 @@ const SearchBar = (props: IProps) => {
         onPress={() => showAddThirdPartyServer(true)}
       >
         <Icon
-          title={"Add Your Server"}
+          title={t("add_server")}
           image={images.icons.add}
           size={20}
           color={"#3B833D"}
@@ -255,8 +256,8 @@ const SearchBar = (props: IProps) => {
         <Icon
           title={
             sideLists
-              ? "Hide player and rule list"
-              : "Show player and rule list"
+              ? t("hide_player_and_rule_list")
+              : t("show_player_and_rule_list")
           }
           image={
             sideLists ? images.icons.closeSideLists : images.icons.openSideLists

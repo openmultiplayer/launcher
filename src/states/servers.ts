@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Server } from "../utils/types";
@@ -77,8 +78,10 @@ const usePersistentServers = create<ServersPersistentState>()(
 
           const { showNotification } = useNotification.getState();
           showNotification(
-            "Added to Favorites!",
-            `${server.ip}:${server.port} has been added to your favorite list`
+            t("notification_add_to_favorites_title"),
+            t("notification_add_to_favorites_description", {
+              server: `${server.ip}:${server.port}`,
+            })
           );
 
           return { favorites: cpy };
@@ -132,3 +135,4 @@ const usePersistentServers = create<ServersPersistentState>()(
 );
 
 export { usePersistentServers, useServers };
+

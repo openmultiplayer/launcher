@@ -1,7 +1,8 @@
+import { t } from "i18next";
 import { useContext } from "react";
-import { StyleSheet, View, Pressable } from "react-native";
-import Text from "../../../components/Text";
+import { Pressable, StyleSheet, View } from "react-native";
 import Icon from "../../../components/Icon";
+import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
 import { useGenericTempState } from "../../../states/genericStates";
@@ -49,7 +50,7 @@ const ListHeader = () => {
             </Text>
           )}
           <Text semibold size={1} color={theme.textPrimary + "AA"}>
-            Name
+            {t("name")}
           </Text>
         </Pressable>
       </View>
@@ -86,7 +87,7 @@ const ListHeader = () => {
             </Text>
           )}
           <Text semibold size={1} color={theme.textPrimary + "AA"}>
-            Ping
+            {t("ping")}
           </Text>
         </Pressable>
 
@@ -116,7 +117,7 @@ const ListHeader = () => {
             </Text>
           )}
           <Text semibold size={1} color={theme.textPrimary + "AA"}>
-            Mode
+            {t("mode")}
           </Text>
         </Pressable>
         <Pressable
@@ -145,7 +146,7 @@ const ListHeader = () => {
             </Text>
           )}
           <Text semibold size={1} color={theme.textPrimary + "AA"}>
-            Players
+            {t("players")}
           </Text>
         </Pressable>
       </View>

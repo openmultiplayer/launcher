@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { useContext, useState } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from "../components/Icon";
@@ -17,12 +18,12 @@ const NavBar = (props: IProps) => {
   const { nickName, setNickName } = useSettings();
 
   const list: { icon: string; label: string; type: ListType }[] = [
-    { icon: images.icons.favorite, label: "Favorites", type: "favorites" },
-    { icon: images.icons.internet, label: "Internet", type: "internet" },
-    { icon: images.icons.partner, label: "Partners", type: "partners" },
+    { icon: images.icons.favorite, label: t("favorites"), type: "favorites" },
+    { icon: images.icons.internet, label: t("internet"), type: "internet" },
+    { icon: images.icons.partner, label: t("partners"), type: "partners" },
     {
       icon: images.icons.recently,
-      label: "Recently Joined",
+      label: t("recently_joined"),
       type: "recentlyjoined",
     },
   ];
@@ -94,7 +95,7 @@ const NavBar = (props: IProps) => {
         <View style={styles.inputs}>
           <View style={styles.nicknameContainer}>
             <Icon
-              title={"Nickname"}
+              title={t("nickname")}
               image={images.icons.nickname}
               size={18}
               color={"white"}
@@ -102,7 +103,7 @@ const NavBar = (props: IProps) => {
             <TextInput
               value={nickName}
               onChangeText={(text) => setNickName(text)}
-              placeholder="Nickname..."
+              placeholder={t("nickname") + "..."}
               placeholderTextColor={theme.textPlaceholder}
               style={{
                 backgroundColor: "white",

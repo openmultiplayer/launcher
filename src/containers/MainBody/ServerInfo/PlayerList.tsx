@@ -1,8 +1,9 @@
+import { t } from "i18next";
 import { useContext } from "react";
-import { StyleSheet, View, FlatList, ListRenderItemInfo } from "react-native";
-import { Player } from "../../../utils/types";
+import { FlatList, ListRenderItemInfo, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
 import { ThemeContext } from "../../../contexts/theme";
+import { Player } from "../../../utils/types";
 
 interface IProps {
   players: Player[];
@@ -56,12 +57,12 @@ const PlayerList = (props: IProps) => {
       >
         <View style={[styles.commonFieldContainer, styles.nameFieldContainer]}>
           <Text semibold size={1} color={theme.textPrimary + "AA"}>
-            Player
+            {t("player")}
           </Text>
         </View>
         <View style={[styles.commonFieldContainer, styles.scoreFieldContainer]}>
           <Text semibold size={1} color={theme.textPrimary + "AA"}>
-            Score
+            {t("score")}
           </Text>
         </View>
       </View>
