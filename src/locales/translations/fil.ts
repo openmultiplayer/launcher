@@ -1,0 +1,83 @@
+export default {
+  favorites: "Mga Paborito",
+  internet: "Internet",
+  partners: "Mga Kasosyo",
+  recently_joined: "Kamakailang Sumali",
+  nickname: "Palayaw",
+  settings: "Mga Setting",
+  minimize: "Itagaas",
+  maximize: "Palakihin",
+  close: "Isara",
+  add_server_modal_description_1:
+    "Idagdag ang server nang manu-mano sa paborito",
+  add_server_modal_description_2: "Halimbawa: 127.0.0.1:7777",
+  add: "Idagdag",
+  server: "Server",
+  address: "Address",
+  players: "Mga Manlalaro",
+  server_join_prompt_enter_password:
+    "Ang server na ito ay protektado, ilagay ang password.",
+  server_join_prompt_enter_password_input_placeholder: "Ilagay ang password...",
+  server_join_prompt_nickname_input_placeholder: "Ilagay ang Palayaw...",
+  connect: "Kumonekta",
+  copy: "Kopyahin",
+  remove_from_favorites: "Alisin sa Paborito",
+  add_to_favorites: "Idagdag sa Paborito",
+  filters: "Mga Salain",
+  filter_only_omp_servers: "Tanging mga open.mp servers",
+  filter_non_empty_servers: "Mga Servers na Hindi Walang Laman",
+  filter_unpassworded_servers: "Mga Servers na Walang Password",
+  rule: "Patakaran",
+  value: "Halaga",
+  player: "Manlalaro",
+  score: "Score",
+  locked: "Nakakandado",
+  unlocked: "Hindi Nakakandado",
+  openmp_server: "open.mp server",
+  name: "Pangalan",
+  ping: "Ping",
+  mode: "Mode",
+  filter_servers: "Salain ang mga Servers",
+  search_for_server_hostname_mode: "Maghanap ng pangalan ng server/mode",
+  clear_recently_joined_list: "Burahin ang Kamakailang Sumali na Listahan",
+  refresh_servers: "I-refresh ang Listahan ng Server",
+  play: "Maglaro",
+  remove_selected_server_from_favorites:
+    "Alisin ang Piniling Server sa Paborito",
+  add_selected_server_to_favorites: "Idagdag ang Piniling Server sa Paborito",
+  add_server: "Idagdag ang Server",
+  hide_player_and_rule_list: "Itago ang Listahan ng Manlalaro at Patakaran",
+  show_player_and_rule_list: "Ipakita ang Listahan ng Manlalaro at Patakaran",
+  copy_server_info: "Kopyahin ang Impormasyon ng Server",
+  settings_gta_path_input_label:
+    "Landas ng GTA: San Andreas (kung saan naka-install ang SA-MP)",
+  browse: "Mag-browse",
+  settings_import_nickname_gta_path_from_samp:
+    "I-import ang palayaw at landas ng gtasa mula sa SA-MP settings",
+  settings_import_samp_favorite_list:
+    "I-import ang listahan ng paborito mula sa SA-MP data",
+  settings_reset_application_data:
+    "I-reset ang data ng aplikasyon (nililinaw ang mga setting at listahan)",
+  settings_new_update_available:
+    "⚠ Bagong Update na Magagamit. I-click upang i-download! ⚠",
+  settings_credits_made_by: "Ginawa ng ❤️ ni",
+  settings_credits_view_source_on_github: "Tingnan ang source code sa GitHub",
+  update_modal_update_available_title: "May Update na Magagamit!",
+  update_modal_update_available_description:
+    'May bagong bersyon ng launcher na magagamit!\nAng bersyon ng iyong launcher: {{ version }}\nAng kasalukuyang bersyon ng launcher: {{ newVersion }}\nI-click ang "I-download" para buksan ang pahinang pagpapalabas',
+  download: "I-download",
+  update_modal_remind_me_next_time:
+    "Alalahanin mo ako sa susunod na pagkakataon",
+  update_modal_skip_this_update: "I-skip ang Update na ito",
+  gta_path_modal_cant_find_game_title: "Hindi Makita ang GTA San Andreas!",
+  gta_path_modal_cant_find_game_description:
+    'Hindi mahanap ang GTA San Andreas sa direktoryong ito:\n  - "{{ path }}"\nHindi makita ang "gta_sa.exe" sa iyong ibinigay na landas.',
+  open_settings: "Buksan ang Mga Setting",
+  cancel: "Kanselahin",
+  gta_path_modal_cant_find_samp_title: "Hindi Makita ang SA-MP!",
+  gta_path_modal_cant_find_samp_description:
+    'Hindi mahanap ang instalasyon ng SA-MP sa direktoryong ito:\n  - "{{ path }}"\nHindi makita ang "samp.dll" sa iyong ibinigay na landas.\n\nKung wala kang SA-MP na naka-install, maaari mong i-download ito mula sa https://sa-mp.mp/ sa pamamagitan ng pag-click sa **I-download**.',
+  notification_add_to_favorites_title: "Idinagdag sa Paborito!",
+  notification_add_to_favorites_description:
+    "Ang {{ server }} ay idinagdag sa iyong listahan ng paborito.",
+};
