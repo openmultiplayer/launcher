@@ -4,8 +4,8 @@ import English from "./translations/en";
 import Spanish from "./translations/es";
 import Farsi from "./translations/fa";
 import Filipino from "./translations/fil";
-import Italian from "./translations/it";
 import France from "./translations/fr";
+import Italian from "./translations/it";
 import Romanian from "./translations/ro";
 import Hungarian from "./translations/hu";
 
