@@ -8,6 +8,7 @@ import France from "./translations/fr";
 import Italian from "./translations/it";
 import Romanian from "./translations/ro";
 import Hungarian from "./translations/hu";
+import Portuguese from "./translations/pt";
 
 i18n.use(initReactI18next).init({
   // we init with resources
@@ -35,6 +36,9 @@ i18n.use(initReactI18next).init({
     },
     hu: {
       translations: Hungarian,
+    },
+    pt: {
+      translations: Portuguese,
     },
   },
   fallbackLng: "en",
