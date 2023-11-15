@@ -41,8 +41,7 @@ export default {
   clear_recently_joined_list: "امسح قائمة الخوادم المنظمة مؤخرًا",
   refresh_servers: "تحديث السيرفرات",
   play: "إلعب",
-  remove_selected_server_from_favorites:
-    "إزالة الخادم المحدد من المفضلة",
+  remove_selected_server_from_favorites: "إزالة الخادم المحدد من المفضلة",
   add_selected_server_to_favorites: "إضافة الخادم المحدد إلى المفضلة",
   add_server: "أضف الخادم",
   hide_player_and_rule_list: "إخفاء قائمة اللاعبين والقواعد",

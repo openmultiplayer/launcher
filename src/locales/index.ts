@@ -1,19 +1,19 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import Arabic from "./translations/ar";
+import Bosnian from "./translations/bs";
 import English from "./translations/en";
 import Spanish from "./translations/es";
 import Farsi from "./translations/fa";
 import Filipino from "./translations/fil";
 import French from "./translations/fr";
 import Hindi from "./translations/hi";
-import Italian from "./translations/it";
-import Romanian from "./translations/ro";
 import Hungarian from "./translations/hu";
-import Portuguese from "./translations/pt";
-import Arabic from "./translations/ar";
 import Indonesian from "./translations/id";
+import Italian from "./translations/it";
 import Polish from "./translations/pl";
-import Bosnian from "./translations/bs";
+import Portuguese from "./translations/pt";
+import Romanian from "./translations/ro";
 import Russian from "./translations/ru";
 
 i18n.use(initReactI18next).init({

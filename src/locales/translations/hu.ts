@@ -8,7 +8,8 @@ export default {
   minimize: "Minimalizálás",
   maximize: "Maximalizálás",
   close: "Bezár",
-  add_server_modal_description_1: "Szerver manuális hozzáadása a kedvencek közé.",
+  add_server_modal_description_1:
+    "Szerver manuális hozzáadása a kedvencek közé.",
   add_server_modal_description_2: "Például: 127.0.0.1:7777",
   add: "Hozzád",
   server: "Szerver",
@@ -54,9 +55,9 @@ export default {
   settings_import_nickname_gta_path_from_samp:
     "Becenév és gtasa útvonalának importálása SA-MP-ból",
   settings_import_samp_favorite_list: "Kedvenc szerverek importálása SA-MP-ból",
-  settings_reset_application_data:
-    "Adatok törlése (beállítások és listák)",
-  settings_new_update_available: "⚠ Új frissítés elérhető. A letöltéshez kattints ide! ⚠",
+  settings_reset_application_data: "Adatok törlése (beállítások és listák)",
+  settings_new_update_available:
+    "⚠ Új frissítés elérhető. A letöltéshez kattints ide! ⚠",
   settings_credits_made_by: "Készítette ❤️-el:",
   settings_credits_view_source_on_github: "Forráskód megtekintése Githubon.",
   update_modal_update_available_title: "Frissítés elérhető!",
