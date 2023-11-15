@@ -78,10 +78,10 @@ async fn ping_server(ip: &str, port: i32) -> Result<u32, String> {
             let before = Instant::now();
             match q.recv().await {
                 Ok(_p) => Ok(before.elapsed().as_millis() as u32),
-                Err(_) => Ok(0),
+                Err(_) => Ok(9999),
             }
         }
-        Err(_) => Ok(0),
+        Err(_) => Ok(9999),
     }
 }
 
