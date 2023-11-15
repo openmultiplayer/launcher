@@ -97,7 +97,7 @@ export const getLanguages = (): {
       translations: Farsi,
     },
     ar: {
-      label: "عربي",
+      label: "العربية",
       type: "ar",
       translations: Arabic,
     },
