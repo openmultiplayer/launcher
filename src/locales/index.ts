@@ -5,9 +5,10 @@ import Spanish from "./translations/es";
 import Farsi from "./translations/fa";
 import Filipino from "./translations/fil";
 import France from "./translations/fr";
+import Hindi from "./translations/hi";
 import Italian from "./translations/it";
-import Romanian from "./translations/ro";
 import Portuguese from "./translations/pt";
+import Romanian from "./translations/ro";
 
 i18n.use(initReactI18next).init({
   // we init with resources
@@ -24,17 +25,20 @@ i18n.use(initReactI18next).init({
     fil: {
       translations: Filipino,
     },
-    it: {
-      translations: Italian,
-    },
     fr: {
       translations: France,
     },
-    ro: {
-      translations: Romanian,
+    hi: {
+      translations: Hindi,
+    },
+    it: {
+      translations: Italian,
     },
     pt: {
       translations: Portuguese,
+    },
+    ro: {
+      translations: Romanian,
     },
   },
   fallbackLng: "en",
