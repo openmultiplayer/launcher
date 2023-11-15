@@ -4,11 +4,11 @@ import { Pressable, StyleSheet, View } from "react-native";
 import CheckBox from "../../components/CheckBox";
 import Text from "../../components/Text";
 import { ThemeContext } from "../../contexts/theme";
+import { useAppState } from "../../states/app";
 import {
   useGenericPersistentState,
   useGenericTempState,
 } from "../../states/genericStates";
-import { ListType } from "../../utils/types";
 import BottomBar from "./BottomBar";
 import ServerInfo from "./ServerInfo";
 import SearchBar from "./ServerList/SearchBar";
@@ -16,10 +16,6 @@ import Favorites from "./ServerList/Tabs/Favorites";
 import Internet from "./ServerList/Tabs/Internet";
 import Partners from "./ServerList/Tabs/Partners";
 import RecentlyJoined from "./ServerList/Tabs/RecentlyJoined";
-
-interface IProps {
-  listType: ListType;
-}
 
 const FiltersModal = () => {
   const { theme } = useContext(ThemeContext);
@@ -98,23 +94,21 @@ const FiltersModal = () => {
   );
 };
 
-const MainView = (props: IProps) => {
+const MainView = () => {
   const { filterMenu, setSearchData } = useGenericTempState();
   const { sideLists } = useGenericPersistentState();
+  const { listType } = useAppState();
 
   const renderList = () => {
-    if (props.listType === "favorites") return <Favorites />;
-    else if (props.listType === "partners") return <Partners />;
-    else if (props.listType === "internet") return <Internet />;
-    else if (props.listType === "recentlyjoined") return <RecentlyJoined />;
+    if (listType === "favorites") return <Favorites />;
+    else if (listType === "partners") return <Partners />;
+    else if (listType === "internet") return <Internet />;
+    else if (listType === "recentlyjoined") return <RecentlyJoined />;
   };
 
   return (
     <View style={styles.body}>
-      <SearchBar
-        listType={props.listType}
-        onChange={(query) => setSearchData("query", query)}
-      />
+      <SearchBar onChange={(query) => setSearchData("query", query)} />
       <View style={styles.serverSection}>
         {renderList()}
         {sideLists && <ServerInfo />}

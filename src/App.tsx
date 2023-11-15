@@ -5,6 +5,7 @@ import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
 import MainView from "./containers/MainBody";
+import MessageBox from "./containers/MessageBox";
 import NavBar from "./containers/NavBar";
 import Notification from "./containers/Notification";
 import ContextMenu from "./containers/ServerContextMenu";
@@ -13,12 +14,9 @@ import WindowTitleBar from "./containers/WindowTitleBar";
 import { ThemeContext } from "./contexts/theme";
 import { useAppState } from "./states/app";
 import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
-import { ListType } from "./utils/types";
-import MessageBox from "./containers/MessageBox";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
-  const [currentListType, setCurrentListType] = useState<ListType>("favorites");
   const { maximized, toggleMaximized } = useAppState();
 
   const windowResizeListener = async () => {
@@ -51,8 +49,8 @@ const App = () => {
         <View style={[styles.appView, { borderRadius: maximized ? 0 : 8 }]}>
           <WindowTitleBar />
           <View style={{ flex: 1, width: "100%" }}>
-            <NavBar onListChange={(type) => setCurrentListType(type)} />
-            <MainView listType={currentListType} />
+            <NavBar />
+            <MainView />
             <ContextMenu />
             <JoinServerPrompt />
             <SettingsModal />

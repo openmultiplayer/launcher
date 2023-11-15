@@ -1,21 +1,18 @@
 import { t } from "i18next";
-import { useContext, useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { useContext } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
 import Icon from "../components/Icon";
-import Text from "../components/Text";
+import TabBar from "../components/TabBar";
 import { images } from "../constants/images";
 import { ThemeContext } from "../contexts/theme";
+import { useAppState } from "../states/app";
 import { useSettings } from "../states/settings";
 import { ListType } from "../utils/types";
 
-interface IProps {
-  onListChange: (type: ListType) => void;
-}
-
-const NavBar = (props: IProps) => {
+const NavBar = () => {
   const { theme } = useContext(ThemeContext);
-  const [selectedList, setSelectedList] = useState<ListType>("favorites");
   const { nickName, setNickName } = useSettings();
+  const { setListType, listType } = useAppState();
 
   const list: { icon: string; label: string; type: ListType }[] = [
     { icon: images.icons.favorite, label: t("favorites"), type: "favorites" },
@@ -31,67 +28,11 @@ const NavBar = (props: IProps) => {
   return (
     <>
       <View style={[styles.container, { backgroundColor: theme.secondary }]}>
-        <View style={styles.listing}>
-          {list.map((item) => {
-            const selected = selectedList === item.type;
-            return (
-              <View
-                key={"list-type-" + item.type}
-                style={{
-                  overflow: "hidden",
-                  height: 34,
-                  top: 2,
-                }}
-              >
-                <TouchableOpacity
-                  style={[
-                    styles.listItem,
-                    selected
-                      ? {
-                          shadowColor: theme.primary,
-                          shadowOffset: {
-                            width: 0,
-                            height: 0,
-                          },
-                          shadowOpacity: 0.45,
-                          shadowRadius: 5.84,
-                          borderColor: theme.textSelected,
-                        }
-                      : {},
-                  ]}
-                  onPress={() => {
-                    if (selectedList !== item.type) {
-                      setSelectedList(item.type);
-                      props.onListChange(item.type);
-                    }
-                  }}
-                >
-                  <Icon
-                    image={item.icon}
-                    size={15}
-                    style={{ marginRight: 5, opacity: selected ? 1 : 0.5 }}
-                  />
-                  <Text
-                    semibold={selected}
-                    size={1}
-                    color={selected ? theme.textSelected : theme.textPrimary}
-                    style={
-                      selected
-                        ? {
-                            textShadowColor: "rgba(132, 119, 183, 0.5)",
-                            textShadowOffset: { width: 0, height: 0 },
-                            textShadowRadius: 4,
-                          }
-                        : {}
-                    }
-                  >
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            );
-          })}
-        </View>
+        <TabBar
+          onChange={(type) => setListType(type as ListType)}
+          list={list}
+          selected={listType}
+        />
         <View style={styles.inputs}>
           <View style={styles.nicknameContainer}>
             <Icon
@@ -148,19 +89,6 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  listing: {
-    height: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: -0.5,
-  },
-  listItem: {
-    height: 30,
-    paddingHorizontal: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
   },
   inputs: {
     height: "100%",

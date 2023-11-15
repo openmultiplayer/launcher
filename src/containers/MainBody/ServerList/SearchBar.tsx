@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
@@ -12,6 +13,7 @@ import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../../states/addThirdPartyServerModal";
+import { useAppState } from "../../../states/app";
 import {
   useGenericPersistentState,
   useGenericTempState,
@@ -19,12 +21,9 @@ import {
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../../states/servers";
 import { fetchServers } from "../../../utils/helpers";
-import { ListType } from "../../../utils/types";
-import { t } from "i18next";
 
 interface IProps {
   onChange: (query: string) => void;
-  listType: ListType;
 }
 
 const AnimatedTouchableOpacity =
@@ -32,7 +31,7 @@ const AnimatedTouchableOpacity =
 
 const SearchBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
-
+  const { listType } = useAppState();
   const [searchQuery, setSearchQuery] = useState("");
   const { filterMenu, showFilterMenu } = useGenericTempState();
   const { sideLists, showSideLists } = useGenericPersistentState();
@@ -166,7 +165,7 @@ const SearchBar = (props: IProps) => {
           </Pressable>
         )}
       </View>
-      {props.listType === "recentlyjoined" && (
+      {listType === "recentlyjoined" && (
         <TouchableOpacity
           style={styles.rightSideIcons}
           onPress={() => clearRecentlyJoined()}
