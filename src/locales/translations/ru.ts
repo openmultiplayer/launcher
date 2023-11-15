@@ -79,10 +79,10 @@ export default {
     "{{ server }} добавлен в ваш список избранных.",
   nickname_modal_name_not_set_title: "Не указан никнейм!",
   nickname_modal_name_not_set_description:
-    "Прежде чем присоединиться к серверу, вы должны выбрать себе никнейм.",
-  gta_path_modal_path_not_set_title: "Путь к GTA San Andreas не установлен!",
+    "Прежде чем подключиться к серверу, вы должны выбрать себе никнейм.",
+  gta_path_modal_path_not_set_title: "Путь к GTA San Andreas не задан!",
   gta_path_modal_path_not_set_description:
-    "Вы не указали путь к GTA San Andreas, зайдите в настройки и укажите папку с игрой.",
+    "Вы не указали путь к GTA San Andreas, зайдите в настройки и найдите папку с игрой.",
   admin_permissions_required_modal_title: "Требуются права администратора!",
   admin_permissions_required_modal_description:
     'Похоже, что для запуска GTA: San Andreas требуются права администратора. Это может произойти по разным причинам, например, если ваша игра установлена на диске "C". Пожалуйста, откройте open.mp лаунчер повторно от имени администратора с помощью кнопки "Запуск от имени администратора" либо вручную',
