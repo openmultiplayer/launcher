@@ -41,8 +41,7 @@ export default {
   clear_recently_joined_list: "Izbriši Nedavno Posjećene Servere",
   refresh_servers: "Osvježi Server Listu",
   play: "Igraj",
-  remove_selected_server_from_favorites:
-    "Ukloni Izabrani Server iz Favorita",
+  remove_selected_server_from_favorites: "Ukloni Izabrani Server iz Favorita",
   add_selected_server_to_favorites: "Dodaj Izabrani Server u Favorite",
   add_server: "Dodaj Server",
   hide_player_and_rule_list: "Sakrij listu igrača i pravila",
@@ -53,10 +52,12 @@ export default {
   browse: "Pretraži",
   settings_import_nickname_gta_path_from_samp:
     "Prenesi nadimak i GTA SA lokaciju iz SA-MP postavki",
-  settings_import_samp_favorite_list: "Prenesi listu favorita iz SA-MP podataka",
+  settings_import_samp_favorite_list:
+    "Prenesi listu favorita iz SA-MP podataka",
   settings_reset_application_data:
     "Restartuj podatke aplikacije (očisti postavke i liste)",
-  settings_new_update_available: "⚠ Novo ažuriranje dostupno. Klikni da skineš! ⚠",
+  settings_new_update_available:
+    "⚠ Novo ažuriranje dostupno. Klikni da skineš! ⚠",
   settings_credits_made_by: "Napravio s ❤️",
   settings_credits_view_source_on_github: "Pogledaj izvorni kod na GitHub-u",
   update_modal_update_available_title: "Dostupno ažuriranje!",
