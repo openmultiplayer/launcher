@@ -1,122 +1,208 @@
 import { invoke } from "@tauri-apps/api";
-import { Player, Server } from "./types";
+import { usePersistentServers, useServers } from "../states/servers";
+import { ListType, Server } from "./types";
 
-export const queryServer = async (server: Server) => {
-  return new Promise<Server>(async (resolve, reject) => {
-    try {
-      const { ip, port } = server;
-      let newSrv: Server = { ...server };
+export const queryServer = (
+  server: Server,
+  listType: ListType = "internet"
+) => {
+  try {
+    const { ip, port } = server;
 
-      newSrv = { ...newSrv, ...(await getServerInfo(ip, port)) };
-      newSrv.ip = ip;
-      newSrv.port = port;
-      const players = await getServerPlayers(ip, port);
-      if (players === false) {
-        newSrv.players = server.players;
-      } else {
-        newSrv.players = [...players];
+    getServerInfo(ip, port, listType);
+    getServerPlayers(ip, port, listType);
+    getServerRules(ip, port, listType);
+    getServerOmpStatus(ip, port, listType);
+    getServerPing(ip, port, listType);
+  } catch (error) {
+    console.log("[query.ts: queryServer]", error);
+  }
+};
+
+const getServerInfo = async (ip: string, port: number, listType: ListType) => {
+  try {
+    const serverInfo = await invoke<string>("request_server_info", {
+      ip: ip,
+      port: port,
+    });
+
+    if (serverInfo === "no_data") {
+      return console.log(
+        "[query.ts: getServerInfo]",
+        "There was a problem getting server main info"
+      );
+    }
+
+    let queryObj = JSON.parse(serverInfo);
+    const data = {
+      hasPassword: queryObj.password,
+      playerCount: queryObj.players,
+      maxPlayers: queryObj.max_players,
+      hostname: queryObj.hostname,
+      gameMode: queryObj.gamemode,
+      language: queryObj.language,
+    };
+
+    let server = getServerFromList(ip, port, listType);
+    if (server) {
+      server = { ...server, ...data };
+
+      updateServerEveryWhere(server);
+    }
+  } catch (e) {
+    console.log("[query.ts: getServerInfo]", e);
+  }
+};
+
+const getServerPlayers = async (
+  ip: string,
+  port: number,
+  listType: ListType
+) => {
+  try {
+    const serverPlayers = await invoke<string>("request_server_players", {
+      ip: ip,
+      port: port,
+    });
+
+    if (serverPlayers === "no_data") {
+      return console.log(
+        "[query.ts: getServerPlayers]",
+        "There was a problem getting server player list"
+      );
+    }
+
+    let server = getServerFromList(ip, port, listType);
+
+    if (server) {
+      let queryObj = JSON.parse(serverPlayers);
+
+      if (queryObj.error) {
+        server = { ...server };
+        updateServerEveryWhere(server);
+      } else if (Array.isArray(queryObj)) {
+        server = { ...server, players: [...queryObj] };
+        updateServerEveryWhere(server);
+      }
+    }
+  } catch (e) {
+    console.log("[query.ts: getServerPlayers]", e);
+  }
+};
+
+const getServerRules = async (ip: string, port: number, listType: ListType) => {
+  try {
+    const serverRules = await invoke<string>("request_server_rules", {
+      ip: ip,
+      port: port,
+    });
+
+    if (serverRules === "no_data" || !Array.isArray(JSON.parse(serverRules))) {
+      return console.log(
+        "[query.ts: getServerRules]",
+        "There was a problem getting server rule list"
+      );
+    }
+
+    let server = getServerFromList(ip, port, listType);
+
+    if (server) {
+      let queryObj = JSON.parse(serverRules);
+      const rules: Server["rules"] = {} as Server["rules"];
+
+      queryObj.forEach((rule: [string, string]) => {
+        rules[rule[0]] = rule[1];
+      });
+
+      server = { ...server, rules: rules };
+      updateServerEveryWhere(server);
+    }
+  } catch (e) {
+    console.log("[query.ts: getServerRules]", e);
+  }
+};
+
+const getServerOmpStatus = async (
+  ip: string,
+  port: number,
+  listType: ListType
+) => {
+  try {
+    const serverOmpStatus = await invoke<string>("request_server_is_omp", {
+      ip: ip,
+      port: port,
+    });
+
+    let server = getServerFromList(ip, port, listType);
+    if (server) {
+      if (
+        serverOmpStatus === "no_data" ||
+        JSON.parse(serverOmpStatus).isOmp == undefined
+      ) {
+        server = { ...server, usingOmp: false };
+        updateServerEveryWhere(server);
+        return;
       }
 
-      newSrv.rules = await getServerRules(ip, port);
-      newSrv.usingOmp = await getServerOmpStatus(ip, port);
-      const ping = await getServerPing(ip, port);
-      newSrv.ping = ping == 0 ? server.ping : ping;
-
-      return resolve(newSrv);
-    } catch (error) {
-      reject(error);
+      server = {
+        ...server,
+        usingOmp: JSON.parse(serverOmpStatus).isOmp as boolean,
+      };
+      updateServerEveryWhere(server);
     }
-  });
+  } catch (e) {}
 };
 
-const getServerInfo = async (ip: string, port: number) => {
-  const serverInfo = await invoke<string>("request_server_info", {
-    ip: ip,
-    port: port,
-  });
+const getServerPing = async (ip: string, port: number, listType: ListType) => {
+  try {
+    const serverPing = await invoke<string>("ping_server", {
+      ip: ip,
+      port: port,
+    });
 
-  if (serverInfo === "no_data") {
-    throw new Error("[Query] There was a problem getting server main info");
-  }
+    let server = getServerFromList(ip, port, listType);
+    if (server) {
+      let ping = server.ping;
+      if (typeof serverPing === "number" && serverPing !== 9999) {
+        ping = serverPing;
+      }
 
-  let queryObj = JSON.parse(serverInfo);
-  const server = {
-    hasPassword: queryObj.password,
-    playerCount: queryObj.players,
-    maxPlayers: queryObj.max_players,
-    hostname: queryObj.hostname,
-    gameMode: queryObj.gamemode,
-    language: queryObj.language,
-  };
-
-  return server;
+      server = {
+        ...server,
+        ping: ping,
+      };
+      updateServerEveryWhere(server);
+    }
+  } catch (e) {}
 };
 
-const getServerPlayers = async (ip: string, port: number) => {
-  const serverPlayers = await invoke<string>("request_server_players", {
-    ip: ip,
-    port: port,
-  });
+const getListBasedOnType = (listType: ListType) => {
+  const { servers } = useServers.getState();
+  const { favorites, recentlyJoined } = usePersistentServers.getState();
 
-  if (serverPlayers === "no_data") {
-    throw new Error("[Query] There was a problem getting server player list");
-  }
-
-  let queryObj = JSON.parse(serverPlayers);
-  if (queryObj.error) {
-    return false;
-  } else if (Array.isArray(queryObj)) {
-    const players: Player[] = [...queryObj];
-    return players;
-  }
-  return [];
+  if (listType === "internet" || listType === "partners") return servers;
+  else if (listType === "favorites") return favorites;
+  else if (listType === "recentlyjoined") return recentlyJoined;
+  else return servers;
 };
 
-const getServerRules = async (ip: string, port: number) => {
-  const serverRules = await invoke<string>("request_server_rules", {
-    ip: ip,
-    port: port,
-  });
-
-  if (serverRules === "no_data" || !Array.isArray(JSON.parse(serverRules))) {
-    throw new Error("[Query] There was a problem getting server rule list");
-  }
-
-  let queryObj = JSON.parse(serverRules);
-  const rules: Server["rules"] = {} as Server["rules"];
-
-  queryObj.forEach((rule: [string, string]) => {
-    rules[rule[0]] = rule[1];
-  });
-
-  return rules;
+const getServerFromList = (ip: string, port: number, listType: ListType) => {
+  const list = getListBasedOnType(listType);
+  return list.find((server) => server.ip === ip && server.port === port);
 };
 
-const getServerOmpStatus = async (ip: string, port: number) => {
-  const serverOmpStatus = await invoke<string>("request_server_is_omp", {
-    ip: ip,
-    port: port,
-  });
+const updateServerEveryWhere = (server: Server) => {
+  const { updateServer, selected, setSelected } = useServers.getState();
+  const { updateInFavoritesList, updateInRecentlyJoinedList } =
+    usePersistentServers.getState();
 
-  if (
-    serverOmpStatus === "no_data" ||
-    JSON.parse(serverOmpStatus).isOmp == undefined
-  ) {
-    return false;
+  updateServer(server);
+  updateInFavoritesList(server);
+  updateInRecentlyJoinedList(server);
+
+  if (selected) {
+    if (server.ip == selected.ip && server.port == selected.port) {
+      setSelected(server);
+    }
   }
-
-  return JSON.parse(serverOmpStatus).isOmp as boolean;
-};
-
-const getServerPing = async (ip: string, port: number) => {
-  const serverPing = await invoke<string>("ping_server", {
-    ip: ip,
-    port: port,
-  });
-
-  if (typeof serverPing !== "number") {
-    return 0;
-  }
-
-  return serverPing;
 };

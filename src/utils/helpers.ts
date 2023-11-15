@@ -1,6 +1,5 @@
 import { invoke, process, shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
-
 import { exists } from "@tauri-apps/api/fs";
 import { type } from "@tauri-apps/api/os";
 import { t } from "i18next";
@@ -41,9 +40,7 @@ export const mapAPIResponseServerListToAppStructure = (
 
 export const fetchServers = async (cached: boolean = true) => {
   if (cached) {
-    const { updateServer } = useServers.getState();
-    const { updateInFavoritesList, updateInRecentlyJoinedList, favorites } =
-      usePersistentServers.getState();
+    const { favorites } = usePersistentServers.getState();
 
     if (Array.isArray(favorites)) {
       // let's query servers from server list so players have updated data
@@ -51,13 +48,7 @@ export const fetchServers = async (cached: boolean = true) => {
         setTimeout(() => {
           for (let offset = 0; offset < 10; offset++) {
             if (favorites[i + offset]) {
-              queryServer(favorites[i + offset])
-                .then((server) => {
-                  updateServer(server);
-                  updateInFavoritesList(server);
-                  updateInRecentlyJoinedList(server);
-                })
-                .catch((e) => console.log(e));
+              queryServer(favorites[i + offset], "favorites");
             }
           }
         }, 500 + (i % 10) * 1000);
@@ -74,13 +65,7 @@ export const fetchServers = async (cached: boolean = true) => {
         setTimeout(() => {
           for (let offset = 0; offset < 15; offset++) {
             if (response.servers[i + offset])
-              queryServer(response.servers[i + offset])
-                .then((server) => {
-                  updateServer(server);
-                  updateInFavoritesList(server);
-                  updateInRecentlyJoinedList(server);
-                })
-                .catch((e) => console.log(e));
+              queryServer(response.servers[i + offset], "internet");
           }
         }, 500 + (i / 15) * 1000);
       }
