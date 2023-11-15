@@ -76,4 +76,11 @@ export default {
   notification_add_to_favorites_title: "Добавлено в избранные!",
   notification_add_to_favorites_description:
     "{{ server }} добавлен в ваш список избранных.",
+  nickname_modal_name_not_set_title: "Не указан никнейм!",
+  nickname_modal_name_not_set_description: "Прежде чем присоединиться к серверу, вы должны выбрать себе никнейм.",
+  gta_path_modal_path_not_set_title: "Путь к GTA San Andreas не установлен!",
+  gta_path_modal_path_not_set_description: "Вы не указали путь к GTA San Andreas, зайдите в настройки и укажите папку с игрой.",
+  admin_permissions_required_modal_title: "Требуются права администратора!",
+  admin_permissions_required_modal_description: "Похоже, что для запуска GTA: San Andreas требуются права администратора. Это может произойти по разным причинам, например, если ваша игра установлена на диске \"C\". Пожалуйста, откройте open.mp лаунчер повторно от имени администратора с помощью кнопки \"Запуск от имени администратора\" либо вручную",
+  run_as_admin: "Запуск от имени администратора",
 };
