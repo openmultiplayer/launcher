@@ -120,7 +120,7 @@ pub fn get_samp_favorite_list() -> String {
             let ip_len = r.read_u32::<LittleEndian>().unwrap();
             let mut pos: u32 = r.position().try_into().unwrap();
             let server_ip = buffer[pos as usize..(pos + ip_len) as usize].to_vec();
-            server_info.ip = helpers::decode_buffer(server_ip);
+            server_info.ip = helpers::decode_buffer(server_ip).0;
             r.set_position((pos + ip_len).try_into().unwrap());
 
             server_info.port = r.read_u32::<LittleEndian>().unwrap();
@@ -128,14 +128,14 @@ pub fn get_samp_favorite_list() -> String {
             let name_len = r.read_u32::<LittleEndian>().unwrap();
             pos = r.position().try_into().unwrap();
             let server_name = buffer[pos as usize..(pos + name_len) as usize].to_vec();
-            server_info.name = helpers::decode_buffer(server_name);
+            server_info.name = helpers::decode_buffer(server_name).0;
             r.set_position((pos + name_len).try_into().unwrap());
 
             let password_len = r.read_u32::<LittleEndian>().unwrap();
             if password_len != 0 {
                 pos = r.position().try_into().unwrap();
                 let server_password = buffer[pos as usize..(pos + password_len) as usize].to_vec();
-                server_info.password = helpers::decode_buffer(server_password);
+                server_info.password = helpers::decode_buffer(server_password).0;
                 r.set_position((pos + password_len).try_into().unwrap());
             }
 
@@ -143,7 +143,7 @@ pub fn get_samp_favorite_list() -> String {
             if rcon_len != 0 {
                 pos = r.position().try_into().unwrap();
                 let server_rcon = buffer[pos as usize..(pos + rcon_len) as usize].to_vec();
-                server_info.rcon = helpers::decode_buffer(server_rcon);
+                server_info.rcon = helpers::decode_buffer(server_rcon).0;
                 r.set_position((pos + rcon_len).try_into().unwrap());
             }
 
