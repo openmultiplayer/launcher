@@ -1,5 +1,11 @@
 import { useContext } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 import { ThemeContext } from "../contexts/theme";
 import Icon from "./Icon";
 import Text from "./Text";
@@ -12,13 +18,14 @@ interface IProps {
     type: string;
   }[];
   selected: string;
+  style?: StyleProp<ViewStyle>;
 }
 
 const TabBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <View style={styles.listing}>
+    <View style={[styles.listing, props.style]}>
       {props.list.map((item) => {
         const selected = props.selected === item.type;
         return (
