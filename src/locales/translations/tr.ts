@@ -8,7 +8,8 @@ export default {
   minimize: "Küçült",
   maximize: "Büyült",
   close: "Kapat",
-  add_server_modal_description_1: "Sunucuyu favori listesine manuel olarak ekleyin.",
+  add_server_modal_description_1:
+    "Sunucuyu favori listesine manuel olarak ekleyin.",
   add_server_modal_description_2: "Örnek: 127.0.0.1:7777",
   add: "Ekle",
   server: "Sunucu",
@@ -41,8 +42,7 @@ export default {
   clear_recently_joined_list: "Son Katılınanlar Listesini Temizle",
   refresh_servers: "Sunucu Listesini Yenile",
   play: "Oyna",
-  remove_selected_server_from_favorites:
-    "Seçili Sunucuyu Favorilerden Kaldır",
+  remove_selected_server_from_favorites: "Seçili Sunucuyu Favorilerden Kaldır",
   add_selected_server_to_favorites: "Seçili Sunucuyu Favorilere Ekle",
   add_server: "Sunucu Ekle",
   hide_player_and_rule_list: "Oyuncu ve kural listesini gizle",
@@ -53,13 +53,15 @@ export default {
   browse: "Gözat",
   settings_import_nickname_gta_path_from_samp:
     "SA-MP ayarlarından oyuncu adı ve GTA: SA yolunu içe aktar",
-  settings_import_samp_favorite_list: "SA-MP verilerinden favori listesini içe aktar",
+  settings_import_samp_favorite_list:
+    "SA-MP verilerinden favori listesini içe aktar",
   settings_reset_application_data:
     "Uygulama verilerini sıfırla (ayarları ve listeleri temizler)",
-  settings_new_update_available: "⚠ Yeni Güncelleme Mevcut. İndirmek için Tıklayınız! ⚠",
+  settings_new_update_available:
+    "⚠ Yeni Güncelleme Mevcut. İndirmek için Tıklayınız! ⚠",
   settings_credits_made_by: "❤️ ile @CanerKaraca23 tarafından çevirildi",
   settings_credits_view_source_on_github: "GitHub'da kaynak kodunu görüntüle",
-  update_modal_update_available_title: "Güncelleme Mevcut!,
+  update_modal_update_available_title: "Güncelleme Mevcut!",
   update_modal_update_available_description:
     'Yeni başlatıcı derlemesi mevcut!\nBaşlatıcı derleme sürümünüz: {{ version }}\nMevcut başlatıcı derleme sürümü: {{ newVersion }}\nYeni sürümün sayfasını açmak için "İndir" e tıklayın',
   download: "İndir",
@@ -72,7 +74,7 @@ export default {
   cancel: "İptal",
   gta_path_modal_cant_find_samp_title: "SA-MP bulunamıyor!",
   gta_path_modal_cant_find_samp_description:
-    'Bu dizinde SA-MP bulunamıyor:\n  - "{{ path }}"\nVerdiğiniz yolda "samp.dll" bulunamıyor.\n\nEğer\ SA-MP yüklü değilse, https://sa-mp.mp/ adresinden **İndir** seçeneğine tıklayarak indirebilirsiniz.',
+    'Bu dizinde SA-MP bulunamıyor:\n  - "{{ path }}"\nVerdiğiniz yolda "samp.dll" bulunamıyor.\n\nEğer SA-MP yüklü değilse, https://sa-mp.mp/ adresinden **İndir** seçeneğine tıklayarak indirebilirsiniz.',
   notification_add_to_favorites_title: "Favorilere Eklendi!",
   notification_add_to_favorites_description:
     "{{ server }} favori listenize eklendi.",
