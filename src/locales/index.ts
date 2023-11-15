@@ -63,7 +63,7 @@ export const getLanguages = (): {
     },
     id: {
       label: "bahasa Indonesia",
-      type: "hu",
+      type: "id",
       translations: Indonesian,
     },
     fil: {
