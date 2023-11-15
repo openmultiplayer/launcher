@@ -80,4 +80,14 @@ export default {
   notification_add_to_favorites_title: "Aggiunto ai Preferiti!",
   notification_add_to_favorites_description:
     "{{ server }} è stato aggiunto ai tuoi preferiti.",
+  nickname_modal_name_not_set_title: "Nessun Nickname!",
+  nickname_modal_name_not_set_description:
+	"Devi scegliere un nickname prima di poterti collegare ad un server.",
+  gta_path_modal_path_not_set_title: "Nessun percorso per GTA San Andreas!",
+  gta_path_modal_path_not_set_description:
+	"Non hai impostato il percorso di GTA San Andreas, apri le impostazioni e cerca la cartella del gioco.",
+  admin_permissions_required_modal_title: "Privilegi da amministratore necessari!",
+  admin_permissions_required_modal_description:
+	'Sembra che il tuo GTA San Andreas abbia bisogno dei privilegi di amministratore per poter funzionare. Ciò può verificarsi per diversi motivi, come aver installato il gioco nel disco "C". Apri nuovamente il launcher di open.mp come amministratore tramite il pulsante "Esegui come amministratore" oppure fallo manualmente.',
+  run_as_admin: "Esegui come amministratore",	
 };
