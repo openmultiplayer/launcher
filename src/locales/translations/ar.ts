@@ -33,9 +33,9 @@ export default {
   locked: "مقفل",
   unlocked: "بدون قفل",
   openmp_server: "خادم OpenMP",
-  name: "اسم",
-  ping: "بينغ",
-  mode: "مود",
+  name: "الاسم",
+  ping: "لبينغ",
+  mode: "المود",
   filter_servers: "تصفية الخوادم",
   search_for_server_hostname_mode: "البحث عن خوادم عن طريق الاسم أو المود",
   clear_recently_joined_list: "امسح قائمة الخوادم المنظمة مؤخرًا",
@@ -51,7 +51,7 @@ export default {
     "͏مسار GTA: San Andreas (حيث تم تثبيت SA-MP أيضًا)",
   browse: "تصفح",
   settings_import_nickname_gta_path_from_samp:
-    "قم باستيراد الإسم المستعار ومسار gtasa من إعدادات SA-MP",
+    "قم باستيراد الاسم المستعار ومسار gtasa من إعدادات SA-MP",
   settings_import_samp_favorite_list: "استيراد قائمة المفضلة من بيانات SA-MP",
   settings_reset_application_data:
     "إعادة ضبط بيانات التطبيق (مسح الإعدادات والقوائم)",
@@ -75,4 +75,17 @@ export default {
   notification_add_to_favorites_title: "تمت إضافتها إلى المفضلة!",
   notification_add_to_favorites_description:
     "تمت إضافة الخادم {{ server }} إلى قائمة المفضلة لديك.",
+  nickname_modal_name_not_set_title: "ليس لديك إسم مستعار!",
+  nickname_modal_name_not_set_description:
+    "يجب عليك اختيار إسم مستعار لنفسك قبل الإنضمام إلى الخادم.",
+  gta_path_modal_path_not_set_title: "لم يتم تعيين مسار GTA San Andreas!",
+  gta_path_modal_path_not_set_description:
+    "لم تقم بتعيين مسار GTA San Andreas، أنتقل إلى الإعدادات وابحث عن مجلد اللعبة.",
+  admin_permissions_required_modal_title: "أذونات المسؤول مطلوبة!",
+  admin_permissions_required_modal_description:
+    'يبدو أن لعبة GTA: San Andreas الخاصة بك تتطلب أذونات إدارية للتشغيل. يمكن أن يكون هذا بسبب العديد من الأسباب ، مثل تثبيت لعبتك في محرك الأقراص "C". يرجى إعادة فتح مشغل open.mp كمسؤول إما باستخدام زر "تشغيل كمسؤول" أو يدويا بنفسك',
+  run_as_admin: "تشغيل كمسؤول",
+  settings_general_tab_title: "عام",
+  settings_appearance_and_lang_tab_title: "المظهر واللغات",
+  settings_language_selector_title: "اختر لغة:",
 };
