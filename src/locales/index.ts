@@ -112,7 +112,7 @@ export const getLanguages = (): {
       translations: Polish,
     },
     bs: {
-      label: "Bosanac",
+      label: "Bosanski",
       type: "bs",
       translations: Bosnian,
     },
