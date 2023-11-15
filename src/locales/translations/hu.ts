@@ -54,7 +54,8 @@ export default {
   browse: "Keresés",
   settings_import_nickname_gta_path_from_samp:
     "Becenév és gtasa útvonalának importálása SA-MP-ból",
-  settings_import_samp_favorite_list: "Kedvenc szerverek importálása a SA-MP kliensből",
+  settings_import_samp_favorite_list:
+    "Kedvenc szerverek importálása a SA-MP kliensből",
   settings_reset_application_data: "Adatok törlése (beállítások és listák)",
   settings_new_update_available:
     "⚠ Új frissítés elérhető. A letöltéshez kattints ide! ⚠",
