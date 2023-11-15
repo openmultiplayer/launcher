@@ -163,8 +163,15 @@ const getServerPing = async (ip: string, port: number, listType: ListType) => {
     let server = getServerFromList(ip, port, listType);
     if (server) {
       let ping = server.ping;
-      if (typeof serverPing === "number" && serverPing !== 9999) {
-        ping = serverPing;
+
+      if (typeof serverPing === "number") {
+        if (serverPing !== 9999) {
+          ping = serverPing;
+        } else {
+          if (server.ping === 0) {
+            ping = serverPing;
+          }
+        }
       }
 
       server = {
