@@ -77,4 +77,17 @@ export default {
   notification_add_to_favorites_title: "Kedvencekhez ad",
   notification_add_to_favorites_description:
     "{{ server }} hozzáadva a kedvenceid közé.",
+  nickname_modal_name_not_set_title: "Nincs felhasználónév megadva!",
+  nickname_modal_name_not_set_description:
+    "Mielőtt csatlakoznál egy szerverhez be kell állítanod a felhasználóneved!",
+  gta_path_modal_path_not_set_title: "GTA San Andreas útvonal nincs beállítva!",
+  gta_path_modal_path_not_set_description:
+    "Nem adtál meg GTA San Andreas útvonalat! Add meg a beállításokban.",
+  admin_permissions_required_modal_title: "Adminisztrátori jogok szükségesek!",
+  admin_permissions_required_modal_description:
+    'Úgy néz ki a játékod Adminisztrátori jogokat kér. Ezt több dolog is okozhatja, például a játék a "C" meghajtón van. Kérlek indítsd újra a launchert Adminisztrátori jogokkal. Használd a(z) "Futtatás adminisztrátorként" gombot, vagy manuálisan.',
+  run_as_admin: "Futtatás adminisztrátorként",
+  settings_general_tab_title: "Általános",
+  settings_appearance_and_lang_tab_title: "Kinézet és Nyelv",
+  settings_language_selector_title: "Válassz egy nyelvet:",
 };
