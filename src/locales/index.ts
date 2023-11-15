@@ -9,6 +9,7 @@ import Hindi from "./translations/hi";
 import Italian from "./translations/it";
 import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
+import Indonesia from "./translations/id";
 import Polish from "./translations/pl";
 import Bosnian from "./translations/bs";
 import Russian from "./translations/ru";
@@ -42,6 +43,9 @@ i18n.use(initReactI18next).init({
     },
     ro: {
       translations: Romanian,
+    },
+    id: {
+      translations: Indonesia,
     },
     pl: {
       translations: Polish,
