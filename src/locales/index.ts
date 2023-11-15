@@ -118,7 +118,7 @@ export const getLanguages = (): {
       type: "bs",
       translations: Bosnian,
     },
-    bs: {
+    tr: {
       label: "Türkçe",
       type: "tr",
       translations: Turkish,
