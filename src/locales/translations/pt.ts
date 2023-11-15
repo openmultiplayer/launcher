@@ -14,8 +14,7 @@ export default {
   server: "Servidores",
   address: "Endereço IP",
   players: "Jogadores",
-  server_join_prompt_enter_password:
-    "Este servidor está trancado, por favor digite a senha.",
+  server_join_prompt_enter_password: "Este servidor está trancado, por favor digite a senha.",
   server_join_prompt_enter_password_input_placeholder: "Digite a senha...",
   server_join_prompt_nickname_input_placeholder: "Digite o Nome de Usuário...",
   connect: "Conectar",
@@ -41,21 +40,17 @@ export default {
   clear_recently_joined_list: "Limpar lista de servidores recentes",
   refresh_servers: "Atualizar lista de servidores",
   play: "Jogar",
-  remove_selected_server_from_favorites:
-    "Remover servidor selecionado dos favoritos",
+  remove_selected_server_from_favorites: "Remover servidor selecionado dos favoritos",
   add_selected_server_to_favorites: "Adicionar servidor selecionado aos favoritos",
   add_server: "Adicionar Servidor",
   hide_player_and_rule_list: "Ocultar lista de jogadores e regras",
   show_player_and_rule_list: "Mostrar lista de jogadores e regras",
   copy_server_info: "Copiar informações do servidor",
-  settings_gta_path_input_label:
-    "GTA: San Andreas caminho (onde o SA-MP está instalado)",
+  settings_gta_path_input_label: "Caminho do GTA: San Andreas (onde o SA-MP está instalado)",
   browse: "Selecionar",
-  settings_import_nickname_gta_path_from_samp:
-    "Importar configurações do SA-MP",
+  settings_import_nickname_gta_path_from_samp: "Importar configurações do SA-MP",
   settings_import_samp_favorite_list: "Importar lista de favoritos do SA-MP",
-  settings_reset_application_data:
-    "Redefinir dados do aplicativo (limpar configurações e listas)",
+  settings_reset_application_data: "Redefinir dados do aplicativo (limpar configurações e listas)",
   settings_new_update_available: "⚠ Nova atualização disponível. Clique aqui para baixar a atualização! ⚠",
   settings_credits_made_by: "Feito com ❤️ por",
   settings_credits_view_source_on_github: "Código fonte disponível no GitHub",
@@ -74,6 +69,5 @@ export default {
   gta_path_modal_cant_find_samp_description:
     'Não é possível encontrar a instalação do SA-MP neste diretório:\n  - "{{ path }}"\nNão é possível encontrar "samp.dll" no caminho fornecido\n\nSe você não tem o SA-MP instalado, você pode baixá-lo em https://sa-mp.mp/ clicando em **Baixar**.',
   notification_add_to_favorites_title: "Adicionado aos Favoritos!",
-  notification_add_to_favorites_description:
-    "{{ server }} foi adicionado à sua lista de favoritos.",
+  notification_add_to_favorites_description: "{{ server }} foi adicionado à sua lista de favoritos.",
 };
