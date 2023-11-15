@@ -16,55 +16,112 @@ import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
 import Russian from "./translations/ru";
 
-i18n.use(initReactI18next).init({
-  // we init with resources
-  resources: {
+export type LanguageType =
+  | "en"
+  | "es"
+  | "fa"
+  | "fil"
+  | "fr"
+  | "hi"
+  | "it"
+  | "ro"
+  | "hu"
+  | "pt"
+  | "ar"
+  | "id"
+  | "pl"
+  | "bs"
+  | "ru";
+
+export const getLanguages = (): {
+  [x: string]: {
+    label: string;
+    type: LanguageType;
+    translations: { [x: string]: string };
+  };
+} => {
+  return {
     en: {
+      label: "English",
+      type: "en",
       translations: English,
     },
+    ru: {
+      label: "Русский",
+      type: "ru",
+      translations: Russian,
+    },
     es: {
+      label: "Español",
+      type: "es",
       translations: Spanish,
     },
-    fa: {
-      translations: Farsi,
+    ro: {
+      label: "Română",
+      type: "ro",
+      translations: Romanian,
+    },
+    id: {
+      label: "bahasa Indonesia",
+      type: "hu",
+      translations: Indonesian,
     },
     fil: {
+      label: "Filipino",
+      type: "fil",
       translations: Filipino,
     },
     fr: {
+      label: "Français",
+      type: "fr",
       translations: French,
     },
-    hi: {
-      translations: Hindi,
-    },
     it: {
+      label: "Italiano",
+      type: "it",
       translations: Italian,
     },
-    ro: {
-      translations: Romanian,
-    },
     hu: {
+      label: "Magyar",
+      type: "hu",
       translations: Hungarian,
     },
     pt: {
+      label: "Português",
+      type: "pt",
       translations: Portuguese,
     },
+    fa: {
+      label: "فارسی",
+      type: "fa",
+      translations: Farsi,
+    },
     ar: {
+      label: "عربي",
+      type: "ar",
       translations: Arabic,
     },
-    id: {
-      translations: Indonesian,
+    hi: {
+      label: "हिंदी",
+      type: "hi",
+      translations: Hindi,
     },
     pl: {
+      label: "Polski",
+      type: "pl",
       translations: Polish,
     },
     bs: {
+      label: "Bosanac",
+      type: "bs",
       translations: Bosnian,
     },
-    ru: {
-      translations: Russian,
-    },
-  },
+  };
+};
+
+i18n.use(initReactI18next).init({
+  // we init with resources
+  resources: getLanguages(),
   fallbackLng: "en",
   debug: true,
 
