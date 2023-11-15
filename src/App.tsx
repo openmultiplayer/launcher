@@ -14,10 +14,13 @@ import WindowTitleBar from "./containers/WindowTitleBar";
 import { ThemeContext } from "./contexts/theme";
 import { useAppState } from "./states/app";
 import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
+import { useGenericPersistentState } from "./states/genericStates";
+import i18n from "./locales";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
   const { maximized, toggleMaximized } = useAppState();
+  const { language } = useGenericPersistentState();
 
   const windowResizeListener = async () => {
     const _maximized = useAppState.getState().maximized;
@@ -29,6 +32,10 @@ const App = () => {
   };
 
   useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language]);
+
+  useEffect(() => {
     fetchServers();
     fetchUpdateInfo();
 
@@ -38,7 +45,7 @@ const App = () => {
   }, []);
 
   return (
-    <View style={[styles.app, { padding: maximized ? 0 : 4 }]}>
+    <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>
       <ThemeContext.Provider
         value={{
           themeType,

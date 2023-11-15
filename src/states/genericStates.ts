@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { ListType, SearchData } from "../utils/types";
+import { LanguageType } from "../locales";
 
 interface GenericTempStates {
   filterMenu: boolean;
@@ -37,14 +38,18 @@ const useGenericTempState = create<GenericTempStates>()((set, get) => ({
 
 interface GenericPersistentStates {
   sideLists: boolean;
+  language: LanguageType;
   showSideLists: (show: boolean) => void;
+  setLanguage: (lang: LanguageType) => void;
 }
 
 const useGenericPersistentState = create<GenericPersistentStates>()(
   persist(
     (set) => ({
       sideLists: true,
+      language: "en",
       showSideLists: (show: boolean) => set(() => ({ sideLists: show })),
+      setLanguage: (lang) => set(() => ({ language: lang })),
     }),
     {
       name: "generic-state-storage",
@@ -54,4 +59,3 @@ const useGenericPersistentState = create<GenericPersistentStates>()(
 );
 
 export { useGenericPersistentState, useGenericTempState };
-
