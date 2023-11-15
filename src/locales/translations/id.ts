@@ -16,7 +16,7 @@ export default {
   address: "Address",
   players: "Pemain",
   server_join_prompt_enter_password:
-    "Server ini dipassword, silakan masukkan kata sandi.",
+    "Server ini dikunci, silakan masukkan kata sandi.",
   server_join_prompt_enter_password_input_placeholder: "Masukkan kata sandi...",
   server_join_prompt_nickname_input_placeholder: " Masukkan nickname...",
   connect: "Masuk",
@@ -26,7 +26,7 @@ export default {
   filters: "Filters",
   filter_only_omp_servers: "Hanya server open.mp",
   filter_non_empty_servers: "Server tidak kosong",
-  filter_unpassworded_servers: "Server tidak dengan sandi",
+  filter_unpassworded_servers: "Server tanpa sandi",
   rule: "Aturan",
   value: "Nilai",
   player: "Pemain",
