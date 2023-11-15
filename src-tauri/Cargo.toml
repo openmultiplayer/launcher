@@ -27,6 +27,7 @@ runas = "1.1.0"
 sysinfo = "0.29.10"
 simple-logging = "2.0.2"
 log = "0.4.20"
+charset-normalizer-rs = "1.0.6"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 dll-syringe = "0.15.2"
