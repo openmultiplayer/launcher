@@ -10,6 +10,7 @@ import { usePersistentServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
 import { checkDirectoryValidity } from "../../../utils/helpers";
 import { Server } from "../../../utils/types";
+import { Log } from "../../../utils/logger";
 
 const General = () => {
   const { hostOS } = useAppState();
@@ -45,7 +46,7 @@ const General = () => {
         setNickName(name);
       }
     } catch (e) {
-      console.log(e);
+      Log.debug(e);
     }
   };
 

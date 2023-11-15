@@ -1,6 +1,7 @@
 import api from "../api/config";
 import { UpdateInfo } from "../states/app";
 import { mapAPIResponseServerListToAppStructure } from "../utils/helpers";
+import { Log } from "../utils/logger";
 import { APIResponseServer, Server } from "../utils/types";
 
 export const getCachedList = async () => {
@@ -15,7 +16,7 @@ export const getCachedList = async () => {
         }
       })
       .catch((e) => {
-        console.log(e);
+        Log.debug(e);
         resolve({ success: false, servers: [] });
       });
   });
@@ -30,7 +31,7 @@ export const getUpdateInfo = async () => {
           resolve({ success: true, info: response.data });
         })
         .catch((e) => {
-          console.log(e);
+          Log.debug(e);
           resolve({ success: false, info: undefined });
         });
     }

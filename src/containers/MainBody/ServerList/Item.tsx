@@ -92,7 +92,6 @@ const ServerItem = memo((props: IProps) => {
       onPress={() => onPress()}
       // @ts-ignore
       onContextMenu={(e) => {
-        console.log(e);
         e.preventDefault();
         showContextMenu({ x: e.clientX, y: e.clientY }, server);
         return e;
