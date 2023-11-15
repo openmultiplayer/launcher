@@ -15,6 +15,7 @@ import Polish from "./translations/pl";
 import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
 import Russian from "./translations/ru";
+import Turkish from "./translations/tr";
 
 export type LanguageType =
   | "en"
@@ -31,7 +32,8 @@ export type LanguageType =
   | "id"
   | "pl"
   | "bs"
-  | "ru";
+  | "ru"
+  | "tr";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -115,6 +117,11 @@ export const getLanguages = (): {
       label: "Bosanac",
       type: "bs",
       translations: Bosnian,
+    },
+    bs: {
+      label: "Türkçe",
+      type: "tr",
+      translations: Turkish,
     },
   };
 };
