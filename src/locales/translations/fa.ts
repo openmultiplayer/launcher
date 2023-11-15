@@ -78,4 +78,14 @@ export default {
   notification_add_to_favorites_title: "به مورد علاقه ها اضافه شد!",
   notification_add_to_favorites_description:
     "سرور {{ server }} به لیست مورد علاقه های شما اضافه شدt.",
+  nickname_modal_name_not_set_title: "نام مستعار ندارید!",
+  nickname_modal_name_not_set_description:
+    "قبل از ورود به سرور باید برای خود نام مستعار انتخاب کنید.",
+  gta_path_modal_path_not_set_title: "مسیر GTA San Andreas خالی است!",
+  gta_path_modal_path_not_set_description:
+    "شما مسیر GTA San Andreas را انتخاب نکردید، به تنظیمات برید و حستحو را بزنید.",
+  admin_permissions_required_modal_title: "دسترسی ادمین نیاز است",
+  admin_permissions_required_modal_description:
+    'به نظر میرسد GTA: San Andreas نیاز به دسترسی ادیمن برای اجرا است. این میتواند به چند دلیل باشد، مثال: بازی شما در درایو C نصب شده است. لانچر را با دسترس ادمین باز کنید، یا از دکمه "اجرا توسط ادمین" استفاده کنید.',
+  run_as_admin: "اجرا توسط ادمین",
 };
