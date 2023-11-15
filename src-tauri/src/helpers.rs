@@ -13,11 +13,10 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String, String) {
     first_encoding = charset2encoding(&detect(&buf).0).to_string();
 
     // charset_normalizer_rs
-    second_encoding = from_bytes(&buf, None)
-        .get_best()
-        .unwrap()
-        .encoding()
-        .to_string();
+    second_encoding = match from_bytes(&buf, None).get_best() {
+        Some(cd) => cd.encoding().to_string(),
+        None => "not_found".to_string(),
+    };
 
     str_encoding = first_encoding.clone();
 
