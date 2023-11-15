@@ -7,6 +7,8 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { useContextMenu } from "../../states/contextMenu";
 import { usePersistentServers } from "../../states/servers";
+import { useSettings } from "../../states/settings";
+import { startGame } from "../../utils/helpers";
 import { ThemeContext } from "./../../contexts/theme";
 
 const ContextMenu = () => {
@@ -15,6 +17,11 @@ const ContextMenu = () => {
   const { visible, position, server, hide } = useContextMenu();
   const { addToFavorites, removeFromFavorites, favorites } =
     usePersistentServers();
+  const { nickName, gtasaPath } = useSettings();
+
+  const [connectBtnBgCol, setConnectBtnBgCol] = useState(
+    theme.listHeaderBackgroundColor
+  );
   const [favBtnBgCol, setFavBtnBgCol] = useState(
     theme.listHeaderBackgroundColor
   );
@@ -73,6 +80,42 @@ const ContextMenu = () => {
             // alignItems: "center",
           }}
         >
+          <Pressable
+            onHoverIn={() =>
+              setConnectBtnBgCol(theme.selectedItemBackgroundColor)
+            }
+            onHoverOut={() =>
+              setConnectBtnBgCol(theme.listHeaderBackgroundColor)
+            }
+            onPress={() => {
+              startGame(
+                server,
+                nickName,
+                gtasaPath,
+                `${gtasaPath}/samp.dll`,
+                ""
+              );
+              hide();
+            }}
+            style={{
+              backgroundColor: connectBtnBgCol,
+              paddingLeft: 10,
+              paddingRight: 30,
+              paddingVertical: 7,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Icon
+              style={{ marginRight: 3 }}
+              image={images.icons.play}
+              color={theme.primary}
+              size={17}
+            />
+            <Text bold color={"white"}>
+              {t("connect")}
+            </Text>
+          </Pressable>
           <Pressable
             onHoverIn={() => setFavBtnBgCol(theme.selectedItemBackgroundColor)}
             onHoverOut={() => setFavBtnBgCol(theme.listHeaderBackgroundColor)}
