@@ -16,6 +16,7 @@ import { useAppState } from "./states/app";
 import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
 import { useGenericPersistentState } from "./states/genericStates";
 import i18n from "./locales";
+import { process } from "@tauri-apps/api";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
@@ -36,6 +37,15 @@ const App = () => {
   }, [language]);
 
   useEffect(() => {
+    document.addEventListener("contextmenu", (event) => {
+      try {
+        // @ts-ignore
+        if (process && process.env.NODE_DEV !== "development") {
+          event.preventDefault();
+        }
+      } catch (e) {}
+    });
+
     fetchServers();
     fetchUpdateInfo();
 
