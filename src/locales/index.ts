@@ -7,8 +7,9 @@ import Filipino from "./translations/fil";
 import French from "./translations/fr";
 import Hindi from "./translations/hi";
 import Italian from "./translations/it";
-import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
+import Hungarian from "./translations/hu";
+import Portuguese from "./translations/pt";
 import Arabic from "./translations/ar";
 import Indonesian from "./translations/id";
 import Polish from "./translations/pl";
@@ -39,11 +40,14 @@ i18n.use(initReactI18next).init({
     it: {
       translations: Italian,
     },
-    pt: {
-      translations: Portuguese,
-    },
     ro: {
       translations: Romanian,
+    },
+    hu: {
+      translations: Hungarian,
+    },
+    pt: {
+      translations: Portuguese,
     },
     ar: {
       translations: Arabic,
