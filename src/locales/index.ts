@@ -4,11 +4,17 @@ import English from "./translations/en";
 import Spanish from "./translations/es";
 import Farsi from "./translations/fa";
 import Filipino from "./translations/fil";
-import France from "./translations/fr";
+import French from "./translations/fr";
+import Hindi from "./translations/hi";
 import Italian from "./translations/it";
 import Romanian from "./translations/ro";
 import Hungarian from "./translations/hu";
 import Portuguese from "./translations/pt";
+import Arabic from "./translations/ar";
+import Indonesian from "./translations/id";
+import Polish from "./translations/pl";
+import Bosnian from "./translations/bs";
+import Russian from "./translations/ru";
 
 i18n.use(initReactI18next).init({
   // we init with resources
@@ -25,11 +31,14 @@ i18n.use(initReactI18next).init({
     fil: {
       translations: Filipino,
     },
+    fr: {
+      translations: French,
+    },
+    hi: {
+      translations: Hindi,
+    },
     it: {
       translations: Italian,
-    },
-    fr: {
-      translations: France,
     },
     ro: {
       translations: Romanian,
@@ -39,6 +48,21 @@ i18n.use(initReactI18next).init({
     },
     pt: {
       translations: Portuguese,
+    },
+    ar: {
+      translations: Arabic,
+    },
+    id: {
+      translations: Indonesian,
+    },
+    pl: {
+      translations: Polish,
+    },
+    bs: {
+      translations: Bosnian,
+    },
+    ru: {
+      translations: Russian,
     },
   },
   fallbackLng: "en",

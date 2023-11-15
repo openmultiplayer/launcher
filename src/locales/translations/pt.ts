@@ -8,7 +8,8 @@ export default {
   minimize: "Minimizar",
   maximize: "Maximizar",
   close: "Fechar",
-  add_server_modal_description_1: "Adicione servidores manualmente à lista de favoritos.",
+  add_server_modal_description_1:
+    "Adicione servidores manualmente à lista de favoritos.",
   add_server_modal_description_2: "Exemplo: 127.0.0.1:7777",
   add: "Adicionar",
   server: "Servidores",
@@ -43,20 +44,22 @@ export default {
   play: "Jogar",
   remove_selected_server_from_favorites:
     "Remover servidor selecionado dos favoritos",
-  add_selected_server_to_favorites: "Adicionar servidor selecionado aos favoritos",
+  add_selected_server_to_favorites:
+    "Adicionar servidor selecionado aos favoritos",
   add_server: "Adicionar Servidor",
   hide_player_and_rule_list: "Ocultar lista de jogadores e regras",
   show_player_and_rule_list: "Mostrar lista de jogadores e regras",
   copy_server_info: "Copiar informações do servidor",
   settings_gta_path_input_label:
-    "GTA: San Andreas caminho (onde o SA-MP está instalado)",
+    "Caminho do GTA: San Andreas (onde o SA-MP está instalado)",
   browse: "Selecionar",
   settings_import_nickname_gta_path_from_samp:
     "Importar configurações do SA-MP",
   settings_import_samp_favorite_list: "Importar lista de favoritos do SA-MP",
   settings_reset_application_data:
     "Redefinir dados do aplicativo (limpar configurações e listas)",
-  settings_new_update_available: "⚠ Nova atualização disponível. Clique aqui para baixar a atualização! ⚠",
+  settings_new_update_available:
+    "⚠ Nova atualização disponível. Clique aqui para baixar a atualização! ⚠",
   settings_credits_made_by: "Feito com ❤️ por",
   settings_credits_view_source_on_github: "Código fonte disponível no GitHub",
   update_modal_update_available_title: "Atualização disponível!",
@@ -65,7 +68,8 @@ export default {
   download: "Baixar",
   update_modal_remind_me_next_time: "Me lembre mais tarde",
   update_modal_skip_this_update: "Ignorar esta atualização",
-  gta_path_modal_cant_find_game_title: "Não foi possível encontrar o GTA San Andreas!",
+  gta_path_modal_cant_find_game_title:
+    "Não foi possível encontrar o GTA San Andreas!",
   gta_path_modal_cant_find_game_description:
     'Não é possível encontrar o GTA San Andreas neste diretório:\n  - "{{ path }}"\nNão é possível encontrar "gta_sa.exe" no caminho fornecido',
   open_settings: "Abrir Configurações",

@@ -14,13 +14,13 @@ export default {
   add: "Aggiungi",
   server: "Server",
   address: "IP",
-  players: "Players",
+  players: "Giocatori",
   server_join_prompt_enter_password:
     "Questo server è protetto, inserisci la password.",
   server_join_prompt_enter_password_input_placeholder:
     "Inserisci la password...",
   server_join_prompt_nickname_input_placeholder: "Inserisci un Nickname...",
-  connect: "Play",
+  connect: "Collegati",
   copy: "Copia",
   remove_from_favorites: "Rimuovi dai Preferiti",
   add_to_favorites: "Aggiungi ai Preferiti",
@@ -30,7 +30,7 @@ export default {
   filter_unpassworded_servers: "Server senza password",
   rule: "Regola",
   value: "Valore",
-  player: "Player",
+  player: "Giocatore",
   score: "Score",
   locked: "Bloccato",
   unlocked: "Aperto",
@@ -42,31 +42,31 @@ export default {
   search_for_server_hostname_mode: "Cerca un server per nome/modalità di gioco",
   clear_recently_joined_list: "Svuota Lista Ultimi Server Giocati",
   refresh_servers: "Aggiorna Lista Servers",
-  play: "Play",
+  play: "Gioca",
   remove_selected_server_from_favorites:
     "Rimuovi il Server Selezionato dai Preferiti",
   add_selected_server_to_favorites:
     "Aggiungi il Server Selezionato ai Preferiti",
   add_server: "Aggiungi Server",
-  hide_player_and_rule_list: "Nascondi lista player e regole",
-  show_player_and_rule_list: "Mostra lista player e regole",
+  hide_player_and_rule_list: "Nascondi lista giocatori e regole",
+  show_player_and_rule_list: "Mostra lista giocatori e regole",
   copy_server_info: "Copia Informazioni Server",
   settings_gta_path_input_label:
     "Percorso di GTA: San Andreas (dov'è installato anche SA-MP)",
   browse: "Cerca",
   settings_import_nickname_gta_path_from_samp:
     "Importa nickname e percorso di gtasa dalle impostazioni di SA-MP",
-  settings_import_samp_favorite_list: "Imposta lista preferiti da SA-MP",
+  settings_import_samp_favorite_list: "Importa la lista preferiti da SA-MP",
   settings_reset_application_data:
     "Ripristina dati dell'app (elimina impostazioni e liste)",
   settings_new_update_available:
     "⚠ Nuovo Aggiornamento Disponibile. Clicca per Scaricare! ⚠",
   settings_credits_made_by: "Realizzato con ❤️ da",
-  settings_credits_view_source_on_github: "Guarda il codice sorgente su GitHub",
+  settings_credits_view_source_on_github: "Visiona il codice sorgente su GitHub",
   update_modal_update_available_title: "Aggiornamento Disponibile!",
   update_modal_update_available_description:
-    'È disponibile un nuovo aggiornamento del Launcher!\nVersione del tuo launcher: {{ version }}\nUltimo aggiornamento disponibile: {{ newVersion }}\nClicca su "Download" per aprire la pagina delle release',
-  download: "Download",
+    'È disponibile un nuovo aggiornamento del Launcher!\nVersione del tuo launcher: {{ version }}\nUltimo aggiornamento disponibile: {{ newVersion }}\nClicca su "Scarica" per aprire la pagina delle release',
+  download: "Scarica",
   update_modal_remind_me_next_time: "Ricordamelo Dopo",
   update_modal_skip_this_update: "Salta Questo Aggiornamento",
   gta_path_modal_cant_find_game_title: "Impossibile trovare GTA San Andreas!",
