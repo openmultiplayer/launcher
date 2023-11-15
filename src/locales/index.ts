@@ -11,6 +11,7 @@ import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
 import Polish from "./translations/pl";
 import Bosnian from "./translations/bs";
+import Russian from "./translations/ru";
 
 i18n.use(initReactI18next).init({
   // we init with resources
@@ -47,6 +48,9 @@ i18n.use(initReactI18next).init({
     },
     bs: {
       translations: Bosnian,
+    },
+    ru: {
+      translations: Russian,
     },
   },
   fallbackLng: "en",
