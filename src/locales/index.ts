@@ -62,7 +62,7 @@ export const getLanguages = (): {
       translations: Romanian,
     },
     id: {
-      label: "bahasa Indonesia",
+      label: "Bahasa Indonesia",
       type: "id",
       translations: Indonesian,
     },
