@@ -159,12 +159,11 @@ export const startGame = async (
 
   if (!gtasaPath || gtasaPath.length < 1) {
     showMessageBox({
-      title: "GTA San Andreas path is not set!",
-      description:
-        "You didn't set GTA San Andreas path, go to settings and search for game folder.",
+      title: t("gta_path_modal_path_not_set_title"),
+      description: t("gta_path_modal_path_not_set_description"),
       buttons: [
         {
-          title: "Open Settings",
+          title: t("open_settings"),
           onPress: () => {
             showPrompt(false);
             showSettings();
@@ -172,7 +171,7 @@ export const startGame = async (
           },
         },
         {
-          title: "Cancel",
+          title: t("cancel"),
           onPress: () => {
             showPrompt(true);
             setServer(server);
@@ -186,9 +185,8 @@ export const startGame = async (
 
   if (!nickname || nickname.length < 1) {
     showMessageBox({
-      title: "No Nickname!",
-      description:
-        "You must choose a nickname for yourself before joining a server.",
+      title: t("nickname_modal_name_not_set_title"),
+      description: t("nickname_modal_name_not_set_description"),
       buttons: [
         {
           title: "Okay",
@@ -222,12 +220,11 @@ export const startGame = async (
   }).catch(async (e) => {
     if (e == "need_admin") {
       showMessageBox({
-        title: "Admin perms required!",
-        description:
-          'It seems like your GTA: San Andreas game requires administration permissions to run. This can be due to many causes, like having your game installed in "C" drive. Please re-open open.mp launcher as administrator either using "Run as Admin" button or manually by yourself',
+        title: t("admin_permissions_required_modal_title"),
+        description: t("admin_permissions_required_modal_description"),
         buttons: [
           {
-            title: "Run as Admin",
+            title: t("run_as_admin"),
             onPress: async () => {
               await invoke("rerun_as_admin").then(() => {
                 process.exit();
@@ -235,7 +232,7 @@ export const startGame = async (
             },
           },
           {
-            title: "Cancel",
+            title: t("cancel"),
             onPress: () => hideMessageBox(),
           },
         ],
@@ -301,7 +298,7 @@ export const checkDirectoryValidity = async (
           },
         },
         {
-          title: t("Cancel"),
+          title: t("cancel"),
           onPress: () => {
             if (onFail) {
               onFail();
