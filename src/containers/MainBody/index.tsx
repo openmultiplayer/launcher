@@ -4,7 +4,6 @@ import { Pressable, StyleSheet, View } from "react-native";
 import CheckBox from "../../components/CheckBox";
 import Text from "../../components/Text";
 import { ThemeContext } from "../../contexts/theme";
-import { useAppState } from "../../states/app";
 import {
   useGenericPersistentState,
   useGenericTempState,
@@ -97,7 +96,7 @@ const FiltersModal = () => {
 const MainView = () => {
   const { filterMenu, setSearchData } = useGenericTempState();
   const { sideLists } = useGenericPersistentState();
-  const { listType } = useAppState();
+  const { listType } = useGenericTempState();
 
   const renderList = () => {
     if (listType === "favorites") return <Favorites />;

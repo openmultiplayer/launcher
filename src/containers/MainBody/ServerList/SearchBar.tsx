@@ -13,7 +13,6 @@ import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../../states/addThirdPartyServerModal";
-import { useAppState } from "../../../states/app";
 import {
   useGenericPersistentState,
   useGenericTempState,
@@ -31,7 +30,7 @@ const AnimatedTouchableOpacity =
 
 const SearchBar = (props: IProps) => {
   const { theme } = useContext(ThemeContext);
-  const { listType } = useAppState();
+  const { listType } = useGenericTempState();
   const [searchQuery, setSearchQuery] = useState("");
   const { filterMenu, showFilterMenu } = useGenericTempState();
   const { sideLists, showSideLists } = useGenericPersistentState();

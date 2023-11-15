@@ -1,7 +1,6 @@
 import { OsType } from "@tauri-apps/api/os";
 import { create } from "zustand";
 import { VERSION } from "../constants/app";
-import { ListType } from "../utils/types";
 
 export interface UpdateInfo {
   version: string;
@@ -16,13 +15,11 @@ interface AppState {
   skippedUpdateVersion: string;
   nativeAppVersion: string;
   hostOS: OsType;
-  listType: ListType;
   toggleMaximized: (enable: boolean) => void;
   setUpdateInfo: (data: UpdateInfo) => void;
   setNativeAppVersionValue: (data: string) => void;
   setHostOSValue: (data: OsType) => void;
   skipUpdate: (version: string) => void;
-  setListType: (type: ListType) => void;
 }
 
 const useAppState = create<AppState>()((set) => ({
@@ -39,7 +36,6 @@ const useAppState = create<AppState>()((set) => ({
     set(() => ({ nativeAppVersion: data })),
   setHostOSValue: (data: OsType) => set(() => ({ hostOS: data })),
   skipUpdate: (version) => set(() => ({ skippedUpdateVersion: version })),
-  setListType: (type) => set(() => ({ listType: type })),
 }));
 
 export { useAppState };

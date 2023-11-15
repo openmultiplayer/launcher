@@ -5,14 +5,14 @@ import Icon from "../components/Icon";
 import TabBar from "../components/TabBar";
 import { images } from "../constants/images";
 import { ThemeContext } from "../contexts/theme";
-import { useAppState } from "../states/app";
+import { useGenericTempState } from "../states/genericStates";
 import { useSettings } from "../states/settings";
 import { ListType } from "../utils/types";
 
 const NavBar = () => {
   const { theme } = useContext(ThemeContext);
   const { nickName, setNickName } = useSettings();
-  const { setListType, listType } = useAppState();
+  const { setListType, listType } = useGenericTempState();
 
   const list: { icon: string; label: string; type: ListType }[] = [
     { icon: images.icons.favorite, label: t("favorites"), type: "favorites" },
