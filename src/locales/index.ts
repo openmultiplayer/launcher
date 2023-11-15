@@ -4,7 +4,7 @@ import English from "./translations/en";
 import Spanish from "./translations/es";
 import Farsi from "./translations/fa";
 import Filipino from "./translations/fil";
-import France from "./translations/fr";
+import French from "./translations/fr";
 import Hindi from "./translations/hi";
 import Italian from "./translations/it";
 import Portuguese from "./translations/pt";
@@ -26,7 +26,7 @@ i18n.use(initReactI18next).init({
       translations: Filipino,
     },
     fr: {
-      translations: France,
+      translations: French,
     },
     hi: {
       translations: Hindi,
