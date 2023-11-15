@@ -76,4 +76,14 @@ export default {
   notification_add_to_favorites_title: "Added to Favorites!",
   notification_add_to_favorites_description:
     "{{ server }} has been added to your favorite list.",
+  nickname_modal_name_not_set_title: "No Nickname!",
+  nickname_modal_name_not_set_description:
+    "You must choose a nickname for yourself before joining a server.",
+  gta_path_modal_path_not_set_title: "GTA San Andreas path is not set!",
+  gta_path_modal_path_not_set_description:
+    "You didn't set GTA San Andreas path, go to settings and search for game folder.",
+  admin_permissions_required_modal_title: "Admin permissions required!",
+  admin_permissions_required_modal_description:
+    'It seems like your GTA: San Andreas game requires administration permissions to run. This can be due to many causes, like having your game installed in "C" drive. Please re-open open.mp launcher as administrator either using "Run as Admin" button or manually by yourself',
+  run_as_admin: "Run as Admin",
 };

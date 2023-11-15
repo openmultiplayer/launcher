@@ -1,14 +1,12 @@
 import { useEffect, useRef } from "react";
-import { usePersistentServers, useServers } from "../states/servers";
+import { useServers } from "../states/servers";
 import { queryServer } from "../utils/query";
 import { Server } from "../utils/types";
 
 export const useQuery = () => {
   const queryTimer = useRef<number | undefined>(undefined);
 
-  const { selected, updateServer, setSelected } = useServers();
-  const { updateInFavoritesList, updateInRecentlyJoinedList } =
-    usePersistentServers();
+  const { selected, setSelected } = useServers();
   const selectedServer = useRef<Server | undefined>(selected);
 
   useEffect(() => {
@@ -37,21 +35,7 @@ export const useQuery = () => {
   };
 
   const getServerInfo = (srv: Server) => {
-    queryServer(srv)
-      .then((server) => {
-        if (server && selectedServer.current) {
-          if (
-            server.ip == selectedServer.current.ip &&
-            server.port == selectedServer.current.port
-          ) {
-            updateServer(server);
-            updateInFavoritesList(server);
-            updateInRecentlyJoinedList(server);
-            setSelected(server);
-          }
-        }
-      })
-      .catch((e) => console.log(e));
+    queryServer(srv);
   };
 
   return {

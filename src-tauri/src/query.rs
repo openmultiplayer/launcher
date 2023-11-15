@@ -158,17 +158,17 @@ impl Query {
         let hostname_len = packet.read_u32::<LittleEndian>().unwrap();
         let mut hostname_buf = vec![0u8; hostname_len as usize];
         packet.read_exact(&mut hostname_buf).unwrap();
-        data.hostname = helpers::decode_buffer(hostname_buf);
+        data.hostname = helpers::decode_buffer(hostname_buf).0;
 
         let gamemode_len = packet.read_u32::<LittleEndian>().unwrap();
         let mut gamemode_buf = vec![0u8; gamemode_len as usize];
         packet.read_exact(&mut gamemode_buf).unwrap();
-        data.gamemode = helpers::decode_buffer(gamemode_buf);
+        data.gamemode = helpers::decode_buffer(gamemode_buf).0;
 
         let language_len = packet.read_u32::<LittleEndian>().unwrap();
         let mut language_buf = vec![0u8; language_len as usize];
         packet.read_exact(&mut language_buf).unwrap();
-        data.language = helpers::decode_buffer(language_buf);
+        data.language = helpers::decode_buffer(language_buf).0;
 
         Ok(serde_json::to_string(&data).unwrap())
     }
@@ -184,7 +184,7 @@ impl Query {
             let player_name_len = packet.read_u8().unwrap();
             let mut player_name_buf = vec![0u8; player_name_len as usize];
             packet.read_exact(&mut player_name_buf).unwrap();
-            player.name = helpers::decode_buffer(player_name_buf);
+            player.name = helpers::decode_buffer(player_name_buf).0;
 
             player.score = packet.read_i32::<LittleEndian>().unwrap();
         }
@@ -202,12 +202,12 @@ impl Query {
             let rule_name_len = packet.read_u8().unwrap();
             let mut rule_name_buf = vec![0u8; rule_name_len as usize];
             packet.read_exact(&mut rule_name_buf).unwrap();
-            rule.push(helpers::decode_buffer(rule_name_buf));
+            rule.push(helpers::decode_buffer(rule_name_buf).0);
 
             let rule_value_len = packet.read_u8().unwrap();
             let mut rule_value_buf = vec![0u8; rule_value_len as usize];
             packet.read_exact(&mut rule_value_buf).unwrap();
-            rule.push(helpers::decode_buffer(rule_value_buf));
+            rule.push(helpers::decode_buffer(rule_value_buf).0);
 
             rules.push(rule);
         }
