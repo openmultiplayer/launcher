@@ -46,32 +46,46 @@ export default {
   hide_player_and_rule_list: "Ukryj listę graczy i reguł",
   show_player_and_rule_list: "Pokaż listę graczy i reguł",
   copy_server_info: "Kopiuj Informacje o Serwerze",
-  settings_gta_path_input_label: "Ścieżka GTA San Andreas (gdzie zainstalowany jest SA-MP)",
+  settings_gta_path_input_label:
+    "Ścieżka GTA San Andreas (gdzie zainstalowany jest SA-MP)",
   browse: "Przeglądaj",
-  settings_import_nickname_gta_path_from_samp: "Importuj pseudonim i ścieżkę gtasa z ustawień SA-MP",
-  settings_import_samp_favorite_list: "Importuj listę ulubionych serwerów z danych SA-MP",
-  settings_reset_application_data: "Zresetuj dane aplikacji (czyści ustawienia i listy)",
-  settings_new_update_available: "⚠ Nowa aktualizacja dostępna. Kliknij, aby pobrać! ⚠",
+  settings_import_nickname_gta_path_from_samp:
+    "Importuj pseudonim i ścieżkę gtasa z ustawień SA-MP",
+  settings_import_samp_favorite_list:
+    "Importuj listę ulubionych serwerów z danych SA-MP",
+  settings_reset_application_data:
+    "Zresetuj dane aplikacji (czyści ustawienia i listy)",
+  settings_new_update_available:
+    "⚠ Nowa aktualizacja dostępna. Kliknij, aby pobrać! ⚠",
   settings_credits_made_by: "Stworzone z ❤️ przez",
   settings_credits_view_source_on_github: "Zobacz kod źródłowy na GitHubie",
   update_modal_update_available_title: "Dostępna Aktualizacja!",
-  update_modal_update_available_description: 'Nowa wersja launcher\'a jest dostępna!\nTwoja wersja: {{ version }}\nAktualna wersja: {{ newVersion }}\nKliknij "Pobierz", aby otworzyć stronę z aktualizacją.',
+  update_modal_update_available_description:
+    'Nowa wersja launcher\'a jest dostępna!\nTwoja wersja: {{ version }}\nAktualna wersja: {{ newVersion }}\nKliknij "Pobierz", aby otworzyć stronę z aktualizacją.',
   download: "Pobierz",
   update_modal_remind_me_next_time: "Przypomnij mi następnym razem",
   update_modal_skip_this_update: "Pomiń tę aktualizację",
   gta_path_modal_cant_find_game_title: "Nie można znaleźć GTA San Andreas!",
-  gta_path_modal_cant_find_game_description: 'Nie można znaleźć GTA San Andreas w tej lokalizacji:\n  - "{{ path }}"\nNie można odnaleźć "gta_sa.exe" w podanej ścieżce.',
+  gta_path_modal_cant_find_game_description:
+    'Nie można znaleźć GTA San Andreas w tej lokalizacji:\n  - "{{ path }}"\nNie można odnaleźć "gta_sa.exe" w podanej ścieżce.',
   nickname_modal_name_not_set_title: "Brak Pseudonimu!",
-  nickname_modal_name_not_set_description: "Należy wybrać pseudonim przed dołączeniem do serwera.",
-  gta_path_modal_path_not_set_title: "Ścieżka do GTA San Andreas nie jest ustawiona!",
-  gta_path_modal_path_not_set_description: "Nie ustawiono ścieżki do GTA San Andreas. Należy przejść do ustawień i wyszukać folder z grą.",
-  admin_permissions_required_modal_title: "Wymagane są uprawnienia administratora!",
-  admin_permissions_required_modal_description: "Wygląda na to, że gra GTA San Andreas wymaga uprawnień administratora do uruchomienia. Może to być spowodowane różnymi przyczynami, np. zainstalowaniem gry na dysku \"C\". Otwórz ponownie launcher open.mp jako administrator, używając przycisku \"Uruchom jako Administrator\" lub wykonaj to ręcznie przez siebie.",
+  nickname_modal_name_not_set_description:
+    "Należy wybrać pseudonim przed dołączeniem do serwera.",
+  gta_path_modal_path_not_set_title:
+    "Ścieżka do GTA San Andreas nie jest ustawiona!",
+  gta_path_modal_path_not_set_description:
+    "Nie ustawiono ścieżki do GTA San Andreas. Należy przejść do ustawień i wyszukać folder z grą.",
+  admin_permissions_required_modal_title:
+    "Wymagane są uprawnienia administratora!",
+  admin_permissions_required_modal_description:
+    'Wygląda na to, że gra GTA San Andreas wymaga uprawnień administratora do uruchomienia. Może to być spowodowane różnymi przyczynami, np. zainstalowaniem gry na dysku "C". Otwórz ponownie launcher open.mp jako administrator, używając przycisku "Uruchom jako Administrator" lub wykonaj to ręcznie przez siebie.',
   run_as_admin: "Uruchom jako Administrator",
   open_settings: "Ustawienia",
   cancel: "Anuluj",
   gta_path_modal_cant_find_samp_title: "Nie można znaleźć SA-MP!",
-  gta_path_modal_cant_find_samp_description: 'Nie można znaleźć zainstalowanego SA-MP w tej lokalizacji:\n  - "{{ path }}"\nNie można odnaleźć "samp.dll" w podanej ścieżce.\n\nJeśli nie masz zainstalowanego SA-MP, możesz pobrać go z https://sa-mp.mp/, klikając **Pobierz**.',
+  gta_path_modal_cant_find_samp_description:
+    'Nie można znaleźć zainstalowanego SA-MP w tej lokalizacji:\n  - "{{ path }}"\nNie można odnaleźć "samp.dll" w podanej ścieżce.\n\nJeśli nie masz zainstalowanego SA-MP, możesz pobrać go z https://sa-mp.mp/, klikając **Pobierz**.',
   notification_add_to_favorites_title: "Dodano do Ulubionych!",
-  notification_add_to_favorites_description: "{{ server }} został dodany do listy ulubionych.",
+  notification_add_to_favorites_description:
+    "{{ server }} został dodany do listy ulubionych.",
 };

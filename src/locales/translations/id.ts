@@ -8,7 +8,8 @@ export default {
   minimize: "Memperkecil",
   maximize: "Memperbesar",
   close: "Tutup",
-  add_server_modal_description_1: "Tambahkan server secara manual ke daftar favorit.",
+  add_server_modal_description_1:
+    "Tambahkan server secara manual ke daftar favorit.",
   add_server_modal_description_2: "Contoh: 127.0.0.1:7777",
   add: "Tambah",
   server: "Server",
@@ -56,7 +57,8 @@ export default {
   settings_import_samp_favorite_list: "Impor daftar favorit dari data SA-MP",
   settings_reset_application_data:
     "Reset data aplikasi (menghapus pengaturan dan list)",
-  settings_new_update_available: "⚠ Pembaruan Baru Tersedia. Klik untuk Download! ⚠",
+  settings_new_update_available:
+    "⚠ Pembaruan Baru Tersedia. Klik untuk Download! ⚠",
   settings_credits_made_by: "Dibuat dengan ❤️ oleh",
   settings_credits_view_source_on_github: "Lihat source code di GitHub",
   update_modal_update_available_title: "Pembaruan Tersedia!",

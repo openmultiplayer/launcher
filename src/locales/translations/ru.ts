@@ -41,8 +41,7 @@ export default {
   clear_recently_joined_list: "Очистить список недавних",
   refresh_servers: "Обновить список серверов",
   play: "Играть",
-  remove_selected_server_from_favorites:
-    "Удалить сервер из избранных",
+  remove_selected_server_from_favorites: "Удалить сервер из избранных",
   add_selected_server_to_favorites: "Добавить сервер в избранные",
   add_server: "Добавить сервер",
   hide_player_and_rule_list: "Скрыть список игроков и правил",
@@ -53,10 +52,12 @@ export default {
   browse: "Обзор",
   settings_import_nickname_gta_path_from_samp:
     "Импортировать никнейм и путь к игре из SA-MP настроек",
-  settings_import_samp_favorite_list: "Импортировать список избранных из SA-MP данных",
+  settings_import_samp_favorite_list:
+    "Импортировать список избранных из SA-MP данных",
   settings_reset_application_data:
     "Сброс данных приложения (очистка настроек и списков)",
-  settings_new_update_available: "⚠ Доступно обновление. Нажмите для его загрузки! ⚠",
+  settings_new_update_available:
+    "⚠ Доступно обновление. Нажмите для его загрузки! ⚠",
   settings_credits_made_by: "Сделано с ❤️ ",
   settings_credits_view_source_on_github: "Исходный код на GitHub",
   update_modal_update_available_title: "Доступно обновление!",
@@ -77,10 +78,13 @@ export default {
   notification_add_to_favorites_description:
     "{{ server }} добавлен в ваш список избранных.",
   nickname_modal_name_not_set_title: "Не указан никнейм!",
-  nickname_modal_name_not_set_description: "Прежде чем присоединиться к серверу, вы должны выбрать себе никнейм.",
+  nickname_modal_name_not_set_description:
+    "Прежде чем присоединиться к серверу, вы должны выбрать себе никнейм.",
   gta_path_modal_path_not_set_title: "Путь к GTA San Andreas не установлен!",
-  gta_path_modal_path_not_set_description: "Вы не указали путь к GTA San Andreas, зайдите в настройки и укажите папку с игрой.",
+  gta_path_modal_path_not_set_description:
+    "Вы не указали путь к GTA San Andreas, зайдите в настройки и укажите папку с игрой.",
   admin_permissions_required_modal_title: "Требуются права администратора!",
-  admin_permissions_required_modal_description: "Похоже, что для запуска GTA: San Andreas требуются права администратора. Это может произойти по разным причинам, например, если ваша игра установлена на диске \"C\". Пожалуйста, откройте open.mp лаунчер повторно от имени администратора с помощью кнопки \"Запуск от имени администратора\" либо вручную",
+  admin_permissions_required_modal_description:
+    'Похоже, что для запуска GTA: San Andreas требуются права администратора. Это может произойти по разным причинам, например, если ваша игра установлена на диске "C". Пожалуйста, откройте open.mp лаунчер повторно от имени администратора с помощью кнопки "Запуск от имени администратора" либо вручную',
   run_as_admin: "Запуск от имени администратора",
 };
