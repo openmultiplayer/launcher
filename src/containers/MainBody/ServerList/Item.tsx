@@ -154,7 +154,7 @@ const ServerItem = memo((props: IProps) => {
             style={[styles.commonFieldContainer, styles.pingFieldContainer]}
           >
             <Text size={1} color={theme.textPrimary + "AA"}>
-              {server.ping}
+              {server.ping === 9999 ? "-" : server.ping}
             </Text>
           </View>
           <View style={[styles.commonFieldContainer, styles.gameModeContainer]}>

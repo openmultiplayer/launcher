@@ -144,11 +144,13 @@ const getServerOmpStatus = async (
         return;
       }
 
-      server = {
-        ...server,
-        usingOmp: JSON.parse(serverOmpStatus).isOmp as boolean,
-      };
-      updateServerEveryWhere(server);
+      if (!server.usingOmp) {
+        server = {
+          ...server,
+          usingOmp: JSON.parse(serverOmpStatus).isOmp as boolean,
+        };
+        updateServerEveryWhere(server);
+      }
     }
   } catch (e) {}
 };
