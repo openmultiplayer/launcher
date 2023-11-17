@@ -4,7 +4,7 @@ import { queryServer } from "../utils/query";
 import { Server } from "../utils/types";
 
 export const useQuery = () => {
-  const queryTimer = useRef<number | undefined>(undefined);
+  const queryTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const { selected, setSelected } = useServers();
   const selectedServer = useRef<Server | undefined>(selected);
