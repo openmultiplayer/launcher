@@ -7,7 +7,6 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import * as Animatable from "react-native-animatable";
 import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import TabBar from "../../components/TabBar";
@@ -48,9 +47,7 @@ const SettingsModal = () => {
 
   return (
     <StaticModal onDismiss={() => hide()} key={"settings-" + language}>
-      <Animatable.View
-        animation={"zoomInUp"}
-        duration={700}
+      <View
         style={[
           styles.container,
           {
@@ -120,7 +117,7 @@ const SettingsModal = () => {
             style={{ opacity: 0.5 }}
           />
         </TouchableOpacity>
-      </Animatable.View>
+      </View>
     </StaticModal>
   );
 };

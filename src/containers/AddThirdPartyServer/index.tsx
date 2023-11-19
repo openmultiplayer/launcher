@@ -6,7 +6,6 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import * as Animatable from "react-native-animatable";
 import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
@@ -68,9 +67,7 @@ const AddThirdPartyServerModal = () => {
 
   return (
     <StaticModal onDismiss={() => showAddThirdPartyServer(false)}>
-      <Animatable.View
-        animation={"zoomInUp"}
-        duration={700}
+      <View
         style={{
           position: "absolute",
           top: height / 2 - 90 - 25, // titlebar height is 25
@@ -151,7 +148,7 @@ const AddThirdPartyServerModal = () => {
             style={{ opacity: 0.5 }}
           />
         </TouchableOpacity>
-      </Animatable.View>
+      </View>
     </StaticModal>
   );
 };

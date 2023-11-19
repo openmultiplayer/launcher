@@ -77,4 +77,19 @@ export default {
   notification_add_to_favorites_title: "Dodan u Favorite!",
   notification_add_to_favorites_description:
     "{{ server }} je dodan u tvoju listu favorita.",
+  nickname_modal_name_not_set_title: "Nemaš Nadimak!",
+  nickname_modal_name_not_set_description:
+    "Moraš izabrati nadimak za sebe prije nego što uđes u server.",
+  gta_path_modal_path_not_set_title:
+    "GTA San Andreas direktorij nije postavljen!",
+  gta_path_modal_path_not_set_description:
+    "Nisi postavio direktorij GTA San Andreas-a, idi u postavke i potraži folder u kojem ti se igra nalazi.",
+  admin_permissions_required_modal_title:
+    "Administratorska odobrenja potrebna!",
+  admin_permissions_required_modal_description:
+    'Čini se da vaša GTA: San Andreas igra zahtijeva administratorsko odobrenje za pokretanje. To može biti zbog mnogih uzroka, kao što je instaliranje vaše igre na "C" drive. Molimo da ponovo otvorite open.mp launcher kao administrator pomoću dugmeta "Pokreni kao administrator" ili ručno.',
+  run_as_admin: "Pokreni kao Admin",
+  settings_general_tab_title: "Generalno",
+  settings_appearance_and_lang_tab_title: "Izgled i Jezici",
+  settings_language_selector_title: "Izaberi jezik:",
 };

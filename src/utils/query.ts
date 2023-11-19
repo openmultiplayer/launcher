@@ -1,21 +1,26 @@
 import { invoke } from "@tauri-apps/api";
 import { usePersistentServers, useServers } from "../states/servers";
 import { ListType, Server } from "./types";
+import { Log } from "./logger";
 
 export const queryServer = (
   server: Server,
-  listType: ListType = "internet"
+  listType: ListType = "internet",
+  queryType: "all" | "basic" = "all"
 ) => {
   try {
     const { ip, port } = server;
 
     getServerInfo(ip, port, listType);
-    getServerPlayers(ip, port, listType);
-    getServerRules(ip, port, listType);
-    getServerOmpStatus(ip, port, listType);
     getServerPing(ip, port, listType);
+
+    if (queryType === "all") {
+      getServerPlayers(ip, port, listType);
+      getServerRules(ip, port, listType);
+      getServerOmpStatus(ip, port, listType);
+    }
   } catch (error) {
-    console.log("[query.ts: queryServer]", error);
+    Log.debug("[query.ts: queryServer]", error);
   }
 };
 
@@ -27,7 +32,7 @@ const getServerInfo = async (ip: string, port: number, listType: ListType) => {
     });
 
     if (serverInfo === "no_data") {
-      return console.log(
+      return Log.debug(
         "[query.ts: getServerInfo]",
         "There was a problem getting server main info"
       );
@@ -50,7 +55,7 @@ const getServerInfo = async (ip: string, port: number, listType: ListType) => {
       updateServerEveryWhere(server);
     }
   } catch (e) {
-    console.log("[query.ts: getServerInfo]", e);
+    Log.debug("[query.ts: getServerInfo]", e);
   }
 };
 
@@ -66,7 +71,7 @@ const getServerPlayers = async (
     });
 
     if (serverPlayers === "no_data") {
-      return console.log(
+      return Log.debug(
         "[query.ts: getServerPlayers]",
         "There was a problem getting server player list"
       );
@@ -86,7 +91,7 @@ const getServerPlayers = async (
       }
     }
   } catch (e) {
-    console.log("[query.ts: getServerPlayers]", e);
+    Log.debug("[query.ts: getServerPlayers]", e);
   }
 };
 
@@ -98,7 +103,7 @@ const getServerRules = async (ip: string, port: number, listType: ListType) => {
     });
 
     if (serverRules === "no_data" || !Array.isArray(JSON.parse(serverRules))) {
-      return console.log(
+      return Log.debug(
         "[query.ts: getServerRules]",
         "There was a problem getting server rule list"
       );
@@ -118,7 +123,7 @@ const getServerRules = async (ip: string, port: number, listType: ListType) => {
       updateServerEveryWhere(server);
     }
   } catch (e) {
-    console.log("[query.ts: getServerRules]", e);
+    Log.debug("[query.ts: getServerRules]", e);
   }
 };
 

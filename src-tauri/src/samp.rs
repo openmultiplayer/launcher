@@ -29,13 +29,13 @@ pub struct SAMPUserData {
 }
 
 #[cfg(not(target_os = "windows"))]
-pub fn get_gtasa_path() -> Option<String> {
-    Some("")
+pub fn get_gtasa_path() -> String {
+    "".to_string()
 }
 
 #[cfg(not(target_os = "windows"))]
-pub fn get_player_name() -> Option<String> {
-    Some("")
+pub fn get_nickname() -> String {
+    "".to_string()
 }
 
 #[cfg(not(target_os = "windows"))]
