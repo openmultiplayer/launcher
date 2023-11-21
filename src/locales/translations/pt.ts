@@ -2,7 +2,7 @@ export default {
   favorites: "Favoritos",
   internet: "Internet",
   partners: "Parceiros",
-  recently_joined: "Entrado Recentemente",
+  recently_joined: "Entrou Recentemente",
   nickname: "Usuário",
   settings: "Configurações",
   minimize: "Minimizar",
@@ -69,9 +69,9 @@ export default {
   update_modal_remind_me_next_time: "Me lembre mais tarde",
   update_modal_skip_this_update: "Ignorar esta atualização",
   gta_path_modal_cant_find_game_title:
-    "Não foi possível encontrar o GTA San Andreas!",
+    "Não foi possível encontrar o GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
-    'Não é possível encontrar o GTA San Andreas neste diretório:\n  - "{{ path }}"\nNão é possível encontrar "gta_sa.exe" no caminho fornecido',
+    'Não é possível encontrar o GTA: San Andreas neste diretório:\n  - "{{ path }}"\nNão é possível encontrar "gta_sa.exe" no caminho fornecido',
   open_settings: "Abrir Configurações",
   cancel: "Cancelar",
   gta_path_modal_cant_find_samp_title: "Não foi possível encontrar o SA-MP!",
@@ -80,4 +80,17 @@ export default {
   notification_add_to_favorites_title: "Adicionado aos Favoritos!",
   notification_add_to_favorites_description:
     "{{ server }} foi adicionado à sua lista de favoritos.",
+  nickname_modal_name_not_set_title: "Sem Nome de Usuário!",
+  nickname_modal_name_not_set_description:
+    "Você deve escolher um Nome de Usuário antes de entrar em um servidor.",
+  gta_path_modal_path_not_set_title: "O caminho do GTA: San Andreas não está definido!",
+  gta_path_modal_path_not_set_description:
+    "Você não definiu o caminho do GTA: San Andreas, vá em configurações e procure a pasta do jogo.",
+  admin_permissions_required_modal_title: "Permissões de Administrador necessárias!",
+  admin_permissions_required_modal_description:
+    'Parece que o seu jogo GTA: San Andreas requer permissões de Administrador para ser executado. Isso pode ser devido a vários motivos, como ter o jogo instalado na unidade “C”. Abra novamente o launcher do open.mp como administrador usando o botão "Executar como administrador" ou manualmente por você mesmo.',
+  run_as_admin: "Executar como Administrador",
+  settings_general_tab_title: "Geral",
+  settings_appearance_and_lang_tab_title: "Aparência & Idiomas",
+  settings_language_selector_title: "Escolha um idioma:",
 };
