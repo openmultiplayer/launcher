@@ -62,7 +62,7 @@ export default {
   settings_credits_view_source_on_github: "Зыходны код на GitHub",
   update_modal_update_available_title: "Даступна абнаўленне!",
   update_modal_update_available_description:
-    'Даступна новая версія запуску!\ ваша пускавая Версія: {{ версія }}\пускавая ўстаноўка: {{ newVersion }}\пнацісніце "Загрузіць", каб адкрыць старонку выпуску',
+    'Даступна новая версія запуску! ваша пускавая Версія: {{ версія }}пускавая ўстаноўка: {{ newVersion }}пнацісніце "Загрузіць", каб адкрыць старонку выпуску',
   download: "Загрузіць",
   update_modal_remind_me_next_time: "Нагадаць пазней",
   update_modal_skip_this_update: "Прапусціць абнаўленне",

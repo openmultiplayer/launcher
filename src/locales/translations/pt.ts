@@ -83,10 +83,12 @@ export default {
   nickname_modal_name_not_set_title: "Sem Nome de Usuário!",
   nickname_modal_name_not_set_description:
     "Você deve escolher um Nome de Usuário antes de entrar em um servidor.",
-  gta_path_modal_path_not_set_title: "O caminho do GTA: San Andreas não está definido!",
+  gta_path_modal_path_not_set_title:
+    "O caminho do GTA: San Andreas não está definido!",
   gta_path_modal_path_not_set_description:
     "Você não definiu o caminho do GTA: San Andreas, vá em configurações e procure a pasta do jogo.",
-  admin_permissions_required_modal_title: "Permissões de Administrador necessárias!",
+  admin_permissions_required_modal_title:
+    "Permissões de Administrador necessárias!",
   admin_permissions_required_modal_description:
     'Parece que o seu jogo GTA: San Andreas requer permissões de Administrador para ser executado. Isso pode ser devido a vários motivos, como ter o jogo instalado na unidade “C”. Abra novamente o launcher do open.mp como administrador usando o botão "Executar como administrador" ou manualmente por você mesmo.',
   run_as_admin: "Executar como Administrador",
