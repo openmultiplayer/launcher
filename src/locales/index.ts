@@ -17,6 +17,7 @@ import Romanian from "./translations/ro";
 import Russian from "./translations/ru";
 import Turkish from "./translations/tr";
 import Belarussian from "./translations/by";
+import Czech from "./translations/cs";
 
 export type LanguageType =
   | "en"
@@ -35,7 +36,8 @@ export type LanguageType =
   | "bs"
   | "ru"
   | "tr"
-  | "by";
+  | "by"
+  | "cs";
 
 export const getLanguages = (): {
   [x: string]: {
