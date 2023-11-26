@@ -101,9 +101,7 @@ const WindowTitleBar = () => {
         <WindowTitleBarButtons
           title={t("maximize")}
           image={images.icons.windowMaximize}
-          onPress={async () => {
-            await appWindow.toggleMaximize();
-          }}
+          onPress={() => appWindow.toggleMaximize()}
         />
         <WindowTitleBarButtons
           title={t("close")}
