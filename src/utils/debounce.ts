@@ -6,7 +6,6 @@ export const debounce = <F extends (...args: any[]) => void>(
 
   return (...args: Parameters<F>) => {
     if (timerId !== null) clearTimeout(timerId);
-
     timerId = setTimeout(() => func(...args), delay);
   };
 };
