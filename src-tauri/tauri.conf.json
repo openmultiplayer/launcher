@@ -61,6 +61,7 @@
         "userAgent": "omp-launcher",
         "center": true
       }
-    ]
+    ],
+    "macOSPrivateApi": true
   }
 }

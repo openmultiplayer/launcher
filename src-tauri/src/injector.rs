@@ -5,18 +5,6 @@ use regex::Regex;
 use std::process::Command;
 use tokio::net::lookup_host;
 
-#[cfg(not(target_os = "windows"))]
-pub fn run_samp(
-    name: &str,
-    ip: &str,
-    port: i32,
-    executable_dir: &str,
-    dll_path: &str,
-    password: &str,
-) -> Result<(), String> {
-    ""
-}
-
 #[cfg(target_os = "windows")]
 pub async fn run_samp(
     name: &str,

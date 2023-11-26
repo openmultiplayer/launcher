@@ -28,21 +28,6 @@ pub struct SAMPUserData {
     pub favorite_servers: Vec<SAMPServerInfo>,
 }
 
-#[cfg(not(target_os = "windows"))]
-pub fn get_gtasa_path() -> String {
-    "".to_string()
-}
-
-#[cfg(not(target_os = "windows"))]
-pub fn get_nickname() -> String {
-    "".to_string()
-}
-
-#[cfg(not(target_os = "windows"))]
-pub fn get_samp_favorite_list() -> String {
-    "[]".to_string();
-}
-
 #[cfg(target_os = "windows")]
 pub fn get_gtasa_path() -> String {
     let key = RegKey::predef(HKEY_CURRENT_USER).open_subkey_with_flags(r"Software\SAMP", KEY_READ);

@@ -3,8 +3,10 @@
 // use serde_json::json;
 mod discord;
 mod helpers;
+#[cfg(target_os = "windows")]
 mod injector;
 mod query;
+#[cfg(target_os = "windows")]
 mod samp;
 
 use log::LevelFilter;
@@ -86,6 +88,7 @@ async fn ping_server(ip: &str, port: i32) -> Result<u32, String> {
 }
 
 #[tauri::command]
+#[cfg_attr(not(target_os = "windows"), allow(unused_variables))]
 async fn inject(
     name: &str,
     ip: &str,
@@ -94,17 +97,41 @@ async fn inject(
     dll: &str,
     password: &str,
 ) -> Result<(), String> {
-    injector::run_samp(name, ip, port, exe, dll, password).await
+    #[cfg(target_os = "windows")]
+    {
+        injector::run_samp(name, ip, port, exe, dll, password).await
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        Err("Non-Windows OS detected".to_string())
+    }
 }
 
 #[tauri::command]
 fn get_gtasa_path_from_samp() -> String {
-    samp::get_gtasa_path().to_string()
+    #[cfg(target_os = "windows")]
+    {
+        samp::get_gtasa_path().to_string()
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        "".to_string()
+    }
 }
 
 #[tauri::command]
 fn get_nickname_from_samp() -> String {
-    samp::get_nickname().to_string()
+    #[cfg(target_os = "windows")]
+    {
+        samp::get_nickname().to_string()
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        "".to_string()
+    }
 }
 
 #[tauri::command]
@@ -122,7 +149,15 @@ fn rerun_as_admin() -> Result<String, String> {
 
 #[tauri::command]
 fn get_samp_favorite_list() -> String {
-    samp::get_samp_favorite_list()
+    #[cfg(target_os = "windows")]
+    {
+        samp::get_samp_favorite_list()
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        "[]".to_string()
+    }
 }
 
 fn main() {
