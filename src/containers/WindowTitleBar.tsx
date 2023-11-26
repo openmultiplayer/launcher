@@ -7,7 +7,6 @@ import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { images } from "../constants/images";
 import { ThemeContext } from "../contexts/theme";
-import { useAppState } from "../states/app";
 import { useSettingsModal } from "../states/settingsModal";
 
 const WindowTitleBarButtons = ({
@@ -48,7 +47,6 @@ const WindowTitleBarButtons = ({
 
 const WindowTitleBar = () => {
   const { theme } = useContext(ThemeContext);
-  const { toggleMaximized } = useAppState();
   const { show: showSettings } = useSettingsModal();
 
   return (
@@ -105,7 +103,6 @@ const WindowTitleBar = () => {
           image={images.icons.windowMaximize}
           onPress={async () => {
             await appWindow.toggleMaximize();
-            toggleMaximized(await appWindow.isMaximized());
           }}
         />
         <WindowTitleBarButtons
