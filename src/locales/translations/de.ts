@@ -56,7 +56,7 @@ export default {
   settings_import_samp_favorite_list: "Favoriten aus SA-MP importieren",
   settings_reset_application_data:
     "Alle Daten auf Werkseinstellungen zurücksetzen (Löscht Einstellungen und alle Serverlisten)",
-  settings_new_update_available: "⚠  Aktualisierung verfügbar. Zum Herunterladen, klicken! ⚠",
+  settings_new_update_available: "⚠ Aktualisierung verfügbar. Zum Herunterladen, klicken! ⚠",
   settings_credits_made_by: "Made with ❤️ by",
   settings_credits_view_source_on_github: "Quellcode auf GitHub ansehen",
   update_modal_update_available_title: "Aktualisierung verfügbar!",
@@ -64,7 +64,7 @@ export default {
     'Neue Launcher-Version verfügbar!\nDeine Launcher Build-Version: {{ version }}\nAktuellste Launcher Build-Version: {{ newVersion }}\nKlicke "Herunterladen" um die Seite der veröffentlichten Launcher zu öffnen.',
   download: "Herunterladen",
   update_modal_remind_me_next_time: "Erinnere mich später",
-  update_modal_skip_this_update: "Aktualisierung auslassen",
+  update_modal_skip_this_update: "Aktualisierung überspringen",
   gta_path_modal_cant_find_game_title: "GTA San Andreas konnte nicht gefunden werden!",
   gta_path_modal_cant_find_game_description:
     'GTA: San Andreas konnte in diesem Ordner nicht gefunden werden:\n  - "{{ path }}"\n"gta_sa.exe" ist am angegebenen Pfad nicht vorhanden.',
@@ -72,7 +72,7 @@ export default {
   cancel: "Abbrechen",
   gta_path_modal_cant_find_samp_title: "SA-MP konnte nicht gefunden werden!",
   gta_path_modal_cant_find_samp_description:
-    'SA-MP Installation konnte in diesem Ordner nicht gefunden werden:\n  - "{{ path }}"\nU"samp.dll" ist am angegebenen Pfad nicht vorhanden.\n\nFalls SA-MP noch nicht installiert wurde, kannst du es von https://sa-mp.mp herunterladen, indem du auf **Herunterladen**. klickst',
+    'SA-MP Installation konnte in diesem Ordner nicht gefunden werden:\n  - "{{ path }}"\n"samp.dll" ist am angegebenen Pfad nicht vorhanden.\n\nFalls SA-MP noch nicht installiert wurde, kannst du es von https://sa-mp.mp herunterladen, indem du auf **Downloads** klickst.',
   notification_add_to_favorites_title: "Zu Favoriten hinzugefügt!",
   notification_add_to_favorites_description:
     "{{ server }} wurde zu deinen Favoriten hinzugefügt.",
