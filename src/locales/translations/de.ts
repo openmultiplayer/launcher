@@ -76,4 +76,17 @@ export default {
   notification_add_to_favorites_title: "Zu Favoriten hinzugefügt!",
   notification_add_to_favorites_description:
     "{{ server }} wurde zu deinen Favoriten hinzugefügt.",
+  nickname_modal_name_not_set_title: "Kein Nickname!",
+  nickname_modal_name_not_set_description:
+    "Du musst einen Nickname wählen, bevor du einem Server beitrittst.",
+  gta_path_modal_path_not_set_title: "Pfad für GTA San Andreas ist nicht festgelegt!",
+  gta_path_modal_path_not_set_description:
+    "Du hast den Pfad für GTA San Andreas nicht festgelegt, gehe zu den Einstellungen und wähle den Spielordner.",
+  admin_permissions_required_modal_title: "Administratorberechtigungen erforderlich!",
+  admin_permissions_required_modal_description:
+    'Es scheint, als ob dein GTA: San Andreas, Administratorberechtigungen zum Ausführen benötigt. Das kann viele Ursachen haben, wie zum Beispiel, dass dein Spiel auf dem "C"-Laufwerk installiert ist. Bitte öffne den open.mp Launcher erneut als Administrator, entweder über den Button "Als Admin ausführen" oder manuell von dir selbst.',
+  run_as_admin: "Als Admin ausführen",
+  settings_general_tab_title: "Allgemein",
+  settings_appearance_and_lang_tab_title: "Aussehen & Sprachen",
+  settings_language_selector_title: "Wähle eine Sprache:",
 };
