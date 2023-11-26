@@ -1,5 +1,6 @@
-import { appWindow } from "@tauri-apps/api/window";
-import { useEffect, useState } from "react";
+import { process } from "@tauri-apps/api";
+import { type PhysicalSize, appWindow } from "@tauri-apps/api/window";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
@@ -12,46 +13,57 @@ import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
 import WindowTitleBar from "./containers/WindowTitleBar";
 import { ThemeContext } from "./contexts/theme";
-import { useAppState } from "./states/app";
 import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
+import { debounce } from "./utils/debounce";
 import { useGenericPersistentState } from "./states/genericStates";
 import i18n from "./locales";
-import { process } from "@tauri-apps/api";
 
 const App = () => {
   const [themeType, setTheme] = useState<"light" | "dark">("light");
-  const { maximized, toggleMaximized } = useAppState();
+  const [maximized, setMaximized] = useState<boolean>(false);
   const { language } = useGenericPersistentState();
+  const windowSize = useRef<PhysicalSize>();
 
-  const windowResizeListener = async () => {
-    const _maximized = useAppState.getState().maximized;
-    const isMaximized = await appWindow.isMaximized();
+  const windowResizeListener = useCallback(
+    debounce(async ({ payload }: { payload: PhysicalSize }) => {
+      if (
+        payload.width !== windowSize.current?.width ||
+        payload.height !== windowSize.current?.height
+      )
+        setMaximized(await appWindow.isMaximized());
 
-    if (isMaximized !== _maximized) {
-      toggleMaximized(isMaximized);
-    }
-  };
+      windowSize.current = payload;
+    }, 50),
+    []
+  );
 
   useEffect(() => {
     i18n.changeLanguage(language);
   }, [language]);
 
   useEffect(() => {
-    document.addEventListener("contextmenu", (event) => {
-      try {
-        // @ts-ignore
-        if (process && process.env.NODE_DEV !== "development") {
-          event.preventDefault();
-        }
-      } catch (e) {}
-    });
+    let killResizeListener: (() => void) | null = null;
+
+    const setupListeners = async () => {
+      document.addEventListener("contextmenu", (event) => {
+        try {
+          // @ts-ignore
+          if (process && process.env.NODE_DEV !== "development") {
+            event.preventDefault();
+          }
+        } catch (e) {}
+      });
+
+      killResizeListener = await appWindow.onResized(windowResizeListener);
+    };
 
     fetchServers();
     fetchUpdateInfo();
+    setupListeners();
 
-    appWindow.onResized(() => {
-      windowResizeListener();
-    });
+    return () => {
+      if (killResizeListener) killResizeListener();
+    };
   }, []);
 
   return (

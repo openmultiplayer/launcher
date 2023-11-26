@@ -10,12 +10,10 @@ export interface UpdateInfo {
 
 interface AppState {
   version: string;
-  maximized: boolean;
   updateInfo: UpdateInfo | undefined;
   skippedUpdateVersion: string;
   nativeAppVersion: string;
   hostOS: OsType;
-  toggleMaximized: (enable: boolean) => void;
   setUpdateInfo: (data: UpdateInfo) => void;
   setNativeAppVersionValue: (data: string) => void;
   setHostOSValue: (data: OsType) => void;
@@ -24,13 +22,11 @@ interface AppState {
 
 const useAppState = create<AppState>()((set) => ({
   version: VERSION,
-  maximized: false,
   updateInfo: undefined,
   skippedUpdateVersion: "",
   nativeAppVersion: "",
   hostOS: "" as OsType,
   listType: "favorites",
-  toggleMaximized: (enable: boolean) => set(() => ({ maximized: enable })),
   setUpdateInfo: (data: UpdateInfo) => set(() => ({ updateInfo: data })),
   setNativeAppVersionValue: (data: string) =>
     set(() => ({ nativeAppVersion: data })),
