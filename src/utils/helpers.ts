@@ -393,6 +393,7 @@ export const sortAndSearchInServerList = (
       ompCheck &&
       unpasswordedCheck &&
       nonEmptyCheck &&
+      server.hostname &&
       server.hostname.toLowerCase().includes(query.toLowerCase())
     );
   });
