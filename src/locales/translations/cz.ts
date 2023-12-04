@@ -8,7 +8,8 @@ export default {
   minimize: "Sbalit",
   maximize: "Rozložit",
   close: "Zavřít",
-  add_server_modal_description_1: "Ruční přidání serveru do seznamu oblíbených položek.",
+  add_server_modal_description_1:
+    "Ruční přidání serveru do seznamu oblíbených položek.",
   add_server_modal_description_2: "Příklad: 127.0.0.1:7777",
   add: "Přidat.",
   server: "Server",
@@ -41,7 +42,8 @@ export default {
   clear_recently_joined_list: "Vymazat nedávný seznam",
   refresh_servers: "Aktualizace seznamu serverů",
   play: "Přehrát",
-  remove_selected_server_from_favorites: "Odstranění serveru z oblíbených položekх",
+  remove_selected_server_from_favorites:
+    "Odstranění serveru z oblíbených položekх",
   add_selected_server_to_favorites: "Přidání serveru do oblíbených",
   add_server: "Přidat server",
   hide_player_and_rule_list: "Skrytí seznamu hráčů a pravidel",
@@ -80,7 +82,8 @@ export default {
   nickname_modal_name_not_set_title: "Žádná přezdívka!",
   nickname_modal_name_not_set_description:
     "Před připojením k serveru je třeba zvolit přezdívku.",
-  gta_path_modal_path_not_set_title: "Cesta ke hře GTA San Andreas není určena!",
+  gta_path_modal_path_not_set_title:
+    "Cesta ke hře GTA San Andreas není určena!",
   gta_path_modal_path_not_set_description:
     "Nezadali jste cestu ke hře GTA San Andreas, přejděte do nastavení a najděte složku se hrou.",
   admin_permissions_required_modal_title: "Vyžadují se práva správce!",
