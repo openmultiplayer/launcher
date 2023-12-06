@@ -131,6 +131,11 @@ impl Query {
             Ok(n) => amt = n,
             Err(e) => return Err(e),
         }
+
+        if amt == 0 {
+            return Ok(String::from("no_data"));
+        }
+
         let query_type = buf[10] as char;
         let packet = Cursor::new(buf[11..amt].to_vec());
         if query_type == 'i' {
