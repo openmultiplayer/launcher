@@ -25,3 +25,13 @@
 .titlebar-button:hover {
   background: #8477B7;
 }
+
+@font-face {
+  font-family: 'Proxima Nova Regular';
+  src:  url('fonts/Proxima Nova Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Proxima Nova Semibold';
+  src:  url('fonts/Proxima Nova Semibold.woff2') format('woff2');
+}
