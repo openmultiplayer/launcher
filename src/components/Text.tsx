@@ -22,15 +22,15 @@ const Text = (props: IProps) => {
       : 20
     : 12;
 
-  const weight = props.bold
-    ? "bold"
+  const font = props.bold
+    ? "Proxima Nova Semibold"
     : props.light
-    ? "100"
+    ? "Proxima Nova Regular"
     : props.medium
-    ? "300"
+    ? "Proxima Nova Regular"
     : props.semibold
-    ? "500"
-    : undefined;
+    ? "Proxima Nova Semibold"
+    : "Proxima Nova Regular";
 
   const { style, ...propsWithoutStyle } = props;
 
@@ -40,7 +40,7 @@ const Text = (props: IProps) => {
       style={[
         {
           fontSize: size,
-          fontWeight: weight,
+          fontFamily: font,
           color: props.color,
         },
         // @ts-ignore
