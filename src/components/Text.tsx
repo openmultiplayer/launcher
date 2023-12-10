@@ -1,4 +1,5 @@
-import { ColorValue, TextProps, Text as RNText } from "react-native";
+import { ColorValue, Text as RNText, TextProps } from "react-native";
+import { sc } from "../utils/sizeScaler";
 
 interface IProps extends TextProps {
   color?: ColorValue;
@@ -14,13 +15,13 @@ interface IProps extends TextProps {
 const Text = (props: IProps) => {
   const size = props.size
     ? props.size === 1
-      ? 14
+      ? sc(14)
       : props.size === 2
-      ? 16
+      ? sc(16)
       : props.size === 3
-      ? 18
-      : 20
-    : 12;
+      ? sc(18)
+      : sc(20)
+    : sc(12);
 
   const font = props.bold
     ? "Proxima Nova Semibold"

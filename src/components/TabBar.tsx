@@ -34,25 +34,26 @@ const TabBar = (props: IProps) => {
             key={"list-type-" + item.type}
             style={{
               overflow: "hidden",
-              height: 34,
-              top: 2,
+              marginRight: sc(10),
+              borderRadius: sc(5),
+              ...(selected
+                ? {
+                    shadowColor: "#fff",
+                    shadowOffset: {
+                      width: 0,
+                      height: 0,
+                    },
+                    shadowOpacity: 0.17,
+                    shadowRadius: 4.65,
+                  }
+                : {}),
             }}
           >
             <TouchableOpacity
               disabled={selected}
               style={[
                 styles.listItem,
-                selected
-                  ? {
-                      shadowColor: theme.primary,
-                      shadowOffset: {
-                        width: 0,
-                        height: 0,
-                      },
-                      shadowOpacity: 0.45,
-                      shadowRadius: 5.84,
-                    }
-                  : {},
+                { backgroundColor: theme.itemBackgroundColor },
               ]}
               onPress={() => {
                 if (props.selected !== item.type) {
@@ -62,24 +63,29 @@ const TabBar = (props: IProps) => {
             >
               {item.icon && (
                 <Icon
+                  svg
                   image={item.icon}
                   size={sc(20)}
-                  style={{ marginRight: 5, opacity: selected ? 1 : 0.25 }}
+                  style={{ marginRight: sc(10), opacity: selected ? 1 : 0.25 }}
+                  color={theme.textPrimary}
                 />
               )}
               <Text
-                semibold={selected}
-                size={1}
-                color={selected ? theme.textSelected : theme.textPrimary}
-                style={
+                semibold
+                color={theme.textPrimary}
+                size={3}
+                style={[
                   selected
                     ? {
+                        opacity: 1,
                         textShadowColor: "rgba(132, 119, 183, 0.5)",
                         textShadowOffset: { width: 0, height: 0 },
                         textShadowRadius: 4,
                       }
-                    : {}
-                }
+                    : {
+                        opacity: 0.25,
+                      },
+                ]}
               >
                 {item.label}
               </Text>
@@ -99,11 +105,12 @@ const styles = StyleSheet.create({
     marginLeft: -0.5,
   },
   listItem: {
-    height: 30,
-    paddingHorizontal: 10,
+    height: sc(35),
+    paddingHorizontal: sc(10),
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+    borderRadius: sc(5),
   },
 });
 
