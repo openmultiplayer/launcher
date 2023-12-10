@@ -1,12 +1,13 @@
 import { useContext } from "react";
 import {
+  StyleProp,
   StyleSheet,
   TouchableOpacity,
   View,
-  StyleProp,
   ViewStyle,
 } from "react-native";
 import { ThemeContext } from "../contexts/theme";
+import { sc } from "../utils/sizeScaler";
 import Icon from "./Icon";
 import Text from "./Text";
 
@@ -50,7 +51,6 @@ const TabBar = (props: IProps) => {
                       },
                       shadowOpacity: 0.45,
                       shadowRadius: 5.84,
-                      borderColor: theme.textSelected,
                     }
                   : {},
               ]}
@@ -63,8 +63,8 @@ const TabBar = (props: IProps) => {
               {item.icon && (
                 <Icon
                   image={item.icon}
-                  size={15}
-                  style={{ marginRight: 5, opacity: selected ? 1 : 0.5 }}
+                  size={sc(20)}
+                  style={{ marginRight: 5, opacity: selected ? 1 : 0.25 }}
                 />
               )}
               <Text

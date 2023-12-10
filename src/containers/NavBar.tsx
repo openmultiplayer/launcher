@@ -15,7 +15,7 @@ const NavBar = () => {
   const { setListType, listType } = useGenericTempState();
 
   const list: { icon: string; label: string; type: ListType }[] = [
-    { icon: images.icons.favorite, label: t("favorites"), type: "favorites" },
+    { icon: images.icons.favTab, label: t("favorites"), type: "favorites" },
     { icon: images.icons.internet, label: t("internet"), type: "internet" },
     { icon: images.icons.partner, label: t("partners"), type: "partners" },
     {
