@@ -47,7 +47,7 @@ const Icon = (props: IProps) => {
 const styles = StyleSheet.create({
   icon: {
     resizeMode: "stretch",
-    tintColor: "white",
+    tintColor: "#FFFFFF",
   },
 });
 

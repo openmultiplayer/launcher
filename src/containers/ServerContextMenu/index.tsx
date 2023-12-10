@@ -112,7 +112,7 @@ const ContextMenu = () => {
               color={theme.primary}
               size={17}
             />
-            <Text bold color={"white"}>
+            <Text bold color={"#FFFFFF"}>
               {t("connect")}
             </Text>
           </Pressable>
@@ -144,7 +144,7 @@ const ContextMenu = () => {
               }
               size={14}
             />
-            <Text bold color={"white"}>
+            <Text bold color={"#FFFFFF"}>
               {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
             </Text>
           </Pressable>
@@ -175,7 +175,7 @@ Using open.mp: ${server.usingOmp ? "Yes" : "No"}`);
               image={images.icons.copy}
               size={14}
             />
-            <Text bold color={"white"}>
+            <Text bold color={"#FFFFFF"}>
               {t("copy_server_info")}
             </Text>
           </Pressable>

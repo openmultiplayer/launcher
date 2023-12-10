@@ -106,7 +106,7 @@ const AddThirdPartyServerModal = () => {
             paddingHorizontal: 5,
             marginTop: 10,
             width: 300,
-            backgroundColor: "white",
+            backgroundColor: "#FFFFFF",
             borderColor: theme.primary,
             height: 30,
             borderRadius: 8,

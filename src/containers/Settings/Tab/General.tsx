@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   pathInput: {
     paddingHorizontal: 5,
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#FFFFFF",
     height: 29,
     borderRadius: 8,
     borderWidth: 2,

@@ -27,7 +27,7 @@ const NavBar = () => {
 
   return (
     <>
-      <View style={[styles.container, { backgroundColor: theme.secondary }]}>
+      <View style={styles.container}>
         <TabBar
           onChange={(type) => setListType(type as ListType)}
           list={list}
@@ -39,7 +39,7 @@ const NavBar = () => {
               title={t("nickname")}
               image={images.icons.nickname}
               size={18}
-              color={"white"}
+              color={"#FFFFFF"}
             />
             <TextInput
               value={nickName}
@@ -47,7 +47,7 @@ const NavBar = () => {
               placeholder={t("nickname") + "..."}
               placeholderTextColor={theme.textPlaceholder}
               style={{
-                backgroundColor: "white",
+                backgroundColor: "#FFFFFF",
                 color: theme.textSecondary,
                 fontWeight: "600",
                 fontSize: 12,
