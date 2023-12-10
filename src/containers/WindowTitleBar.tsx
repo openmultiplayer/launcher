@@ -1,6 +1,6 @@
 import { appWindow } from "@tauri-apps/api/window";
 import { t } from "i18next";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { ColorValue, Pressable, StyleSheet, View } from "react-native";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
@@ -126,8 +126,9 @@ const WindowTitleBar = () => {
         </View>
         <Text
           semibold
+          size={3}
           color={theme.textPrimary}
-          style={{ marginLeft: sc(12), fontSize: sc(18) }}
+          style={{ marginLeft: sc(12) }}
         >
           Open Multiplayer
         </Text>
