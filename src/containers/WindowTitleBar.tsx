@@ -1,7 +1,7 @@
 import { appWindow } from "@tauri-apps/api/window";
 import { t } from "i18next";
 import { useContext, useEffect } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { ColorValue, Pressable, StyleSheet, View } from "react-native";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { images } from "../constants/images";
@@ -9,7 +9,7 @@ import { ThemeContext } from "../contexts/theme";
 import { useSettingsModal } from "../states/settingsModal";
 import { sc } from "../utils/sizeScaler";
 
-const WindowTitleBarButtons = ({
+const NativeWindowTitleBarButtons = ({
   size = sc(30),
   image,
   onPress,
@@ -24,7 +24,10 @@ const WindowTitleBarButtons = ({
 }) => {
   const { theme } = useContext(ThemeContext);
   return (
-    <div className="titlebar-button" style={{ height: size, width: size }}>
+    <div
+      className="titlebar-button"
+      style={{ height: size, width: size, borderRadius: sc(3) }}
+    >
       <Pressable
         style={{
           height: "100%",
@@ -45,8 +48,52 @@ const WindowTitleBarButtons = ({
   );
 };
 
+const CustomWindowTitleBarButtons = ({
+  size = sc(30),
+  image,
+  onPress,
+  iconSize = sc(20),
+  title = "",
+  className,
+  marginRight = 0,
+  color,
+}: {
+  size?: number;
+  iconSize?: number;
+  image: string;
+  title?: string;
+  onPress: () => void;
+  marginRight?: number;
+  className?: string;
+  color?: ColorValue;
+}) => {
+  return (
+    <div
+      className={className}
+      style={{
+        height: size,
+        width: size,
+        borderRadius: sc(3),
+        marginRight: marginRight,
+      }}
+    >
+      <Pressable
+        style={{
+          height: "100%",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={onPress}
+      >
+        <Icon title={title} image={image} size={iconSize} color={color} />
+      </Pressable>
+    </div>
+  );
+};
+
 const WindowTitleBar = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme, themeType, setTheme } = useContext(ThemeContext);
   const { show: showSettings } = useSettingsModal();
 
   useEffect(() => {
@@ -105,43 +152,41 @@ const WindowTitleBar = () => {
       <View
         style={{ flexDirection: "row", alignItems: "center", height: "100%" }}
       >
-        <div
-          className="titlebar-button-colored"
-          style={{
-            height: sc(30),
-            width: sc(30),
-            borderRadius: sc(3),
-            marginRight: sc(12),
+        <CustomWindowTitleBarButtons
+          title={""}
+          iconSize={sc(30)}
+          image={
+            themeType === "dark"
+              ? images.icons.lightTheme
+              : images.icons.darkTheme
+          }
+          marginRight={sc(10)}
+          onPress={() => {
+            if (themeType === "dark") {
+              setTheme("light");
+            } else {
+              setTheme("dark");
+            }
           }}
-        >
-          <Pressable
-            style={{
-              height: "100%",
-              width: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => showSettings()}
-          >
-            <Icon
-              title={t("settings")}
-              image={images.icons.settings}
-              size={sc(20)}
-              color={theme.textPrimary}
-            />
-          </Pressable>
-        </div>
-        <WindowTitleBarButtons
+        />
+        <CustomWindowTitleBarButtons
+          title={t("settings")}
+          image={images.icons.settings}
+          className={"titlebar-button-settings"}
+          marginRight={sc(16)}
+          onPress={() => showSettings()}
+        />
+        <NativeWindowTitleBarButtons
           title={t("minimize")}
           image={images.icons.windowMinimize}
           onPress={() => appWindow.minimize()}
         />
-        <WindowTitleBarButtons
+        <NativeWindowTitleBarButtons
           title={t("maximize")}
           image={images.icons.windowMaximize}
           onPress={() => appWindow.toggleMaximize()}
         />
-        <WindowTitleBarButtons
+        <NativeWindowTitleBarButtons
           title={t("close")}
           image={images.icons.windowClose}
           onPress={() => appWindow.close()}

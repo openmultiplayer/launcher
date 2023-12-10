@@ -32,5 +32,7 @@ export const images = {
     close: "icons/close.svg",
     refresh: "icons/refresh.png",
     clean: "icons/clean.png",
+    darkTheme: "icons/darktheme.svg",
+    lightTheme: "icons/lighttheme.svg",
   },
 };

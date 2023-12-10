@@ -22,7 +22,7 @@
   background: #797979;
 }
 
-.titlebar-button-colored {
+.titlebar-button-settings {
   background: #222227;
 }
 
@@ -30,7 +30,7 @@
   background: #897af1;
 }
 
-.titlebar-button-colored:hover {
+.titlebar-button-settings:hover {
   background: #897af1;
 }
 
