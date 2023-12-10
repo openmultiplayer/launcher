@@ -148,6 +148,7 @@ const WindowTitleBar = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+          padding: sc(15),
         }}
       />
       <View
