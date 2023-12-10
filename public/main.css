@@ -22,16 +22,24 @@
   background: #797979;
 }
 
+.titlebar-button-colored {
+  background: #222227;
+}
+
 .titlebar-button:hover {
-  background: #8477B7;
+  background: #897af1;
+}
+
+.titlebar-button-colored:hover {
+  background: #897af1;
 }
 
 @font-face {
-  font-family: 'Proxima Nova Regular';
-  src:  url('fonts/Proxima Nova Regular.woff2') format('woff2');
+  font-family: "Proxima Nova Regular";
+  src: url("fonts/Proxima Nova Regular.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'Proxima Nova Semibold';
-  src:  url('fonts/Proxima Nova Semibold.woff2') format('woff2');
+  font-family: "Proxima Nova Semibold";
+  src: url("fonts/Proxima Nova Semibold.woff2") format("woff2");
 }

@@ -1,6 +1,6 @@
 import { process } from "@tauri-apps/api";
-import { type PhysicalSize, appWindow } from "@tauri-apps/api/window";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { appWindow, type PhysicalSize } from "@tauri-apps/api/window";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
@@ -13,14 +13,16 @@ import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
 import WindowTitleBar from "./containers/WindowTitleBar";
 import { ThemeContext } from "./contexts/theme";
-import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
-import { debounce } from "./utils/debounce";
-import { useGenericPersistentState } from "./states/genericStates";
 import i18n from "./locales";
+import { useGenericPersistentState } from "./states/genericStates";
+import { debounce } from "./utils/debounce";
+import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
+import { sc } from "./utils/sizeScaler";
 
 const App = () => {
-  const [themeType, setTheme] = useState<"light" | "dark">("light");
+  const [themeType, setTheme] = useState<"light" | "dark">("dark");
   const [maximized, setMaximized] = useState<boolean>(false);
+  const { theme } = useContext(ThemeContext);
   const { language } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
 
@@ -66,6 +68,10 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => {
+    console.log("ya aliiii", theme);
+  }, []);
+
   return (
     <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>
       <ThemeContext.Provider
@@ -75,9 +81,17 @@ const App = () => {
           setTheme,
         }}
       >
-        <View style={[styles.appView, { borderRadius: maximized ? 0 : 8 }]}>
+        <View
+          style={[
+            styles.appView,
+            {
+              borderRadius: maximized ? 0 : 8,
+              backgroundColor: theme.appBackgroundColor,
+            },
+          ]}
+        >
           <WindowTitleBar />
-          <View style={{ flex: 1, width: "100%" }}>
+          <View style={styles.appBody}>
             <NavBar />
             <MainView />
             <ContextMenu />
@@ -111,6 +125,12 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.6,
     shadowRadius: 4.65,
+  },
+  appBody: {
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: sc(15),
+    paddingBottom: sc(15),
   },
 });
 

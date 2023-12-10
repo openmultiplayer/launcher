@@ -1,7 +1,7 @@
 export const images = {
   logoDark: "logo-dark-trans.png",
   icons: {
-    settings: "icons/settings.png",
+    settings: "icons/settings.svg",
     info: "icons/info.png",
     nickname: "icons/nickname.png",
     connect: "icons/connect.png",
