@@ -45,11 +45,22 @@ const Icon = (props: IProps) => {
     />
   );
 
-  const Titled = props.title ? <div title={props.title}>{Icon}</div> : Icon;
+  const Titled = props.title ? (
+    <div title={props.title} style={{ height: props.size, width: props.size }}>
+      {Icon}
+    </div>
+  ) : (
+    Icon
+  );
 
   if (props.onPress) {
     return (
-      <TouchableOpacity onPress={props.onPress}>{Titled}</TouchableOpacity>
+      <TouchableOpacity
+        onPress={props.onPress}
+        style={{ height: props.size, width: props.size }}
+      >
+        {Titled}
+      </TouchableOpacity>
     );
   } else {
     return Titled;
