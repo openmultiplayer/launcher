@@ -1,4 +1,4 @@
-const SCALE = 1.333;
+const SCALE = 1.15;
 
 const sizeScaler = (n: number) => {
   return n / SCALE;

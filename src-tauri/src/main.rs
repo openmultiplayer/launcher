@@ -133,7 +133,7 @@ fn main() {
         .setup(|app| {
             let main_window = app.get_window("main").unwrap();
             main_window
-                .set_min_size(Some(PhysicalSize::new(900, 600)))
+                .set_min_size(Some(PhysicalSize::new(1000, 700)))
                 .unwrap();
             Ok(())
         })
