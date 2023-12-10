@@ -68,10 +68,6 @@ const App = () => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("ya aliiii", theme);
-  }, []);
-
   return (
     <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>
       <ThemeContext.Provider

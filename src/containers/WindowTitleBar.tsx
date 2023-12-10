@@ -96,10 +96,6 @@ const WindowTitleBar = () => {
   const { theme, themeType, setTheme } = useContext(ThemeContext);
   const { show: showSettings } = useSettingsModal();
 
-  useEffect(() => {
-    console.log("ya heseeeeein", theme);
-  }, []);
-
   return (
     <View
       style={{
