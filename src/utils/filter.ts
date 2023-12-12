@@ -1,3 +1,5 @@
+import { Log } from "./logger";
+
 class Color {
   r: number = 0;
   g: number = 0;
@@ -294,11 +296,11 @@ class Solver {
     function fmt(idx: number, multiplier = 1) {
       return Math.round(filters[idx] * multiplier);
     }
-    return `brightness(0) saturate(100%) invert(${fmt(0)}%) sepia(${fmt(1)}%) saturate(${fmt(
-      2
-    )}%) hue-rotate(${fmt(3, 3.6)}deg) brightness(${fmt(4)}%) contrast(${fmt(
-      5
-    )}%)`;
+    return `brightness(0) saturate(100%) invert(${fmt(0)}%) sepia(${fmt(
+      1
+    )}%) saturate(${fmt(2)}%) hue-rotate(${fmt(3, 3.6)}deg) brightness(${fmt(
+      4
+    )}%) contrast(${fmt(5)}%)`;
   }
 }
 
@@ -322,7 +324,7 @@ function hexToRgb(hex: string) {
 export const convertRgbToFilter = (color_: string) => {
   const rgb = hexToRgb(color_);
   if (rgb === null || rgb.length !== 3) {
-    alert("Invalid format! " + color_);
+    Log.debug("Invalid format! " + color_);
     return {
       values: [],
       loss: 0,
