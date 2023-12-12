@@ -59,10 +59,11 @@ const NavBar = () => {
               placeholder={t("nickname") + "..."}
               placeholderTextColor={theme.textSecondary}
               style={{
+                fontFamily: "Proxima Nova Regular",
                 backgroundColor: theme.textInputBackgroundColor,
                 color: theme.textPrimary,
-                fontWeight: "600",
-                fontSize: 12,
+                fontSize: sc(17),
+                textAlignVertical: 'center',
                 width: 150,
                 marginLeft: sc(10),
                 height: sc(35),

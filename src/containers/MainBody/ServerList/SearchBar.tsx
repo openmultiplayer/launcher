@@ -138,7 +138,7 @@ const SearchBar = (props: IProps) => {
             backgroundColor: "transparent",
             flex: 1,
             fontFamily: "Proxima Nova Regular",
-            fontSize: sc(18),
+            fontSize: sc(17),
             paddingHorizontal: 5,
             color: theme.textPrimary,
             // @ts-ignore
