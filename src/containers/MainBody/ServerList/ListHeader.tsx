@@ -6,22 +6,20 @@ import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
 import { useGenericTempState } from "../../../states/genericStates";
+import { sc } from "../../../utils/sizeScaler";
 
 const ListHeader = () => {
   const { theme } = useContext(ThemeContext);
   const { searchData, setSearchData } = useGenericTempState();
   return (
-    <View
-      style={[
-        styles.serverContainer,
-        {
-          borderBottomColor: theme.separatorBorderColor,
-          backgroundColor: theme.listHeaderBackgroundColor,
-        },
-      ]}
-    >
+    <View style={styles.serverContainer}>
       <View style={styles.iconContainer}>
-        <Icon image={images.icons.locked} size={17} />
+        <Icon
+          svg
+          image={images.icons.locked}
+          size={sc(20)}
+          color={theme.textSecondary}
+        />
       </View>
       <View style={[styles.commonFieldContainer, styles.hostNameContainer]}>
         <Pressable
@@ -49,7 +47,11 @@ const ListHeader = () => {
               {searchData.sortName === "descending" ? "↓" : "↑"}
             </Text>
           )}
-          <Text semibold size={1} color={theme.textPrimary + "AA"}>
+          <Text
+            semibold
+            style={{ fontSize: sc(17) }}
+            color={theme.textSecondary}
+          >
             {t("name")}
           </Text>
         </Pressable>
@@ -86,7 +88,11 @@ const ListHeader = () => {
               {searchData.sortPing === "descending" ? "↓" : "↑"}
             </Text>
           )}
-          <Text semibold size={1} color={theme.textPrimary + "AA"}>
+          <Text
+            semibold
+            style={{ fontSize: sc(17) }}
+            color={theme.textSecondary}
+          >
             {t("ping")}
           </Text>
         </Pressable>
@@ -116,7 +122,11 @@ const ListHeader = () => {
               {searchData.sortMode === "descending" ? "↓" : "↑"}
             </Text>
           )}
-          <Text semibold size={1} color={theme.textPrimary + "AA"}>
+          <Text
+            semibold
+            style={{ fontSize: sc(17) }}
+            color={theme.textSecondary}
+          >
             {t("mode")}
           </Text>
         </Pressable>
@@ -145,7 +155,11 @@ const ListHeader = () => {
               {searchData.sortPlayer === "descending" ? "↓" : "↑"}
             </Text>
           )}
-          <Text semibold size={1} color={theme.textPrimary + "AA"}>
+          <Text
+            semibold
+            style={{ fontSize: sc(17) }}
+            color={theme.textSecondary}
+          >
             {t("players")}
           </Text>
         </Pressable>
@@ -160,13 +174,11 @@ const styles = StyleSheet.create({
     paddingRight: 8,
     width: "100%",
     flexDirection: "row",
-    borderBottomWidth: 1,
   },
   iconContainer: {
-    height: 24,
-    width: 23,
-    marginRight: 1,
-    marginLeft: 5,
+    height: sc(32),
+    width: sc(32),
+    marginRight: sc(10),
     justifyContent: "center",
     alignItems: "center",
   },
@@ -188,14 +200,14 @@ const styles = StyleSheet.create({
   },
   pingFieldContainer: {
     width: 50,
-    justifyContent: "flex-end",
+    justifyContent: "center",
   },
   gameModeContainer: {
     flex: 1,
-    maxWidth: 450,
-    minWidth: 170,
+    maxWidth: 420,
+    minWidth: 150,
     paddingLeft: 10,
-    justifyContent: "flex-start",
+    justifyContent: "center",
   },
 });
 
