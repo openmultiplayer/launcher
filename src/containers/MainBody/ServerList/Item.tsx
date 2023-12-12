@@ -121,7 +121,6 @@ const ServerItem = memo((props: IProps) => {
               alignItems: "center",
               flex: 1,
               borderRadius: sc(5),
-              overflow: "hidden",
             },
             {
               borderWidth: props.isSelected ? 1 : 0,
@@ -139,21 +138,34 @@ const ServerItem = memo((props: IProps) => {
                 {
                   backgroundColor: theme.serverListItemBackgroundColor,
                   opacity: fadeAnimValue,
+                  borderRadius: sc(5),
                 },
               ]}
             />
           )}
           {server.usingOmp && (
-            <View style={[styles.iconContainer]}>
-              <Icon
-                title={t("openmp_server")}
-                image={images.icons.ompLight}
-                size={sc(20)}
-              />
-            </View>
+            <div
+              style={{
+                filter: `drop-shadow(0 0 8px ${theme.primary}CC)`,
+              }}
+            >
+              <View style={[styles.iconContainer, { marginHorizontal: sc(3) }]}>
+                <Icon
+                  title={t("openmp_server")}
+                  image={images.icons.omp}
+                  size={sc(23)}
+                />
+              </View>
+            </div>
           )}
-          <View style={[styles.commonFieldContainer, styles.hostNameContainer]}>
-            <Text size={1} color={theme.textPrimary}>
+          <View
+            style={[
+              styles.commonFieldContainer,
+              styles.hostNameContainer,
+              { paddingLeft: server.usingOmp ? 0 : sc(10) },
+            ]}
+          >
+            <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
               {server.hostname}
             </Text>
           </View>
@@ -168,14 +180,14 @@ const ServerItem = memo((props: IProps) => {
             <View
               style={[styles.commonFieldContainer, styles.pingFieldContainer]}
             >
-              <Text size={1} color={theme.textPrimary + "AA"}>
+              <Text style={{ fontSize: sc(17) }} color={theme.textSecondary}>
                 {server.ping === 9999 ? "-" : server.ping}
               </Text>
             </View>
             <View
               style={[styles.commonFieldContainer, styles.gameModeContainer]}
             >
-              <Text size={1} color={theme.textPrimary}>
+              <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
                 {server.gameMode}
               </Text>
             </View>
@@ -185,9 +197,12 @@ const ServerItem = memo((props: IProps) => {
                 styles.playersFieldContainer,
               ]}
             >
-              <Text size={1} color={theme.textPrimary}>
+              <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
                 {server.playerCount}
-                <Text size={1} color={theme.textPrimary + "AA"}>
+                <Text
+                  style={{ fontSize: sc(17) }}
+                  color={theme.textPrimary + "AA"}
+                >
                   /{server.maxPlayers}
                 </Text>
               </Text>
@@ -223,7 +238,7 @@ const styles = StyleSheet.create({
   },
   hostNameContainer: {
     flex: 1,
-    paddingHorizontal: 5,
+    paddingRight: sc(10),
   },
   playersFieldContainer: {
     paddingRight: 5,
