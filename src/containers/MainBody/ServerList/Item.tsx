@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
     height: sc(32),
     width: "100%",
     flexDirection: "row",
+    paddingRight: sc(5),
   },
   iconContainer: {
     height: sc(32),

@@ -171,7 +171,7 @@ const ListHeader = () => {
 const styles = StyleSheet.create({
   serverContainer: {
     height: 26,
-    paddingRight: 8,
+    paddingRight: sc(13),
     width: "100%",
     flexDirection: "row",
   },
