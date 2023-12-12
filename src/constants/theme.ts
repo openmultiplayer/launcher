@@ -12,7 +12,7 @@ export interface ThemeColors {
   itemContainerBackgroundColor: string;
   selectedItemBorderColor: string;
   selectedItemBackgroundColor: string;
-  responsiveListItemBackgroundColor: string;
+  serverListItemBackgroundColor: string;
   listHeaderBackgroundColor: string;
   listBackgroundColor: string;
 }
@@ -31,7 +31,7 @@ export const darkThemeColors: ThemeColors = {
   itemContainerBackgroundColor: "#1D1D1D",
   selectedItemBorderColor: "#000000DD",
   selectedItemBackgroundColor: "#63598b",
-  responsiveListItemBackgroundColor: "#0D0D0D",
+  serverListItemBackgroundColor: "#303038",
   listHeaderBackgroundColor: "#2D2D2D",
   listBackgroundColor: "#3D3D3D",
 };
@@ -50,7 +50,7 @@ export const lightThemeColors: ThemeColors = {
   itemContainerBackgroundColor: "#1D1D1D",
   selectedItemBorderColor: "#000000DD",
   selectedItemBackgroundColor: "#63598b",
-  responsiveListItemBackgroundColor: "#0D0D0D",
+  serverListItemBackgroundColor: "#303038",
   listHeaderBackgroundColor: "#2D2D2D",
   listBackgroundColor: "#3D3D3D",
 };

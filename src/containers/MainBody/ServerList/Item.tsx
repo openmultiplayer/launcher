@@ -7,6 +7,7 @@ import { images } from "../../../constants/images";
 import { ThemeContext } from "../../../contexts/theme";
 import { useContextMenu } from "../../../states/contextMenu";
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
+import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 
 interface IProps {
@@ -15,8 +16,6 @@ interface IProps {
   isSelected?: boolean;
   onSelect?: (server: Server) => void;
 }
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const ServerItem = memo((props: IProps) => {
   const { server, index } = props;
@@ -32,12 +31,12 @@ const ServerItem = memo((props: IProps) => {
       fadeAnimValue.setValue(1);
       isSelectedRef.current = true;
     } else {
-      fadeAnimValue.setValue(0.8);
+      fadeAnimValue.setValue(0.5);
       isSelectedRef.current = false;
     }
   }, [props.isSelected]);
 
-  const fadeAnimValue = useRef(new Animated.Value(0.8)).current;
+  const fadeAnimValue = useRef(new Animated.Value(0.5)).current;
 
   const fadeInAnim = Animated.timing(fadeAnimValue, {
     toValue: 1,
@@ -46,7 +45,7 @@ const ServerItem = memo((props: IProps) => {
   });
 
   const fadeOutAnim = Animated.timing(fadeAnimValue, {
-    toValue: 0.8,
+    toValue: 0.5,
     duration: 400,
     useNativeDriver: false,
   });
@@ -79,14 +78,9 @@ const ServerItem = memo((props: IProps) => {
   };
 
   return (
-    <AnimatedPressable
+    <Pressable
       key={"server-item-" + index}
-      style={[
-        styles.pressableContainer,
-        {
-          opacity: fadeAnimValue,
-        },
-      ]}
+      style={styles.pressableContainer}
       onHoverIn={() => !props.isSelected && fadeIn()}
       onHoverOut={() => !props.isSelected && fadeOut()}
       onPress={() => onPress()}
@@ -97,83 +91,111 @@ const ServerItem = memo((props: IProps) => {
         return e;
       }}
     >
-      <View
-        style={[
-          styles.serverContainer,
-          {
-            borderWidth: props.isSelected ? 0 : 0,
-            backgroundColor: props.isSelected
-              ? theme.selectedItemBackgroundColor
-              : theme.responsiveListItemBackgroundColor,
-            borderColor: theme.selectedItemBorderColor,
-            borderRadius: props.isSelected ? 4 : 0,
-            top: props.isSelected ? 0 : 0,
-          },
-        ]}
-      >
+      <View style={styles.serverContainer}>
         <View
           style={[
             styles.iconContainer,
             server.hasPassword
-              ? { backgroundColor: "#DA0000BB" }
-              : { backgroundColor: "#24731DBB" },
+              ? { backgroundColor: theme.itemBackgroundColor }
+              : { backgroundColor: "#7AF1AA1A" },
           ]}
         >
           <Icon
+            svg
             title={server.hasPassword ? t("locked") : t("unlocked")}
             image={
               server.hasPassword ? images.icons.locked : images.icons.unlocked
             }
-            size={17}
+            size={sc(20)}
+            color={
+              !server.hasPassword
+                ? "#7AF1AA"
+                : theme.serverListItemBackgroundColor
+            }
           />
         </View>
-        {server.usingOmp && (
-          <View style={[styles.iconContainer]}>
-            <Icon
-              title={t("openmp_server")}
-              image={images.icons.ompLight}
-              size={20}
-            />
-          </View>
-        )}
-        <View style={[styles.commonFieldContainer, styles.hostNameContainer]}>
-          <Text size={1} color={theme.textPrimary}>
-            {server.hostname}
-          </Text>
-        </View>
         <View
-          style={{
-            flex: 0.5,
-            minWidth: 300,
-            flexDirection: "row",
-            marginLeft: server.usingOmp ? -26 : 0,
-          }}
+          style={[
+            {
+              flexDirection: "row",
+              alignItems: "center",
+              flex: 1,
+              borderRadius: sc(5),
+              overflow: "hidden",
+            },
+            {
+              borderWidth: props.isSelected ? 1 : 0,
+              borderColor: theme.primary,
+              backgroundColor: props.isSelected
+                ? theme.primary + "7D"
+                : "transparent",
+            },
+          ]}
         >
-          <View
-            style={[styles.commonFieldContainer, styles.pingFieldContainer]}
-          >
-            <Text size={1} color={theme.textPrimary + "AA"}>
-              {server.ping === 9999 ? "-" : server.ping}
+          {!props.isSelected && (
+            <Animated.View
+              style={[
+                StyleSheet.absoluteFill,
+                {
+                  backgroundColor: theme.serverListItemBackgroundColor,
+                  opacity: fadeAnimValue,
+                },
+              ]}
+            />
+          )}
+          {server.usingOmp && (
+            <View style={[styles.iconContainer]}>
+              <Icon
+                title={t("openmp_server")}
+                image={images.icons.ompLight}
+                size={sc(20)}
+              />
+            </View>
+          )}
+          <View style={[styles.commonFieldContainer, styles.hostNameContainer]}>
+            <Text size={1} color={theme.textPrimary}>
+              {server.hostname}
             </Text>
           </View>
-          <View style={[styles.commonFieldContainer, styles.gameModeContainer]}>
-            <Text size={1} color={theme.textPrimary}>
-              {server.gameMode}
-            </Text>
-          </View>
           <View
-            style={[styles.commonFieldContainer, styles.playersFieldContainer]}
+            style={{
+              flex: 0.5,
+              minWidth: 300,
+              flexDirection: "row",
+              marginLeft: server.usingOmp ? -26 : 0,
+            }}
           >
-            <Text size={1} color={theme.textPrimary}>
-              {server.playerCount}
+            <View
+              style={[styles.commonFieldContainer, styles.pingFieldContainer]}
+            >
               <Text size={1} color={theme.textPrimary + "AA"}>
-                /{server.maxPlayers}
+                {server.ping === 9999 ? "-" : server.ping}
               </Text>
-            </Text>
+            </View>
+            <View
+              style={[styles.commonFieldContainer, styles.gameModeContainer]}
+            >
+              <Text size={1} color={theme.textPrimary}>
+                {server.gameMode}
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.commonFieldContainer,
+                styles.playersFieldContainer,
+              ]}
+            >
+              <Text size={1} color={theme.textPrimary}>
+                {server.playerCount}
+                <Text size={1} color={theme.textPrimary + "AA"}>
+                  /{server.maxPlayers}
+                </Text>
+              </Text>
+            </View>
           </View>
         </View>
       </View>
-    </AnimatedPressable>
+    </Pressable>
   );
 });
 
@@ -181,17 +203,18 @@ const styles = StyleSheet.create({
   pressableContainer: {
     // @ts-ignore
     cursor: "default",
+    marginTop: sc(7),
   },
   serverContainer: {
-    height: 25,
+    height: sc(32),
     width: "100%",
     flexDirection: "row",
-    marginTop: 2,
   },
   iconContainer: {
-    height: 25,
-    width: 24,
-    marginLeft: 1,
+    height: sc(32),
+    width: sc(32),
+    marginRight: sc(10),
+    borderRadius: sc(5),
     justifyContent: "center",
     alignItems: "center",
   },
@@ -209,13 +232,14 @@ const styles = StyleSheet.create({
   },
   pingFieldContainer: {
     width: 50,
-    alignItems: "flex-end",
+    alignItems: "center",
   },
   gameModeContainer: {
     flex: 1,
-    maxWidth: 450,
-    minWidth: 170,
+    maxWidth: 420,
+    minWidth: 150,
     paddingLeft: 10,
+    alignItems: "center",
   },
 });
 

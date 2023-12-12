@@ -1,5 +1,6 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
+import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 import ListHeader from "./ListHeader";
 
@@ -15,11 +16,11 @@ const List = (props: IProps) => {
       <ListHeader />
       <BigList
         id="scroll"
-        contentContainerStyle={[{ paddingHorizontal: 3 }, props.containerStyle]}
+        contentContainerStyle={props.containerStyle}
         data={props.data}
         renderItem={(info) => props.renderItem(info.item, info.index)}
         headerHeight={0}
-        itemHeight={28}
+        itemHeight={sc(39)}
         renderFooter={null}
         renderHeader={null}
       />
