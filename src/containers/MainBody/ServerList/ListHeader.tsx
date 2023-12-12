@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   gameModeContainer: {
     flex: 1,
     maxWidth: 420,
-    minWidth: 150,
+    minWidth: 170,
     paddingLeft: 10,
     justifyContent: "center",
   },
