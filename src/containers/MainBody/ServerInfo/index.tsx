@@ -8,6 +8,8 @@ import { validateWebUrl } from "../../../utils/helpers";
 import { sc } from "../../../utils/sizeScaler";
 import AdditionalInfo from "./AdditionalInfo";
 import PlayerList from "./PlayerList";
+import Icon from "../../../components/Icon";
+import { images } from "../../../constants/images";
 
 const ServerInfo = () => {
   const { theme } = useContext(ThemeContext);
@@ -25,35 +27,36 @@ const ServerInfo = () => {
   return (
     <View style={styles.serverInfoView}>
       <PlayerList players={selected ? selected.players : []} />
-      <AdditionalInfo server={selected} />
       <View
         style={{
           width: "100%",
-          height: 30,
-          paddingRight: 8,
-          backgroundColor: theme.itemContainerBackgroundColor,
+          height: sc(50),
         }}
       >
         <Pressable
           style={{
-            justifyContent: "center",
             alignItems: "center",
             width: "100%",
             height: "100%",
+            flexDirection: "row",
+            paddingLeft: sc(12),
           }}
           onPress={() =>
             shell.open(webUrl.includes("http") ? webUrl : "https://" + webUrl)
           }
         >
+          <Icon svg image={images.icons.link} size={sc(29)} />
           <Text
-            style={{ textDecorationLine: "underline" }}
             semibold
-            color={theme.primary}
+            size={1}
+            color={theme.textPrimary}
+            style={{ marginLeft: sc(5) }}
           >
             {webUrl}
           </Text>
         </Pressable>
       </View>
+      <AdditionalInfo server={selected} />
     </View>
   );
 };

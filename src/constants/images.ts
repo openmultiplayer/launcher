@@ -35,5 +35,6 @@ export const images = {
     clean: "icons/clean.png",
     darkTheme: "icons/darktheme.svg",
     lightTheme: "icons/lighttheme.svg",
+    link: "icons/link.svg",
   },
 };
