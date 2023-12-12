@@ -322,6 +322,7 @@ function hexToRgb(hex: string) {
 }
 
 export const convertRgbToFilter = (color_: string) => {
+  if (color_ === "#FFFFFF40") color_ = "#59595D";
   const rgb = hexToRgb(color_);
   if (rgb === null || rgb.length !== 3) {
     Log.debug("Invalid format! " + color_);
