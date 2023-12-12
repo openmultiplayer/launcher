@@ -7,6 +7,7 @@ export interface ThemeColors {
   textSelected: string;
   appBackgroundColor: string;
   itemBackgroundColor: string;
+  textInputBackgroundColor: string;
   separatorBorderColor: string;
   itemContainerBackgroundColor: string;
   selectedItemBorderColor: string;
@@ -20,11 +21,12 @@ export const darkThemeColors: ThemeColors = {
   primary: "#8477B7",
   secondary: "#2D2D2D",
   textPrimary: "#FAFAFA",
-  textSecondary: "#373737",
+  textSecondary: "#59595D",
   textPlaceholder: "#909090",
   textSelected: "#8477B7",
   appBackgroundColor: "#1A1A1E",
   itemBackgroundColor: "#222227",
+  textInputBackgroundColor: "#16161A",
   separatorBorderColor: "#3D3D3D",
   itemContainerBackgroundColor: "#1D1D1D",
   selectedItemBorderColor: "#000000DD",
@@ -38,11 +40,12 @@ export const lightThemeColors: ThemeColors = {
   primary: "#8477B7",
   secondary: "#2D2D2D",
   textPrimary: "#FAFAFA",
-  textSecondary: "#373737",
+  textSecondary: "#59595D",
   textPlaceholder: "#909090",
   textSelected: "#8477B7",
   appBackgroundColor: "#1A1A1E",
   itemBackgroundColor: "#222227",
+  textInputBackgroundColor: "#16161A",
   separatorBorderColor: "#3D3D3D",
   itemContainerBackgroundColor: "#1D1D1D",
   selectedItemBorderColor: "#000000DD",

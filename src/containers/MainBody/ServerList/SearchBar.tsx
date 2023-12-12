@@ -20,6 +20,7 @@ import {
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../../states/servers";
 import { fetchServers } from "../../../utils/helpers";
+import { sc } from "../../../utils/sizeScaler";
 
 interface IProps {
   onChange: (query: string) => void;
@@ -88,45 +89,46 @@ const SearchBar = (props: IProps) => {
   });
 
   return (
-    <View
-      style={[styles.searchContainer, { backgroundColor: theme.secondary }]}
-    >
+    <View style={styles.searchContainer}>
       <TouchableOpacity
         style={{
-          height: "100%",
-          aspectRatio: 1.1,
+          height: sc(38),
+          width: sc(38),
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.itemBackgroundColor,
+          borderRadius: sc(5),
         }}
         onPress={() => showFilterMenu(!filterMenu)}
       >
         <Icon
+          svg
           title={t("filter_servers")}
           image={images.icons.filter}
-          size={16}
-          color={theme.textPlaceholder}
+          size={sc(16)}
+          color={theme.textSecondary}
         />
       </TouchableOpacity>
       <View
-        style={{
-          height: "100%",
-          aspectRatio: 1,
-          marginLeft: -5,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Icon image={images.icons.search} size={16} />
-      </View>
-      <View
         style={[
           styles.inputContainer,
-          {
-            borderBottomWidth: searchQuery.length ? 1 : 0,
-            borderColor: theme.separatorBorderColor,
-          },
+          { backgroundColor: theme.textInputBackgroundColor },
         ]}
       >
+        <View
+          style={{
+            height: sc(38),
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Icon
+            svg
+            image={images.icons.search}
+            size={sc(16)}
+            color={theme.textSecondary}
+          />
+        </View>
         <TextInput
           placeholder={t("search_for_server_hostname_mode")}
           placeholderTextColor={theme.textPlaceholder}
@@ -135,6 +137,8 @@ const SearchBar = (props: IProps) => {
             height: "100%",
             backgroundColor: "transparent",
             flex: 1,
+            fontFamily: "Proxima Nova Regular",
+            fontSize: sc(18),
             paddingHorizontal: 5,
             // @ts-ignore
             outlineStyle: "none",
@@ -150,12 +154,11 @@ const SearchBar = (props: IProps) => {
               setSearchQuery("");
             }}
             style={{
-              height: "80%",
+              height: "100%",
               aspectRatio: 1,
               justifyContent: "center",
               alignItems: "center",
-              marginTop: "1%",
-              backgroundColor: theme.separatorBorderColor,
+              backgroundColor: theme.itemBackgroundColor,
             }}
           >
             <Text size={2} color={theme.textPlaceholder}>
@@ -270,17 +273,19 @@ const SearchBar = (props: IProps) => {
 
 const styles = StyleSheet.create({
   searchContainer: {
-    height: 30,
+    height: sc(60),
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: 10,
   },
   inputContainer: {
-    height: "100%",
+    height: sc(38),
     flex: 1,
-    marginRight: 10,
+    marginHorizontal: sc(10),
+    paddingLeft: sc(10),
     flexDirection: "row",
     alignItems: "center",
+    borderRadius: sc(5),
+    overflow: "hidden",
   },
   rightSideIcons: {
     height: "100%",
