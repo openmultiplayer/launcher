@@ -3,6 +3,7 @@ import { useContext, useMemo } from "react";
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
 import { ThemeContext } from "../../../contexts/theme";
+import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 
 interface IProps {
@@ -31,22 +32,27 @@ const AdditionalInfo = (props: IProps) => {
   const renderRule = ({ item: rule, index }: ListRenderItemInfo<Rule>) => {
     return (
       <View
-        style={[
-          styles.rulesContainer,
-          {
-            backgroundColor: theme.itemContainerBackgroundColor,
-            marginTop: 2,
-          },
-        ]}
+        style={[styles.rulesContainer, { marginBottom: sc(5) }]}
         key={"rule-list-item-" + index}
       >
         <View style={[styles.commonFieldContainer, styles.ruleFieldContainer]}>
-          <Text size={1} color={theme.textPrimary}>
+          <Text style={{ fontSize: sc(16) }} color={theme.textPrimary}>
             {rule.name}
           </Text>
         </View>
-        <View style={[styles.commonFieldContainer, styles.valueFieldContainer]}>
-          <Text size={1} color={theme.textPrimary + "AA"}>
+        <View
+          style={[
+            styles.commonFieldContainer,
+            styles.valueFieldContainer,
+            {
+              height: sc(26),
+              paddingHorizontal: sc(7),
+              backgroundColor: theme.appBackgroundColor + "66",
+              borderRadius: sc(5),
+            },
+          ]}
+        >
+          <Text style={{ fontSize: sc(14) }} color={theme.textSecondary}>
             {rule.value}
           </Text>
         </View>
@@ -67,31 +73,43 @@ const AdditionalInfo = (props: IProps) => {
         style={[
           styles.rulesContainer,
           {
-            marginBottom: 0,
-            paddingRight: 8,
-            borderBottomWidth: 1,
-            borderColor: theme.separatorBorderColor,
-            backgroundColor: theme.listHeaderBackgroundColor,
+            marginBottom: sc(5),
+            marginTop: sc(0),
+            paddingRight: sc(14),
+            paddingLeft: sc(10),
           },
         ]}
       >
         <View style={[styles.commonFieldContainer, styles.ruleFieldContainer]}>
-          <Text semibold size={1} color={theme.textPrimary + "AA"}>
+          <Text
+            semibold
+            style={{ fontSize: sc(17) }}
+            color={theme.textSecondary}
+          >
             {t("rule")}
           </Text>
         </View>
         <View style={[styles.commonFieldContainer, styles.valueFieldContainer]}>
-          <Text semibold size={1} color={theme.textPrimary + "AA"}>
+          <Text
+            semibold
+            style={{ fontSize: sc(17) }}
+            color={theme.textSecondary}
+          >
             {t("value")}
           </Text>
         </View>
       </View>
-      <FlatList
-        id="scroll"
-        data={rules}
-        renderItem={renderRule}
-        contentContainerStyle={{ paddingHorizontal: 3, paddingBottom: 3 }}
-      />
+      <View
+        style={{
+          backgroundColor: theme.itemBackgroundColor,
+          padding: sc(15),
+          paddingTop: sc(15),
+          borderRadius: 5,
+          flex: 1,
+        }}
+      >
+        <FlatList id="scroll" data={rules} renderItem={renderRule} />
+      </View>
     </View>
   );
 };
@@ -99,25 +117,24 @@ const AdditionalInfo = (props: IProps) => {
 const styles = StyleSheet.create({
   additionalInfoView: {
     width: "100%",
-    height: "38%",
+    flex: 1,
+    paddingBottom: sc(10),
   },
   rulesContainer: {
-    height: 25,
+    height: sc(26),
     flexDirection: "row",
   },
   commonFieldContainer: {
     justifyContent: "center",
+    height: sc(26),
   },
   ruleFieldContainer: {
-    flex: 0.8,
-    paddingLeft: 8,
-    borderLeftWidth: 0,
+    flex: 1,
     alignItems: "flex-start",
   },
   valueFieldContainer: {
-    flex: 1,
     paddingRight: 5,
-    alignItems: "flex-start",
+    alignItems: "flex-end",
   },
 });
 

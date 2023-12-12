@@ -18,9 +18,12 @@ const PlayerList = (props: IProps) => {
     index,
   }: ListRenderItemInfo<Player>) => {
     return (
-      <View style={[styles.playerContainer]} key={"player-list-item-" + index}>
+      <View
+        style={[styles.playerContainer, { marginBottom: sc(10) }]}
+        key={"player-list-item-" + index}
+      >
         <View style={[styles.commonFieldContainer, styles.nameFieldContainer]}>
-          <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
+          <Text style={{ fontSize: sc(16) }} color={theme.textPrimary}>
             {player.name}
           </Text>
         </View>
@@ -35,7 +38,7 @@ const PlayerList = (props: IProps) => {
             },
           ]}
         >
-          <Text style={{ fontSize: sc(15) }} color={theme.textSecondary}>
+          <Text style={{ fontSize: sc(14) }} color={theme.textSecondary}>
             {player.score}
           </Text>
         </View>
@@ -50,7 +53,7 @@ const PlayerList = (props: IProps) => {
           styles.playerContainer,
           {
             marginBottom: sc(9),
-            marginTop: sc(3),
+            marginTop: sc(5),
             paddingRight: sc(14),
             paddingLeft: sc(10),
           },
@@ -79,16 +82,12 @@ const PlayerList = (props: IProps) => {
         style={{
           backgroundColor: theme.itemBackgroundColor,
           padding: sc(15),
+          paddingTop: sc(15),
           borderRadius: 5,
           height: "50%",
         }}
       >
-        <FlatList
-          id="scroll"
-          data={props.players}
-          renderItem={renderPlayer}
-          contentContainerStyle={{ paddingHorizontal: 3, paddingBottom: 3 }}
-        />
+        <FlatList id="scroll" data={props.players} renderItem={renderPlayer} />
       </View>
     </>
   );
@@ -96,8 +95,7 @@ const PlayerList = (props: IProps) => {
 
 const styles = StyleSheet.create({
   playerContainer: {
-    height: sc(25),
-    marginTop: sc(10),
+    height: sc(20),
     flexDirection: "row",
   },
   commonFieldContainer: {
