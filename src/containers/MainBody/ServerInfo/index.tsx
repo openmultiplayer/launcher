@@ -33,28 +33,30 @@ const ServerInfo = () => {
           height: sc(50),
         }}
       >
-        <Pressable
-          style={{
-            alignItems: "center",
-            width: "100%",
-            height: "100%",
-            flexDirection: "row",
-            paddingLeft: sc(12),
-          }}
-          onPress={() =>
-            shell.open(webUrl.includes("http") ? webUrl : "https://" + webUrl)
-          }
-        >
-          <Icon svg image={images.icons.link} size={sc(29)} />
-          <Text
-            semibold
-            size={1}
-            color={theme.textPrimary}
-            style={{ marginLeft: sc(5) }}
+        {webUrl.length ? (
+          <Pressable
+            style={{
+              alignItems: "center",
+              width: "100%",
+              height: "100%",
+              flexDirection: "row",
+              paddingLeft: sc(12),
+            }}
+            onPress={() =>
+              shell.open(webUrl.includes("http") ? webUrl : "https://" + webUrl)
+            }
           >
-            {webUrl}
-          </Text>
-        </Pressable>
+            <Icon svg image={images.icons.link} size={sc(29)} />
+            <Text
+              semibold
+              size={1}
+              color={theme.textPrimary}
+              style={{ marginLeft: sc(5) }}
+            >
+              {webUrl}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
       <AdditionalInfo server={selected} />
     </View>
