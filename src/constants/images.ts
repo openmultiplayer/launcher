@@ -25,7 +25,7 @@ export const images = {
     favTab: "icons/fav_tab.svg",
     favRemove: "icons/fav_remove.svg",
     play: "icons/play.svg",
-    add: "icons/add.png",
+    add: "icons/add.svg",
     language: "icons/language.svg",
     users: "icons/users.svg",
     game: "icons/game.svg",
