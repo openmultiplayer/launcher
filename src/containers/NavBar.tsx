@@ -63,10 +63,10 @@ const NavBar = () => {
                 backgroundColor: theme.textInputBackgroundColor,
                 color: theme.textPrimary,
                 fontSize: sc(17),
-                width: 150,
+                width: sc(160),
                 marginLeft: sc(10),
                 height: sc(35),
-                paddingHorizontal: 5,
+                paddingHorizontal: sc(5),
                 borderRadius: sc(5),
                 // @ts-ignore
                 outlineStyle: "none",
