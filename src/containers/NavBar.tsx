@@ -8,6 +8,7 @@ import { ThemeContext } from "../contexts/theme";
 import { useGenericTempState } from "../states/genericStates";
 import { useSettings } from "../states/settings";
 import { ListType } from "../utils/types";
+import { sc } from "../utils/sizeScaler";
 
 const NavBar = () => {
   const { theme } = useContext(ThemeContext);
@@ -35,30 +36,38 @@ const NavBar = () => {
         />
         <View style={styles.inputs}>
           <View style={styles.nicknameContainer}>
-            <Icon
-              title={t("nickname")}
-              image={images.icons.nickname}
-              size={18}
-              color={"#FFFFFF"}
-            />
+            <View
+              style={{
+                height: sc(35),
+                width: sc(35),
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: theme.itemBackgroundColor,
+                borderRadius: sc(5),
+              }}
+            >
+              <Icon
+                title={t("nickname")}
+                image={images.icons.nickname}
+                size={sc(16)}
+                color={theme.textSecondary}
+              />
+            </View>
             <TextInput
               value={nickName}
               onChangeText={(text) => setNickName(text)}
               placeholder={t("nickname") + "..."}
-              placeholderTextColor={theme.textPlaceholder}
+              placeholderTextColor={theme.textSecondary}
               style={{
-                backgroundColor: "#FFFFFF",
-                color: theme.textSecondary,
+                backgroundColor: theme.textInputBackgroundColor,
+                color: theme.textPrimary,
                 fontWeight: "600",
                 fontSize: 12,
                 width: 150,
-                marginRight: 10,
-                marginLeft: 10,
-                height: "80%",
+                marginLeft: sc(10),
+                height: sc(35),
                 paddingHorizontal: 5,
-                borderColor: theme.primary,
-                borderWidth: 1,
-                borderRadius: 3,
+                borderRadius: sc(5),
                 // @ts-ignore
                 outlineStyle: "none",
               }}
@@ -98,7 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   nicknameContainer: {
-    height: "100%",
+    height: sc(35),
     flexDirection: "row",
     alignItems: "center",
   },

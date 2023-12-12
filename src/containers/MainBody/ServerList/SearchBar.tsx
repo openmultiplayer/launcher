@@ -92,8 +92,8 @@ const SearchBar = (props: IProps) => {
     <View style={styles.searchContainer}>
       <TouchableOpacity
         style={{
-          height: sc(38),
-          width: sc(38),
+          height: sc(35),
+          width: sc(35),
           justifyContent: "center",
           alignItems: "center",
           backgroundColor: theme.itemBackgroundColor,
@@ -117,7 +117,7 @@ const SearchBar = (props: IProps) => {
       >
         <View
           style={{
-            height: sc(38),
+            height: "100%",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -131,7 +131,7 @@ const SearchBar = (props: IProps) => {
         </View>
         <TextInput
           placeholder={t("search_for_server_hostname_mode")}
-          placeholderTextColor={theme.textPlaceholder}
+          placeholderTextColor={theme.textSecondary}
           value={searchQuery}
           style={{
             height: "100%",
@@ -140,9 +140,9 @@ const SearchBar = (props: IProps) => {
             fontFamily: "Proxima Nova Regular",
             fontSize: sc(18),
             paddingHorizontal: 5,
+            color: theme.textPrimary,
             // @ts-ignore
             outlineStyle: "none",
-            color: theme.textPrimary,
           }}
           onChangeText={(text) => {
             setSearchQuery(text);
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   inputContainer: {
-    height: sc(38),
+    height: sc(36),
     flex: 1,
     marginHorizontal: sc(10),
     paddingLeft: sc(10),
