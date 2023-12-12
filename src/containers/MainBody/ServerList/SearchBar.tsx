@@ -180,64 +180,25 @@ const SearchBar = (props: IProps) => {
           />
         </TouchableOpacity>
       )}
-      <AnimatedTouchableOpacity
-        style={[
-          styles.rightSideIcons,
-          {
-            transform: [
-              {
-                rotate: interpolateRotating,
-              },
-            ],
-          },
-        ]}
-        onPress={() => refreshServers()}
-      >
-        <Icon
-          title={t("refresh_servers")}
-          image={images.icons.refresh}
-          size={20}
-        />
-      </AnimatedTouchableOpacity>
-      <TouchableOpacity
-        style={styles.rightSideIcons}
-        onPress={() => playSelectedServer()}
-      >
-        <Icon
-          title={t("play")}
-          image={images.icons.play}
-          size={22}
-          color={theme.primary}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.rightSideIcons}
-        onPress={() => {
-          if (selected) {
-            if (favorited) {
-              removeFromFavorites(selected);
-            } else {
-              addToFavorites(selected);
-            }
-          }
-        }}
-      >
-        <Icon
-          title={
-            favorited
-              ? t("remove_selected_server_from_favorites")
-              : t("add_selected_server_to_favorites")
-          }
-          image={favorited ? images.icons.unfavorite : images.icons.favorite}
-          size={19}
-          color={"#FF2D2D"}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.rightSideIcons}
-        onPress={() => showAddThirdPartyServer(true)}
-      >
-        <Icon
+        {/* <AnimatedTouchableOpacity
+          style={[
+            styles.rightSideIcons,
+            {
+              transform: [
+                {
+                  rotate: interpolateRotating,
+                },
+              ],
+            },
+          ]}
+          onPress={() => refreshServers()}
+        >
+          <Icon
+            title={t("refresh_servers")}
+            image={images.icons.refresh}
+            size={20}
+          />
+        </AnimatedTouchableOpacity> */}
           title={t("add_server")}
           image={images.icons.add}
           size={20}
