@@ -18,12 +18,12 @@ export interface ThemeColors {
 }
 
 export const darkThemeColors: ThemeColors = {
-  primary: "#8477B7",
+  primary: "#897AF1",
   secondary: "#2D2D2D",
   textPrimary: "#FAFAFA",
   textSecondary: "#59595D",
   textPlaceholder: "#909090",
-  textSelected: "#8477B7",
+  textSelected: "#897AF1",
   appBackgroundColor: "#1A1A1E",
   itemBackgroundColor: "#222227",
   textInputBackgroundColor: "#16161A",
@@ -37,12 +37,12 @@ export const darkThemeColors: ThemeColors = {
 };
 
 export const lightThemeColors: ThemeColors = {
-  primary: "#8477B7",
+  primary: "#897AF1",
   secondary: "#2D2D2D",
   textPrimary: "#FAFAFA",
   textSecondary: "#59595D",
   textPlaceholder: "#909090",
-  textSelected: "#8477B7",
+  textSelected: "#897AF1",
   appBackgroundColor: "#1A1A1E",
   itemBackgroundColor: "#222227",
   textInputBackgroundColor: "#16161A",
