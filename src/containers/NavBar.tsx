@@ -63,7 +63,6 @@ const NavBar = () => {
                 backgroundColor: theme.textInputBackgroundColor,
                 color: theme.textPrimary,
                 fontSize: sc(17),
-                textAlignVertical: 'center',
                 width: 150,
                 marginLeft: sc(10),
                 height: sc(35),

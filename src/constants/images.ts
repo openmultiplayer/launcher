@@ -24,6 +24,7 @@ export const images = {
     closeSideLists: "icons/close_side_lists.svg",
     favTab: "icons/fav_tab.svg",
     favRemove: "icons/fav_remove.svg",
+    favAdd: "icons/fav_add.svg",
     play: "icons/play.svg",
     add: "icons/add.svg",
     language: "icons/language.svg",
