@@ -1,12 +1,13 @@
+import { shell } from "@tauri-apps/api";
 import { useContext, useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
 import { ThemeContext } from "../../../contexts/theme";
 import { useServers } from "../../../states/servers";
 import { validateWebUrl } from "../../../utils/helpers";
+import { sc } from "../../../utils/sizeScaler";
 import AdditionalInfo from "./AdditionalInfo";
 import PlayerList from "./PlayerList";
-import { shell } from "@tauri-apps/api";
 
 const ServerInfo = () => {
   const { theme } = useContext(ThemeContext);
@@ -22,14 +23,7 @@ const ServerInfo = () => {
   }, [selected]);
 
   return (
-    <View
-      style={[
-        styles.serverInfoView,
-        {
-          backgroundColor: theme.listBackgroundColor,
-        },
-      ]}
-    >
+    <View style={styles.serverInfoView}>
       <PlayerList players={selected ? selected.players : []} />
       <AdditionalInfo server={selected} />
       <View
@@ -66,9 +60,9 @@ const ServerInfo = () => {
 
 const styles = StyleSheet.create({
   serverInfoView: {
-    flex: 0.285,
-    // maxWidth: 350,
+    flex: 0.3,
     height: "100%",
+    marginLeft: sc(15),
   },
 });
 
