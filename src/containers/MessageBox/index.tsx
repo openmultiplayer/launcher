@@ -89,7 +89,7 @@ const MessageBox = () => {
                 }}
                 onPress={() => button.onPress()}
               >
-                <Text semibold color={theme.textPrimary} size={2}>
+                <Text semibold color={"#FFFFFF"} size={2}>
                   {button.title}
                 </Text>
               </TouchableOpacity>

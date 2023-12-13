@@ -103,7 +103,7 @@ const ContextMenu = () => {
               color={theme.primary}
               size={sc(23)}
             />
-            <Text semibold size={1} color={"#FFFFFF"}>
+            <Text semibold size={1} color={theme.textPrimary}>
               {t("connect")}
             </Text>
           </Pressable>
@@ -135,7 +135,7 @@ const ContextMenu = () => {
               }
               size={sc(17)}
             />
-            <Text semibold size={1} color={"#FFFFFF"}>
+            <Text semibold size={1} color={theme.textPrimary}>
               {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
             </Text>
           </Pressable>
@@ -166,7 +166,7 @@ Using open.mp: ${server.usingOmp ? "Yes" : "No"}`);
               image={images.icons.copy}
               size={sc(17)}
             />
-            <Text semibold size={1} color={"#FFFFFF"}>
+            <Text semibold size={1} color={theme.textPrimary}>
               {t("copy_server_info")}
             </Text>
           </Pressable>

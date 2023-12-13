@@ -140,7 +140,7 @@ const General = () => {
           ]}
           onPress={() => selectPath()}
         >
-          <Text semibold color={theme.textPrimary} size={2}>
+          <Text semibold color={"#FFFFFF"} size={2}>
             {t("browse")}
           </Text>
         </TouchableOpacity>
@@ -155,7 +155,7 @@ const General = () => {
         ]}
         onPress={() => importDataFromSAMP()}
       >
-        <Text semibold color={theme.textPrimary} size={2}>
+        <Text semibold color={"#FFFFFF"} size={2}>
           {t("settings_import_nickname_gta_path_from_samp")}
         </Text>
       </TouchableOpacity>
@@ -168,7 +168,7 @@ const General = () => {
         ]}
         onPress={() => importFavListFromSAMP()}
       >
-        <Text semibold color={theme.textPrimary} size={2}>
+        <Text semibold color={"#FFFFFF"} size={2}>
           {t("settings_import_samp_favorite_list")}
         </Text>
       </TouchableOpacity>
@@ -184,7 +184,7 @@ const General = () => {
           window.location.reload();
         }}
       >
-        <Text semibold color={theme.textPrimary} size={2}>
+        <Text semibold color={"#FFFFFF"} size={2}>
           {t("settings_reset_application_data")}
         </Text>
       </TouchableOpacity>

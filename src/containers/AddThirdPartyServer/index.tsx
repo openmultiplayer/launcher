@@ -129,7 +129,7 @@ const AddThirdPartyServerModal = () => {
           }}
           onPress={() => addServer()}
         >
-          <Text semibold color={theme.textPrimary} size={2}>
+          <Text semibold color={"#FFFFFF"} size={2}>
             {t("add")}
           </Text>
         </TouchableOpacity>
