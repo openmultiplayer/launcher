@@ -43,7 +43,7 @@ const Favorites = () => {
   const onSelect = (server: Server) => {
     stopQuery();
     setSelected(server);
-    startQuery(server);
+    startQuery(server, "favorites");
   };
 
   return (

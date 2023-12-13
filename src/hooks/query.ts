@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useServers } from "../states/servers";
 import { queryServer } from "../utils/query";
-import { Server } from "../utils/types";
+import { ListType, Server } from "../utils/types";
 
 export const useQuery = () => {
   const queryTimer = useRef<ReturnType<typeof setInterval> | undefined>(
@@ -24,20 +24,20 @@ export const useQuery = () => {
     }
   };
 
-  const startQuery = (srv: Server) => {
+  const startQuery = (srv: Server, listType: ListType) => {
     if (queryTimer.current != undefined) {
       clearInterval(queryTimer.current);
       queryTimer.current = undefined;
     } else {
-      getServerInfo(srv);
+      getServerInfo(srv, listType);
       queryTimer.current = setInterval(() => {
-        getServerInfo(srv);
+        getServerInfo(srv, listType);
       }, 1000);
     }
   };
 
-  const getServerInfo = (srv: Server) => {
-    queryServer(srv);
+  const getServerInfo = (srv: Server, listType: ListType) => {
+    queryServer(srv, listType);
   };
 
   return {

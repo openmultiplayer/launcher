@@ -49,7 +49,7 @@ const RecentlyJoined = () => {
   const onSelect = (server: Server) => {
     stopQuery();
     setSelected(server);
-    startQuery(server);
+    startQuery(server, "recentlyjoined");
   };
 
   return (
