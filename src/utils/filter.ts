@@ -321,7 +321,13 @@ function hexToRgb(hex: string) {
     : null;
 }
 
+const cachedColors: any = {};
+
 export const convertRgbToFilter = (color_: string) => {
+  if (cachedColors[color_]) {
+    return cachedColors[color_];
+  }
+
   if (color_ === "#FFFFFF40") color_ = "#59595D";
   const rgb = hexToRgb(color_);
   if (rgb === null || rgb.length !== 3) {
@@ -337,5 +343,6 @@ export const convertRgbToFilter = (color_: string) => {
   const solver = new Solver(color);
   const result = solver.solve();
 
+  cachedColors[color_] = { ...result };
   return result;
 };
