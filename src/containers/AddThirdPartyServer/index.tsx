@@ -75,18 +75,18 @@ const AddThirdPartyServerModal = () => {
           left: width / 2 - 160,
           height: 180,
           width: 320,
-          borderRadius: 4,
+          borderRadius: sc(10),
           backgroundColor: theme.secondary,
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
-            height: 3,
+            height: 0,
           },
-          shadowOpacity: 0.8,
-          shadowRadius: 4.65,
+          shadowOpacity: 0.9,
+          shadowRadius: 10,
           alignItems: "center",
           overflow: "hidden",
-          paddingVertical: 10,
+          paddingVertical: sc(11),
         }}
       >
         <Icon image={images.icons.favorite} size={30} />
