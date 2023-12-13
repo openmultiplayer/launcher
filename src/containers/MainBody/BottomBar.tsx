@@ -152,6 +152,7 @@ const BottomBar = () => {
             flex: 0.4,
             top: sc(5),
             justifyContent: "space-between",
+            alignItems: "flex-start",
           }}
         >
           <PropInfo
@@ -169,7 +170,7 @@ const BottomBar = () => {
           <TouchableOpacity
             style={{
               height: sc(28),
-              width: sc(200),
+              paddingHorizontal: sc(10),
               borderRadius: sc(5),
               backgroundColor: theme.primary,
               flexDirection: "row",
