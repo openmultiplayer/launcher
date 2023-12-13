@@ -297,7 +297,7 @@ const SearchBar = (props: IProps) => {
             sideLists ? images.icons.closeSideLists : images.icons.openSideLists
           }
           iconSize={sc(32)}
-          iconColor={theme.textSecondary}
+          iconColor={theme.textPlaceholder}
           onPress={() => showSideLists(!sideLists)}
         />
       </View>
