@@ -75,7 +75,7 @@ const AddThirdPartyServerModal = () => {
           height: 180,
           width: 320,
           borderRadius: 4,
-          backgroundColor: theme.listHeaderBackgroundColor,
+          backgroundColor: theme.secondary,
           shadowColor: "#000",
           shadowOffset: {
             width: 0,

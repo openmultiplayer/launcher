@@ -10,6 +10,7 @@ import { usePersistentServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { startGame } from "../../utils/helpers";
 import { ThemeContext } from "./../../contexts/theme";
+import { sc } from "../../utils/sizeScaler";
 
 const ContextMenu = () => {
   const { width, height } = useWindowDimensions();
@@ -19,15 +20,9 @@ const ContextMenu = () => {
     usePersistentServers();
   const { nickName, gtasaPath } = useSettings();
 
-  const [connectBtnBgCol, setConnectBtnBgCol] = useState(
-    theme.listHeaderBackgroundColor
-  );
-  const [favBtnBgCol, setFavBtnBgCol] = useState(
-    theme.listHeaderBackgroundColor
-  );
-  const [cpyBtnBgCol, setCpyBtnBgCol] = useState(
-    theme.listHeaderBackgroundColor
-  );
+  const [connectBtnBgCol, setConnectBtnBgCol] = useState(theme.secondary);
+  const [favBtnBgCol, setFavBtnBgCol] = useState(theme.secondary);
+  const [cpyBtnBgCol, setCpyBtnBgCol] = useState(theme.secondary);
 
   const favorited = useMemo(() => {
     const find = favorites.find(
@@ -37,8 +32,8 @@ const ContextMenu = () => {
   }, [server, favorites]);
 
   const hideMenu = () => {
-    setFavBtnBgCol(theme.listHeaderBackgroundColor);
-    setCpyBtnBgCol(theme.listHeaderBackgroundColor);
+    setFavBtnBgCol(theme.secondary);
+    setCpyBtnBgCol(theme.secondary);
     hide();
   };
 
@@ -64,10 +59,10 @@ const ContextMenu = () => {
         <View
           style={{
             position: "absolute",
-            top: position.y - 25, // titlebar height is 25
+            top: position.y - sc(60), // titlebar height is 25
             left: position.x,
             borderRadius: 4,
-            backgroundColor: theme.listHeaderBackgroundColor,
+            backgroundColor: theme.secondary,
             shadowColor: "#000",
             shadowOffset: {
               width: 0,
@@ -81,12 +76,8 @@ const ContextMenu = () => {
           }}
         >
           <Pressable
-            onHoverIn={() =>
-              setConnectBtnBgCol(theme.selectedItemBackgroundColor)
-            }
-            onHoverOut={() =>
-              setConnectBtnBgCol(theme.listHeaderBackgroundColor)
-            }
+            onHoverIn={() => setConnectBtnBgCol(theme.primary)}
+            onHoverOut={() => setConnectBtnBgCol(theme.secondary)}
             onPress={() => {
               startGame(
                 server,
@@ -99,7 +90,7 @@ const ContextMenu = () => {
             }}
             style={{
               backgroundColor: connectBtnBgCol,
-              paddingLeft: 10,
+              paddingLeft: 8,
               paddingRight: 30,
               paddingVertical: 7,
               flexDirection: "row",
@@ -110,15 +101,15 @@ const ContextMenu = () => {
               style={{ marginRight: 3 }}
               image={images.icons.play}
               color={theme.primary}
-              size={17}
+              size={sc(23)}
             />
-            <Text bold color={"#FFFFFF"}>
+            <Text semibold size={1} color={"#FFFFFF"}>
               {t("connect")}
             </Text>
           </Pressable>
           <Pressable
-            onHoverIn={() => setFavBtnBgCol(theme.selectedItemBackgroundColor)}
-            onHoverOut={() => setFavBtnBgCol(theme.listHeaderBackgroundColor)}
+            onHoverIn={() => setFavBtnBgCol(theme.primary)}
+            onHoverOut={() => setFavBtnBgCol(theme.secondary)}
             onPress={() => {
               if (favorited) {
                 removeFromFavorites(server);
@@ -142,15 +133,15 @@ const ContextMenu = () => {
               image={
                 favorited ? images.icons.unfavorite : images.icons.favorite
               }
-              size={14}
+              size={sc(17)}
             />
-            <Text bold color={"#FFFFFF"}>
+            <Text semibold size={1} color={"#FFFFFF"}>
               {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
             </Text>
           </Pressable>
           <Pressable
-            onHoverIn={() => setCpyBtnBgCol(theme.selectedItemBackgroundColor)}
-            onHoverOut={() => setCpyBtnBgCol(theme.listHeaderBackgroundColor)}
+            onHoverIn={() => setCpyBtnBgCol(theme.primary)}
+            onHoverOut={() => setCpyBtnBgCol(theme.secondary)}
             onPress={() => {
               Clipboard.setString(`HostName: ${server.hostname}
 Address: ${server.ip}:${server.port}
@@ -173,9 +164,9 @@ Using open.mp: ${server.usingOmp ? "Yes" : "No"}`);
             <Icon
               style={{ marginRight: 5 }}
               image={images.icons.copy}
-              size={14}
+              size={sc(17)}
             />
-            <Text bold color={"#FFFFFF"}>
+            <Text semibold size={1} color={"#FFFFFF"}>
               {t("copy_server_info")}
             </Text>
           </Pressable>

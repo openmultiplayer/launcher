@@ -43,7 +43,7 @@ const JoinServerPrompt = () => {
           height: HEIGHT,
           width: WIDTH,
           borderRadius: 4,
-          backgroundColor: theme.listHeaderBackgroundColor,
+          backgroundColor: theme.secondary,
           shadowColor: "#000",
           shadowOffset: {
             width: 0,

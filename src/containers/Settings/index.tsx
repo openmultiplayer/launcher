@@ -55,7 +55,7 @@ const SettingsModal = () => {
             left: width / 2 - MODAL_WIDTH / 2,
             height: MODAL_HEIGHT,
             width: MODAL_WIDTH,
-            backgroundColor: theme.listHeaderBackgroundColor,
+            backgroundColor: theme.secondary,
           },
         ]}
       >

@@ -28,7 +28,7 @@ const MessageBox = () => {
           left: width / 2 - Number(args.boxWidth) / 2,
           width: args.boxWidth,
           borderRadius: 4,
-          backgroundColor: theme.listHeaderBackgroundColor,
+          backgroundColor: theme.secondary,
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
