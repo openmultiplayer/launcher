@@ -19,7 +19,7 @@ export default {
   server_join_prompt_enter_password_input_placeholder: "Enter password...",
   server_join_prompt_nickname_input_placeholder: "Enter Nickname...",
   connect: "Connect",
-  copy: "Copy",
+  copy: "COPY",
   remove_from_favorites: "Remove from Favorites",
   add_to_favorites: "Add to Favorites",
   filters: "Filters",

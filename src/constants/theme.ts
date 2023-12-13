@@ -19,7 +19,7 @@ export interface ThemeColors {
 
 export const darkThemeColors: ThemeColors = {
   primary: "#897AF1",
-  secondary: "#2D2D2D",
+  secondary: "#1A1A1E",
   textPrimary: "#FAFAFA",
   textSecondary: "#FFFFFF40",
   textPlaceholder: "#909090",
@@ -38,7 +38,7 @@ export const darkThemeColors: ThemeColors = {
 
 export const lightThemeColors: ThemeColors = {
   primary: "#897AF1",
-  secondary: "#2D2D2D",
+  secondary: "#1A1A1E",
   textPrimary: "#FAFAFA",
   textSecondary: "#FFFFFF40",
   textPlaceholder: "#909090",
