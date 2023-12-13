@@ -37,5 +37,6 @@ export const images = {
     lightTheme: "icons/lighttheme.svg",
     link: "icons/link.svg",
     ip: "icons/ip.svg",
+    mode: "icons/mode.svg",
   },
 };

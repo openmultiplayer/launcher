@@ -254,8 +254,8 @@ const SearchBar = (props: IProps) => {
               }
               icon={favorited ? images.icons.favRemove : images.icons.favAdd}
               iconSize={sc(20)}
-              iconColor={"#FFFFFF99"}
-              buttonColor={"#F02E2E"}
+              iconColor={"#FFFFFFDD"}
+              buttonColor={"#C8302F"}
               onPress={() => {
                 if (selected) {
                   if (favorited) {

@@ -7,8 +7,8 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { ThemeContext } from "../../contexts/theme";
 import { usePersistentServers, useServers } from "../../states/servers";
-import Chart from "../PingChart";
 import { sc } from "../../utils/sizeScaler";
+import Chart from "../PingChart";
 
 const PropInfo = (props: {
   glow?: boolean;
@@ -117,7 +117,9 @@ const BottomBar = () => {
           height: "100%",
         }}
       >
-        <View style={{ flex: 0.5, top: sc(5) }}>
+        <View
+          style={{ flex: 0.6, top: sc(5), justifyContent: "space-between" }}
+        >
           <PropInfo
             iconTitle={server.usingOmp ? t("openmp_server") : ""}
             icon={server.usingOmp ? images.icons.omp : images.icons.internet}
@@ -129,7 +131,7 @@ const BottomBar = () => {
             <PropInfo
               iconTitle={""}
               icon={images.icons.ip}
-              iconSize={sc(16)}
+              iconSize={sc(14)}
               text={`${server.ip}:${server.port}`}
               buttonText={t("copy")}
               buttonColor={theme.primary}
@@ -141,79 +143,61 @@ const BottomBar = () => {
           <PropInfo
             iconTitle={""}
             icon={images.icons.nickname}
-            iconSize={sc(16)}
+            iconSize={sc(15)}
             text={`${server.playerCount}/${server.maxPlayers}`}
           />
         </View>
-        <View style={{ flex: 0.5 }}>
-          <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
-            <TouchableOpacity
-              style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                paddingVertical: 1,
-                paddingHorizontal: 5,
-                borderRadius: 5,
-                borderWidth: 1,
-                backgroundColor: theme.primary,
-                borderColor: theme.separatorBorderColor,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-              onPress={() => {
-                if (favorited) {
-                  removeFromFavorites(server);
-                } else {
-                  addToFavorites(server);
-                }
-              }}
-            >
-              <Icon
-                image={
-                  favorited ? images.icons.unfavorite : images.icons.favorite
-                }
-                size={12}
-              />
-              <Text
-                semibold
-                color={theme.textPrimary}
-                style={{ marginLeft: 2, fontSize: 10 }}
-              >
-                {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View
+        <View
+          style={{
+            flex: 0.4,
+            top: sc(5),
+            justifyContent: "space-between",
+          }}
+        >
+          <PropInfo
+            iconTitle={""}
+            icon={images.icons.mode}
+            iconSize={sc(17)}
+            text={`${server.gameMode}`}
+          />
+          <PropInfo
+            iconTitle={""}
+            icon={images.icons.language}
+            iconSize={sc(17)}
+            text={`${server.language}`}
+          />
+          <TouchableOpacity
             style={{
+              height: sc(28),
+              width: sc(200),
+              borderRadius: sc(5),
+              backgroundColor: theme.primary,
               flexDirection: "row",
-              flex: 1,
-              justifyContent: "space-between",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => {
+              if (favorited) {
+                removeFromFavorites(server);
+              } else {
+                addToFavorites(server);
+              }
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Icon
-                image={images.icons.game}
-                color={theme.primary}
-                size={22}
-                style={{ opacity: 0.8 }}
-              />
-              <Text semibold color={theme.primary} style={{ marginLeft: 7 }}>
-                {server.gameMode}
-              </Text>
-            </View>
-
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Icon
-                image={images.icons.language}
-                color={theme.primary}
-                size={20}
-              />
-              <Text semibold color={theme.primary} style={{ marginLeft: 7 }}>
-                {server.language}
-              </Text>
-            </View>
-          </View>
+            <Icon
+              svg
+              image={favorited ? images.icons.favRemove : images.icons.favAdd}
+              size={sc(16)}
+              color={"#FF0000"}
+            />
+            <Text
+              semibold
+              color={theme.textPrimary}
+              style={{ fontSize: sc(15), marginLeft: sc(8) }}
+            >
+              {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
       <Chart containerStyle={styles.chartContainer} />
