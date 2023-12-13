@@ -1,18 +1,18 @@
 import { shell } from "@tauri-apps/api";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
+import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
+import { images } from "../../../constants/images";
 import { useServers } from "../../../states/servers";
+import { useTheme } from "../../../states/theme";
 import { validateWebUrl } from "../../../utils/helpers";
 import { sc } from "../../../utils/sizeScaler";
 import AdditionalInfo from "./AdditionalInfo";
 import PlayerList from "./PlayerList";
-import Icon from "../../../components/Icon";
-import { images } from "../../../constants/images";
 
 const ServerInfo = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { selected } = useServers();
 
   const webUrl = useMemo(() => {

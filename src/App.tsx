@@ -1,8 +1,7 @@
 import { process } from "@tauri-apps/api";
 import { appWindow, type PhysicalSize } from "@tauri-apps/api/window";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
 import MainView from "./containers/MainBody";
@@ -12,17 +11,16 @@ import Notification from "./containers/Notification";
 import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
 import WindowTitleBar from "./containers/WindowTitleBar";
-import { ThemeContext } from "./contexts/theme";
 import i18n from "./locales";
 import { useGenericPersistentState } from "./states/genericStates";
+import { useTheme } from "./states/theme";
 import { debounce } from "./utils/debounce";
 import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
 import { sc } from "./utils/sizeScaler";
 
 const App = () => {
-  const [themeType, setTheme] = useState<"light" | "dark">("dark");
   const [maximized, setMaximized] = useState<boolean>(false);
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { language } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
 
@@ -70,35 +68,27 @@ const App = () => {
 
   return (
     <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>
-      <ThemeContext.Provider
-        value={{
-          themeType,
-          theme: themeType === "dark" ? darkThemeColors : lightThemeColors,
-          setTheme,
-        }}
+      <View
+        style={[
+          styles.appView,
+          {
+            borderRadius: maximized ? 0 : sc(10),
+            backgroundColor: theme.secondary,
+          },
+        ]}
       >
-        <View
-          style={[
-            styles.appView,
-            {
-              borderRadius: maximized ? 0 : sc(10),
-              backgroundColor: theme.secondary,
-            },
-          ]}
-        >
-          <WindowTitleBar />
-          <View style={styles.appBody}>
-            <NavBar />
-            <MainView />
-            <ContextMenu />
-            <JoinServerPrompt />
-            <SettingsModal />
-            <AddThirdPartyServerModal />
-            <Notification />
-            <MessageBox />
-          </View>
+        <WindowTitleBar />
+        <View style={styles.appBody}>
+          <NavBar />
+          <MainView />
+          <ContextMenu />
+          <JoinServerPrompt />
+          <SettingsModal />
+          <AddThirdPartyServerModal />
+          <Notification />
+          <MessageBox />
         </View>
-      </ThemeContext.Provider>
+      </View>
     </View>
   );
 };

@@ -1,18 +1,17 @@
-import { useContext } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
 import * as Animatable from "react-native-animatable";
 import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
-import { ThemeContext } from "../../contexts/theme";
 import { useMessageBox } from "../../states/messageModal";
+import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
 
 const MessageBox = () => {
   const { args, visible, hideMessageBox } = useMessageBox();
   const { height, width } = useWindowDimensions();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   if (!visible) {
     return null;

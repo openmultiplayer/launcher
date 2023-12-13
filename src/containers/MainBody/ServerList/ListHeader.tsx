@@ -1,15 +1,14 @@
 import { t } from "i18next";
-import { useContext } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
-import { ThemeContext } from "../../../contexts/theme";
 import { useGenericTempState } from "../../../states/genericStates";
+import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 
 const ListHeader = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { searchData, setSearchData } = useGenericTempState();
   return (
     <View style={styles.serverContainer}>

@@ -1,6 +1,6 @@
 import { shell } from "@tauri-apps/api";
 import { t } from "i18next";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -12,13 +12,13 @@ import StaticModal from "../../components/StaticModal";
 import TabBar from "../../components/TabBar";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
-import { ThemeContext } from "../../contexts/theme";
 import { useAppState } from "../../states/app";
 import { useGenericPersistentState } from "../../states/genericStates";
 import { useSettingsModal } from "../../states/settingsModal";
+import { useTheme } from "../../states/theme";
+import { sc } from "../../utils/sizeScaler";
 import Appearance from "./Tab/Appearance";
 import General from "./Tab/General";
-import { sc } from "../../utils/sizeScaler";
 
 const MODAL_WIDTH = 500;
 const MODAL_HEIGHT = 300;
@@ -26,7 +26,7 @@ const MODAL_HEIGHT = 300;
 const SettingsModal = () => {
   const { height, width } = useWindowDimensions();
   const { nativeAppVersion, version, updateInfo } = useAppState();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { hide, visible } = useSettingsModal();
   const [selectedTab, setSelectedTab] = useState("general");
   const { language } = useGenericPersistentState();

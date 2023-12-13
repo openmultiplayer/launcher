@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -10,16 +10,16 @@ import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
-import { ThemeContext } from "../../contexts/theme";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { useSettings } from "../../states/settings";
+import { useTheme } from "../../states/theme";
 import { startGame } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
 
 const JoinServerPrompt = () => {
   const { visible, server, showPrompt } = useJoinServerPrompt();
   const { height, width } = useWindowDimensions();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const [password, setPassword] = useState("");
   const { nickName, gtasaPath, setNickName } = useSettings();
 

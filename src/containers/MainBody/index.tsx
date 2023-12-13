@@ -1,13 +1,12 @@
 import { t } from "i18next";
-import { useContext } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import CheckBox from "../../components/CheckBox";
 import Text from "../../components/Text";
-import { ThemeContext } from "../../contexts/theme";
 import {
   useGenericPersistentState,
   useGenericTempState,
 } from "../../states/genericStates";
+import { useTheme } from "../../states/theme";
 import BottomBar from "./BottomBar";
 import ServerInfo from "./ServerInfo";
 import SearchBar from "./ServerList/SearchBar";
@@ -17,7 +16,7 @@ import Partners from "./ServerList/Tabs/Partners";
 import RecentlyJoined from "./ServerList/Tabs/RecentlyJoined";
 
 const FiltersModal = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { showFilterMenu, searchData, setSearchData } = useGenericTempState();
   const { ompOnly, nonEmpty, unpassworded } = searchData;
 

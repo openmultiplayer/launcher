@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -6,7 +5,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { ThemeContext } from "../contexts/theme";
+import { useTheme } from "../states/theme";
 import { sc } from "../utils/sizeScaler";
 import Icon from "./Icon";
 import Text from "./Text";
@@ -23,7 +22,7 @@ interface IProps {
 }
 
 const TabBar = (props: IProps) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   return (
     <View style={[styles.listing, props.style]}>

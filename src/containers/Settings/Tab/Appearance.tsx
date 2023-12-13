@@ -1,17 +1,16 @@
 import { t } from "i18next";
-import { useContext } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
 import { getLanguages } from "../../../locales";
 import { useGenericPersistentState } from "../../../states/genericStates";
 import { useSettingsModal } from "../../../states/settingsModal";
+import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 
 const Appearance = () => {
   const { language, setLanguage } = useGenericPersistentState();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { hide: hideSettings } = useSettingsModal();
   const languages = Object.entries(getLanguages());
 

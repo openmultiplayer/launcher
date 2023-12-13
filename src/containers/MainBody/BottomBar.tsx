@@ -1,12 +1,12 @@
 import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
 import { t } from "i18next";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
-import { ThemeContext } from "../../contexts/theme";
 import { usePersistentServers, useServers } from "../../states/servers";
+import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
 import Chart from "../PingChart";
 
@@ -20,7 +20,7 @@ const PropInfo = (props: {
   buttonOnPress?: () => void;
   buttonColor?: string;
 }) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   const MaybeGlow = props.glow ? (
     <div
@@ -95,7 +95,7 @@ const BottomBar = () => {
   const { selected: server } = useServers();
   const { favorites, addToFavorites, removeFromFavorites } =
     usePersistentServers();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   const favorited = useMemo(() => {
     const find = favorites.find(

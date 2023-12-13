@@ -1,8 +1,8 @@
 import { t } from "i18next";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
+import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 
@@ -14,7 +14,7 @@ type Rule = { name: string; value: string };
 type RuleList = Rule[];
 
 const AdditionalInfo = (props: IProps) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   const rules = useMemo(() => {
     if (props.server) {

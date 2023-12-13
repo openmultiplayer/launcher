@@ -1,17 +1,16 @@
 import { t } from "i18next";
-import { useContext } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import Icon from "../components/Icon";
 import TabBar from "../components/TabBar";
 import { images } from "../constants/images";
-import { ThemeContext } from "../contexts/theme";
 import { useGenericTempState } from "../states/genericStates";
 import { useSettings } from "../states/settings";
-import { ListType } from "../utils/types";
+import { useTheme } from "../states/theme";
 import { sc } from "../utils/sizeScaler";
+import { ListType } from "../utils/types";
 
 const NavBar = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { nickName, setNickName } = useSettings();
   const { setListType, listType } = useGenericTempState();
 

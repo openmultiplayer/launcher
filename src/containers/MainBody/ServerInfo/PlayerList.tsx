@@ -1,8 +1,7 @@
 import { t } from "i18next";
-import { useContext } from "react";
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
+import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 import { Player } from "../../../utils/types";
 
@@ -11,7 +10,7 @@ interface IProps {
 }
 
 const PlayerList = (props: IProps) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   const renderPlayer = ({
     item: player,

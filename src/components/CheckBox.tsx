@@ -1,6 +1,5 @@
-import { useContext } from "react";
-import { View, ViewProps, ColorValue, Pressable } from "react-native";
-import { ThemeContext } from "../contexts/theme";
+import { ColorValue, Pressable, View, ViewProps } from "react-native";
+import { useTheme } from "../states/theme";
 
 interface IProps extends ViewProps {
   color?: ColorValue;
@@ -9,7 +8,7 @@ interface IProps extends ViewProps {
 }
 
 const CheckBox = (props: IProps) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const Wrapper = props.onChange ? Pressable : View;
 
   return (

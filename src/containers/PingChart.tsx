@@ -11,11 +11,11 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
-import { useContext, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { StyleProp, View, ViewStyle } from "react-native";
-import { ThemeContext } from "../contexts/theme";
 import { useServers } from "../states/servers";
+import { useTheme } from "../states/theme";
 
 ChartJS.register(
   CategoryScale,
@@ -91,7 +91,7 @@ interface IProps {
 
 const Chart = (props: IProps) => {
   const { selected } = useServers();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const selectedServerAddr = useRef<string>("");
   const pingList = useRef<number[]>(Array(MAX_PING_ELEMENTS).fill(0));
 

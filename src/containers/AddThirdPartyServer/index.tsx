@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -10,17 +10,17 @@ import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
-import { ThemeContext } from "../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../states/addThirdPartyServerModal";
 import { usePersistentServers } from "../../states/servers";
+import { useTheme } from "../../states/theme";
 import { validateServerAddress } from "../../utils/helpers";
-import { Server } from "../../utils/types";
 import { sc } from "../../utils/sizeScaler";
+import { Server } from "../../utils/types";
 
 const AddThirdPartyServerModal = () => {
   const { visible, showAddThirdPartyServer } = useAddThirdPartyServerModal();
   const { height, width } = useWindowDimensions();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const [serverAddress, setServerAddress] = useState("");
   const { addToFavorites } = usePersistentServers();
 

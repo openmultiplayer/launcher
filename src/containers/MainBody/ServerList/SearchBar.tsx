@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -10,7 +10,6 @@ import {
 import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
-import { ThemeContext } from "../../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../../states/addThirdPartyServerModal";
 import {
   useGenericPersistentState,
@@ -19,6 +18,7 @@ import {
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../../states/servers";
 // import { fetchServers } from "../../../utils/helpers";
+import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 
 interface IProps {
@@ -72,7 +72,7 @@ const ActionIcon = ({
 };
 
 const SearchBar = (props: IProps) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { listType } = useGenericTempState();
   const [searchQuery, setSearchQuery] = useState("");
   const { filterMenu, showFilterMenu } = useGenericTempState();

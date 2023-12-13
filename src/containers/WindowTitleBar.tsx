@@ -1,12 +1,11 @@
 import { appWindow } from "@tauri-apps/api/window";
 import { t } from "i18next";
-import { useContext } from "react";
 import { ColorValue, Pressable, StyleSheet, View } from "react-native";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { images } from "../constants/images";
-import { ThemeContext } from "../contexts/theme";
 import { useSettingsModal } from "../states/settingsModal";
+import { useTheme } from "../states/theme";
 import { sc } from "../utils/sizeScaler";
 
 const NativeWindowTitleBarButtons = ({
@@ -22,7 +21,7 @@ const NativeWindowTitleBarButtons = ({
   title?: string;
   onPress: () => void;
 }) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   return (
     <div
       className="titlebar-button"
@@ -93,7 +92,7 @@ const CustomWindowTitleBarButtons = ({
 };
 
 const WindowTitleBar = () => {
-  const { theme, themeType, setTheme } = useContext(ThemeContext);
+  const { theme, themeType, setTheme } = useTheme();
   const { show: showSettings } = useSettingsModal();
 
   return (

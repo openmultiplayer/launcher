@@ -1,12 +1,12 @@
 import { t } from "i18next";
-import { memo, useContext, useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
 import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
-import { ThemeContext } from "../../../contexts/theme";
 import { useContextMenu } from "../../../states/contextMenu";
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
+import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 
@@ -20,7 +20,7 @@ interface IProps {
 const ServerItem = memo((props: IProps) => {
   const { server, index } = props;
 
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const isSelectedRef = useRef(!!props.isSelected);
   const lastPressTime = useRef(0);
   const { showPrompt, setServer } = useJoinServerPrompt();

@@ -1,21 +1,20 @@
 import { invoke } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 import { t } from "i18next";
-import { useContext } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
 import { useAppState } from "../../../states/app";
 import { usePersistentServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
+import { useTheme } from "../../../states/theme";
 import { checkDirectoryValidity } from "../../../utils/helpers";
-import { Server } from "../../../utils/types";
 import { Log } from "../../../utils/logger";
 import { sc } from "../../../utils/sizeScaler";
+import { Server } from "../../../utils/types";
 
 const General = () => {
   const { hostOS } = useAppState();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { gtasaPath, setGTASAPath, setNickName } = useSettings();
 
   const selectPath = async () => {

@@ -1,6 +1,6 @@
 import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
 import { t } from "i18next";
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, View, useWindowDimensions } from "react-native";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
@@ -8,13 +8,13 @@ import { images } from "../../constants/images";
 import { useContextMenu } from "../../states/contextMenu";
 import { usePersistentServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
+import { useTheme } from "../../states/theme";
 import { startGame } from "../../utils/helpers";
-import { ThemeContext } from "./../../contexts/theme";
 import { sc } from "../../utils/sizeScaler";
 
 const ContextMenu = () => {
   const { width, height } = useWindowDimensions();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { visible, position, server, hide } = useContextMenu();
   const { addToFavorites, removeFromFavorites, favorites } =
     usePersistentServers();
