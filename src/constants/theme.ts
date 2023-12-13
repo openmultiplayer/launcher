@@ -28,5 +28,5 @@ export const lightThemeColors: ThemeColors = {
   textPlaceholder: "#6D7071",
   itemBackgroundColor: "#F3F6FC",
   textInputBackgroundColor: "#F3F6FC",
-  serverListItemBackgroundColor: "#C5BEF8",
+  serverListItemBackgroundColor: "#E9ECF2",
 };

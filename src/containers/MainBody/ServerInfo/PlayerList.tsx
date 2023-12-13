@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const PlayerList = (props: IProps) => {
-  const { theme } = useTheme();
+  const { theme, themeType } = useTheme();
 
   const renderPlayer = ({
     item: player,
@@ -32,7 +32,8 @@ const PlayerList = (props: IProps) => {
             styles.scoreFieldContainer,
             {
               paddingHorizontal: sc(7),
-              backgroundColor: theme.secondary + "66",
+              backgroundColor:
+                themeType === "dark" ? theme.secondary + "66" : "#E2E6EE",
               borderRadius: sc(5),
             },
           ]}

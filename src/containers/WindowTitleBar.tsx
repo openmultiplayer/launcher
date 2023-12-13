@@ -56,6 +56,7 @@ const CustomWindowTitleBarButtons = ({
   className,
   marginRight = 0,
   color,
+  backgroundColor,
 }: {
   size?: number;
   iconSize?: number;
@@ -65,7 +66,9 @@ const CustomWindowTitleBarButtons = ({
   marginRight?: number;
   className?: string;
   color?: ColorValue;
+  backgroundColor?: string;
 }) => {
+  const isSvg = image.includes(".svg");
   return (
     <div
       className={className}
@@ -74,6 +77,7 @@ const CustomWindowTitleBarButtons = ({
         width: size,
         borderRadius: sc(3),
         marginRight: marginRight,
+        backgroundColor: backgroundColor,
       }}
     >
       <Pressable
@@ -85,7 +89,13 @@ const CustomWindowTitleBarButtons = ({
         }}
         onPress={onPress}
       >
-        <Icon title={title} image={image} size={iconSize} color={color} />
+        <Icon
+          svg={isSvg}
+          title={title}
+          image={image}
+          size={iconSize}
+          color={color}
+        />
       </Pressable>
     </div>
   );
@@ -170,8 +180,9 @@ const WindowTitleBar = () => {
         <CustomWindowTitleBarButtons
           title={t("settings")}
           image={images.icons.settings}
-          className={"titlebar-button-settings"}
           marginRight={sc(16)}
+          color={theme.textSecondary}
+          backgroundColor={theme.itemBackgroundColor}
           onPress={() => showSettings()}
         />
         <NativeWindowTitleBarButtons

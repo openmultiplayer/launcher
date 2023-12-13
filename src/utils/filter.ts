@@ -329,6 +329,8 @@ export const convertRgbToFilter = (color_: string) => {
   }
 
   if (color_ === "#FFFFFF40") color_ = "#59595D";
+  if (color_ === "#1A1A1E80") color_ = "#8C8C90";
+
   const rgb = hexToRgb(color_);
   if (rgb === null || rgb.length !== 3) {
     Log.debug("Invalid format! " + color_);

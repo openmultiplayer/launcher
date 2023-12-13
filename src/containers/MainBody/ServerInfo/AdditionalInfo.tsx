@@ -14,7 +14,7 @@ type Rule = { name: string; value: string };
 type RuleList = Rule[];
 
 const AdditionalInfo = (props: IProps) => {
-  const { theme } = useTheme();
+  const { theme, themeType } = useTheme();
 
   const rules = useMemo(() => {
     if (props.server) {
@@ -47,7 +47,8 @@ const AdditionalInfo = (props: IProps) => {
             {
               height: sc(26),
               paddingHorizontal: sc(7),
-              backgroundColor: theme.secondary + "66",
+              backgroundColor:
+                themeType === "dark" ? theme.secondary + "66" : "#E2E6EE",
               borderRadius: sc(5),
             },
           ]}
