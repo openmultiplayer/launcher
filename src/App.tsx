@@ -81,8 +81,8 @@ const App = () => {
           style={[
             styles.appView,
             {
-              borderRadius: maximized ? 0 : 8,
-              backgroundColor: theme.appBackgroundColor,
+              borderRadius: maximized ? 0 : sc(10),
+              backgroundColor: theme.secondary,
             },
           ]}
         >

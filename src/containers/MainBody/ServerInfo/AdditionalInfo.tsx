@@ -47,7 +47,7 @@ const AdditionalInfo = (props: IProps) => {
             {
               height: sc(26),
               paddingHorizontal: sc(7),
-              backgroundColor: theme.appBackgroundColor + "66",
+              backgroundColor: theme.secondary + "66",
               borderRadius: sc(5),
             },
           ]}
@@ -61,14 +61,7 @@ const AdditionalInfo = (props: IProps) => {
   };
 
   return (
-    <View
-      style={[
-        styles.additionalInfoView,
-        {
-          borderColor: theme.separatorBorderColor,
-        },
-      ]}
-    >
+    <View style={styles.additionalInfoView}>
       <View
         style={[
           styles.rulesContainer,

@@ -47,7 +47,7 @@ const FiltersModal = () => {
           width: 200,
           padding: 5,
           paddingBottom: 6,
-          backgroundColor: theme.itemContainerBackgroundColor,
+          backgroundColor: theme.secondary,
           shadowColor: "#000",
           shadowOffset: {
             width: 0,

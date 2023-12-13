@@ -33,7 +33,7 @@ const PlayerList = (props: IProps) => {
             styles.scoreFieldContainer,
             {
               paddingHorizontal: sc(7),
-              backgroundColor: theme.appBackgroundColor + "66",
+              backgroundColor: theme.secondary + "66",
               borderRadius: sc(5),
             },
           ]}
