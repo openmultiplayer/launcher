@@ -18,6 +18,7 @@ import { useGenericPersistentState } from "../../states/genericStates";
 import { useSettingsModal } from "../../states/settingsModal";
 import Appearance from "./Tab/Appearance";
 import General from "./Tab/General";
+import { sc } from "../../utils/sizeScaler";
 
 const MODAL_WIDTH = 500;
 const MODAL_HEIGHT = 300;
@@ -64,25 +65,28 @@ const SettingsModal = () => {
           onChange={(type) => setSelectedTab(type)}
           selected={selectedTab}
           style={{
-            height: 30,
+            height: sc(30),
+            paddingHorizontal: sc(15),
+            marginTop: sc(15),
           }}
         />
         {renderTab()}
         <View style={styles.appInfoContainer}>
           {updateInfo && updateInfo.version != version && (
             <Text
-              style={{ marginBottom: 10 }}
+              style={{ marginBottom: sc(10) }}
               semibold
-              size={1}
+              size={2}
               onPress={() => shell.open(updateInfo?.download)}
               color={theme.primary}
             >
               {t("settings_new_update_available")}
             </Text>
           )}
-          <Text color={theme.textPrimary}>
+          <Text size={2} color={theme.textPrimary}>
             {t("settings_credits_made_by")}{" "}
             <Text
+              size={2}
               onPress={() => shell.open("https://open.mp/")}
               color={theme.primary}
             >
@@ -90,6 +94,7 @@ const SettingsModal = () => {
             </Text>{" "}
             |{" "}
             <Text
+              size={2}
               onPress={() =>
                 shell.open("https://github.com/openmultiplayer/launcher/")
               }
@@ -103,18 +108,17 @@ const SettingsModal = () => {
         <TouchableOpacity
           style={{
             position: "absolute",
-            top: 5,
-            right: 5,
-            height: 25,
-            width: 25,
+            top: sc(15),
+            right: sc(15),
+            height: sc(20),
+            width: sc(20),
           }}
           onPress={() => hide()}
         >
           <Icon
             image={images.icons.close}
-            size={25}
-            color={theme.primary}
-            style={{ opacity: 0.5 }}
+            size={sc(20)}
+            color={theme.textSecondary}
           />
         </TouchableOpacity>
       </View>
@@ -124,15 +128,15 @@ const SettingsModal = () => {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 4,
+    borderRadius: sc(11),
     position: "absolute",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 0,
     },
-    shadowOpacity: 0.8,
-    shadowRadius: 4.65,
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
   },
   appInfoContainer: {
     height: 30,

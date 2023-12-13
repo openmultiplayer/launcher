@@ -11,6 +11,7 @@ import { useSettings } from "../../../states/settings";
 import { checkDirectoryValidity } from "../../../utils/helpers";
 import { Server } from "../../../utils/types";
 import { Log } from "../../../utils/logger";
+import { sc } from "../../../utils/sizeScaler";
 
 const General = () => {
   const { hostOS } = useAppState();
@@ -115,7 +116,7 @@ const General = () => {
         flex: 1,
       }}
     >
-      <Text size={1} color={theme.textPrimary}>
+      <Text semibold color={theme.textPrimary} size={2}>
         {t("settings_gta_path_input_label")}:
       </Text>
       <View style={styles.pathInputContainer}>
@@ -125,8 +126,8 @@ const General = () => {
           style={[
             styles.pathInput,
             {
-              color: theme.textSecondary,
-              borderColor: theme.primary,
+              color: theme.textPrimary,
+              backgroundColor: theme.textInputBackgroundColor,
             },
           ]}
         />
@@ -140,14 +141,7 @@ const General = () => {
           ]}
           onPress={() => selectPath()}
         >
-          <Text
-            semibold
-            color={theme.textPrimary}
-            size={1}
-            style={{
-              top: -1,
-            }}
-          >
+          <Text semibold color={theme.textPrimary} size={2}>
             {t("browse")}
           </Text>
         </TouchableOpacity>
@@ -162,14 +156,7 @@ const General = () => {
         ]}
         onPress={() => importDataFromSAMP()}
       >
-        <Text
-          semibold
-          color={theme.textPrimary}
-          size={1}
-          style={{
-            top: -1,
-          }}
-        >
+        <Text semibold color={theme.textPrimary} size={2}>
           {t("settings_import_nickname_gta_path_from_samp")}
         </Text>
       </TouchableOpacity>
@@ -177,21 +164,12 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            marginTop: 5,
             backgroundColor: theme.primary,
-            borderColor: theme.textSecondary,
           },
         ]}
         onPress={() => importFavListFromSAMP()}
       >
-        <Text
-          semibold
-          color={theme.textPrimary}
-          size={1}
-          style={{
-            top: -1,
-          }}
-        >
+        <Text semibold color={theme.textPrimary} size={2}>
           {t("settings_import_samp_favorite_list")}
         </Text>
       </TouchableOpacity>
@@ -200,7 +178,6 @@ const General = () => {
           styles.resetButton,
           {
             backgroundColor: "red",
-            borderColor: theme.textSecondary,
           },
         ]}
         onPress={() => {
@@ -208,14 +185,7 @@ const General = () => {
           window.location.reload();
         }}
       >
-        <Text
-          semibold
-          color={theme.textPrimary}
-          size={1}
-          style={{
-            top: -1,
-          }}
-        >
+        <Text semibold color={theme.textPrimary} size={2}>
           {t("settings_reset_application_data")}
         </Text>
       </TouchableOpacity>
@@ -231,40 +201,37 @@ const styles = StyleSheet.create({
     marginTop: 7,
   },
   pathInput: {
-    paddingHorizontal: 5,
+    paddingHorizontal: sc(10),
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    height: 29,
-    borderRadius: 8,
-    borderWidth: 2,
+    height: sc(38),
+    borderRadius: sc(5),
     outlineStyle: "none",
+    fontFamily: "Proxima Nova Regular",
+    fontSize: sc(17),
   },
   browseButton: {
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    marginLeft: 5,
+    height: sc(36),
+    paddingHorizontal: sc(15),
+    borderRadius: sc(5),
+    marginLeft: sc(10),
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
   },
   importButton: {
-    marginTop: 10,
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    marginTop: sc(8),
+    height: sc(36),
+    paddingHorizontal: sc(10),
+    borderRadius: sc(5),
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
   },
   resetButton: {
-    marginTop: 5,
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    marginTop: sc(8),
+    height: sc(36),
+    paddingHorizontal: sc(10),
+    borderRadius: sc(5),
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
   },
 });
 

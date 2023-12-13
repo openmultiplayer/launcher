@@ -50,7 +50,7 @@ export default {
   copy_server_info: "Copy Server Info",
   settings_gta_path_input_label:
     "GTA: San Andreas path (where SA-MP is also installed)",
-  browse: "Browse",
+  browse: "BROWSE",
   settings_import_nickname_gta_path_from_samp:
     "Import nickname and gtasa path from SA-MP settings",
   settings_import_samp_favorite_list: "Import favorite list from SA-MP data",
