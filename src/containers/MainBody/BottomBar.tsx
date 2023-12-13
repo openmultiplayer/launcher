@@ -82,7 +82,7 @@ const PropInfo = (props: {
           }}
           onPress={() => props.buttonOnPress && props.buttonOnPress()}
         >
-          <Text semibold color={theme.textPrimary} style={{ fontSize: sc(14) }}>
+          <Text semibold color={"#FFFFFF"} style={{ fontSize: sc(14) }}>
             {props.buttonText}
           </Text>
         </TouchableOpacity>
@@ -193,7 +193,7 @@ const BottomBar = () => {
             />
             <Text
               semibold
-              color={theme.textPrimary}
+              color={"#FFFFFF"}
               style={{ fontSize: sc(15), marginLeft: sc(8) }}
             >
               {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
