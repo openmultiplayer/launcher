@@ -15,6 +15,7 @@ import { useAddThirdPartyServerModal } from "../../states/addThirdPartyServerMod
 import { usePersistentServers } from "../../states/servers";
 import { validateServerAddress } from "../../utils/helpers";
 import { Server } from "../../utils/types";
+import { sc } from "../../utils/sizeScaler";
 
 const AddThirdPartyServerModal = () => {
   const { visible, showAddThirdPartyServer } = useAddThirdPartyServerModal();
@@ -89,28 +90,29 @@ const AddThirdPartyServerModal = () => {
         }}
       >
         <Icon image={images.icons.favorite} size={30} />
-        <View style={{ width: 300, marginTop: 10 }}>
-          <Text color={theme.textPrimary} size={1}>
+        <View style={{ width: 300, marginTop: sc(10) }}>
+          <Text color={theme.textPrimary} size={2}>
             {t("add_server_modal_description_1")}
           </Text>
-          <Text color={theme.textPrimary} size={1}>
+          <Text color={theme.textPrimary} size={2}>
             {t("add_server_modal_description_2")}
           </Text>
         </View>
         <TextInput
           placeholder={"IP:Port"}
+          placeholderTextColor={theme.textPlaceholder}
           value={serverAddress}
           onChangeText={(text) => setServerAddress(text)}
           style={{
-            color: theme.textSecondary,
-            paddingHorizontal: 5,
-            marginTop: 10,
+            fontFamily: "Proxima Nova Regular",
+            fontSize: sc(17),
+            color: theme.textPrimary,
+            paddingHorizontal: sc(10),
+            marginTop: sc(10),
             width: 300,
-            backgroundColor: "#FFFFFF",
-            borderColor: theme.primary,
-            height: 30,
-            borderRadius: 8,
-            borderWidth: 2,
+            backgroundColor: theme.textInputBackgroundColor,
+            height: sc(38),
+            borderRadius: sc(5),
             // @ts-ignore
             outlineStyle: "none",
           }}
@@ -118,34 +120,33 @@ const AddThirdPartyServerModal = () => {
         <TouchableOpacity
           style={{
             width: 300,
-            height: 30,
-            marginTop: 5,
+            height: sc(38),
+            marginTop: sc(10),
             backgroundColor: theme.primary,
-            borderRadius: 8,
+            borderRadius: sc(5),
             justifyContent: "center",
             alignItems: "center",
           }}
           onPress={() => addServer()}
         >
-          <Text color={theme.textPrimary} size={1}>
+          <Text semibold color={theme.textPrimary} size={2}>
             {t("add")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
             position: "absolute",
-            top: 5,
-            right: 5,
-            height: 25,
-            width: 25,
+            top: sc(15),
+            right: sc(15),
+            height: sc(20),
+            width: sc(20),
           }}
           onPress={() => showAddThirdPartyServer(false)}
         >
           <Icon
             image={images.icons.close}
-            size={25}
-            color={theme.primary}
-            style={{ opacity: 0.5 }}
+            size={sc(20)}
+            color={theme.textSecondary}
           />
         </TouchableOpacity>
       </View>
