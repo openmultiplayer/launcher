@@ -215,7 +215,8 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     width: "40%",
-    height: sc(100),
+    height: sc(110),
+    marginTop: sc(5),
   },
 });
 
