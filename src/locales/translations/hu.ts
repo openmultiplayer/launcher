@@ -89,6 +89,5 @@ export default {
     'Úgy néz ki a játékod adminisztrátori jogokat kér. Ezt több dolog is okozhatja, például a játék a "C" meghajtón van. Kérlek indítsd újra a launchert rendszergazda jogokkal. Használd a(z) "Futtatás adminisztrátorként" gombot, vagy futtasd a programot rendszergazdaként.',
   run_as_admin: "Futtatás adminisztrátorként",
   settings_general_tab_title: "Általános",
-  settings_appearance_and_lang_tab_title: "Kinézet és Nyelv",
-  settings_language_selector_title: "Válassz egy nyelvet:",
+  settings_lang_tab_title: "Nyelv",
 };

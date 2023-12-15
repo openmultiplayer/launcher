@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke, shell } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 import { t } from "i18next";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
@@ -16,6 +16,7 @@ const General = () => {
   const { hostOS } = useAppState();
   const { theme } = useTheme();
   const { gtasaPath, setGTASAPath, setNickName } = useSettings();
+  const { updateInfo, version } = useAppState();
 
   const selectPath = async () => {
     const selected: string = (await open({
@@ -188,6 +189,19 @@ const General = () => {
           {t("settings_reset_application_data")}
         </Text>
       </TouchableOpacity>
+      <View style={styles.appInfoContainer}>
+        {updateInfo && updateInfo.version != version && (
+          <Text
+            style={{ marginBottom: sc(10) }}
+            semibold
+            size={2}
+            onPress={() => shell.open(updateInfo?.download)}
+            color={theme.primary}
+          >
+            {t("settings_new_update_available")}
+          </Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -230,6 +244,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: sc(10),
     borderRadius: sc(5),
     justifyContent: "center",
+    alignItems: "center",
+  },
+  appInfoContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    width: "100%",
     alignItems: "center",
   },
 });

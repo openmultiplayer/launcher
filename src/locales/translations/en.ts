@@ -87,6 +87,5 @@ export default {
     'It seems like your GTA: San Andreas game requires administration permissions to run. This can be due to many causes, like having your game installed in "C" drive. Please re-open open.mp launcher as administrator either using "Run as Admin" button or manually by yourself',
   run_as_admin: "Run as Admin",
   settings_general_tab_title: "General",
-  settings_appearance_and_lang_tab_title: "Appearance & Languages",
-  settings_language_selector_title: "Choose a language:",
+  settings_lang_tab_title: "Languages",
 };

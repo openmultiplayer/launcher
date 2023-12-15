@@ -1,4 +1,3 @@
-import { t } from "i18next";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
@@ -24,9 +23,6 @@ const Appearance = () => {
         flex: 1,
       }}
     >
-      <Text semibold color={theme.textPrimary} size={2}>
-        {t("settings_language_selector_title")}:
-      </Text>
       <View
         style={{
           height: "100%",

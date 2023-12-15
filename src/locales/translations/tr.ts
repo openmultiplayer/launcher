@@ -89,6 +89,5 @@ export default {
     'Görünüşe göre GTA: San Andreas oyununuzun çalışması için yönetici izinleri gerekiyor. Bu, oyununuzun "C" sürücüsüne yüklenmiş olması gibi birçok nedenden kaynaklanıyor olabilir. Lütfen open.mp başlatıcısını "Yönetici Olarak Çalıştır" seçeneğini kullanarak veya kendiniz manuel olarak yönetici olarak yeniden açın',
   run_as_admin: "Yönetici Olarak Çalıştır",
   settings_general_tab_title: "Genel",
-  settings_appearance_and_lang_tab_title: "Görünüm ve Diller",
-  settings_language_selector_title: "Bir dil seçin:",
+  settings_lang_tab_title: "Diller",
 };

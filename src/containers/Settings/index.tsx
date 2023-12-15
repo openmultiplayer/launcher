@@ -17,15 +17,15 @@ import { useGenericPersistentState } from "../../states/genericStates";
 import { useSettingsModal } from "../../states/settingsModal";
 import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
-import Appearance from "./Tab/Appearance";
 import General from "./Tab/General";
+import Languages from "./Tab/Languages";
 
 const MODAL_WIDTH = 500;
 const MODAL_HEIGHT = 300;
 
 const SettingsModal = () => {
   const { height, width } = useWindowDimensions();
-  const { nativeAppVersion, version, updateInfo } = useAppState();
+  const { nativeAppVersion, version } = useAppState();
   const { theme } = useTheme();
   const { hide, visible } = useSettingsModal();
   const [selectedTab, setSelectedTab] = useState("general");
@@ -33,7 +33,7 @@ const SettingsModal = () => {
 
   const tabs = [
     { label: t("settings_general_tab_title"), type: "general" },
-    { label: t("settings_appearance_and_lang_tab_title"), type: "appearance" },
+    { label: t("settings_lang_tab_title"), type: "languages" },
   ];
 
   if (!visible) {
@@ -42,7 +42,7 @@ const SettingsModal = () => {
 
   const renderTab = () => {
     if (selectedTab === "general") return <General />;
-    else if (selectedTab === "appearance") return <Appearance />;
+    else if (selectedTab === "languages") return <Languages />;
     else return null;
   };
 
@@ -72,17 +72,6 @@ const SettingsModal = () => {
         />
         {renderTab()}
         <View style={styles.appInfoContainer}>
-          {updateInfo && updateInfo.version != version && (
-            <Text
-              style={{ marginBottom: sc(10) }}
-              semibold
-              size={2}
-              onPress={() => shell.open(updateInfo?.download)}
-              color={theme.primary}
-            >
-              {t("settings_new_update_available")}
-            </Text>
-          )}
           <Text size={2} color={theme.textPrimary}>
             {t("settings_credits_made_by")}{" "}
             <Text
