@@ -7,6 +7,7 @@ import {
   useGenericTempState,
 } from "../../states/genericStates";
 import { useTheme } from "../../states/theme";
+import { sc } from "../../utils/sizeScaler";
 import BottomBar from "./BottomBar";
 import ServerInfo from "./ServerInfo";
 import SearchBar from "./ServerList/SearchBar";
@@ -41,11 +42,11 @@ const FiltersModal = () => {
       <View
         style={{
           position: "absolute",
-          top: 25,
-          left: 6,
-          width: 200,
-          padding: 5,
-          paddingBottom: 6,
+          top: sc(40),
+          left: 0,
+          width: sc(250),
+          padding: sc(10),
+          paddingBottom: sc(11),
           backgroundColor: theme.secondary,
           shadowColor: "#000",
           shadowOffset: {
@@ -57,33 +58,45 @@ const FiltersModal = () => {
           borderRadius: 3,
         }}
       >
-        <Text semibold size={1} color={theme.textPrimary}>
+        <Text semibold size={2} color={theme.textPrimary}>
           {t("filters")}:
         </Text>
         <Pressable
-          style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: sc(10),
+          }}
           onPress={() => setSearchData("ompOnly", !ompOnly)}
         >
-          <CheckBox value={ompOnly} style={{ marginRight: 5 }} />
-          <Text size={1} color={theme.textPrimary}>
+          <CheckBox value={ompOnly} style={{ marginRight: sc(8) }} />
+          <Text size={2} color={theme.textPrimary}>
             {t("filter_only_omp_servers")}
           </Text>
         </Pressable>
         <Pressable
-          style={{ flexDirection: "row", alignItems: "center", marginTop: 2 }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: sc(6),
+          }}
           onPress={() => setSearchData("nonEmpty", !nonEmpty)}
         >
-          <CheckBox value={nonEmpty} style={{ marginRight: 5 }} />
-          <Text size={1} color={theme.textPrimary}>
+          <CheckBox value={nonEmpty} style={{ marginRight: sc(8) }} />
+          <Text size={2} color={theme.textPrimary}>
             {t("filter_non_empty_servers")}
           </Text>
         </Pressable>
         <Pressable
-          style={{ flexDirection: "row", alignItems: "center", marginTop: 2 }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: sc(6),
+          }}
           onPress={() => setSearchData("unpassworded", !unpassworded)}
         >
-          <CheckBox value={unpassworded} style={{ marginRight: 5 }} />
-          <Text size={1} color={theme.textPrimary}>
+          <CheckBox value={unpassworded} style={{ marginRight: sc(8) }} />
+          <Text size={2} color={theme.textPrimary}>
             {t("filter_unpassworded_servers")}
           </Text>
         </Pressable>

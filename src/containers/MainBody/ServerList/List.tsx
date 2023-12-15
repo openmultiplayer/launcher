@@ -1,9 +1,9 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import BigList from "react-native-big-list";
+import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 import ListHeader from "./ListHeader";
-import { useTheme } from "../../../states/theme";
 
 interface IProps {
   data: Server[];
