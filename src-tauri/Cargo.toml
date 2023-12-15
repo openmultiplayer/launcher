@@ -1,6 +1,6 @@
 [package]
 name = "omp-launcher"
-version = "0.0.1"
+version = "1.0.0"
 description = "open.mp launcher"
 authors = ["Amyr Ahmady (iAmir)"]
 license = ""
