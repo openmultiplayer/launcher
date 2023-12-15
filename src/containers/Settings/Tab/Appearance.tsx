@@ -10,7 +10,7 @@ import { sc } from "../../../utils/sizeScaler";
 
 const Appearance = () => {
   const { language, setLanguage } = useGenericPersistentState();
-  const { theme } = useTheme();
+  const { theme, themeType } = useTheme();
   const { hide: hideSettings } = useSettingsModal();
   const languages = Object.entries(getLanguages());
 
@@ -37,7 +37,7 @@ const Appearance = () => {
           backgroundColor: theme.itemBackgroundColor,
         }}
       >
-        <ScrollView id="scroll">
+        <ScrollView id={themeType === "dark" ? "scroll" : "scroll-light"}>
           {languages.map(([_, lang], index) => {
             return (
               <Pressable

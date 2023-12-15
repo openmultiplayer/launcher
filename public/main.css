@@ -37,6 +37,45 @@
   background: #ffffff99;
 }
 
+#scroll-light::-webkit-scrollbar-track {
+  background: #1A1A1E4D;
+}
+
+#scroll-light {
+  scrollbar-color: #1A1A1E4D #1A1A1E4D;
+  scrollbar-width: thin;
+  overflow: overlay !important;
+}
+
+#scroll-light::-webkit-scrollbar {
+  width: 5px;
+  background: transparent;
+}
+
+#scroll-light::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+
+#scroll-light::-webkit-scrollbar-thumb:vertical {
+  background: linear-gradient(to left, #1A1A1E4D 1px, transparent 0%);
+}
+
+#scroll-light::-webkit-scrollbar-thumb:horizontal {
+  background: linear-gradient(to bottom, #1A1A1E4D 1px, transparent 0%);
+}
+
+#scroll-light::-webkit-scrollbar-track:vertical {
+  background: linear-gradient(to left, #1A1A1E4D 1px, transparent 0%);
+}
+
+#scroll-light::-webkit-scrollbar-track:horizontal {
+  background: linear-gradient(to bottom, #1A1A1E4D 1px, transparent 0%);
+}
+
+#scroll-light::-webkit-scrollbar-thumb:hover {
+  background: #1A1A1E99;
+}
+
 .titlebar-button:hover {
   background: #897af1;
 }

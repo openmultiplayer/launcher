@@ -87,7 +87,7 @@ const PlayerList = (props: IProps) => {
           height: "50%",
         }}
       >
-        <FlatList id="scroll" data={props.players} renderItem={renderPlayer} />
+        <FlatList id={themeType === "dark" ? "scroll" : "scroll-light"} data={props.players} renderItem={renderPlayer} />
       </View>
     </>
   );

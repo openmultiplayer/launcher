@@ -3,6 +3,7 @@ import BigList from "react-native-big-list";
 import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 import ListHeader from "./ListHeader";
+import { useTheme } from "../../../states/theme";
 
 interface IProps {
   data: Server[];
@@ -11,11 +12,13 @@ interface IProps {
 }
 
 const List = (props: IProps) => {
+  const { themeType } = useTheme();
+
   return (
     <View style={styles.mainContainer}>
       <ListHeader />
       <BigList
-        id="scroll"
+        id={themeType === "dark" ? "scroll" : "scroll-light"}
         contentContainerStyle={props.containerStyle}
         data={props.data}
         renderItem={(info) => props.renderItem(info.item, info.index)}

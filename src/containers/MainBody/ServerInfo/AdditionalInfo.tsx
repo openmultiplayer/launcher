@@ -102,7 +102,11 @@ const AdditionalInfo = (props: IProps) => {
           flex: 1,
         }}
       >
-        <FlatList id="scroll" data={rules} renderItem={renderRule} />
+        <FlatList
+          id={themeType === "dark" ? "scroll" : "scroll-light"}
+          data={rules}
+          renderItem={renderRule}
+        />
       </View>
     </View>
   );
