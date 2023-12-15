@@ -22,7 +22,7 @@ interface IProps {
 }
 
 const TabBar = (props: IProps) => {
-  const { theme } = useTheme();
+  const { theme, themeType } = useTheme();
 
   return (
     <View style={[styles.listing, props.style]}>
@@ -37,7 +37,7 @@ const TabBar = (props: IProps) => {
               borderRadius: sc(5),
               ...(selected
                 ? {
-                    shadowColor: "#fff",
+                    shadowColor: themeType === "dark" ? "#fff" : "#000",
                     shadowOffset: {
                       width: 0,
                       height: 0,
