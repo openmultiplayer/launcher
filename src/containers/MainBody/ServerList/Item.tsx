@@ -107,11 +107,7 @@ const ServerItem = memo((props: IProps) => {
               server.hasPassword ? images.icons.locked : images.icons.unlocked
             }
             size={sc(20)}
-            color={
-              !server.hasPassword
-                ? "#7AF1AA"
-                : theme.serverListItemBackgroundColor
-            }
+            color={!server.hasPassword ? "#7AF1AA" : "#36363F"}
           />
         </View>
         <View

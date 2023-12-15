@@ -61,7 +61,7 @@ const JoinServerPrompt = () => {
           svg
           image={server?.hasPassword ? images.icons.locked : images.icons.play}
           size={sc(30)}
-          color={server?.hasPassword ? "#C8302F" : theme.primary}
+          color={server?.hasPassword ? "#36363F" : theme.primary}
         />
         <View
           style={{
