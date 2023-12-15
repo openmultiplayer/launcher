@@ -88,4 +88,6 @@ export default {
   run_as_admin: "Run as Admin",
   settings_general_tab_title: "General",
   settings_lang_tab_title: "Languages",
+  settings_advanced_tab_title: "Advanced",
+  settings_advanced_discord_status: "Enable Discord status",
 };

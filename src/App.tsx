@@ -1,4 +1,4 @@
-import { process } from "@tauri-apps/api";
+import { invoke, process } from "@tauri-apps/api";
 import { appWindow, type PhysicalSize } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -21,7 +21,7 @@ import { sc } from "./utils/sizeScaler";
 const App = () => {
   const [maximized, setMaximized] = useState<boolean>(false);
   const { theme } = useTheme();
-  const { language } = useGenericPersistentState();
+  const { language, shouldUpdateDiscordStatus } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
 
   const windowResizeListener = useCallback(
@@ -57,6 +57,9 @@ const App = () => {
       killResizeListener = await appWindow.onResized(windowResizeListener);
     };
 
+    invoke("toggle_drpc", {
+      toggle: shouldUpdateDiscordStatus,
+    });
     fetchServers();
     fetchUpdateInfo();
     setupListeners();

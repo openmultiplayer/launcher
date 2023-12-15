@@ -19,6 +19,7 @@ import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
 import General from "./Tab/General";
 import Languages from "./Tab/Languages";
+import Advanced from "./Tab/Advanced";
 
 const MODAL_WIDTH = 500;
 const MODAL_HEIGHT = 300;
@@ -34,6 +35,7 @@ const SettingsModal = () => {
   const tabs = [
     { label: t("settings_general_tab_title"), type: "general" },
     { label: t("settings_lang_tab_title"), type: "languages" },
+    { label: t("settings_advanced_tab_title"), type: "advanced" },
   ];
 
   if (!visible) {
@@ -43,6 +45,7 @@ const SettingsModal = () => {
   const renderTab = () => {
     if (selectedTab === "general") return <General />;
     else if (selectedTab === "languages") return <Languages />;
+    else if (selectedTab === "advanced") return <Advanced />;
     else return null;
   };
 
