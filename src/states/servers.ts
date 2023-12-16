@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Server } from "../utils/types";
 import { useNotification } from "./notification";
+import { queryServer } from "../utils/query";
 
 interface ServersState {
   servers: Server[];
@@ -96,6 +97,8 @@ const usePersistentServers = create<ServersPersistentState>()(
               server: `${server.ip}:${server.port}`,
             })
           );
+
+          queryServer(server, "favorites", "basic");
 
           return { favorites: cpy };
         }),
