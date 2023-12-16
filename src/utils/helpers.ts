@@ -149,8 +149,6 @@ export const startGame = async (
   const { show: showSettings } = useSettingsModal.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
 
-  addToRecentlyJoined(server);
-
   if (password.length) {
     const srvCpy = { ...server };
     srvCpy.password = password;
@@ -220,28 +218,32 @@ export const startGame = async (
     exe: gtasaPath,
     dll: sampDllPath,
     password: password,
-  }).catch(async (e) => {
-    if (e == "need_admin") {
-      showMessageBox({
-        title: t("admin_permissions_required_modal_title"),
-        description: t("admin_permissions_required_modal_description"),
-        buttons: [
-          {
-            title: t("run_as_admin"),
-            onPress: async () => {
-              await invoke("rerun_as_admin").then(() => {
-                process.exit();
-              });
+  })
+    .then(() => {
+      addToRecentlyJoined(server);
+    })
+    .catch(async (e) => {
+      if (e == "need_admin") {
+        showMessageBox({
+          title: t("admin_permissions_required_modal_title"),
+          description: t("admin_permissions_required_modal_description"),
+          buttons: [
+            {
+              title: t("run_as_admin"),
+              onPress: async () => {
+                await invoke("rerun_as_admin").then(() => {
+                  process.exit();
+                });
+              },
             },
-          },
-          {
-            title: t("cancel"),
-            onPress: () => hideMessageBox(),
-          },
-        ],
-      });
-    }
-  });
+            {
+              title: t("cancel"),
+              onPress: () => hideMessageBox(),
+            },
+          ],
+        });
+      }
+    });
 };
 
 export const checkDirectoryValidity = async (
