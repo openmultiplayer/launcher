@@ -65,6 +65,19 @@ const usePersistentServers = create<ServersPersistentState>()(
         }),
       addToFavorites: (server) =>
         set(() => {
+          // Validate server before adding
+          if (
+            (typeof server.ip !== "string" && isNaN(server.ip)) ||
+            server.ip === "NaN" ||
+            // @ts-ignore
+            server.port === "NaN" ||
+            isNaN(Number(server.port)) ||
+            server.ip.length < 6 ||
+            server.port < 1
+          ) {
+            alert("FUCK ");
+            return { favorites: get().favorites };
+          }
           const cpy = [...get().favorites];
           const findIndex = cpy.findIndex(
             (srv) => srv.ip === server.ip && srv.port === server.port
