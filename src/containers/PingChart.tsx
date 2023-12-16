@@ -11,11 +11,11 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
-import { useContext, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { StyleProp, View, ViewStyle } from "react-native";
-import { ThemeContext } from "../contexts/theme";
 import { useServers } from "../states/servers";
+import { useTheme } from "../states/theme";
 
 ChartJS.register(
   CategoryScale,
@@ -28,6 +28,8 @@ ChartJS.register(
   Colors
 );
 
+const MAX_PING_ELEMENTS = 25;
+
 export const options: ChartOptions<"line"> = {
   responsive: true,
   maintainAspectRatio: false,
@@ -37,7 +39,7 @@ export const options: ChartOptions<"line"> = {
     y: {
       grid: {
         display: true,
-        color: "#555",
+        color: "#44444444",
       },
       ticks: { color: "#999", align: "center" },
     },
@@ -63,7 +65,25 @@ export const options: ChartOptions<"line"> = {
   },
 };
 
-const labels = Array(40).fill("");
+const chartStyle = (theme: any) => {
+  return {
+    borderWidth: 2,
+    borderColor: theme.primary,
+    hoverBackgroundColor: theme.primary,
+    hoverBorderColor: theme.primary,
+    backgroundColor: theme.primary,
+    pointBackgroundColor: "white",
+    pointBorderColor: theme.primary,
+    pointBorderWidth: 2,
+    pointRadius: 3,
+    pointHoverRadius: 3,
+    pointHoverBorderWidth: 2,
+    pointHoverBackgroundColor: "white",
+    pointHoverBorderColor: theme.primary,
+  };
+};
+
+const labels = Array(MAX_PING_ELEMENTS).fill("");
 
 interface IProps {
   containerStyle?: StyleProp<ViewStyle>;
@@ -71,9 +91,9 @@ interface IProps {
 
 const Chart = (props: IProps) => {
   const { selected } = useServers();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const selectedServerAddr = useRef<string>("");
-  const pingList = useRef<number[]>(Array(40).fill(0));
+  const pingList = useRef<number[]>(Array(MAX_PING_ELEMENTS).fill(0));
 
   const data = useMemo(() => {
     if (selected) {
@@ -89,12 +109,8 @@ const Chart = (props: IProps) => {
         labels: labels,
         datasets: [
           {
-            borderWidth: 2,
             data: pingList.current,
-            borderColor: theme.primary,
-            backgroundColor: theme.primary,
-            pointBackgroundColor: "transparent",
-            pointBorderColor: "transparent",
+            ...chartStyle(theme),
           },
         ],
       } as ChartData<"line", number[], string>;
@@ -104,12 +120,8 @@ const Chart = (props: IProps) => {
       labels: labels,
       datasets: [
         {
-          borderWidth: 2,
-          data: Array(40).fill(0),
-          borderColor: theme.primary,
-          backgroundColor: theme.primary,
-          pointBackgroundColor: "transparent",
-          pointBorderColor: "transparent",
+          data: Array(MAX_PING_ELEMENTS).fill(0),
+          ...chartStyle(theme),
         },
       ],
     } as ChartData<"line", number[], string>;

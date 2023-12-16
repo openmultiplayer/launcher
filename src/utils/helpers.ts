@@ -14,7 +14,7 @@ import { APIResponseServer, Player, SearchData, Server } from "./types";
 import { Log } from "./logger";
 
 const PARALLEL_SERVERS_TO_UPDATE_COUNT = 5;
-const PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL = 1500;
+const PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL = 2000;
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]

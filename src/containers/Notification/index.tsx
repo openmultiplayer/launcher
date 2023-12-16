@@ -1,12 +1,12 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { Pressable, View } from "react-native";
 import * as Animatable from "react-native-animatable";
 import Text from "../../components/Text";
-import { ThemeContext } from "../../contexts/theme";
 import { useNotification } from "../../states/notification";
+import { useTheme } from "../../states/theme";
 
 const Notification = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const {
     visible,
     title,

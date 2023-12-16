@@ -1,27 +1,91 @@
-/* Width */
+#scroll::-webkit-scrollbar-track {
+  background: #ffffff40;
+}
+
 #scroll {
-  overflow-y: scroll;
+  scrollbar-color: #ffffff40 #ffffff40;
+  scrollbar-width: thin;
+  overflow: overlay !important;
 }
 
 #scroll::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
+  background: transparent;
 }
 
-/* Track */
-#scroll::-webkit-scrollbar-track {
-  background: #1d1d1d;
+#scroll::-webkit-scrollbar-track-piece {
+  background: transparent;
 }
 
-/* Handle */
-#scroll::-webkit-scrollbar-thumb {
-  background: #585858;
+#scroll::-webkit-scrollbar-thumb:vertical {
+  background: linear-gradient(to left, #ffffff40 1px, transparent 0%);
 }
 
-/* Handle on hover */
+#scroll::-webkit-scrollbar-thumb:horizontal {
+  background: linear-gradient(to bottom, #ffffff40 1px, transparent 0%);
+}
+
+#scroll::-webkit-scrollbar-track:vertical {
+  background: linear-gradient(to left, #ffffff40 1px, transparent 0%);
+}
+
+#scroll::-webkit-scrollbar-track:horizontal {
+  background: linear-gradient(to bottom, #ffffff40 1px, transparent 0%);
+}
+
 #scroll::-webkit-scrollbar-thumb:hover {
-  background: #797979;
+  background: #ffffff99;
+}
+
+#scroll-light::-webkit-scrollbar-track {
+  background: #1A1A1E4D;
+}
+
+#scroll-light {
+  scrollbar-color: #1A1A1E4D #1A1A1E4D;
+  scrollbar-width: thin;
+  overflow: overlay !important;
+}
+
+#scroll-light::-webkit-scrollbar {
+  width: 5px;
+  background: transparent;
+}
+
+#scroll-light::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+
+#scroll-light::-webkit-scrollbar-thumb:vertical {
+  background: linear-gradient(to left, #1A1A1E4D 1px, transparent 0%);
+}
+
+#scroll-light::-webkit-scrollbar-thumb:horizontal {
+  background: linear-gradient(to bottom, #1A1A1E4D 1px, transparent 0%);
+}
+
+#scroll-light::-webkit-scrollbar-track:vertical {
+  background: linear-gradient(to left, #1A1A1E4D 1px, transparent 0%);
+}
+
+#scroll-light::-webkit-scrollbar-track:horizontal {
+  background: linear-gradient(to bottom, #1A1A1E4D 1px, transparent 0%);
+}
+
+#scroll-light::-webkit-scrollbar-thumb:hover {
+  background: #1A1A1E99;
 }
 
 .titlebar-button:hover {
-  background: #8477B7;
+  background: #897af1;
+}
+
+@font-face {
+  font-family: "Proxima Nova Regular";
+  src: url("fonts/Proxima Nova Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Proxima Nova Semibold";
+  src: url("fonts/Proxima Nova Semibold.woff2") format("woff2");
 }

@@ -1,29 +1,41 @@
 import {
   ColorValue,
   Image,
-  ImageSourcePropType,
+  ImageStyle,
+  StyleProp,
   StyleSheet,
   TouchableOpacity,
-  StyleProp,
-  ImageStyle,
 } from "react-native";
+import { convertRgbToFilter } from "../utils/filter";
 
 interface IProps {
-  image: string | ImageSourcePropType;
+  image: string;
   title?: string;
   size: number;
   color?: ColorValue;
   onPress?: () => void;
   style?: StyleProp<ImageStyle>;
+  svg?: boolean;
 }
 
 const Icon = (props: IProps) => {
-  const image =
-    typeof props.image === "string" ? { uri: props.image } : props.image;
-
-  const Icon = (
+  const Icon = props.svg ? (
+    <img
+      src={props.image}
+      height={props.size}
+      width={props.size}
+      style={{
+        // @ts-ignore
+        ...(props.style ? props.style : {}),
+        ...styles.icon,
+        filter: props.color
+          ? convertRgbToFilter(props.color as string).filter
+          : undefined,
+      }}
+    />
+  ) : (
     <Image
-      source={image}
+      source={{ uri: props.image }}
       style={[
         styles.icon,
         { tintColor: props.color },
@@ -33,11 +45,22 @@ const Icon = (props: IProps) => {
     />
   );
 
-  const Titled = props.title ? <div title={props.title}>{Icon}</div> : Icon;
+  const Titled = props.title ? (
+    <div title={props.title} style={{ height: props.size, width: props.size }}>
+      {Icon}
+    </div>
+  ) : (
+    Icon
+  );
 
   if (props.onPress) {
     return (
-      <TouchableOpacity onPress={props.onPress}>{Titled}</TouchableOpacity>
+      <TouchableOpacity
+        onPress={props.onPress}
+        style={{ height: props.size, width: props.size }}
+      >
+        {Titled}
+      </TouchableOpacity>
     );
   } else {
     return Titled;
@@ -47,7 +70,7 @@ const Icon = (props: IProps) => {
 const styles = StyleSheet.create({
   icon: {
     resizeMode: "stretch",
-    tintColor: "white",
+    tintColor: "#FFFFFF",
   },
 });
 

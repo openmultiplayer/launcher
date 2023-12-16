@@ -13,11 +13,11 @@ export const queryServer = (
 
     getServerInfo(ip, port, listType);
     getServerPing(ip, port, listType);
+    getServerRules(ip, port, listType);
 
     if (queryType === "all") {
       getServerPlayers(ip, port, listType);
-      getServerRules(ip, port, listType);
-      getServerOmpStatus(ip, port, listType);
+      // getServerOmpStatus(ip, port, listType);
     }
   } catch (error) {
     Log.debug("[query.ts: queryServer]", error);
@@ -119,7 +119,17 @@ const getServerRules = async (ip: string, port: number, listType: ListType) => {
         rules[rule[0]] = rule[1];
       });
 
-      server = { ...server, rules: rules };
+      let isOmp = false;
+
+      if (rules["allow_DL"]) {
+        isOmp = true;
+      } else {
+        if (rules.version && rules.version.includes("omp")) {
+          isOmp = true;
+        }
+      }
+
+      server = { ...server, rules: rules, usingOmp: isOmp };
       updateServerEveryWhere(server);
     }
   } catch (e) {
@@ -127,38 +137,38 @@ const getServerRules = async (ip: string, port: number, listType: ListType) => {
   }
 };
 
-const getServerOmpStatus = async (
-  ip: string,
-  port: number,
-  listType: ListType
-) => {
-  try {
-    const serverOmpStatus = await invoke<string>("request_server_is_omp", {
-      ip: ip,
-      port: port,
-    });
+// const getServerOmpStatus = async (
+//   ip: string,
+//   port: number,
+//   listType: ListType
+// ) => {
+//   try {
+//     const serverOmpStatus = await invoke<string>("request_server_is_omp", {
+//       ip: ip,
+//       port: port,
+//     });
 
-    let server = getServerFromList(ip, port, listType);
-    if (server) {
-      if (
-        serverOmpStatus === "no_data" ||
-        JSON.parse(serverOmpStatus).isOmp == undefined
-      ) {
-        server = { ...server, usingOmp: false };
-        updateServerEveryWhere(server);
-        return;
-      }
+//     let server = getServerFromList(ip, port, listType);
+//     if (server) {
+//       if (
+//         serverOmpStatus === "no_data" ||
+//         JSON.parse(serverOmpStatus).isOmp == undefined
+//       ) {
+//         server = { ...server, usingOmp: false };
+//         updateServerEveryWhere(server);
+//         return;
+//       }
 
-      if (!server.usingOmp) {
-        server = {
-          ...server,
-          usingOmp: JSON.parse(serverOmpStatus).isOmp as boolean,
-        };
-        updateServerEveryWhere(server);
-      }
-    }
-  } catch (e) {}
-};
+//       if (!server.usingOmp) {
+//         server = {
+//           ...server,
+//           usingOmp: JSON.parse(serverOmpStatus).isOmp as boolean,
+//         };
+//         updateServerEveryWhere(server);
+//       }
+//     }
+//   } catch (e) {}
+// };
 
 const getServerPing = async (ip: string, port: number, listType: ListType) => {
   try {

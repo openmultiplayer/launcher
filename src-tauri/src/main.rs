@@ -125,6 +125,11 @@ fn get_samp_favorite_list() -> String {
     samp::get_samp_favorite_list()
 }
 
+#[tauri::command]
+fn toggle_drpc(toggle: bool) -> () {
+    discord::toggle_drpc(toggle);
+}
+
 fn main() {
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
@@ -133,7 +138,7 @@ fn main() {
         .setup(|app| {
             let main_window = app.get_window("main").unwrap();
             main_window
-                .set_min_size(Some(PhysicalSize::new(900, 600)))
+                .set_min_size(Some(PhysicalSize::new(1000, 700)))
                 .unwrap();
             Ok(())
         })
@@ -147,7 +152,8 @@ fn main() {
             get_gtasa_path_from_samp,
             get_nickname_from_samp,
             rerun_as_admin,
-            get_samp_favorite_list
+            get_samp_favorite_list,
+            toggle_drpc,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

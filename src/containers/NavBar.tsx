@@ -1,21 +1,21 @@
 import { t } from "i18next";
-import { useContext } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import Icon from "../components/Icon";
 import TabBar from "../components/TabBar";
 import { images } from "../constants/images";
-import { ThemeContext } from "../contexts/theme";
 import { useGenericTempState } from "../states/genericStates";
 import { useSettings } from "../states/settings";
+import { useTheme } from "../states/theme";
+import { sc } from "../utils/sizeScaler";
 import { ListType } from "../utils/types";
 
 const NavBar = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { nickName, setNickName } = useSettings();
   const { setListType, listType } = useGenericTempState();
 
   const list: { icon: string; label: string; type: ListType }[] = [
-    { icon: images.icons.favorite, label: t("favorites"), type: "favorites" },
+    { icon: images.icons.favTab, label: t("favorites"), type: "favorites" },
     { icon: images.icons.internet, label: t("internet"), type: "internet" },
     { icon: images.icons.partner, label: t("partners"), type: "partners" },
     {
@@ -27,7 +27,7 @@ const NavBar = () => {
 
   return (
     <>
-      <View style={[styles.container, { backgroundColor: theme.secondary }]}>
+      <View style={styles.container}>
         <TabBar
           onChange={(type) => setListType(type as ListType)}
           list={list}
@@ -35,30 +35,38 @@ const NavBar = () => {
         />
         <View style={styles.inputs}>
           <View style={styles.nicknameContainer}>
-            <Icon
-              title={t("nickname")}
-              image={images.icons.nickname}
-              size={18}
-              color={"white"}
-            />
+            <View
+              style={{
+                height: sc(35),
+                width: sc(35),
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: theme.itemBackgroundColor,
+                borderRadius: sc(5),
+              }}
+            >
+              <Icon
+                title={t("nickname")}
+                image={images.icons.nickname}
+                size={sc(16)}
+                color={theme.textSecondary}
+              />
+            </View>
             <TextInput
               value={nickName}
               onChangeText={(text) => setNickName(text)}
               placeholder={t("nickname") + "..."}
-              placeholderTextColor={theme.textPlaceholder}
+              placeholderTextColor={theme.textSecondary}
               style={{
-                backgroundColor: "white",
-                color: theme.textSecondary,
-                fontWeight: "600",
-                fontSize: 12,
-                width: 150,
-                marginRight: 10,
-                marginLeft: 10,
-                height: "80%",
-                paddingHorizontal: 5,
-                borderColor: theme.primary,
-                borderWidth: 1,
-                borderRadius: 3,
+                fontFamily: "Proxima Nova Regular",
+                backgroundColor: theme.textInputBackgroundColor,
+                color: theme.textPrimary,
+                fontSize: sc(17),
+                width: sc(160),
+                marginLeft: sc(10),
+                height: sc(35),
+                paddingHorizontal: sc(5),
+                borderRadius: sc(5),
                 // @ts-ignore
                 outlineStyle: "none",
               }}
@@ -98,7 +106,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   nicknameContainer: {
-    height: "100%",
+    height: sc(35),
     flexDirection: "row",
     alignItems: "center",
   },

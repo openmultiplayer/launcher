@@ -7,6 +7,14 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use sysinfo::{ProcessExt, System, SystemExt};
 use tauri::async_runtime::block_on;
 
+static mut SHOULD_SEND_UPDATE_TO_DISCORD: bool = true;
+
+pub fn toggle_drpc(toggle: bool) -> () {
+    unsafe {
+        SHOULD_SEND_UPDATE_TO_DISCORD = toggle;
+    }
+}
+
 pub fn initialize_drpc() -> () {
     std::thread::spawn(move || {
         #[allow(unused_assignments)]
@@ -36,6 +44,17 @@ pub fn initialize_drpc() -> () {
         let mut in_game = false;
 
         loop {
+            unsafe {
+                if !SHOULD_SEND_UPDATE_TO_DISCORD {
+                    match client.close() {
+                        Ok(_) => {}
+                        Err(_) => {}
+                    };
+                    connected = false;
+                    continue;
+                }
+            }
+
             if !connected {
                 match client.reconnect() {
                     Ok(_) => {

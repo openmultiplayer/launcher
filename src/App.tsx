@@ -1,8 +1,7 @@
-import { process } from "@tauri-apps/api";
-import { type PhysicalSize, appWindow } from "@tauri-apps/api/window";
+import { invoke, process } from "@tauri-apps/api";
+import { appWindow, type PhysicalSize } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
 import MainView from "./containers/MainBody";
@@ -12,16 +11,17 @@ import Notification from "./containers/Notification";
 import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
 import WindowTitleBar from "./containers/WindowTitleBar";
-import { ThemeContext } from "./contexts/theme";
-import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
-import { debounce } from "./utils/debounce";
-import { useGenericPersistentState } from "./states/genericStates";
 import i18n from "./locales";
+import { useGenericPersistentState } from "./states/genericStates";
+import { useTheme } from "./states/theme";
+import { debounce } from "./utils/debounce";
+import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
+import { sc } from "./utils/sizeScaler";
 
 const App = () => {
-  const [themeType, setTheme] = useState<"light" | "dark">("light");
   const [maximized, setMaximized] = useState<boolean>(false);
-  const { language } = useGenericPersistentState();
+  const { theme } = useTheme();
+  const { language, shouldUpdateDiscordStatus } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
 
   const windowResizeListener = useCallback(
@@ -57,6 +57,9 @@ const App = () => {
       killResizeListener = await appWindow.onResized(windowResizeListener);
     };
 
+    invoke("toggle_drpc", {
+      toggle: shouldUpdateDiscordStatus,
+    });
     fetchServers();
     fetchUpdateInfo();
     setupListeners();
@@ -68,27 +71,27 @@ const App = () => {
 
   return (
     <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>
-      <ThemeContext.Provider
-        value={{
-          themeType,
-          theme: themeType === "dark" ? darkThemeColors : lightThemeColors,
-          setTheme,
-        }}
+      <View
+        style={[
+          styles.appView,
+          {
+            borderRadius: maximized ? 0 : sc(10),
+            backgroundColor: theme.secondary,
+          },
+        ]}
       >
-        <View style={[styles.appView, { borderRadius: maximized ? 0 : 8 }]}>
-          <WindowTitleBar />
-          <View style={{ flex: 1, width: "100%" }}>
-            <NavBar />
-            <MainView />
-            <ContextMenu />
-            <JoinServerPrompt />
-            <SettingsModal />
-            <AddThirdPartyServerModal />
-            <Notification />
-            <MessageBox />
-          </View>
+        <WindowTitleBar />
+        <View style={styles.appBody}>
+          <NavBar />
+          <MainView />
+          <ContextMenu />
+          <JoinServerPrompt />
+          <SettingsModal />
+          <AddThirdPartyServerModal />
+          <Notification />
+          <MessageBox />
         </View>
-      </ThemeContext.Provider>
+      </View>
     </View>
   );
 };
@@ -111,6 +114,12 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.6,
     shadowRadius: 4.65,
+  },
+  appBody: {
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: sc(15),
+    paddingBottom: sc(15),
   },
 });
 

@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "omp-launcher",
-    "version": "0.0.1"
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -54,8 +54,8 @@
         "fullscreen": false,
         "resizable": true,
         "title": "open.mp launcher",
-        "width": 900,
-        "height": 600,
+        "width": 1000,
+        "height": 700,
         "decorations": false,
         "transparent": true,
         "userAgent": "omp-launcher",

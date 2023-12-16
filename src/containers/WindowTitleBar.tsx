@@ -1,16 +1,15 @@
-import { shell } from "@tauri-apps/api";
 import { appWindow } from "@tauri-apps/api/window";
 import { t } from "i18next";
-import { useContext } from "react";
-import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ColorValue, Pressable, StyleSheet, View } from "react-native";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { images } from "../constants/images";
-import { ThemeContext } from "../contexts/theme";
 import { useSettingsModal } from "../states/settingsModal";
+import { useTheme } from "../states/theme";
+import { sc } from "../utils/sizeScaler";
 
-const WindowTitleBarButtons = ({
-  size = 25,
+const NativeWindowTitleBarButtons = ({
+  size = sc(30),
   image,
   onPress,
   iconSize = 15,
@@ -22,9 +21,12 @@ const WindowTitleBarButtons = ({
   title?: string;
   onPress: () => void;
 }) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   return (
-    <div className="titlebar-button" style={{ height: size, width: size + 5 }}>
+    <div
+      className="titlebar-button"
+      style={{ height: size, width: size, borderRadius: sc(3) }}
+    >
       <Pressable
         style={{
           height: "100%",
@@ -45,80 +47,171 @@ const WindowTitleBarButtons = ({
   );
 };
 
+const CustomWindowTitleBarButtons = ({
+  size = sc(30),
+  image,
+  onPress,
+  iconSize = sc(20),
+  title = "",
+  className,
+  marginRight = 0,
+  color,
+  backgroundColor,
+}: {
+  size?: number;
+  iconSize?: number;
+  image: string;
+  title?: string;
+  onPress: () => void;
+  marginRight?: number;
+  className?: string;
+  color?: ColorValue;
+  backgroundColor?: string;
+}) => {
+  const isSvg = image.includes(".svg");
+  return (
+    <div
+      className={className}
+      style={{
+        height: size,
+        width: size,
+        borderRadius: sc(3),
+        marginRight: marginRight,
+        backgroundColor: backgroundColor,
+      }}
+    >
+      <Pressable
+        style={{
+          height: "100%",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={onPress}
+      >
+        <Icon
+          svg={isSvg}
+          title={title}
+          image={image}
+          size={iconSize}
+          color={color}
+        />
+      </Pressable>
+    </div>
+  );
+};
+
 const WindowTitleBar = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme, themeType, setTheme } = useTheme();
   const { show: showSettings } = useSettingsModal();
 
   return (
-    <div
-      data-tauri-drag-region
+    <View
       style={{
-        height: 25,
         width: "100%",
-        backgroundColor: theme.secondary,
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        paddingTop: sc(15),
+        paddingHorizontal: sc(15),
+        paddingBottom: sc(8),
       }}
     >
-      <TouchableOpacity
-        style={{ height: "100%" }}
-        onPress={() => shell.open("https://open.mp/")}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          flex: 1,
+        }}
       >
         <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            height: "100%",
-            width: 130,
-            paddingLeft: 4,
-            top: 2,
-          }}
+          style={[
+            styles.logoContainer,
+            { backgroundColor: theme.itemBackgroundColor },
+          ]}
         >
-          <View style={styles.logoContainer}>
-            <Icon image={images.icons.omp} size={20} />
-          </View>
-          <Text color={theme.textPrimary} style={{ top: -1, marginLeft: 3 }}>
-            Open Multiplayer
-          </Text>
+          <Icon image={images.icons.omp} size={sc(22)} />
         </View>
-      </TouchableOpacity>
+        <Text
+          semibold
+          size={3}
+          color={theme.textPrimary}
+          style={{ marginLeft: sc(12) }}
+        >
+          Open Multiplayer
+        </Text>
+      </View>
+      <div
+        data-tauri-drag-region
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          height: sc(32),
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: sc(15),
+        }}
+      />
       <View
         style={{ flexDirection: "row", alignItems: "center", height: "100%" }}
       >
-        <WindowTitleBarButtons
+        <CustomWindowTitleBarButtons
+          title={""}
+          iconSize={sc(30)}
+          image={
+            themeType === "dark"
+              ? images.icons.lightTheme
+              : images.icons.darkTheme
+          }
+          marginRight={sc(10)}
+          onPress={() => {
+            if (themeType === "dark") {
+              setTheme("light");
+            } else {
+              setTheme("dark");
+            }
+          }}
+        />
+        <CustomWindowTitleBarButtons
           title={t("settings")}
-          iconSize={17}
           image={images.icons.settings}
+          marginRight={sc(16)}
+          color={theme.textSecondary}
+          backgroundColor={theme.itemBackgroundColor}
           onPress={() => showSettings()}
         />
-        <WindowTitleBarButtons
+        <NativeWindowTitleBarButtons
           title={t("minimize")}
           image={images.icons.windowMinimize}
           onPress={() => appWindow.minimize()}
         />
-        <WindowTitleBarButtons
+        <NativeWindowTitleBarButtons
           title={t("maximize")}
           image={images.icons.windowMaximize}
           onPress={() => appWindow.toggleMaximize()}
         />
-        <WindowTitleBarButtons
+        <NativeWindowTitleBarButtons
           title={t("close")}
           image={images.icons.windowClose}
           onPress={() => appWindow.close()}
         />
       </View>
-    </div>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   logoContainer: {
-    height: "100%",
-    aspectRatio: 1,
+    height: sc(32),
+    width: sc(32),
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: sc(5),
   },
 });
 
