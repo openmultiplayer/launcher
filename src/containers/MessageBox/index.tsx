@@ -1,17 +1,17 @@
-import { useContext } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
 import * as Animatable from "react-native-animatable";
 import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
-import { ThemeContext } from "../../contexts/theme";
 import { useMessageBox } from "../../states/messageModal";
+import { useTheme } from "../../states/theme";
+import { sc } from "../../utils/sizeScaler";
 
 const MessageBox = () => {
   const { args, visible, hideMessageBox } = useMessageBox();
   const { height, width } = useWindowDimensions();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   if (!visible) {
     return null;
@@ -27,23 +27,22 @@ const MessageBox = () => {
           top: height / 2 - 90 - 25, // titlebar height is 25
           left: width / 2 - Number(args.boxWidth) / 2,
           width: args.boxWidth,
-          borderRadius: 4,
-          backgroundColor: theme.listHeaderBackgroundColor,
+          borderRadius: sc(10),
+          backgroundColor: theme.secondary,
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
-            height: 3,
+            height: 0,
           },
-          shadowOpacity: 0.8,
-          shadowRadius: 4.65,
+          shadowOpacity: 0.9,
+          shadowRadius: 10,
           alignItems: "center",
           overflow: "hidden",
-          paddingTop: 10,
-          paddingBottom: 15,
+          paddingVertical: sc(15),
         }}
       >
         <Text
-          bold
+          semibold
           size={3}
           color={theme.primary}
           style={{
@@ -59,7 +58,7 @@ const MessageBox = () => {
             marginTop: 5,
           }}
         >
-          <Text color={theme.textPrimary} size={1} numberOfLines={10}>
+          <Text color={theme.textPrimary} size={2} numberOfLines={10}>
             {args.description}
           </Text>
         </View>
@@ -79,18 +78,18 @@ const MessageBox = () => {
               <TouchableOpacity
                 key={"message-box-button-" + index}
                 style={{
-                  paddingHorizontal: 10,
-                  height: 30,
+                  paddingHorizontal: sc(10),
+                  height: sc(36),
                   width: args.buttonWidth,
-                  marginTop: 5,
+                  marginTop: sc(5),
                   backgroundColor: theme.primary,
-                  borderRadius: 8,
+                  borderRadius: sc(5),
                   justifyContent: "center",
                   alignItems: "center",
                 }}
                 onPress={() => button.onPress()}
               >
-                <Text color={theme.textPrimary} size={1}>
+                <Text semibold color={"#FFFFFF"} size={2}>
                   {button.title}
                 </Text>
               </TouchableOpacity>
@@ -100,18 +99,17 @@ const MessageBox = () => {
         <TouchableOpacity
           style={{
             position: "absolute",
-            top: 5,
-            right: 5,
-            height: 25,
-            width: 25,
+            top: sc(15),
+            right: sc(15),
+            height: sc(20),
+            width: sc(20),
           }}
           onPress={() => hideMessageBox()}
         >
           <Icon
             image={images.icons.close}
-            size={25}
-            color={theme.primary}
-            style={{ opacity: 0.5 }}
+            size={sc(20)}
+            color={theme.textSecondary}
           />
         </TouchableOpacity>
       </Animatable.View>

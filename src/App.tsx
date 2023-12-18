@@ -1,7 +1,7 @@
-import { appWindow } from "@tauri-apps/api/window";
-import { useEffect, useState } from "react";
+import { invoke, process } from "@tauri-apps/api";
+import { appWindow, type PhysicalSize } from "@tauri-apps/api/window";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { darkThemeColors, lightThemeColors } from "./constants/theme";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
 import MainView from "./containers/MainBody";
@@ -11,72 +11,87 @@ import Notification from "./containers/Notification";
 import ContextMenu from "./containers/ServerContextMenu";
 import SettingsModal from "./containers/Settings";
 import WindowTitleBar from "./containers/WindowTitleBar";
-import { ThemeContext } from "./contexts/theme";
-import { useAppState } from "./states/app";
-import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
-import { useGenericPersistentState } from "./states/genericStates";
 import i18n from "./locales";
-import { process } from "@tauri-apps/api";
+import { useGenericPersistentState } from "./states/genericStates";
+import { useTheme } from "./states/theme";
+import { debounce } from "./utils/debounce";
+import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
+import { sc } from "./utils/sizeScaler";
 
 const App = () => {
-  const [themeType, setTheme] = useState<"light" | "dark">("light");
-  const { maximized, toggleMaximized } = useAppState();
-  const { language } = useGenericPersistentState();
+  const [maximized, setMaximized] = useState<boolean>(false);
+  const { theme } = useTheme();
+  const { language, shouldUpdateDiscordStatus } = useGenericPersistentState();
+  const windowSize = useRef<PhysicalSize>();
 
-  const windowResizeListener = async () => {
-    const _maximized = useAppState.getState().maximized;
-    const isMaximized = await appWindow.isMaximized();
+  const windowResizeListener = useCallback(
+    debounce(async ({ payload }: { payload: PhysicalSize }) => {
+      if (
+        payload.width !== windowSize.current?.width ||
+        payload.height !== windowSize.current?.height
+      )
+        setMaximized(await appWindow.isMaximized());
 
-    if (isMaximized !== _maximized) {
-      toggleMaximized(isMaximized);
-    }
-  };
+      windowSize.current = payload;
+    }, 50),
+    []
+  );
 
   useEffect(() => {
     i18n.changeLanguage(language);
   }, [language]);
 
   useEffect(() => {
-    document.addEventListener("contextmenu", (event) => {
-      try {
-        // @ts-ignore
-        if (process && process.env.NODE_DEV !== "development") {
-          event.preventDefault();
-        }
-      } catch (e) {}
-    });
+    let killResizeListener: (() => void) | null = null;
 
+    const setupListeners = async () => {
+      document.addEventListener("contextmenu", (event) => {
+        try {
+          // @ts-ignore
+          if (process && process.env.NODE_DEV !== "development") {
+            event.preventDefault();
+          }
+        } catch (e) {}
+      });
+
+      killResizeListener = await appWindow.onResized(windowResizeListener);
+    };
+
+    invoke("toggle_drpc", {
+      toggle: shouldUpdateDiscordStatus,
+    });
     fetchServers();
     fetchUpdateInfo();
+    setupListeners();
 
-    appWindow.onResized(() => {
-      windowResizeListener();
-    });
+    return () => {
+      if (killResizeListener) killResizeListener();
+    };
   }, []);
 
   return (
     <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>
-      <ThemeContext.Provider
-        value={{
-          themeType,
-          theme: themeType === "dark" ? darkThemeColors : lightThemeColors,
-          setTheme,
-        }}
+      <View
+        style={[
+          styles.appView,
+          {
+            borderRadius: maximized ? 0 : sc(10),
+            backgroundColor: theme.secondary,
+          },
+        ]}
       >
-        <View style={[styles.appView, { borderRadius: maximized ? 0 : 8 }]}>
-          <WindowTitleBar />
-          <View style={{ flex: 1, width: "100%" }}>
-            <NavBar />
-            <MainView />
-            <ContextMenu />
-            <JoinServerPrompt />
-            <SettingsModal />
-            <AddThirdPartyServerModal />
-            <Notification />
-            <MessageBox />
-          </View>
+        <WindowTitleBar />
+        <View style={styles.appBody}>
+          <NavBar />
+          <MainView />
+          <ContextMenu />
+          <JoinServerPrompt />
+          <SettingsModal />
+          <AddThirdPartyServerModal />
+          <Notification />
+          <MessageBox />
         </View>
-      </ThemeContext.Provider>
+      </View>
     </View>
   );
 };
@@ -99,6 +114,12 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.6,
     shadowRadius: 4.65,
+  },
+  appBody: {
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: sc(15),
+    paddingBottom: sc(15),
   },
 });
 

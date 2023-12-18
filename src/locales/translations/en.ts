@@ -19,7 +19,7 @@ export default {
   server_join_prompt_enter_password_input_placeholder: "Enter password...",
   server_join_prompt_nickname_input_placeholder: "Enter Nickname...",
   connect: "Connect",
-  copy: "Copy",
+  copy: "COPY",
   remove_from_favorites: "Remove from Favorites",
   add_to_favorites: "Add to Favorites",
   filters: "Filters",
@@ -50,7 +50,7 @@ export default {
   copy_server_info: "Copy Server Info",
   settings_gta_path_input_label:
     "GTA: San Andreas path (where SA-MP is also installed)",
-  browse: "Browse",
+  browse: "BROWSE",
   settings_import_nickname_gta_path_from_samp:
     "Import nickname and gtasa path from SA-MP settings",
   settings_import_samp_favorite_list: "Import favorite list from SA-MP data",
@@ -87,6 +87,7 @@ export default {
     'It seems like your GTA: San Andreas game requires administration permissions to run. This can be due to many causes, like having your game installed in "C" drive. Please re-open open.mp launcher as administrator either using "Run as Admin" button or manually by yourself',
   run_as_admin: "Run as Admin",
   settings_general_tab_title: "General",
-  settings_appearance_and_lang_tab_title: "Appearance & Languages",
-  settings_language_selector_title: "Choose a language:",
+  settings_lang_tab_title: "Languages",
+  settings_advanced_tab_title: "Advanced",
+  settings_advanced_discord_status: "Enable Discord status",
 };

@@ -1,8 +1,8 @@
 import { t } from "i18next";
-import { useContext } from "react";
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
+import { useTheme } from "../../../states/theme";
+import { sc } from "../../../utils/sizeScaler";
 import { Player } from "../../../utils/types";
 
 interface IProps {
@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const PlayerList = (props: IProps) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme, themeType } = useTheme();
 
   const renderPlayer = ({
     item: player,
@@ -18,22 +18,27 @@ const PlayerList = (props: IProps) => {
   }: ListRenderItemInfo<Player>) => {
     return (
       <View
-        style={[
-          styles.playerContainer,
-          {
-            backgroundColor: theme.itemContainerBackgroundColor,
-            marginTop: 2,
-          },
-        ]}
+        style={[styles.playerContainer, { marginBottom: sc(10) }]}
         key={"player-list-item-" + index}
       >
         <View style={[styles.commonFieldContainer, styles.nameFieldContainer]}>
-          <Text size={1} color={theme.textPrimary}>
+          <Text style={{ fontSize: sc(16) }} color={theme.textPrimary}>
             {player.name}
           </Text>
         </View>
-        <View style={[styles.commonFieldContainer, styles.scoreFieldContainer]}>
-          <Text size={1} color={theme.textPrimary + "AA"}>
+        <View
+          style={[
+            styles.commonFieldContainer,
+            styles.scoreFieldContainer,
+            {
+              paddingHorizontal: sc(7),
+              backgroundColor:
+                themeType === "dark" ? theme.secondary + "66" : "#E2E6EE",
+              borderRadius: sc(5),
+            },
+          ]}
+        >
+          <Text style={{ fontSize: sc(14) }} color={theme.textSecondary}>
             {player.score}
           </Text>
         </View>
@@ -47,38 +52,50 @@ const PlayerList = (props: IProps) => {
         style={[
           styles.playerContainer,
           {
-            marginBottom: 0,
-            paddingRight: 8,
-            borderBottomWidth: 1,
-            borderColor: theme.separatorBorderColor,
-            backgroundColor: theme.listHeaderBackgroundColor,
+            marginBottom: sc(9),
+            marginTop: sc(5),
+            paddingRight: sc(14),
+            paddingLeft: sc(10),
           },
         ]}
       >
         <View style={[styles.commonFieldContainer, styles.nameFieldContainer]}>
-          <Text semibold size={1} color={theme.textPrimary + "AA"}>
+          <Text
+            semibold
+            style={{ fontSize: sc(17) }}
+            color={theme.textSecondary}
+          >
             {t("player")}
           </Text>
         </View>
         <View style={[styles.commonFieldContainer, styles.scoreFieldContainer]}>
-          <Text semibold size={1} color={theme.textPrimary + "AA"}>
+          <Text
+            semibold
+            style={{ fontSize: sc(17) }}
+            color={theme.textSecondary}
+          >
             {t("score")}
           </Text>
         </View>
       </View>
-      <FlatList
-        id="scroll"
-        data={props.players}
-        renderItem={renderPlayer}
-        contentContainerStyle={{ paddingHorizontal: 3, paddingBottom: 3 }}
-      />
+      <View
+        style={{
+          backgroundColor: theme.itemBackgroundColor,
+          padding: sc(15),
+          paddingTop: sc(15),
+          borderRadius: 5,
+          height: "50%",
+        }}
+      >
+        <FlatList id={themeType === "dark" ? "scroll" : "scroll-light"} data={props.players} renderItem={renderPlayer} />
+      </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
   playerContainer: {
-    height: 26,
+    height: sc(20),
     flexDirection: "row",
   },
   commonFieldContainer: {
@@ -86,7 +103,6 @@ const styles = StyleSheet.create({
   },
   nameFieldContainer: {
     flex: 1,
-    paddingLeft: 8,
     alignItems: "flex-start",
   },
   scoreFieldContainer: {

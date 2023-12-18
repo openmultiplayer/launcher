@@ -88,4 +88,8 @@ export default {
   admin_permissions_required_modal_description:
     'به نظر میرسد GTA: San Andreas نیاز به دسترسی ادیمن برای اجرا است. این میتواند به چند دلیل باشد، مثال: بازی شما در درایو C نصب شده است. لانچر را با دسترس ادمین باز کنید، یا از دکمه "اجرا توسط ادمین" استفاده کنید.',
   run_as_admin: "اجرا توسط ادمین",
+  settings_general_tab_title: "عمومی",
+  settings_lang_tab_title: "زبان ها",
+  settings_advanced_tab_title: "پیشرفته",
+  settings_advanced_discord_status: "قعال سازی وضعیت دیسکورد",
 };

@@ -1,21 +1,22 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke, shell } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 import { t } from "i18next";
-import { useContext } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
 import { useAppState } from "../../../states/app";
 import { usePersistentServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
+import { useTheme } from "../../../states/theme";
 import { checkDirectoryValidity } from "../../../utils/helpers";
-import { Server } from "../../../utils/types";
 import { Log } from "../../../utils/logger";
+import { sc } from "../../../utils/sizeScaler";
+import { Server } from "../../../utils/types";
 
 const General = () => {
   const { hostOS } = useAppState();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { gtasaPath, setGTASAPath, setNickName } = useSettings();
+  const { updateInfo, version } = useAppState();
 
   const selectPath = async () => {
     const selected: string = (await open({
@@ -115,7 +116,7 @@ const General = () => {
         flex: 1,
       }}
     >
-      <Text size={1} color={theme.textPrimary}>
+      <Text semibold color={theme.textPrimary} size={2}>
         {t("settings_gta_path_input_label")}:
       </Text>
       <View style={styles.pathInputContainer}>
@@ -125,8 +126,8 @@ const General = () => {
           style={[
             styles.pathInput,
             {
-              color: theme.textSecondary,
-              borderColor: theme.primary,
+              color: theme.textPrimary,
+              backgroundColor: theme.textInputBackgroundColor,
             },
           ]}
         />
@@ -140,14 +141,7 @@ const General = () => {
           ]}
           onPress={() => selectPath()}
         >
-          <Text
-            semibold
-            color={theme.textPrimary}
-            size={1}
-            style={{
-              top: -1,
-            }}
-          >
+          <Text semibold color={"#FFFFFF"} size={2}>
             {t("browse")}
           </Text>
         </TouchableOpacity>
@@ -162,14 +156,7 @@ const General = () => {
         ]}
         onPress={() => importDataFromSAMP()}
       >
-        <Text
-          semibold
-          color={theme.textPrimary}
-          size={1}
-          style={{
-            top: -1,
-          }}
-        >
+        <Text semibold color={"#FFFFFF"} size={2}>
           {t("settings_import_nickname_gta_path_from_samp")}
         </Text>
       </TouchableOpacity>
@@ -177,21 +164,12 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            marginTop: 5,
             backgroundColor: theme.primary,
-            borderColor: theme.textSecondary,
           },
         ]}
         onPress={() => importFavListFromSAMP()}
       >
-        <Text
-          semibold
-          color={theme.textPrimary}
-          size={1}
-          style={{
-            top: -1,
-          }}
-        >
+        <Text semibold color={"#FFFFFF"} size={2}>
           {t("settings_import_samp_favorite_list")}
         </Text>
       </TouchableOpacity>
@@ -200,7 +178,6 @@ const General = () => {
           styles.resetButton,
           {
             backgroundColor: "red",
-            borderColor: theme.textSecondary,
           },
         ]}
         onPress={() => {
@@ -208,17 +185,23 @@ const General = () => {
           window.location.reload();
         }}
       >
-        <Text
-          semibold
-          color={theme.textPrimary}
-          size={1}
-          style={{
-            top: -1,
-          }}
-        >
+        <Text semibold color={"#FFFFFF"} size={2}>
           {t("settings_reset_application_data")}
         </Text>
       </TouchableOpacity>
+      <View style={styles.appInfoContainer}>
+        {updateInfo && updateInfo.version != version && (
+          <Text
+            style={{ marginBottom: sc(10) }}
+            semibold
+            size={2}
+            onPress={() => shell.open(updateInfo?.download)}
+            color={theme.primary}
+          >
+            {t("settings_new_update_available")}
+          </Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -231,40 +214,43 @@ const styles = StyleSheet.create({
     marginTop: 7,
   },
   pathInput: {
-    paddingHorizontal: 5,
+    paddingHorizontal: sc(10),
     flex: 1,
-    backgroundColor: "white",
-    height: 29,
-    borderRadius: 8,
-    borderWidth: 2,
+    height: sc(38),
+    borderRadius: sc(5),
     outlineStyle: "none",
+    fontFamily: "Proxima Nova Regular",
+    fontSize: sc(17),
   },
   browseButton: {
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    marginLeft: 5,
+    height: sc(36),
+    paddingHorizontal: sc(15),
+    borderRadius: sc(5),
+    marginLeft: sc(10),
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
   },
   importButton: {
-    marginTop: 10,
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    marginTop: sc(8),
+    height: sc(36),
+    paddingHorizontal: sc(10),
+    borderRadius: sc(5),
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
   },
   resetButton: {
-    marginTop: 5,
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    marginTop: sc(8),
+    height: sc(36),
+    paddingHorizontal: sc(10),
+    borderRadius: sc(5),
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
+  },
+  appInfoContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    width: "100%",
+    alignItems: "center",
   },
 });
 

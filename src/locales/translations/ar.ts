@@ -86,6 +86,5 @@ export default {
     'يبدو أن لعبة GTA: San Andreas الخاصة بك تتطلب أذونات إدارية للتشغيل. يمكن أن يكون هذا بسبب العديد من الأسباب ، مثل تثبيت لعبتك في محرك الأقراص "C". يرجى إعادة فتح مشغل open.mp كمسؤول إما باستخدام زر "تشغيل كمسؤول" أو يدويا بنفسك',
   run_as_admin: "تشغيل كمسؤول",
   settings_general_tab_title: "عام",
-  settings_appearance_and_lang_tab_title: "المظهر واللغات",
-  settings_language_selector_title: "اختر لغة:",
+  settings_lang_tab_title: "اللغات",
 };

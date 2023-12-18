@@ -1,7 +1,6 @@
 import { t } from "i18next";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  Animated,
   Pressable,
   StyleSheet,
   TextInput,
@@ -11,7 +10,6 @@ import {
 import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
-import { ThemeContext } from "../../../contexts/theme";
 import { useAddThirdPartyServerModal } from "../../../states/addThirdPartyServerModal";
 import {
   useGenericPersistentState,
@@ -19,17 +17,62 @@ import {
 } from "../../../states/genericStates";
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../../states/servers";
-import { fetchServers } from "../../../utils/helpers";
+// import { fetchServers } from "../../../utils/helpers";
+import { useTheme } from "../../../states/theme";
+import { sc } from "../../../utils/sizeScaler";
 
 interface IProps {
   onChange: (query: string) => void;
 }
 
-const AnimatedTouchableOpacity =
-  Animated.createAnimatedComponent(TouchableOpacity);
+interface IActionIconProps {
+  icon: string;
+  onPress: () => void;
+  buttonColor?: string;
+  iconColor: string;
+  iconSize: number;
+  title: string;
+  svg?: boolean;
+}
+
+// const AnimatedTouchableOpacity =
+//   Animated.createAnimatedComponent(TouchableOpacity);
+
+const ActionIcon = ({
+  icon,
+  onPress,
+  buttonColor,
+  iconColor,
+  iconSize,
+  title,
+  svg,
+}: IActionIconProps) => {
+  return (
+    <div
+      style={{
+        filter: buttonColor
+          ? `drop-shadow(0 0 20px ${buttonColor}77)`
+          : undefined,
+      }}
+    >
+      <TouchableOpacity
+        style={[styles.rightSideIcons, { backgroundColor: buttonColor }]}
+        onPress={() => onPress()}
+      >
+        <Icon
+          svg={svg}
+          title={title}
+          image={icon}
+          size={iconSize}
+          color={iconColor}
+        />
+      </TouchableOpacity>
+    </div>
+  );
+};
 
 const SearchBar = (props: IProps) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { listType } = useGenericTempState();
   const [searchQuery, setSearchQuery] = useState("");
   const { filterMenu, showFilterMenu } = useGenericTempState();
@@ -43,7 +86,7 @@ const SearchBar = (props: IProps) => {
   } = usePersistentServers();
   const { showPrompt, setServer } = useJoinServerPrompt();
   const { showAddThirdPartyServer } = useAddThirdPartyServerModal();
-  const refreshIconSpinAnim = useRef(new Animated.Value(0)).current;
+  // const refreshIconSpinAnim = useRef(new Animated.Value(0)).current;
 
   const favorited = useMemo(() => {
     const find = favorites.find(
@@ -63,82 +106,85 @@ const SearchBar = (props: IProps) => {
     }
   };
 
-  const refreshServers = async () => {
-    const animation = Animated.timing(refreshIconSpinAnim, {
-      toValue: 1,
-      duration: 5000,
-      useNativeDriver: false,
-    });
+  // const refreshServers = async () => {
+  //   const animation = Animated.timing(refreshIconSpinAnim, {
+  //     toValue: 1,
+  //     duration: 5000,
+  //     useNativeDriver: false,
+  //   });
 
-    animation.start(() => {
-      refreshIconSpinAnim.setValue(0);
-    });
+  //   animation.start(() => {
+  //     refreshIconSpinAnim.setValue(0);
+  //   });
 
-    fetchServers().finally(() => {
-      setTimeout(() => {
-        animation.stop();
-        refreshIconSpinAnim.setValue(0);
-      }, 1000);
-    });
-  };
+  //   fetchServers().finally(() => {
+  //     setTimeout(() => {
+  //       animation.stop();
+  //       refreshIconSpinAnim.setValue(0);
+  //     }, 1000);
+  //   });
+  // };
 
-  const interpolateRotating = refreshIconSpinAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["3600deg", "0deg"],
-  });
+  // const interpolateRotating = refreshIconSpinAnim.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: ["3600deg", "0deg"],
+  // });
 
   return (
-    <View
-      style={[styles.searchContainer, { backgroundColor: theme.secondary }]}
-    >
+    <View style={styles.searchContainer}>
       <TouchableOpacity
         style={{
-          height: "100%",
-          aspectRatio: 1.1,
+          height: sc(35),
+          width: sc(35),
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.itemBackgroundColor,
+          borderRadius: sc(5),
         }}
         onPress={() => showFilterMenu(!filterMenu)}
       >
         <Icon
+          svg
           title={t("filter_servers")}
           image={images.icons.filter}
-          size={16}
-          color={theme.textPlaceholder}
+          size={sc(16)}
+          color={theme.textSecondary}
         />
       </TouchableOpacity>
       <View
-        style={{
-          height: "100%",
-          aspectRatio: 1,
-          marginLeft: -5,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Icon image={images.icons.search} size={16} />
-      </View>
-      <View
         style={[
           styles.inputContainer,
-          {
-            borderBottomWidth: searchQuery.length ? 1 : 0,
-            borderColor: theme.separatorBorderColor,
-          },
+          { backgroundColor: theme.textInputBackgroundColor },
         ]}
       >
+        <View
+          style={{
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Icon
+            svg
+            image={images.icons.search}
+            size={sc(16)}
+            color={theme.textSecondary}
+          />
+        </View>
         <TextInput
           placeholder={t("search_for_server_hostname_mode")}
-          placeholderTextColor={theme.textPlaceholder}
+          placeholderTextColor={theme.textSecondary}
           value={searchQuery}
           style={{
             height: "100%",
             backgroundColor: "transparent",
             flex: 1,
+            fontFamily: "Proxima Nova Regular",
+            fontSize: sc(17),
             paddingHorizontal: 5,
+            color: theme.textPrimary,
             // @ts-ignore
             outlineStyle: "none",
-            color: theme.textPrimary,
           }}
           onChangeText={(text) => {
             setSearchQuery(text);
@@ -150,12 +196,11 @@ const SearchBar = (props: IProps) => {
               setSearchQuery("");
             }}
             style={{
-              height: "80%",
+              height: "100%",
               aspectRatio: 1,
               justifyContent: "center",
               alignItems: "center",
-              marginTop: "1%",
-              backgroundColor: theme.separatorBorderColor,
+              backgroundColor: theme.itemBackgroundColor,
             }}
           >
             <Text size={2} color={theme.textPlaceholder}>
@@ -164,127 +209,123 @@ const SearchBar = (props: IProps) => {
           </Pressable>
         )}
       </View>
-      {listType === "recentlyjoined" && (
-        <TouchableOpacity
-          style={styles.rightSideIcons}
-          onPress={() => clearRecentlyJoined()}
-        >
-          <Icon
-            title={t("clear_recently_joined_list")}
-            image={images.icons.clean}
-            size={18}
-            color={"#D2691E"}
-          />
-        </TouchableOpacity>
-      )}
-      <AnimatedTouchableOpacity
-        style={[
-          styles.rightSideIcons,
-          {
-            transform: [
-              {
-                rotate: interpolateRotating,
-              },
-            ],
-          },
-        ]}
-        onPress={() => refreshServers()}
-      >
-        <Icon
-          title={t("refresh_servers")}
-          image={images.icons.refresh}
-          size={20}
-        />
-      </AnimatedTouchableOpacity>
-      <TouchableOpacity
-        style={styles.rightSideIcons}
-        onPress={() => playSelectedServer()}
-      >
-        <Icon
-          title={t("play")}
-          image={images.icons.play}
-          size={22}
-          color={theme.primary}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.rightSideIcons}
-        onPress={() => {
-          if (selected) {
-            if (favorited) {
-              removeFromFavorites(selected);
-            } else {
-              addToFavorites(selected);
-            }
-          }
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          width: 200,
+          justifyContent: "flex-end",
         }}
       >
-        <Icon
-          title={
-            favorited
-              ? t("remove_selected_server_from_favorites")
-              : t("add_selected_server_to_favorites")
-          }
-          image={favorited ? images.icons.unfavorite : images.icons.favorite}
-          size={19}
-          color={"#FF2D2D"}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.rightSideIcons}
-        onPress={() => showAddThirdPartyServer(true)}
-      >
-        <Icon
+        {/* <AnimatedTouchableOpacity
+          style={[
+            styles.rightSideIcons,
+            {
+              transform: [
+                {
+                  rotate: interpolateRotating,
+                },
+              ],
+            },
+          ]}
+          onPress={() => refreshServers()}
+        >
+          <Icon
+            title={t("refresh_servers")}
+            image={images.icons.refresh}
+            size={20}
+          />
+        </AnimatedTouchableOpacity> */}
+        {selected && (
+          <>
+            <ActionIcon
+              title={t("play")}
+              icon={images.icons.play}
+              iconSize={sc(22)}
+              iconColor={"#FFFFFF"}
+              buttonColor={theme.primary}
+              onPress={() => playSelectedServer()}
+            />
+            <ActionIcon
+              title={
+                favorited
+                  ? t("remove_selected_server_from_favorites")
+                  : t("add_selected_server_to_favorites")
+              }
+              icon={favorited ? images.icons.favRemove : images.icons.favAdd}
+              iconSize={sc(20)}
+              iconColor={"#FFFFFFDD"}
+              buttonColor={"#C8302F"}
+              onPress={() => {
+                if (selected) {
+                  if (favorited) {
+                    removeFromFavorites(selected);
+                  } else {
+                    addToFavorites(selected);
+                  }
+                }
+              }}
+            />
+          </>
+        )}
+        {listType === "recentlyjoined" && (
+          <ActionIcon
+            title={t("clear_recently_joined_list")}
+            icon={images.icons.clean}
+            iconSize={sc(20)}
+            iconColor={"#78613F"}
+            buttonColor={"#F1C17A"}
+            onPress={() => clearRecentlyJoined()}
+          />
+        )}
+        <ActionIcon
+          svg
           title={t("add_server")}
-          image={images.icons.add}
-          size={20}
-          color={"#3B833D"}
+          icon={images.icons.add}
+          iconSize={sc(18)}
+          iconColor={"#3B833D"}
+          buttonColor={"#7AF1AA"}
+          onPress={() => showAddThirdPartyServer(true)}
         />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[
-          styles.rightSideIcons,
-          {
-            opacity: 0.5,
-            left: 5,
-          },
-        ]}
-        onPress={() => showSideLists(!sideLists)}
-      >
-        <Icon
+        <ActionIcon
           title={
             sideLists
               ? t("hide_player_and_rule_list")
               : t("show_player_and_rule_list")
           }
-          image={
+          icon={
             sideLists ? images.icons.closeSideLists : images.icons.openSideLists
           }
-          size={20}
-          color={theme.textPlaceholder}
+          iconSize={sc(32)}
+          iconColor={theme.textPlaceholder}
+          onPress={() => showSideLists(!sideLists)}
         />
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   searchContainer: {
-    height: 30,
+    height: sc(60),
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: 10,
   },
   inputContainer: {
-    height: "100%",
+    height: sc(36),
     flex: 1,
-    marginRight: 10,
+    marginHorizontal: sc(10),
+    paddingLeft: sc(10),
     flexDirection: "row",
     alignItems: "center",
+    borderRadius: sc(5),
+    overflow: "hidden",
   },
   rightSideIcons: {
-    height: "100%",
-    aspectRatio: 1,
+    marginLeft: sc(10),
+    height: sc(35),
+    width: sc(35),
+    borderRadius: sc(5),
     justifyContent: "center",
     alignItems: "center",
   },

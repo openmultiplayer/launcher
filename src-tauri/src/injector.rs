@@ -6,7 +6,7 @@ use std::process::Command;
 use tokio::net::lookup_host;
 
 #[cfg(not(target_os = "windows"))]
-pub fn run_samp(
+pub async fn run_samp(
     name: &str,
     ip: &str,
     port: i32,
@@ -14,7 +14,7 @@ pub fn run_samp(
     dll_path: &str,
     password: &str,
 ) -> Result<(), String> {
-    ""
+    Ok(())
 }
 
 #[cfg(target_os = "windows")]
@@ -84,25 +84,7 @@ pub async fn run_samp(
     match process {
         Ok(p) => {
             // let target_process = .unwrap();
-            match OwnedProcess::from_pid(p.id()) {
-                Ok(p) => {
-                    // create a new syringe for the target process
-                    let syringe = Syringe::for_process(p);
-
-                    // inject the payload into the target process
-                    match syringe.inject(dll_path) {
-                        Ok(_) => Ok(()),
-                        Err(e) => {
-                            info!("[injector.rs] Dll injection failed: {}", e.to_string());
-                            Err(format!("Injecting dll failed: {}", e.to_string()).to_owned())
-                        }
-                    }
-                }
-                Err(e) => {
-                    info!("[injector.rs] Process creation failed: {}", e.to_string());
-                    Err(format!("Finding GTASA process failed: {}", e.to_string()).to_owned())
-                }
-            }
+            inject_dll(p.id(), dll_path, 0)
         }
         Err(e) => {
             info!("[injector.rs] Process creation failed: {}", e.to_string());
@@ -117,6 +99,36 @@ pub async fn run_samp(
             }
 
             return Err(format!("Spawning process failed (error code: {})", raw_os_err).to_owned());
+        }
+    }
+}
+
+#[cfg(target_os = "windows")]
+pub fn inject_dll(child: u32, dll_path: &str, times: u32) -> Result<(), String> {
+    match OwnedProcess::from_pid(child) {
+        Ok(p) => {
+            // create a new syringe for the target process
+            let syringe = Syringe::for_process(p);
+
+            // inject the payload into the target process
+            match syringe.inject(dll_path) {
+                Ok(_) => Ok(()),
+                Err(e) => {
+                    let ten_millis = std::time::Duration::from_millis(500);
+                    std::thread::sleep(ten_millis);
+
+                    if times == 10 {
+                        info!("[injector.rs] Dll injection failed: {}", e.to_string());
+                        Err(format!("Injecting dll failed: {}", e.to_string()).to_owned())
+                    } else {
+                        inject_dll(child, dll_path, times + 1)
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            info!("[injector.rs] Process creation failed: {}", e.to_string());
+            Err(format!("Finding GTASA process failed: {}", e.to_string()).to_owned())
         }
     }
 }

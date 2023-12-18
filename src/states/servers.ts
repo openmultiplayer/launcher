@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Server } from "../utils/types";
 import { useNotification } from "./notification";
+import { queryServer } from "../utils/query";
 
 interface ServersState {
   servers: Server[];
@@ -65,6 +66,19 @@ const usePersistentServers = create<ServersPersistentState>()(
         }),
       addToFavorites: (server) =>
         set(() => {
+          // Validate server before adding
+          if (
+            (typeof server.ip !== "string" && isNaN(server.ip)) ||
+            server.ip === "NaN" ||
+            // @ts-ignore
+            server.port === "NaN" ||
+            isNaN(Number(server.port)) ||
+            server.ip.length < 6 ||
+            server.port < 1
+          ) {
+            alert("FUCK ");
+            return { favorites: get().favorites };
+          }
           const cpy = [...get().favorites];
           const findIndex = cpy.findIndex(
             (srv) => srv.ip === server.ip && srv.port === server.port
@@ -83,6 +97,8 @@ const usePersistentServers = create<ServersPersistentState>()(
               server: `${server.ip}:${server.port}`,
             })
           );
+
+          queryServer(server, "favorites", "basic");
 
           return { favorites: cpy };
         }),

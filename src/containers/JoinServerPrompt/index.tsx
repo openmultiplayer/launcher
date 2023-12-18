@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -10,15 +10,16 @@ import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
-import { ThemeContext } from "../../contexts/theme";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { useSettings } from "../../states/settings";
+import { useTheme } from "../../states/theme";
 import { startGame } from "../../utils/helpers";
+import { sc } from "../../utils/sizeScaler";
 
 const JoinServerPrompt = () => {
   const { visible, server, showPrompt } = useJoinServerPrompt();
   const { height, width } = useWindowDimensions();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const [password, setPassword] = useState("");
   const { nickName, gtasaPath, setNickName } = useSettings();
 
@@ -42,24 +43,25 @@ const JoinServerPrompt = () => {
           left: width / 2 - WIDTH / 2,
           height: HEIGHT,
           width: WIDTH,
-          borderRadius: 4,
-          backgroundColor: theme.listHeaderBackgroundColor,
+          borderRadius: sc(10),
+          backgroundColor: theme.secondary,
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
-            height: 3,
+            height: 0,
           },
-          shadowOpacity: 0.8,
-          shadowRadius: 4.65,
+          shadowOpacity: 0.9,
+          shadowRadius: 10,
           alignItems: "center",
           overflow: "hidden",
-          paddingVertical: 10,
+          paddingVertical: sc(11),
         }}
       >
         <Icon
+          svg
           image={server?.hasPassword ? images.icons.locked : images.icons.play}
-          size={30}
-          color={server?.hasPassword ? undefined : theme.primary}
+          size={sc(30)}
+          color={server?.hasPassword ? "#36363F" : theme.primary}
         />
         <View
           style={{
@@ -68,28 +70,28 @@ const JoinServerPrompt = () => {
             marginTop: 10,
           }}
         >
-          <Text semibold color={theme.textPrimary} size={1}>
+          <Text semibold color={theme.textPrimary} size={2}>
             {t("server")}:{" "}
-            <Text medium color={theme.textPrimary} size={1}>
+            <Text medium color={theme.textPrimary} size={2}>
               {server?.hostname}
             </Text>
           </Text>
-          <Text semibold color={theme.textPrimary} size={1}>
+          <Text semibold color={theme.textPrimary} size={2}>
             {t("address")}:{" "}
-            <Text medium color={theme.textPrimary} size={1}>
+            <Text medium color={theme.textPrimary} size={2}>
               {server?.ip}:{server?.port}
             </Text>
           </Text>
-          <Text semibold color={theme.textPrimary} size={1}>
+          <Text semibold color={theme.textPrimary} size={2}>
             {t("players")}:{" "}
-            <Text medium color={theme.textPrimary} size={1}>
+            <Text medium color={theme.textPrimary} size={2}>
               {server?.playerCount}/{server?.maxPlayers}
             </Text>
           </Text>
         </View>
         {server?.hasPassword && (
-          <View style={{ marginTop: 15 }}>
-            <Text color={theme.textPrimary} size={1}>
+          <View style={{ marginTop: sc(15), width: 300, alignSelf: "center" }}>
+            <Text semibold color={theme.textPrimary} size={2} numberOfLines={2}>
               {t("server_join_prompt_enter_password")}
             </Text>
             <TextInput
@@ -100,23 +102,23 @@ const JoinServerPrompt = () => {
               value={password}
               onChangeText={(text) => setPassword(text)}
               style={{
-                color: theme.textSecondary,
-                paddingHorizontal: 5,
-                marginTop: 4,
+                fontFamily: "Proxima Nova Regular",
+                fontSize: sc(17),
+                color: theme.textPrimary,
+                paddingHorizontal: sc(10),
                 width: 300,
-                backgroundColor: "white",
-                borderColor: theme.primary,
-                height: 30,
-                borderRadius: 8,
-                borderWidth: 2,
+                marginTop: sc(5),
+                backgroundColor: theme.textInputBackgroundColor,
+                height: sc(38),
+                borderRadius: sc(5),
                 // @ts-ignore
                 outlineStyle: "none",
               }}
             />
           </View>
         )}
-        <View style={{ marginTop: server?.hasPassword ? 5 : 15 }}>
-          <Text color={theme.textPrimary} size={1}>
+        <View style={{ marginTop: sc(10) }}>
+          <Text semibold color={theme.textPrimary} size={2}>
             {t("nickname")}:
           </Text>
           <TextInput
@@ -125,15 +127,15 @@ const JoinServerPrompt = () => {
             value={nickName}
             onChangeText={(text) => setNickName(text)}
             style={{
-              color: theme.textSecondary,
-              paddingHorizontal: 5,
-              marginTop: 4,
+              fontFamily: "Proxima Nova Regular",
+              fontSize: sc(17),
+              color: theme.textPrimary,
+              paddingHorizontal: sc(10),
               width: 300,
-              backgroundColor: "white",
-              borderColor: theme.primary,
-              height: 30,
-              borderRadius: 8,
-              borderWidth: 2,
+              marginTop: sc(5),
+              backgroundColor: theme.textInputBackgroundColor,
+              height: sc(38),
+              borderRadius: sc(5),
               // @ts-ignore
               outlineStyle: "none",
             }}
@@ -142,12 +144,12 @@ const JoinServerPrompt = () => {
         <TouchableOpacity
           style={{
             width: 300,
-            height: 30,
+            height: sc(38),
             backgroundColor: theme.primary,
-            borderRadius: 8,
+            borderRadius: sc(5),
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 10,
+            marginTop: sc(10),
           }}
           onPress={() => {
             if (server) {
@@ -162,25 +164,24 @@ const JoinServerPrompt = () => {
             }
           }}
         >
-          <Text color={theme.textPrimary} size={1}>
+          <Text semibold color={"#FFFFFF"} size={2}>
             {t("connect")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
             position: "absolute",
-            top: 5,
-            right: 5,
-            height: 25,
-            width: 25,
+            top: sc(15),
+            right: sc(15),
+            height: sc(20),
+            width: sc(20),
           }}
           onPress={() => showPrompt(false)}
         >
           <Icon
             image={images.icons.close}
-            size={25}
-            color={theme.primary}
-            style={{ opacity: 0.5 }}
+            size={sc(20)}
+            color={theme.textSecondary}
           />
         </TouchableOpacity>
       </View>

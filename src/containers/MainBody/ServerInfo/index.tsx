@@ -1,15 +1,18 @@
-import { useContext, useMemo } from "react";
+import { shell } from "@tauri-apps/api";
+import { useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
+import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
+import { images } from "../../../constants/images";
 import { useServers } from "../../../states/servers";
+import { useTheme } from "../../../states/theme";
 import { validateWebUrl } from "../../../utils/helpers";
+import { sc } from "../../../utils/sizeScaler";
 import AdditionalInfo from "./AdditionalInfo";
 import PlayerList from "./PlayerList";
-import { shell } from "@tauri-apps/api";
 
 const ServerInfo = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   const { selected } = useServers();
 
   const webUrl = useMemo(() => {
@@ -22,53 +25,49 @@ const ServerInfo = () => {
   }, [selected]);
 
   return (
-    <View
-      style={[
-        styles.serverInfoView,
-        {
-          backgroundColor: theme.listBackgroundColor,
-        },
-      ]}
-    >
+    <View style={styles.serverInfoView}>
       <PlayerList players={selected ? selected.players : []} />
-      <AdditionalInfo server={selected} />
       <View
         style={{
           width: "100%",
-          height: 30,
-          paddingRight: 8,
-          backgroundColor: theme.itemContainerBackgroundColor,
+          height: sc(50),
         }}
       >
-        <Pressable
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            height: "100%",
-          }}
-          onPress={() =>
-            shell.open(webUrl.includes("http") ? webUrl : "https://" + webUrl)
-          }
-        >
-          <Text
-            style={{ textDecorationLine: "underline" }}
-            semibold
-            color={theme.primary}
+        {webUrl.length ? (
+          <Pressable
+            style={{
+              alignItems: "center",
+              width: "100%",
+              height: "100%",
+              flexDirection: "row",
+              paddingLeft: sc(12),
+            }}
+            onPress={() =>
+              shell.open(webUrl.includes("http") ? webUrl : "https://" + webUrl)
+            }
           >
-            {webUrl}
-          </Text>
-        </Pressable>
+            <Icon svg image={images.icons.link} size={sc(29)} />
+            <Text
+              semibold
+              size={1}
+              color={theme.textPrimary}
+              style={{ marginLeft: sc(5) }}
+            >
+              {webUrl}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
+      <AdditionalInfo server={selected} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   serverInfoView: {
-    flex: 0.285,
-    // maxWidth: 350,
+    flex: 0.3,
     height: "100%",
+    marginLeft: sc(15),
   },
 });
 

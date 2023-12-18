@@ -40,7 +40,7 @@ pub fn get_nickname() -> String {
 
 #[cfg(not(target_os = "windows"))]
 pub fn get_samp_favorite_list() -> String {
-    "[]".to_string();
+    "[]".to_string()
 }
 
 #[cfg(target_os = "windows")]

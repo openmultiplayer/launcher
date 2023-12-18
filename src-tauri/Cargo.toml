@@ -1,6 +1,6 @@
 [package]
 name = "omp-launcher"
-version = "0.0.1"
+version = "1.0.0"
 description = "open.mp launcher"
 authors = ["Amyr Ahmady (iAmir)"]
 license = ""
@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
-tauri = { version = "1.4", features = [ "process-all", "window-all", "dialog-all", "fs-exists", "os-all", "shell-open"] }
+tauri = { version = "1.4", features = [ "macos-private-api", "process-all", "window-all", "dialog-all", "fs-exists", "os-all", "shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.32.0", features = ["full"] }

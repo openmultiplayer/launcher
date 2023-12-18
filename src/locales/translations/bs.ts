@@ -90,6 +90,5 @@ export default {
     'Čini se da vaša GTA: San Andreas igra zahtijeva administratorsko odobrenje za pokretanje. To može biti zbog mnogih uzroka, kao što je instaliranje vaše igre na "C" drive. Molimo da ponovo otvorite open.mp launcher kao administrator pomoću dugmeta "Pokreni kao administrator" ili ručno.',
   run_as_admin: "Pokreni kao Admin",
   settings_general_tab_title: "Generalno",
-  settings_appearance_and_lang_tab_title: "Izgled i Jezici",
-  settings_language_selector_title: "Izaberi jezik:",
+  settings_lang_tab_title: "Jezici",
 };

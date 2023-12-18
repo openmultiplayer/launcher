@@ -7,6 +7,7 @@ import Spanish from "./translations/es";
 import Farsi from "./translations/fa";
 import Filipino from "./translations/fil";
 import French from "./translations/fr";
+import German from "./translations/de";
 import Hindi from "./translations/hi";
 import Hungarian from "./translations/hu";
 import Indonesian from "./translations/id";
@@ -16,6 +17,8 @@ import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
 import Russian from "./translations/ru";
 import Turkish from "./translations/tr";
+import Belarussian from "./translations/by";
+import Czech from "./translations/cz";
 
 export type LanguageType =
   | "en"
@@ -23,6 +26,7 @@ export type LanguageType =
   | "fa"
   | "fil"
   | "fr"
+  | "de"
   | "hi"
   | "it"
   | "ro"
@@ -33,7 +37,9 @@ export type LanguageType =
   | "pl"
   | "bs"
   | "ru"
-  | "tr";
+  | "tr"
+  | "by"
+  | "cz";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -122,6 +128,21 @@ export const getLanguages = (): {
       label: "Türkçe",
       type: "tr",
       translations: Turkish,
+    },
+    de: {
+      label: "Deutsch",
+      type: "de",
+      translations: German,
+    },
+    by: {
+      label: "Беларускі",
+      type: "by",
+      translations: Belarussian,
+    },
+    cz: {
+      label: "Česky",
+      type: "cz",
+      translations: Czech,
     },
   };
 };

@@ -36,7 +36,7 @@ const Partners = () => {
   const onSelect = (server: Server) => {
     stopQuery();
     setSelected(server);
-    startQuery(server);
+    startQuery(server, "internet");
   };
 
   return (

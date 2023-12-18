@@ -39,8 +39,10 @@ const useGenericTempState = create<GenericTempStates>()((set, get) => ({
 interface GenericPersistentStates {
   sideLists: boolean;
   language: LanguageType;
+  shouldUpdateDiscordStatus: boolean;
   showSideLists: (show: boolean) => void;
   setLanguage: (lang: LanguageType) => void;
+  toggleDiscordStatus: (toggle: boolean) => void;
 }
 
 const useGenericPersistentState = create<GenericPersistentStates>()(
@@ -48,8 +50,11 @@ const useGenericPersistentState = create<GenericPersistentStates>()(
     (set) => ({
       sideLists: true,
       language: "en",
+      shouldUpdateDiscordStatus: true,
       showSideLists: (show: boolean) => set(() => ({ sideLists: show })),
       setLanguage: (lang) => set(() => ({ language: lang })),
+      toggleDiscordStatus: (toggle) =>
+        set(() => ({ shouldUpdateDiscordStatus: toggle })),
     }),
     {
       name: "generic-state-storage",

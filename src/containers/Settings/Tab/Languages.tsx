@@ -1,16 +1,15 @@
-import { t } from "i18next";
-import { useContext } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
-import { ThemeContext } from "../../../contexts/theme";
 import { getLanguages } from "../../../locales";
 import { useGenericPersistentState } from "../../../states/genericStates";
 import { useSettingsModal } from "../../../states/settingsModal";
+import { useTheme } from "../../../states/theme";
+import { sc } from "../../../utils/sizeScaler";
 
 const Appearance = () => {
   const { language, setLanguage } = useGenericPersistentState();
-  const { theme } = useContext(ThemeContext);
+  const { theme, themeType } = useTheme();
   const { hide: hideSettings } = useSettingsModal();
   const languages = Object.entries(getLanguages());
 
@@ -19,24 +18,22 @@ const Appearance = () => {
       style={{
         paddingHorizontal: 12,
         overflow: "hidden",
-        paddingVertical: 10,
+        paddingTop: sc(6),
+        paddingBottom: sc(12),
         flex: 1,
       }}
     >
-      <Text size={1} color={theme.textPrimary}>
-        {t("settings_language_selector_title")}:
-      </Text>
       <View
         style={{
-          height: "50%",
-          width: "50%",
-          borderRadius: 5,
-          marginTop: 5,
-          paddingLeft: 10,
-          backgroundColor: theme.itemContainerBackgroundColor,
+          height: "100%",
+          width: "100%",
+          borderRadius: sc(10),
+          marginTop: sc(10),
+          padding: sc(16),
+          backgroundColor: theme.itemBackgroundColor,
         }}
       >
-        <ScrollView id="scroll">
+        <ScrollView id={themeType === "dark" ? "scroll" : "scroll-light"}>
           {languages.map(([_, lang], index) => {
             return (
               <Pressable
@@ -44,7 +41,7 @@ const Appearance = () => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginTop: index === 0 ? 8 : 3,
+                  marginTop: index === 0 ? 0 : sc(7),
                   marginBottom: index === languages.length - 1 ? 8 : 0,
                 }}
                 onPress={() => {
@@ -54,9 +51,9 @@ const Appearance = () => {
               >
                 <CheckBox
                   value={language === lang.type}
-                  style={{ marginRight: 5 }}
+                  style={{ marginRight: sc(10) }}
                 />
-                <Text size={1} color={theme.textPrimary}>
+                <Text color={theme.textPrimary} size={2}>
                   {lang.label}
                 </Text>
               </Pressable>
@@ -79,7 +76,7 @@ const styles = StyleSheet.create({
   pathInput: {
     paddingHorizontal: 5,
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#FFFFFF",
     height: 29,
     borderRadius: 8,
     borderWidth: 2,
