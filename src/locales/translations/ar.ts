@@ -87,4 +87,6 @@ export default {
   run_as_admin: "تشغيل كمسؤول",
   settings_general_tab_title: "عام",
   settings_lang_tab_title: "اللغات",
+  settings_advanced_tab_title: "متقدم",
+  settings_advanced_discord_status: "تمكين حالة ديسكورد",
 };
