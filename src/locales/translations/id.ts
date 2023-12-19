@@ -67,9 +67,9 @@ export default {
   download: "Download",
   update_modal_remind_me_next_time: "Ingatkan Saya Lain Kali",
   update_modal_skip_this_update: "Lewati Update Ini!",
-  gta_path_modal_cant_find_game_title: "Tidak dapat menemukan GTA San Andreas!",
+  gta_path_modal_cant_find_game_title: "Tidak dapat menemukan GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
-    'Tidak dapat menemukan GTA San Andreas di direktori ini:\n  - "{{ path }}"\n"gta_sa.exe" tidak dapat ditemukan di direktori yang anda berikan.',
+    'Tidak dapat menemukan GTA: San Andreas di direktori ini:\n  - "{{ path }}"\n"gta_sa.exe" tidak dapat ditemukan di direktori yang anda berikan.',
   open_settings: "Buka Pengaturan",
   cancel: "Batal",
   gta_path_modal_cant_find_samp_title: "Tidak dapat menemukan SA-MP!",
@@ -81,9 +81,9 @@ export default {
   nickname_modal_name_not_set_title: "Nickname kosong!",
   nickname_modal_name_not_set_description:
     "Anda harus memasukan nickname sebelum bergabung ke server.",
-  gta_path_modal_path_not_set_title: "Direktori GTA San Andreas belum diatur!",
+  gta_path_modal_path_not_set_title: "Direktori GTA: San Andreas belum diatur!",
   gta_path_modal_path_not_set_description:
-    "Anda belum mengatur direktori GTA San Andreas, buka pengaturan dan pilih folder game.",
+    "Anda belum mengatur direktori GTA: San Andreas, buka pengaturan dan pilih folder game.",
   admin_permissions_required_modal_title: "Diperlukan izin admin!",
   admin_permissions_required_modal_description:
     'Sepertinya game GTA: San Andreas Anda memerlukan izin administrasi untuk dijalankan. Hal ini dapat disebabkan oleh banyak hal, seperti game Anda terinstal di drive "C". Silakan buka kembali launcher open.mp sebagai administrator baik menggunakan tombol "Run as Admin" atau secara manual oleh Anda sendiri',

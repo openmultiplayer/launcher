@@ -66,9 +66,9 @@ export default {
   download: "Загрузить",
   update_modal_remind_me_next_time: "Напомнить позже",
   update_modal_skip_this_update: "Пропустить обновление",
-  gta_path_modal_cant_find_game_title: "GTA San Andreas не найдена!",
+  gta_path_modal_cant_find_game_title: "GTA: San Andreas не найдена!",
   gta_path_modal_cant_find_game_description:
-    'Не удается найти GTA San Andreas в этой папке:\n  - "{{ path }}"\nОтсутствует "gta_sa.exe" по указанному пути.',
+    'Не удается найти GTA: San Andreas в этой папке:\n  - "{{ path }}"\nОтсутствует "gta_sa.exe" по указанному пути.',
   open_settings: "Открыть настройки",
   cancel: "Отмена",
   gta_path_modal_cant_find_samp_title: "SA-MP не найден!",
@@ -80,9 +80,9 @@ export default {
   nickname_modal_name_not_set_title: "Не указан никнейм!",
   nickname_modal_name_not_set_description:
     "Прежде чем подключиться к серверу, вы должны выбрать себе никнейм.",
-  gta_path_modal_path_not_set_title: "Путь к GTA San Andreas не задан!",
+  gta_path_modal_path_not_set_title: "Путь к GTA: San Andreas не задан!",
   gta_path_modal_path_not_set_description:
-    "Вы не указали путь к GTA San Andreas, зайдите в настройки и найдите папку с игрой.",
+    "Вы не указали путь к GTA: San Andreas, зайдите в настройки и найдите папку с игрой.",
   admin_permissions_required_modal_title: "Требуются права администратора!",
   admin_permissions_required_modal_description:
     'Похоже, что для запуска GTA: San Andreas требуются права администратора. Это может произойти по разным причинам, например, если ваша игра установлена на диске "C". Пожалуйста, откройте open.mp лаунчер повторно от имени администратора с помощью кнопки "Запуск от имени администратора" либо вручную',

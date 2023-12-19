@@ -47,7 +47,7 @@ export default {
   show_player_and_rule_list: "Pokaż listę graczy i reguł",
   copy_server_info: "Kopiuj Informacje o Serwerze",
   settings_gta_path_input_label:
-    "Ścieżka GTA San Andreas (gdzie zainstalowany jest SA-MP)",
+    "Ścieżka GTA: San Andreas (gdzie zainstalowany jest SA-MP)",
   browse: "Przeglądaj",
   settings_import_nickname_gta_path_from_samp:
     "Importuj pseudonim i ścieżkę gtasa z ustawień SA-MP",
@@ -65,20 +65,20 @@ export default {
   download: "Pobierz",
   update_modal_remind_me_next_time: "Przypomnij mi następnym razem",
   update_modal_skip_this_update: "Pomiń tę aktualizację",
-  gta_path_modal_cant_find_game_title: "Nie można znaleźć GTA San Andreas!",
+  gta_path_modal_cant_find_game_title: "Nie można znaleźć GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
-    'Nie można znaleźć GTA San Andreas w tej lokalizacji:\n  - "{{ path }}"\nNie można odnaleźć "gta_sa.exe" w podanej ścieżce.',
+    'Nie można znaleźć GTA: San Andreas w tej lokalizacji:\n  - "{{ path }}"\nNie można odnaleźć "gta_sa.exe" w podanej ścieżce.',
   nickname_modal_name_not_set_title: "Brak Pseudonimu!",
   nickname_modal_name_not_set_description:
     "Należy wybrać pseudonim przed dołączeniem do serwera.",
   gta_path_modal_path_not_set_title:
-    "Ścieżka do GTA San Andreas nie jest ustawiona!",
+    "Ścieżka do GTA: San Andreas nie jest ustawiona!",
   gta_path_modal_path_not_set_description:
-    "Nie ustawiono ścieżki do GTA San Andreas. Należy przejść do ustawień i wyszukać folder z grą.",
+    "Nie ustawiono ścieżki do GTA: San Andreas. Należy przejść do ustawień i wyszukać folder z grą.",
   admin_permissions_required_modal_title:
     "Wymagane są uprawnienia administratora!",
   admin_permissions_required_modal_description:
-    'Wygląda na to, że gra GTA San Andreas wymaga uprawnień administratora do uruchomienia. Może to być spowodowane różnymi przyczynami, np. zainstalowaniem gry na dysku "C". Otwórz ponownie launcher open.mp jako administrator, używając przycisku "Uruchom jako Administrator" lub wykonaj to ręcznie przez siebie.',
+    'Wygląda na to, że gra GTA: San Andreas wymaga uprawnień administratora do uruchomienia. Może to być spowodowane różnymi przyczynami, np. zainstalowaniem gry na dysku "C". Otwórz ponownie launcher open.mp jako administrator, używając przycisku "Uruchom jako Administrator" lub wykonaj to ręcznie przez siebie.',
   run_as_admin: "Uruchom jako Administrator",
   open_settings: "Ustawienia",
   cancel: "Anuluj",

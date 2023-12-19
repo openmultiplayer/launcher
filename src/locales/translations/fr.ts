@@ -72,7 +72,7 @@ export default {
   update_modal_remind_me_next_time: "Me le rappeler la prochaine fois",
   update_modal_skip_this_update: "Passer cette mise à jour",
   gta_path_modal_cant_find_game_title:
-    "Impossible de trouver GTA San Andreas !",
+    "Impossible de trouver GTA: San Andreas !",
   gta_path_modal_cant_find_game_description:
     'Impossible de trouver GTA : San Andreas dans ce répertoire :\n  - "{{ path }}"\nImpossible de trouver "gta_sa.exe" dans le chemin spécifié.',
   open_settings: "Ouvrir les paramètres",

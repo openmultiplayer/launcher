@@ -49,7 +49,7 @@ export default {
   show_player_and_rule_list: "نمایش لیست بازیکنان و قواعد",
   copy_server_info: "کپی کردن اطلاعات سرور",
   settings_gta_path_input_label:
-    "͏ ͏ ͏ ͏ ͏ ͏ ͏ مسیر بازی GTA San Andreas و جایی که SA-MP هم نصب شده است",
+    "͏ ͏ ͏ ͏ ͏ ͏ ͏ مسیر بازی GTA: San Andreas و جایی که SA-MP هم نصب شده است",
   browse: "جستجو",
   settings_import_nickname_gta_path_from_samp:
     "وارد کردن نام مستعار و مسیر نصب GTA SA از تنظیمات SA-MP",
@@ -67,9 +67,9 @@ export default {
   download: "دانلود",
   update_modal_remind_me_next_time: "الان نه",
   update_modal_skip_this_update: "نادیده گرفتن این نسخه",
-  gta_path_modal_cant_find_game_title: "بازی GTA San Andreas پیدا نشد!",
+  gta_path_modal_cant_find_game_title: "بازی GTA: San Andreas پیدا نشد!",
   gta_path_modal_cant_find_game_description:
-    'مسیر نصب GTA San Andreas در این پوشه پیدا نشد:\n  - "{{ path }}"\nفایل "gta_sa.exe" پیدا نشد.',
+    'مسیر نصب GTA: San Andreas در این پوشه پیدا نشد:\n  - "{{ path }}"\nفایل "gta_sa.exe" پیدا نشد.',
   open_settings: "باز کردن تنظیمات",
   cancel: "کنسل",
   gta_path_modal_cant_find_samp_title: "مسیر SA-MP پیدا نشد!",
@@ -81,9 +81,9 @@ export default {
   nickname_modal_name_not_set_title: "نام مستعار ندارید!",
   nickname_modal_name_not_set_description:
     "قبل از ورود به سرور باید برای خود نام مستعار انتخاب کنید.",
-  gta_path_modal_path_not_set_title: "مسیر GTA San Andreas خالی است!",
+  gta_path_modal_path_not_set_title: "مسیر GTA: San Andreas خالی است!",
   gta_path_modal_path_not_set_description:
-    "شما مسیر GTA San Andreas را انتخاب نکردید، به تنظیمات برید و حستحو را بزنید.",
+    "شما مسیر GTA: San Andreas را انتخاب نکردید، به تنظیمات برید و حستحو را بزنید.",
   admin_permissions_required_modal_title: "دسترسی ادمین نیاز است",
   admin_permissions_required_modal_description:
     'به نظر میرسد GTA: San Andreas نیاز به دسترسی ادیمن برای اجرا است. این میتواند به چند دلیل باشد، مثال: بازی شما در درایو C نصب شده است. لانچر را با دسترس ادمین باز کنید، یا از دکمه "اجرا توسط ادمین" استفاده کنید.',

@@ -64,9 +64,9 @@ export default {
   download: "تحميل",
   update_modal_remind_me_next_time: "ليس الآن",
   update_modal_skip_this_update: "تجاهل هذا الإصدار",
-  gta_path_modal_cant_find_game_title: "لعبة GTA San Andreas غير موجودة!",
+  gta_path_modal_cant_find_game_title: "لعبة GTA: San Andreas غير موجودة!",
   gta_path_modal_cant_find_game_description:
-    'لا يمكن العثور على GTA San Andreas في هذا الدليل:\n   - "{{ path }}"\nغير قادر على العثور على "gta_sa.exe" في المسار المحدد لديك.',
+    'لا يمكن العثور على GTA: San Andreas في هذا الدليل:\n   - "{{ path }}"\nغير قادر على العثور على "gta_sa.exe" في المسار المحدد لديك.',
   open_settings: "أفتح الإعدادات",
   cancel: "إلغاء",
   gta_path_modal_cant_find_samp_title: "لم يتم العثور على SA-MP!",
@@ -78,9 +78,9 @@ export default {
   nickname_modal_name_not_set_title: "ليس لديك إسم مستعار!",
   nickname_modal_name_not_set_description:
     "يجب عليك اختيار إسم مستعار لنفسك قبل الإنضمام إلى الخادم.",
-  gta_path_modal_path_not_set_title: "لم يتم تعيين مسار GTA San Andreas!",
+  gta_path_modal_path_not_set_title: "لم يتم تعيين مسار GTA: San Andreas!",
   gta_path_modal_path_not_set_description:
-    "لم تقم بتعيين مسار GTA San Andreas، أنتقل إلى الإعدادات وابحث عن مجلد اللعبة.",
+    "لم تقم بتعيين مسار GTA: San Andreas، أنتقل إلى الإعدادات وابحث عن مجلد اللعبة.",
   admin_permissions_required_modal_title: "أذونات المسؤول مطلوبة!",
   admin_permissions_required_modal_description:
     'يبدو أن لعبة GTA: San Andreas الخاصة بك تتطلب أذونات إدارية للتشغيل. يمكن أن يكون هذا بسبب العديد من الأسباب ، مثل تثبيت لعبتك في محرك الأقراص "C". يرجى إعادة فتح مشغل open.mp كمسؤول إما باستخدام زر "تشغيل كمسؤول" أو يدويا بنفسك',

@@ -67,9 +67,9 @@ export default {
   download: "İndir",
   update_modal_remind_me_next_time: "Sonra Hatırlat",
   update_modal_skip_this_update: "Bu Güncellemeyi Atla",
-  gta_path_modal_cant_find_game_title: "GTA San Andreas bulunamıyor!",
+  gta_path_modal_cant_find_game_title: "GTA: San Andreas bulunamıyor!",
   gta_path_modal_cant_find_game_description:
-    'GTA San Andreas bu dizinde bulunamıyor:\n  - "{{ path }}"\nVerdiğiniz yolda "gta_sa.exe" bulunamıyor.',
+    'GTA: San Andreas bu dizinde bulunamıyor:\n  - "{{ path }}"\nVerdiğiniz yolda "gta_sa.exe" bulunamıyor.',
   open_settings: "Ayarları Aç",
   cancel: "İptal",
   gta_path_modal_cant_find_samp_title: "SA-MP bulunamıyor!",
@@ -81,9 +81,9 @@ export default {
   nickname_modal_name_not_set_title: "Oyuncu adı yok!",
   nickname_modal_name_not_set_description:
     "Bir sunucuya katılmadan önce kendiniz için bir oyuncu adı seçmelisiniz.",
-  gta_path_modal_path_not_set_title: "GTA San Andreas yolu ayarlanmadı!",
+  gta_path_modal_path_not_set_title: "GTA: San Andreas yolu ayarlanmadı!",
   gta_path_modal_path_not_set_description:
-    "GTA San Andreas yolunu ayarlamadınız, ayarlara gidin ve oyun klasörünü arayın.",
+    "GTA: San Andreas yolunu ayarlamadınız, ayarlara gidin ve oyun klasörünü arayın.",
   admin_permissions_required_modal_title: "Yönetici izinleri gerekli!",
   admin_permissions_required_modal_description:
     'Görünüşe göre GTA: San Andreas oyununuzun çalışması için yönetici izinleri gerekiyor. Bu, oyununuzun "C" sürücüsüne yüklenmiş olması gibi birçok nedenden kaynaklanıyor olabilir. Lütfen open.mp başlatıcısını "Yönetici Olarak Çalıştır" seçeneğini kullanarak veya kendiniz manuel olarak yönetici olarak yeniden açın',

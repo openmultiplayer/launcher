@@ -70,9 +70,9 @@ export default {
   update_modal_remind_me_next_time: "Recordarme la próxima vez",
   update_modal_skip_this_update: "Saltar esta actualización",
   gta_path_modal_cant_find_game_title:
-    "¡No se puede encontrar GTA San Andreas!",
+    "¡No se puede encontrar GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
-    'No se puede encontrar GTA San Andreas en este directorio:\n  - "{{ path }}"\nNo se puede encontrar "gta_sa.exe" en la ruta proporcionada.',
+    'No se puede encontrar GTA: San Andreas en este directorio:\n  - "{{ path }}"\nNo se puede encontrar "gta_sa.exe" en la ruta proporcionada.',
   open_settings: "Abrir configuración",
   cancel: "Cancelar",
   gta_path_modal_cant_find_samp_title: "¡No se puede encontrar SA-MP!",

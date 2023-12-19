@@ -69,9 +69,9 @@ export default {
   update_modal_remind_me_next_time:
     "Alalahanin mo ako sa susunod na pagkakataon",
   update_modal_skip_this_update: "I-skip ang Update na ito",
-  gta_path_modal_cant_find_game_title: "Hindi Makita ang GTA San Andreas!",
+  gta_path_modal_cant_find_game_title: "Hindi Makita ang GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
-    'Hindi mahanap ang GTA San Andreas sa direktoryong ito:\n  - "{{ path }}"\nHindi makita ang "gta_sa.exe" sa iyong ibinigay na landas.',
+    'Hindi mahanap ang GTA: San Andreas sa direktoryong ito:\n  - "{{ path }}"\nHindi makita ang "gta_sa.exe" sa iyong ibinigay na landas.',
   open_settings: "Buksan ang Setting",
   cancel: "Kanselahin",
   gta_path_modal_cant_find_samp_title: "Hindi Makita ang SA-MP!",

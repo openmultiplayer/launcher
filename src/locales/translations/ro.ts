@@ -68,9 +68,9 @@ export default {
   download: "Descarcă",
   update_modal_remind_me_next_time: "Amintește-mi Data Viitoare",
   update_modal_skip_this_update: "Sari peste Această Actualizare",
-  gta_path_modal_cant_find_game_title: "Nu se poate găsi GTA San Andreas!",
+  gta_path_modal_cant_find_game_title: "Nu se poate găsi GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
-    'Nu se poate găsi GTA San Andreas în acest director:\n  - "{{ path }}"\nImposibil de găsit "gta_sa.exe" în calea dată.',
+    'Nu se poate găsi GTA: San Andreas în acest director:\n  - "{{ path }}"\nImposibil de găsit "gta_sa.exe" în calea dată.',
   open_settings: "Deschide Setările",
   cancel: "Anulează",
   gta_path_modal_cant_find_samp_title: "Nu se poate găsi SA-MP!",

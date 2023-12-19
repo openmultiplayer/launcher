@@ -66,9 +66,9 @@ export default {
   download: "डाउनलोड",
   update_modal_remind_me_next_time: "मुझे अगली बार याद दिलाएं",
   update_modal_skip_this_update: "इस अद्यतन को छोड़ें",
-  gta_path_modal_cant_find_game_title: "GTA San Andreas नहीं मिल सका!",
+  gta_path_modal_cant_find_game_title: "GTA: San Andreas नहीं मिल सका!",
   gta_path_modal_cant_find_game_description:
-    'इस निर्देशिका में GTA San Andreas नहीं मिल सका:\n  - "{{ path }}"\nआपके दिए गए पथ में "gta_sa.exe" ढूँढने में असमर्थ।',
+    'इस निर्देशिका में GTA: San Andreas नहीं मिल सका:\n  - "{{ path }}"\nआपके दिए गए पथ में "gta_sa.exe" ढूँढने में असमर्थ।',
   open_settings: "सेटिंग खोलें",
   cancel: "रद्द करें",
   gta_path_modal_cant_find_samp_title: "SA-MP नहीं मिल सका!",

@@ -65,7 +65,7 @@ export default {
   download: "Herunterladen",
   update_modal_remind_me_next_time: "Erinnere mich später",
   update_modal_skip_this_update: "Aktualisierung überspringen",
-  gta_path_modal_cant_find_game_title: "GTA San Andreas konnte nicht gefunden werden!",
+  gta_path_modal_cant_find_game_title: "GTA: San Andreas konnte nicht gefunden werden!",
   gta_path_modal_cant_find_game_description:
     'GTA: San Andreas konnte in diesem Ordner nicht gefunden werden:\n  - "{{ path }}"\n"gta_sa.exe" ist am angegebenen Pfad nicht vorhanden.',
   open_settings: "Einstellungen öffnen",
@@ -79,9 +79,9 @@ export default {
   nickname_modal_name_not_set_title: "Kein Nickname!",
   nickname_modal_name_not_set_description:
     "Du musst einen Nickname wählen, bevor du einem Server beitrittst.",
-  gta_path_modal_path_not_set_title: "Pfad für GTA San Andreas ist nicht festgelegt!",
+  gta_path_modal_path_not_set_title: "Pfad für GTA: San Andreas ist nicht festgelegt!",
   gta_path_modal_path_not_set_description:
-    "Du hast den Pfad für GTA San Andreas nicht festgelegt, gehe zu den Einstellungen und wähle den Spielordner.",
+    "Du hast den Pfad für GTA: San Andreas nicht festgelegt, gehe zu den Einstellungen und wähle den Spielordner.",
   admin_permissions_required_modal_title: "Administratorberechtigungen erforderlich!",
   admin_permissions_required_modal_description:
     'Es scheint, als ob dein GTA: San Andreas, Administratorberechtigungen zum Ausführen benötigt. Das kann viele Ursachen haben, wie zum Beispiel, dass dein Spiel auf dem "C"-Laufwerk installiert ist. Bitte öffne den open.mp Launcher erneut als Administrator, entweder über den Button "Als Admin ausführen" oder manuell von dir selbst.',

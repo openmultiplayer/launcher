@@ -66,9 +66,9 @@ export default {
   download: "Skini",
   update_modal_remind_me_next_time: "Podjseti Me Slijedeći Put",
   update_modal_skip_this_update: "Preskoči Ovo Ažuriranje",
-  gta_path_modal_cant_find_game_title: "GTA San Andreas nije pronađen!",
+  gta_path_modal_cant_find_game_title: "GTA: San Andreas nije pronađen!",
   gta_path_modal_cant_find_game_description:
-    'GTA San Andreas nije pronađen u ovom direktoriju:\n  - "{{ path }}"\n"gta_sa.exe" nije pronađen u datom direktoriju.',
+    'GTA: San Andreas nije pronađen u ovom direktoriju:\n  - "{{ path }}"\n"gta_sa.exe" nije pronađen u datom direktoriju.',
   open_settings: "Otvori Postavke",
   cancel: "Otkaži",
   gta_path_modal_cant_find_samp_title: "SA-MP nije pronađen!",
@@ -81,9 +81,9 @@ export default {
   nickname_modal_name_not_set_description:
     "Moraš izabrati nadimak za sebe prije nego što uđes u server.",
   gta_path_modal_path_not_set_title:
-    "GTA San Andreas direktorij nije postavljen!",
+    "GTA: San Andreas direktorij nije postavljen!",
   gta_path_modal_path_not_set_description:
-    "Nisi postavio direktorij GTA San Andreas-a, idi u postavke i potraži folder u kojem ti se igra nalazi.",
+    "Nisi postavio direktorij GTA: San Andreas-a, idi u postavke i potraži folder u kojem ti se igra nalazi.",
   admin_permissions_required_modal_title:
     "Administratorska odobrenja potrebna!",
   admin_permissions_required_modal_description:

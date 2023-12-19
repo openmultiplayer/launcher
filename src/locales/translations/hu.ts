@@ -67,9 +67,9 @@ export default {
   download: "Letöltés",
   update_modal_remind_me_next_time: "Emlékeztess később",
   update_modal_skip_this_update: "Frissítés kihagyása",
-  gta_path_modal_cant_find_game_title: "Nem található a GTA San Andreas!",
+  gta_path_modal_cant_find_game_title: "Nem található a GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
-    'Nem található a GTA San Andreas az alábbi helyen:\n  - "{{ path }}"\nA megadott útvonalon nem található "gta_sa.exe".',
+    'Nem található a GTA: San Andreas az alábbi helyen:\n  - "{{ path }}"\nA megadott útvonalon nem található "gta_sa.exe".',
   open_settings: "Beállítások megnyitása",
   cancel: "Mégse",
   gta_path_modal_cant_find_samp_title: "Nem található a SA-MP!",
@@ -81,9 +81,9 @@ export default {
   nickname_modal_name_not_set_title: "Nincs felhasználónév megadva!",
   nickname_modal_name_not_set_description:
     "Mielőtt csatlakoznál egy szerverhez be kell állítanod a felhasználóneved!",
-  gta_path_modal_path_not_set_title: "GTA San Andreas útvonal nincs beállítva!",
+  gta_path_modal_path_not_set_title: "GTA: San Andreas útvonal nincs beállítva!",
   gta_path_modal_path_not_set_description:
-    "Nem adtál meg GTA San Andreas útvonalat! Add meg a beállításokban.",
+    "Nem adtál meg GTA: San Andreas útvonalat! Add meg a beállításokban.",
   admin_permissions_required_modal_title: "Adminisztrátori jogok szükségesek!",
   admin_permissions_required_modal_description:
     'Úgy néz ki a játékod adminisztrátori jogokat kér. Ezt több dolog is okozhatja, például a játék a "C" meghajtón van. Kérlek indítsd újra a launchert rendszergazda jogokkal. Használd a(z) "Futtatás adminisztrátorként" gombot, vagy futtasd a programot rendszergazdaként.',
