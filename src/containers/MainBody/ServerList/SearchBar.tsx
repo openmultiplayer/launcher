@@ -51,7 +51,7 @@ const ActionIcon = ({
     <div
       style={{
         filter: buttonColor
-          ? `drop-shadow(0 0 20px ${buttonColor}77)`
+          ? `drop-shadow(0 0 20px ${buttonColor}44)`
           : undefined,
       }}
     >
@@ -288,6 +288,7 @@ const SearchBar = (props: IProps) => {
           onPress={() => showAddThirdPartyServer(true)}
         />
         <ActionIcon
+          svg
           title={
             sideLists
               ? t("hide_player_and_rule_list")
@@ -296,8 +297,9 @@ const SearchBar = (props: IProps) => {
           icon={
             sideLists ? images.icons.closeSideLists : images.icons.openSideLists
           }
-          iconSize={sc(32)}
-          iconColor={theme.textPlaceholder}
+          iconSize={sc(18)}
+          iconColor={theme.textSecondary}
+          buttonColor={theme.itemBackgroundColor}
           onPress={() => showSideLists(!sideLists)}
         />
       </View>
