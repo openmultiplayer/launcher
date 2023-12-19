@@ -323,7 +323,13 @@ function hexToRgb(hex: string) {
 
 const cachedColors: any = {};
 
-export const convertRgbToFilter = (color_: string) => {
+export const convertRgbToFilter = (
+  color_: string
+): {
+  values: number[] | null;
+  loss: number;
+  filter: string;
+} => {
   if (cachedColors[color_]) {
     return cachedColors[color_];
   }
@@ -344,6 +350,9 @@ export const convertRgbToFilter = (color_: string) => {
   const color = new Color(rgb[0], rgb[1], rgb[2]);
   const solver = new Solver(color);
   const result = solver.solve();
+
+  // Make sure loss is less than 1
+  if (result.loss > 1) return convertRgbToFilter(color_);
 
   cachedColors[color_] = { ...result };
   return result;
