@@ -76,7 +76,6 @@ const usePersistentServers = create<ServersPersistentState>()(
             server.ip.length < 6 ||
             server.port < 1
           ) {
-            alert("FUCK ");
             return { favorites: get().favorites };
           }
           const cpy = [...get().favorites];
