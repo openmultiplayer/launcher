@@ -97,7 +97,7 @@ const AdditionalInfo = (props: IProps) => {
         style={{
           backgroundColor: theme.itemBackgroundColor,
           padding: sc(15),
-          paddingTop: sc(15),
+          paddingVertical: sc(10),
           borderRadius: 5,
           flex: 1,
         }}
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   additionalInfoView: {
     width: "100%",
     flex: 1,
-    paddingBottom: sc(10),
+    paddingBottom: sc(5),
   },
   rulesContainer: {
     height: sc(26),

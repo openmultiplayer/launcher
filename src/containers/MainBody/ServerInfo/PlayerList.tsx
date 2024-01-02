@@ -4,6 +4,7 @@ import Text from "../../../components/Text";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 import { Player } from "../../../utils/types";
+import { useServers } from "../../../states/servers";
 
 interface IProps {
   players: Player[];
@@ -11,6 +12,7 @@ interface IProps {
 
 const PlayerList = (props: IProps) => {
   const { theme, themeType } = useTheme();
+  const { selected } = useServers();
 
   const renderPlayer = ({
     item: player,
@@ -84,10 +86,14 @@ const PlayerList = (props: IProps) => {
           padding: sc(15),
           paddingTop: sc(15),
           borderRadius: 5,
-          height: "50%",
+          height: selected?.omp && selected.omp.banner ? "46%" : "51%",
         }}
       >
-        <FlatList id={themeType === "dark" ? "scroll" : "scroll-light"} data={props.players} renderItem={renderPlayer} />
+        <FlatList
+          id={themeType === "dark" ? "scroll" : "scroll-light"}
+          data={props.players}
+          renderItem={renderPlayer}
+        />
       </View>
     </>
   );

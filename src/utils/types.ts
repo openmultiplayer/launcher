@@ -25,6 +25,25 @@ export interface Server {
   ping: number;
   players: Player[];
   password: string;
+  omp?: {
+    banner?: string;
+    discord: {
+      invite?: string;
+      status?: {
+        appId: string;
+        largeImage: {
+          asset: string;
+          text: string;
+        };
+        smallImage: {
+          asset: string;
+          text: string;
+        };
+        title: string;
+        description: string;
+      };
+    };
+  };
   rules: {
     artwork: string;
     mapname: string;
