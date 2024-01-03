@@ -72,10 +72,10 @@ const ActionIcon = ({
 };
 
 const SearchBar = (props: IProps) => {
-  const { theme } = useTheme();
+  const { theme, themeType } = useTheme();
   const { listType } = useGenericTempState();
   const [searchQuery, setSearchQuery] = useState("");
-  const { filterMenu, showFilterMenu } = useGenericTempState();
+  const { filterMenu, showFilterMenu, searchData } = useGenericTempState();
   const { sideLists, showSideLists } = useGenericPersistentState();
   const { selected } = useServers();
   const {
@@ -87,6 +87,23 @@ const SearchBar = (props: IProps) => {
   const { showPrompt, setServer } = useJoinServerPrompt();
   const { showAddThirdPartyServer } = useAddThirdPartyServerModal();
   // const refreshIconSpinAnim = useRef(new Animated.Value(0)).current;
+
+  const showFiltersBadge = useMemo(() => {
+    if (
+      searchData.languages.length < 1 &&
+      !searchData.nonEmpty &&
+      !searchData.ompOnly &&
+      !searchData.unpassworded &&
+      searchData.sortMode === "none" &&
+      searchData.sortName === "none" &&
+      searchData.sortPing === "none" &&
+      searchData.sortPlayer === "none"
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [searchData]);
 
   const favorited = useMemo(() => {
     const find = favorites.find(
@@ -150,6 +167,27 @@ const SearchBar = (props: IProps) => {
           size={sc(16)}
           color={theme.textSecondary}
         />
+        {showFiltersBadge ? (
+          <div
+            style={{
+              filter: `drop-shadow(0 0 5px ${theme.primary}${
+                themeType === "dark" ? "CC" : "FF"
+              })`,
+              position: "absolute",
+              bottom: -sc(2),
+              right: -sc(3),
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: theme.primary,
+                borderRadius: sc(30),
+                height: sc(12),
+                width: sc(12),
+              }}
+            />
+          </div>
+        ) : null}
       </TouchableOpacity>
       <View
         style={[
