@@ -49,6 +49,7 @@ const PropInfo = (props: {
       style={{
         flexDirection: "row",
         alignItems: "center",
+        width: "100%",
       }}
     >
       <View
