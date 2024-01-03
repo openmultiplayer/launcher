@@ -9,12 +9,17 @@ import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
 import { usePersistentServers, useServers } from "../states/servers";
 import { useSettingsModal } from "../states/settingsModal";
+import { Log } from "./logger";
 import { queryServer } from "./query";
 import { APIResponseServer, Player, SearchData, Server } from "./types";
-import { Log } from "./logger";
 
 const PARALLEL_SERVERS_TO_UPDATE_COUNT = 5;
 const PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL = 2000;
+
+export const languageFilters: {
+  name: string;
+  keywords: string[];
+}[] = [];
 
 export const mapAPIResponseServerListToAppStructure = (
   list: APIResponseServer[]
@@ -378,6 +383,7 @@ export const sortAndSearchInServerList = (
     sortPlayer,
     sortName,
     sortMode,
+    languages,
   } = searchData;
   let list = servers.filter((server) => {
     const ompCheck = ompOnly ? server.usingOmp === true : true;
@@ -389,12 +395,26 @@ export const sortAndSearchInServerList = (
       ? server.hasPassword === false
       : true;
 
+    let languageResult = false;
+
+    if (!languages.length) {
+      languageResult = true;
+    } else {
+      languages.forEach((lang) => {
+        const result = checkLanguage(server.language, lang);
+        if (!languageResult) {
+          languageResult = result;
+        }
+      });
+    }
+
     return (
       server.ip &&
       partnershipCheck &&
       ompCheck &&
       unpasswordedCheck &&
       nonEmptyCheck &&
+      languageResult &&
       server.hostname &&
       server.hostname.toLowerCase().includes(query.toLowerCase())
     );
@@ -455,4 +475,60 @@ export const sortAndSearchInServerList = (
   }
 
   return list;
+};
+
+const addLanguageFilter = (name: string, keywords: string[]) => {
+  const findIndex = languageFilters.findIndex((l) => l.name === name);
+  if (findIndex == -1) {
+    languageFilters.push({
+      name,
+      keywords: [...keywords],
+    });
+  }
+};
+
+export const generateLanguageFilters = () => {
+  addLanguageFilter("English", ["English", "EN", "Eng"]);
+  addLanguageFilter("Arabic", ["Arabic", "العربية"]);
+  addLanguageFilter("Czech", ["Czech", "CZ", "Čeština"]);
+  addLanguageFilter("Chinese", ["Chinese", "CN", "ZH", "中文"]);
+  addLanguageFilter("Bulgarian", ["Bulgarian", "BG", "Български"]);
+  addLanguageFilter("Dutch", ["Dutch", "NL"]);
+  addLanguageFilter("French", ["French", "FR", "Français"]);
+  addLanguageFilter("Georgian", ["Georgian", "KA", "ქართული"]);
+  addLanguageFilter("German", ["German", "DE", "GER", "Deutsch"]);
+  addLanguageFilter("Greek", ["Greek", "EL", "Ελληνικά"]);
+  addLanguageFilter("Hungarian", ["Hungarian", "HU", "Magyar"]);
+  addLanguageFilter("Indonesian", ["Indonesian", "ID", "Bahasa Indonesia "]);
+  addLanguageFilter("Italian", ["Italian", "IT", "Italiano"]);
+  addLanguageFilter("Lithuanian", ["Lithuanian", "LT", "Lietuvių"]);
+  addLanguageFilter("Polish", ["Polish", "PL", "Polski"]);
+  addLanguageFilter("Portuguese", ["Portuguese", "PT", "Português"]);
+  addLanguageFilter("Romanian", ["Romanian", "RO", "Română"]);
+  addLanguageFilter("Russian", ["Russian", "RU", "RUS", "Русский"]);
+  addLanguageFilter("Spanish", ["Spanish", "ES", "Español"]);
+  addLanguageFilter("Swedish", ["Swedish", "SV", "Svenska"]);
+  addLanguageFilter("Turkish", ["Turkish", "TR", "Türkçe"]);
+  addLanguageFilter("Ukrainian", ["Ukrainian", "UK", "Українська"]);
+  addLanguageFilter("Vietnamese", [
+    "Vietnamese",
+    "VI",
+    "Viet Nam",
+    "Tiếng Việt",
+  ]);
+};
+
+export const checkLanguage = (lang: string | undefined, filter: string) => {
+  if (!lang) {
+    return false;
+  }
+
+  const find = languageFilters.find((l) => l.name === filter);
+  if (!find) {
+    return false;
+  }
+
+  return find.keywords.some((keyword) =>
+    lang?.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
+  );
 };

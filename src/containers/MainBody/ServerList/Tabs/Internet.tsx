@@ -30,6 +30,7 @@ const Internet = () => {
     searchData.sortPlayer,
     searchData.sortName,
     searchData.sortMode,
+    searchData.languages,
     servers,
   ]);
 

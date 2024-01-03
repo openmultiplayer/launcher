@@ -23,6 +23,7 @@ const useGenericTempState = create<GenericTempStates>()((set, get) => ({
     sortPlayer: "none",
     sortName: "none",
     sortMode: "none",
+    languages: [],
   },
   listType: "favorites",
   showFilterMenu: (show) => set(() => ({ filterMenu: show })),

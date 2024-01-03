@@ -37,6 +37,7 @@ const Favorites = () => {
     searchData.sortPlayer,
     searchData.sortName,
     searchData.sortMode,
+    searchData.languages,
     favorites,
   ]);
 

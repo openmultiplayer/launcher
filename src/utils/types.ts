@@ -71,6 +71,7 @@ export interface SearchData {
   sortPing: SortType;
   sortName: SortType;
   sortMode: SortType;
+  languages: string[];
 }
 
 export interface APIResponseServer {

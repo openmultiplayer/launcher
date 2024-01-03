@@ -15,7 +15,11 @@ import i18n from "./locales";
 import { useGenericPersistentState } from "./states/genericStates";
 import { useTheme } from "./states/theme";
 import { debounce } from "./utils/debounce";
-import { fetchServers, fetchUpdateInfo } from "./utils/helpers";
+import {
+  fetchServers,
+  fetchUpdateInfo,
+  generateLanguageFilters,
+} from "./utils/helpers";
 import { sc } from "./utils/sizeScaler";
 
 const App = () => {
@@ -63,6 +67,7 @@ const App = () => {
     fetchServers();
     fetchUpdateInfo();
     setupListeners();
+    generateLanguageFilters();
 
     return () => {
       if (killResizeListener) killResizeListener();
