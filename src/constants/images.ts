@@ -38,5 +38,6 @@ export const images = {
     link: "icons/link.svg",
     ip: "icons/ip.svg",
     mode: "icons/mode.svg",
+    discord: "icons/discord.svg",
   },
 };
