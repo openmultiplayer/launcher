@@ -27,21 +27,19 @@ export interface Server {
   password: string;
   omp?: {
     banner?: string;
-    discord: {
-      invite?: string;
-      status?: {
-        appId: string;
-        largeImage: {
-          asset: string;
-          text: string;
-        };
-        smallImage: {
-          asset: string;
-          text: string;
-        };
-        title: string;
-        description: string;
+    discordInvite?: string;
+    discordStatus?: {
+      appId: string;
+      largeImage: {
+        asset: string;
+        text: string;
       };
+      smallImage: {
+        asset: string;
+        text: string;
+      };
+      title: string;
+      description: string;
     };
   };
   rules: {
