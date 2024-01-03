@@ -90,4 +90,5 @@ export default {
   settings_lang_tab_title: "Languages",
   settings_advanced_tab_title: "Advanced",
   settings_advanced_discord_status: "Enable Discord status",
+  join_discord: "Join Discord Server",
 };

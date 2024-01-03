@@ -1,4 +1,5 @@
 import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
+import { shell } from "@tauri-apps/api";
 import { t } from "i18next";
 import { useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -7,6 +8,7 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { usePersistentServers, useServers } from "../../states/servers";
 import { useTheme } from "../../states/theme";
+import { validateWebUrl } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
 import Chart from "../PingChart";
 
@@ -105,6 +107,15 @@ const BottomBar = () => {
     return find !== undefined;
   }, [server, favorites]);
 
+  const discordInvite = useMemo(() => {
+    if (server && server.omp && server.omp.discordInvite) {
+      if (validateWebUrl(server.omp.discordInvite)) {
+        return server.omp.discordInvite;
+      }
+    }
+    return "";
+  }, [server]);
+
   if (!server) {
     return null;
   }
@@ -158,16 +169,47 @@ const BottomBar = () => {
         >
           <PropInfo
             iconTitle={""}
-            icon={images.icons.mode}
-            iconSize={sc(17)}
-            text={`${server.gameMode}`}
-          />
-          <PropInfo
-            iconTitle={""}
             icon={images.icons.language}
             iconSize={sc(17)}
             text={`${server.language}`}
           />
+          {discordInvite.length ? (
+            <TouchableOpacity
+              style={{
+                height: sc(28),
+                paddingHorizontal: sc(10),
+                borderRadius: sc(5),
+                backgroundColor: "#5865F2",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onPress={() => {
+                shell.open(discordInvite);
+              }}
+            >
+              <Icon
+                svg
+                image={images.icons.discord}
+                size={sc(16)}
+                color={"#FFFFFF"}
+              />
+              <Text
+                semibold
+                color={"#FFFFFF"}
+                style={{ fontSize: sc(15), marginLeft: sc(8) }}
+              >
+                {t("join_discord")}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <PropInfo
+              iconTitle={""}
+              icon={images.icons.mode}
+              iconSize={sc(17)}
+              text={`${server.gameMode}`}
+            />
+          )}
           <TouchableOpacity
             style={{
               height: sc(28),
