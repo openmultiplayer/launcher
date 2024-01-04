@@ -53,6 +53,23 @@ impl Default for Player {
     }
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ExtraInfoPacket {
+    pub discord_link: String,
+    pub light_banner_url: String,
+    pub dark_banner_url: String,
+}
+
+impl Default for ExtraInfoPacket {
+    fn default() -> Self {
+        Self {
+            discord_link: String::new(),
+            light_banner_url: String::new(),
+            dark_banner_url: String::new(),
+        }
+    }
+}
+
 impl Query {
     pub async fn new(addr: &str, port: i32) -> Result<Self, std::io::Error> {
         let regex = Regex::new(r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$").unwrap();
@@ -108,7 +125,7 @@ impl Query {
         packet.push((self.port >> 8 & 0xFF) as u8);
         packet.push(query_type as u8);
 
-        if query_type == 'p' || query_type == 'o' {
+        if query_type == 'p' {
             packet.push(0);
             packet.push(0);
             packet.push(0);
@@ -145,7 +162,7 @@ impl Query {
         } else if query_type == 'r' {
             self.build_rules_packet(packet)
         } else if query_type == 'o' {
-            Ok(String::from("{\"isOmp\": true}"))
+            self.build_extra_info_packet(packet)
         } else if query_type == 'p' {
             Ok(String::from("pong"))
         } else {
@@ -174,6 +191,30 @@ impl Query {
         let mut language_buf = vec![0u8; language_len as usize];
         packet.read_exact(&mut language_buf).unwrap();
         data.language = helpers::decode_buffer(language_buf).0;
+
+        Ok(serde_json::to_string(&data).unwrap())
+    }
+
+    fn build_extra_info_packet(
+        &self,
+        mut packet: Cursor<Vec<u8>>,
+    ) -> Result<String, std::io::Error> {
+        let mut data = ExtraInfoPacket::default();
+
+        let discord_link_len = packet.read_u32::<LittleEndian>().unwrap();
+        let mut discord_link_buf = vec![0u8; discord_link_len as usize];
+        packet.read_exact(&mut discord_link_buf).unwrap();
+        data.discord_link = helpers::decode_buffer(discord_link_buf).0;
+
+        let mut banner_url_len = packet.read_u32::<LittleEndian>().unwrap();
+        let mut banner_url_buf = vec![0u8; banner_url_len as usize];
+        packet.read_exact(&mut banner_url_buf).unwrap();
+        data.light_banner_url = helpers::decode_buffer(banner_url_buf).0;
+
+        banner_url_len = packet.read_u32::<LittleEndian>().unwrap();
+        banner_url_buf = vec![0u8; banner_url_len as usize];
+        packet.read_exact(&mut banner_url_buf).unwrap();
+        data.dark_banner_url = helpers::decode_buffer(banner_url_buf).0;
 
         Ok(serde_json::to_string(&data).unwrap())
     }

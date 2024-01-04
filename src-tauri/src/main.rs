@@ -57,16 +57,16 @@ async fn request_server_rules(ip: &str, port: i32) -> Result<String, String> {
 }
 
 #[tauri::command]
-async fn request_server_is_omp(ip: &str, port: i32) -> Result<String, String> {
+async fn request_server_omp_extra_info(ip: &str, port: i32) -> Result<String, String> {
     match query::Query::new(ip, port).await {
         Ok(q) => {
             let _ = q.send('o').await;
             match q.recv().await {
                 Ok(p) => Ok(format!("{}", p)),
-                Err(_) => Ok("{\"isOmp\": false}".to_string()),
+                Err(e) => Err(e.to_string()),
             }
         }
-        Err(_) => Ok("{\"isOmp\": false}".to_string()),
+        Err(e) => Err(e.to_string()),
     }
 }
 
@@ -146,7 +146,7 @@ fn main() {
             request_server_info,
             request_server_players,
             request_server_rules,
-            request_server_is_omp,
+            request_server_omp_extra_info,
             ping_server,
             inject,
             get_gtasa_path_from_samp,

@@ -1,7 +1,10 @@
 import { invoke } from "@tauri-apps/api";
 import { usePersistentServers, useServers } from "../states/servers";
-import { ListType, Server } from "./types";
 import { Log } from "./logger";
+import { ListType, Server } from "./types";
+
+const OMP_EXTRA_INFO_CHECK_DELAY = 5000; // 10 seconds;
+const ompExtraInfoLastCheck: { [x: string]: number } = {};
 
 export const queryServer = (
   server: Server,
@@ -17,7 +20,16 @@ export const queryServer = (
 
     if (queryType === "all") {
       getServerPlayers(ip, port, listType);
-      // getServerOmpStatus(ip, port, listType);
+      if (ompExtraInfoLastCheck[`${ip}:${port}`]) {
+        if (
+          Date.now() - ompExtraInfoLastCheck[`${ip}:${port}`] >
+          OMP_EXTRA_INFO_CHECK_DELAY
+        ) {
+          getServerOmpExtraInfo(ip, port, listType);
+        }
+      } else {
+        getServerOmpExtraInfo(ip, port, listType);
+      }
     }
   } catch (error) {
     Log.debug("[query.ts: queryServer]", error);
@@ -51,7 +63,6 @@ const getServerInfo = async (ip: string, port: number, listType: ListType) => {
     let server = getServerFromList(ip, port, listType);
     if (server) {
       server = { ...server, ...data };
-
       updateServerEveryWhere(server);
     }
   } catch (e) {
@@ -137,38 +148,54 @@ const getServerRules = async (ip: string, port: number, listType: ListType) => {
   }
 };
 
-// const getServerOmpStatus = async (
-//   ip: string,
-//   port: number,
-//   listType: ListType
-// ) => {
-//   try {
-//     const serverOmpStatus = await invoke<string>("request_server_is_omp", {
-//       ip: ip,
-//       port: port,
-//     });
+const getServerOmpExtraInfo = async (
+  ip: string,
+  port: number,
+  listType: ListType
+) => {
+  ompExtraInfoLastCheck[`${ip}:${port}`] = Date.now();
 
-//     let server = getServerFromList(ip, port, listType);
-//     if (server) {
-//       if (
-//         serverOmpStatus === "no_data" ||
-//         JSON.parse(serverOmpStatus).isOmp == undefined
-//       ) {
-//         server = { ...server, usingOmp: false };
-//         updateServerEveryWhere(server);
-//         return;
-//       }
+  try {
+    const serverOmpExtraInfo = await invoke<string>(
+      "request_server_omp_extra_info",
+      {
+        ip: ip,
+        port: port,
+      }
+    );
 
-//       if (!server.usingOmp) {
-//         server = {
-//           ...server,
-//           usingOmp: JSON.parse(serverOmpStatus).isOmp as boolean,
-//         };
-//         updateServerEveryWhere(server);
-//       }
-//     }
-//   } catch (e) {}
-// };
+    console.log(serverOmpExtraInfo);
+
+    let server = getServerFromList(ip, port, listType);
+    if (server) {
+      if (serverOmpExtraInfo === "no_data") {
+        return;
+      }
+
+      const data = JSON.parse(serverOmpExtraInfo);
+      if (data) {
+        server = {
+          ...server,
+          omp: {
+            bannerLight:
+              data.light_banner_url && data.light_banner_url.length
+                ? data.light_banner_url
+                : undefined,
+            bannerDark:
+              data.dark_banner_url && data.dark_banner_url.length
+                ? data.dark_banner_url
+                : undefined,
+            discordInvite:
+              data.discord_link && data.discord_link.length
+                ? data.discord_link
+                : undefined,
+          },
+        };
+        updateServerEveryWhere(server);
+      }
+    }
+  } catch (e) {}
+};
 
 const getServerPing = async (ip: string, port: number, listType: ListType) => {
   try {

@@ -26,7 +26,8 @@ export interface Server {
   players: Player[];
   password: string;
   omp?: {
-    banner?: string;
+    bannerLight?: string;
+    bannerDark?: string;
     discordInvite?: string;
     discordStatus?: {
       appId: string;
