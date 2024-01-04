@@ -5,6 +5,7 @@ import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 import { Player } from "../../../utils/types";
 import { useServers } from "../../../states/servers";
+import { useMemo } from "react";
 
 interface IProps {
   players: Player[];
@@ -13,6 +14,37 @@ interface IProps {
 const PlayerList = (props: IProps) => {
   const { theme, themeType } = useTheme();
   const { selected } = useServers();
+
+  const bannerUrl = useMemo(() => {
+    if (selected) {
+      if (selected.omp) {
+        const dark = selected.omp.bannerDark;
+        const light = selected.omp.bannerLight;
+        if (themeType === "dark") {
+          if (dark) {
+            return dark;
+          } else {
+            if (light) {
+              return light;
+            } else {
+              return "";
+            }
+          }
+        } else {
+          if (light) {
+            return light;
+          } else {
+            if (dark) {
+              return dark;
+            } else {
+              return "";
+            }
+          }
+        }
+      }
+    }
+    return "";
+  }, [selected?.omp, themeType]);
 
   const renderPlayer = ({
     item: player,
@@ -86,7 +118,7 @@ const PlayerList = (props: IProps) => {
           padding: sc(15),
           paddingTop: sc(15),
           borderRadius: 5,
-          height: selected?.omp && selected.omp.banner ? "46%" : "51%",
+          height: bannerUrl.length ? "46%" : "51%",
         }}
       >
         <FlatList
