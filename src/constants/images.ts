@@ -1,5 +1,5 @@
 export const images = {
-  logoDark: "logo-dark-trans.png",
+  logoDark: "logo-dark-trans.svg",
   icons: {
     settings: "icons/settings.svg",
     info: "icons/info.png",

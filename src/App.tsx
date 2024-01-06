@@ -1,9 +1,14 @@
 import { invoke, process } from "@tauri-apps/api";
-import { appWindow, type PhysicalSize } from "@tauri-apps/api/window";
+import {
+  LogicalSize,
+  appWindow,
+  type PhysicalSize,
+} from "@tauri-apps/api/window";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
+import LoadingScreen from "./containers/LoadingScreen";
 import MainView from "./containers/MainBody";
 import MessageBox from "./containers/MessageBox";
 import NavBar from "./containers/NavBar";
@@ -23,10 +28,12 @@ import {
 import { sc } from "./utils/sizeScaler";
 
 const App = () => {
-  const [maximized, setMaximized] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [maximized, setMaximized] = useState(false);
   const { theme } = useTheme();
   const { language, shouldUpdateDiscordStatus } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
+  const mainWindowSize = useRef<LogicalSize>();
 
   const windowResizeListener = useCallback(
     debounce(async ({ payload }: { payload: PhysicalSize }) => {
@@ -40,6 +47,23 @@ const App = () => {
     }, 50),
     []
   );
+
+  const initializeApp = async () => {
+    invoke("toggle_drpc", {
+      toggle: shouldUpdateDiscordStatus,
+    });
+    fetchServers();
+    fetchUpdateInfo();
+    generateLanguageFilters();
+
+    mainWindowSize.current = (await appWindow.innerSize()).toLogical(
+      await appWindow.scaleFactor()
+    );
+    // Set window attributes for loading screen
+    appWindow.setResizable(false);
+    appWindow.setSize(new LogicalSize(250, 300));
+    appWindow.center();
+  };
 
   useEffect(() => {
     i18n.changeLanguage(language);
@@ -61,18 +85,30 @@ const App = () => {
       killResizeListener = await appWindow.onResized(windowResizeListener);
     };
 
-    invoke("toggle_drpc", {
-      toggle: shouldUpdateDiscordStatus,
-    });
-    fetchServers();
-    fetchUpdateInfo();
     setupListeners();
-    generateLanguageFilters();
+    initializeApp();
 
     return () => {
       if (killResizeListener) killResizeListener();
     };
   }, []);
+
+  if (loading) {
+    return (
+      <LoadingScreen
+        onEnd={async () => {
+          await appWindow.setResizable(true);
+          await appWindow.setSize(
+            mainWindowSize.current
+              ? mainWindowSize.current
+              : new LogicalSize(1000, 700)
+          );
+          await appWindow.center();
+          setLoading(false);
+        }}
+      />
+    );
+  }
 
   return (
     <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>

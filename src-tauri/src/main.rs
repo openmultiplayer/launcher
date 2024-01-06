@@ -8,7 +8,11 @@ mod query;
 mod samp;
 
 use log::LevelFilter;
+use md5::compute;
 use runas;
+use sevenz_rust::decompress_file;
+use std::fs::File;
+use std::io::Read;
 use std::time::Instant;
 use tauri::Manager;
 use tauri::PhysicalSize;
@@ -130,11 +134,36 @@ fn toggle_drpc(toggle: bool) -> () {
     discord::toggle_drpc(toggle);
 }
 
+#[tauri::command]
+fn get_checksum_of_files(list: Vec<&str>) -> Vec<String> {
+    let mut result = Vec::<String>::new();
+    for file in list {
+        let mut f = File::open(file).unwrap();
+        let mut contents = Vec::<u8>::new();
+        f.read_to_end(&mut contents).unwrap();
+        let digest = compute(&contents.as_slice());
+        let mut combine = file.to_string().to_owned();
+        combine.push_str("|");
+        combine.push_str(format!("{:x}", digest).as_str());
+        result.push(combine);
+    }
+    result
+}
+
+#[tauri::command]
+fn extract_7z(path: &str, output_path: &str) -> Result<String, String> {
+    match decompress_file(path, output_path) {
+        Ok(_) => Ok("success".to_string()),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
 fn main() {
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
     discord::initialize_drpc();
     tauri::Builder::default()
+        .plugin(tauri_plugin_upload::init())
         .setup(|app| {
             let main_window = app.get_window("main").unwrap();
             main_window
@@ -154,6 +183,8 @@ fn main() {
             rerun_as_admin,
             get_samp_favorite_list,
             toggle_drpc,
+            get_checksum_of_files,
+            extract_7z,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

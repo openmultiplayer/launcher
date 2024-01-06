@@ -13,6 +13,9 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "path": {
+        "all": true
+      },
       "window": {
         "all": true
       },
@@ -23,6 +26,7 @@
         "all": true
       },
       "fs": {
+        "all": true,
         "scope": ["**"],
         "exists": true
       },
