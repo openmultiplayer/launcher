@@ -13,7 +13,7 @@ import { images } from "../../constants/images";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
-import { startGame } from "../../utils/helpers";
+import { startGame } from "../../utils/game";
 import { sc } from "../../utils/sizeScaler";
 
 const JoinServerPrompt = () => {

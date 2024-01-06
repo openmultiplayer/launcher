@@ -7,7 +7,7 @@ import { useAppState } from "../../../states/app";
 import { usePersistentServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
-import { checkDirectoryValidity } from "../../../utils/helpers";
+import { checkDirectoryValidity } from "../../../utils/game";
 import { Log } from "../../../utils/logger";
 import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
