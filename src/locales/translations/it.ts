@@ -94,4 +94,7 @@ export default {
   run_as_admin: "Esegui come amministratore",
   settings_general_tab_title: "Generale",
   settings_lang_tab_title: "Lingua",
+  settings_advanced_tab_title: "Avanzate",
+  settings_advanced_discord_status: "Mostra stato su Discord",
+  join_discord: "Unisciti al Server Discord",  
 };
