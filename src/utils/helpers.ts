@@ -351,3 +351,47 @@ export const formatBytes = (bytes: number, decimals: number) => {
     i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 };
+
+export const getSampVersions = (): SAMPDLLVersions[] => {
+  return [
+    "custom",
+    "037R1_samp.dll",
+    "037R2_samp.dll",
+    "037R3_samp.dll",
+    "037R31_samp.dll",
+    "037R4_samp.dll",
+    "037R5_samp.dll",
+    "03DL_samp.dll",
+  ];
+};
+
+export const getSampVersionName = (version: SAMPDLLVersions) => {
+  switch (version) {
+    case "037R1_samp.dll":
+      return "0.3.7-R1";
+    case "037R2_samp.dll":
+      return "0.3.7-R2";
+    case "037R3_samp.dll":
+      return "0.3.7-R3";
+    case "037R31_samp.dll":
+      return "0.3.7-R3-1";
+    case "037R4_samp.dll":
+      return "0.3.7-R4";
+    case "037R5_samp.dll":
+      return "0.3.7-R5";
+    case "03DL_samp.dll":
+      return "0.3.DL";
+    case "custom":
+      return "From GTASA Folder";
+  }
+};
+
+export const getSampVersionFromName = (name: string): SAMPDLLVersions => {
+  let ret: SAMPDLLVersions = "custom";
+  getSampVersions().forEach((ver) => {
+    if (getSampVersionName(ver) === name) {
+      ret = ver;
+    }
+  });
+  return ret;
+};
