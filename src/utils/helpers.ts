@@ -50,9 +50,17 @@ export const fetchServers = async (cached: boolean = true) => {
     const { favorites } = usePersistentServers.getState();
     if (Array.isArray(favorites)) {
       // let's query servers from server list so players have updated data
-      for (let i = 0; i < favorites.length; i += 10) {
+      for (
+        let i = 0;
+        i < favorites.length;
+        i += PARALLEL_SERVERS_TO_UPDATE_COUNT
+      ) {
         setTimeout(() => {
-          for (let offset = 0; offset < 10; offset++) {
+          for (
+            let offset = 0;
+            offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
+            offset++
+          ) {
             if (favorites[i + offset]) {
               queryServer(favorites[i + offset], "favorites", "basic");
             }
@@ -67,9 +75,17 @@ export const fetchServers = async (cached: boolean = true) => {
     Log.debug(response);
     if (Array.isArray(response.servers)) {
       // let's query servers from server list so players have updated data
-      for (let i = 0; i < response.servers.length; i += 15) {
+      for (
+        let i = 0;
+        i < response.servers.length;
+        i += PARALLEL_SERVERS_TO_UPDATE_COUNT
+      ) {
         setTimeout(() => {
-          for (let offset = 0; offset < 15; offset++) {
+          for (
+            let offset = 0;
+            offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
+            offset++
+          ) {
             if (response.servers[i + offset])
               queryServer(response.servers[i + offset], "internet", "basic");
           }
