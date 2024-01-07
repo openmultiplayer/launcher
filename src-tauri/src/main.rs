@@ -158,6 +158,11 @@ fn extract_7z(path: &str, output_path: &str) -> Result<String, String> {
     }
 }
 
+#[tauri::command]
+fn copy_files_to_gtasa(src: &str, gtasa_dir: &str) -> Result<(), String> {
+    helpers::copy_files(src, gtasa_dir)
+}
+
 fn main() {
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
@@ -185,6 +190,7 @@ fn main() {
             toggle_drpc,
             get_checksum_of_files,
             extract_7z,
+            copy_files_to_gtasa,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
