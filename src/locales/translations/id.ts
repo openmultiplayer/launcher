@@ -74,7 +74,7 @@ export default {
   cancel: "Batal",
   gta_path_modal_cant_find_samp_title: "Tidak dapat menemukan SA-MP!",
   gta_path_modal_cant_find_samp_description:
-    'Tidak dapat menemukan instalasi SA-MP di direktori ini:\n  - "{{ path }}"\nTidak dapat menemukan path "samp.dll" direktori yang anda berikan.\n\nJika anda tidak\' mempunyai SA-MP, anda dapat mengunduhnya dari https://sa-mp.mp/ dengan mengklik **Download**.',
+    'Tidak dapat menemukan instalasi SA-MP di direktori ini:\n  - "{{ path }}"\nTidak dapat menemukan path "samp.dll" direktori yang anda berikan.\n',
   notification_add_to_favorites_title: "Telah ditambahkan ke list Favorit!",
   notification_add_to_favorites_description:
     "{{ server }} telah ditambahkan ke list Favorit Anda.",

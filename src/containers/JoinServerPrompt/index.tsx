@@ -6,6 +6,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
+import DropdownList from "../../components/DropdownList";
 import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
@@ -13,7 +14,17 @@ import { images } from "../../constants/images";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
-import { startGame } from "../../utils/helpers";
+import {
+  checkResourceFilesAvailability,
+  copySharedFilesIntoGameFolder,
+  startGame,
+} from "../../utils/game";
+import {
+  getSampVersionFromName,
+  getSampVersionName,
+  getSampVersions,
+} from "../../utils/helpers";
+import { Log } from "../../utils/logger";
 import { sc } from "../../utils/sizeScaler";
 
 const JoinServerPrompt = () => {
@@ -21,7 +32,8 @@ const JoinServerPrompt = () => {
   const { height, width } = useWindowDimensions();
   const { theme } = useTheme();
   const [password, setPassword] = useState("");
-  const { nickName, gtasaPath, setNickName } = useSettings();
+  const { nickName, gtasaPath, setNickName, sampVersion, setSampVersion } =
+    useSettings();
 
   useEffect(() => {
     setPassword(server && server.password ? server.password : "");
@@ -31,7 +43,7 @@ const JoinServerPrompt = () => {
     return null;
   }
 
-  const HEIGHT = server?.hasPassword ? 285 : 227;
+  const HEIGHT = server?.hasPassword ? 316 : 248;
   const WIDTH = 320;
 
   return (
@@ -53,7 +65,6 @@ const JoinServerPrompt = () => {
           shadowOpacity: 0.9,
           shadowRadius: 10,
           alignItems: "center",
-          overflow: "hidden",
           paddingVertical: sc(11),
         }}
       >
@@ -143,23 +154,17 @@ const JoinServerPrompt = () => {
         </View>
         <TouchableOpacity
           style={{
+            top: sc(52),
             width: 300,
             height: sc(38),
             backgroundColor: theme.primary,
             borderRadius: sc(5),
             justifyContent: "center",
             alignItems: "center",
-            marginTop: sc(10),
           }}
           onPress={() => {
             if (server) {
-              startGame(
-                server,
-                nickName,
-                gtasaPath,
-                `${gtasaPath}/samp.dll`,
-                password
-              );
+              startGame(server, nickName, gtasaPath, password);
               showPrompt(false);
             }
           }}
@@ -168,6 +173,43 @@ const JoinServerPrompt = () => {
             {t("connect")}
           </Text>
         </TouchableOpacity>
+        <View
+          style={{
+            top: -sc(28),
+            width: 300,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Text semibold color={theme.textPrimary} size={2}>
+            {t("samp_verison")}:
+          </Text>
+          <DropdownList
+            style={{
+              marginLeft: sc(10),
+              height: sc(30),
+              flex: 1,
+              backgroundColor: theme.textInputBackgroundColor,
+            }}
+            value={getSampVersionName(sampVersion)}
+            items={getSampVersions().map((version) =>
+              getSampVersionName(version)
+            )}
+            onChange={async (value) => {
+              const version = getSampVersionFromName(value);
+              setSampVersion(version);
+              if (version !== "custom") {
+                const checks = await checkResourceFilesAvailability();
+                if (checks.includes(false)) {
+                  Log.debug(
+                    "Failed file validation, let's copy files into GTASA directory"
+                  );
+                  await copySharedFilesIntoGameFolder();
+                }
+              }
+            }}
+          />
+        </View>
         <TouchableOpacity
           style={{
             position: "absolute",
@@ -175,6 +217,7 @@ const JoinServerPrompt = () => {
             right: sc(15),
             height: sc(20),
             width: sc(20),
+            zIndex: 0,
           }}
           onPress={() => showPrompt(false)}
         >

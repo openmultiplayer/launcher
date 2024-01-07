@@ -380,6 +380,11 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
+"@tauri-apps/api@1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-1.5.3.tgz#f7b362b1f30aadb0a8bbeb7ae111755c0ed33d73"
+  integrity sha512-zxnDjHHKjOsrIzZm6nO5Xapb/BxqUq1tc7cGkFXsFkGTsSWgCPH1D8mm0XS9weJY2OaR73I3k3S+b7eSzJDfqA==
+
 "@tauri-apps/api@^1.4.0":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-1.5.1.tgz#9074476c4323f71351db624e9711c99277cdfb99"
@@ -1344,6 +1349,12 @@ supports-color@^7.1.0:
   integrity sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==
   dependencies:
     has-flag "^4.0.0"
+
+"tauri-plugin-upload-api@https://github.com/tauri-apps/tauri-plugin-upload#v1":
+  version "0.0.0"
+  resolved "https://github.com/tauri-apps/tauri-plugin-upload#7b97b5c04838922a8b69892b3e39219d5b42835e"
+  dependencies:
+    "@tauri-apps/api" "1.5.3"
 
 tmp@^0.0.33:
   version "0.0.33"

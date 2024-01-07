@@ -73,7 +73,7 @@ export default {
   cancel: "Otkaži",
   gta_path_modal_cant_find_samp_title: "SA-MP nije pronađen!",
   gta_path_modal_cant_find_samp_description:
-    'SA-MP instalacija nije pronađena u ovom direktoriju:\n  - "{{ path }}"\n"samp.dll" nije pronađen u datom direktoriju.\n\nAko nemaš instaliran SA-MP, možeš ga skinuti sa https://sa-mp.mp/ klikom na **Skini**',
+    'SA-MP instalacija nije pronađena u ovom direktoriju:\n  - "{{ path }}"\n"samp.dll" nije pronađen u datom direktoriju.\n',
   notification_add_to_favorites_title: "Dodan u Favorite!",
   notification_add_to_favorites_description:
     "{{ server }} je dodan u tvoju listu favorita.",

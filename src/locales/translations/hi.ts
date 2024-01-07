@@ -73,7 +73,7 @@ export default {
   cancel: "रद्द करें",
   gta_path_modal_cant_find_samp_title: "SA-MP नहीं मिल सका!",
   gta_path_modal_cant_find_samp_description:
-    'इस निर्देशिका में SA-MP संस्थापन नहीं मिल सका:\n  - "{{ path }}"\nआपके दिए गए पथ में "samp.dll" ढूँढने में असमर्थ।\n\nयदि आपके पास SA-MP स्थापित नहीं है, आप https://sa-mp.mp/ से डाउनलोड कर सकते हैं। इसे क्लिक करें **डाउनलोड**.',
+    'इस निर्देशिका में SA-MP संस्थापन नहीं मिल सका:\n  - "{{ path }}"\nआपके दिए गए पथ में "samp.dll" ढूँढने में असमर्थ।\n',
   notification_add_to_favorites_title: "पसंदीदा में जोड़ा गया!",
   notification_add_to_favorites_description:
     "{{ server }} आपकी पसंदीदा सूची में जोड़ा गया।",

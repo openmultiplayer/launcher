@@ -72,7 +72,7 @@ export default {
   cancel: "Cancel",
   gta_path_modal_cant_find_samp_title: "Can't find SA-MP!",
   gta_path_modal_cant_find_samp_description:
-    'Can not find SA-MP installation in this directory:\n  - "{{ path }}"\nUnable to find "samp.dll" in your given path.\n\nIf you don\'t have SA-MP installed, you can download it from https://sa-mp.mp/ by clicking **Download**.',
+    'Can not find SA-MP installation in this directory:\n  - "{{ path }}"\nUnable to find "samp.dll" in your given path.\n',
   notification_add_to_favorites_title: "Added to Favorites!",
   notification_add_to_favorites_description:
     "{{ server }} has been added to your favorite list.",
@@ -91,4 +91,6 @@ export default {
   settings_advanced_tab_title: "Advanced",
   settings_advanced_discord_status: "Enable Discord status",
   join_discord: "Join Discord Server",
+  samp_verison: "SA-MP Version",
+  change_version: "Change Version",
 };

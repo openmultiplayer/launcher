@@ -1,17 +1,15 @@
-import { invoke, process, shell } from "@tauri-apps/api";
+import { shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
-import { exists } from "@tauri-apps/api/fs";
 import { type } from "@tauri-apps/api/os";
 import { t } from "i18next";
 import { getCachedList, getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
-import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
 import { usePersistentServers, useServers } from "../states/servers";
-import { useSettingsModal } from "../states/settingsModal";
 import { Log } from "./logger";
 import { queryServer } from "./query";
 import { APIResponseServer, Player, SearchData, Server } from "./types";
+import { SAMPDLLVersions } from "../states/settings";
 
 const PARALLEL_SERVERS_TO_UPDATE_COUNT = 5;
 const PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL = 2000;
@@ -135,193 +133,6 @@ export const fetchUpdateInfo = async () => {
     }
   }, 1000);
   Log.debug(response);
-};
-
-export const startGame = async (
-  server: Server,
-  nickname: string,
-  gtasaPath: string,
-  sampDllPath: string,
-  password: string
-) => {
-  const {
-    addToRecentlyJoined,
-    updateInFavoritesList,
-    updateInRecentlyJoinedList,
-  } = usePersistentServers.getState();
-  const { updateServer } = useServers.getState();
-  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
-  const { show: showSettings } = useSettingsModal.getState();
-  const { showPrompt, setServer } = useJoinServerPrompt.getState();
-
-  if (password.length) {
-    const srvCpy = { ...server };
-    srvCpy.password = password;
-
-    updateServer(srvCpy);
-    updateInFavoritesList(srvCpy);
-    updateInRecentlyJoinedList(srvCpy);
-  }
-
-  if (!gtasaPath || gtasaPath.length < 1) {
-    showMessageBox({
-      title: t("gta_path_modal_path_not_set_title"),
-      description: t("gta_path_modal_path_not_set_description"),
-      buttons: [
-        {
-          title: t("open_settings"),
-          onPress: () => {
-            showPrompt(false);
-            showSettings();
-            hideMessageBox();
-          },
-        },
-        {
-          title: t("cancel"),
-          onPress: () => {
-            showPrompt(true);
-            setServer(server);
-            hideMessageBox();
-          },
-        },
-      ],
-    });
-    return;
-  }
-
-  if (!nickname || nickname.length < 1) {
-    showMessageBox({
-      title: t("nickname_modal_name_not_set_title"),
-      description: t("nickname_modal_name_not_set_description"),
-      buttons: [
-        {
-          title: "Okay",
-          onPress: () => {
-            showPrompt(true);
-            setServer(server);
-            hideMessageBox();
-          },
-        },
-      ],
-    });
-    return;
-  }
-
-  const dirValidity = await checkDirectoryValidity(gtasaPath, () => {
-    showPrompt(true);
-    setServer(server);
-  });
-
-  if (!dirValidity) {
-    return;
-  }
-
-  invoke("inject", {
-    name: nickname,
-    ip: server.ip,
-    port: server.port,
-    exe: gtasaPath,
-    dll: sampDllPath,
-    password: password,
-  })
-    .then(() => {
-      addToRecentlyJoined(server);
-    })
-    .catch(async (e) => {
-      if (e == "need_admin") {
-        showMessageBox({
-          title: t("admin_permissions_required_modal_title"),
-          description: t("admin_permissions_required_modal_description"),
-          buttons: [
-            {
-              title: t("run_as_admin"),
-              onPress: async () => {
-                await invoke("rerun_as_admin").then(() => {
-                  process.exit();
-                });
-              },
-            },
-            {
-              title: t("cancel"),
-              onPress: () => hideMessageBox(),
-            },
-          ],
-        });
-      }
-    });
-};
-
-export const checkDirectoryValidity = async (
-  path: string,
-  onFail?: () => void
-) => {
-  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
-  const { show: showSettings } = useSettingsModal.getState();
-  const { showPrompt } = useJoinServerPrompt.getState();
-
-  const gtasaExists = await exists(path + "/gta_sa.exe");
-  if (!gtasaExists) {
-    showMessageBox({
-      title: t("gta_path_modal_cant_find_game_title"),
-      description: t("gta_path_modal_cant_find_game_description", {
-        path: path,
-      }),
-      boxWidth: 360,
-      buttonWidth: 150,
-      buttons: [
-        {
-          title: t("open_settings"),
-          onPress: () => {
-            showPrompt(false);
-            showSettings();
-            hideMessageBox();
-          },
-        },
-        {
-          title: t("cancel"),
-          onPress: () => {
-            if (onFail) {
-              onFail();
-            }
-            hideMessageBox();
-          },
-        },
-      ],
-    });
-    return false;
-  }
-
-  const sampExists = await exists(path + "/samp.dll");
-  if (!sampExists) {
-    showMessageBox({
-      title: t("gta_path_modal_cant_find_samp_title"),
-      description: t("gta_path_modal_cant_find_samp_description", {
-        path: path,
-      }),
-      boxWidth: 360,
-      buttonWidth: 150,
-      buttons: [
-        {
-          title: t("download"),
-          onPress: () => {
-            shell.open("https://sa-mp.mp/downloads/");
-          },
-        },
-        {
-          title: t("cancel"),
-          onPress: () => {
-            if (onFail) {
-              onFail();
-            }
-            hideMessageBox();
-          },
-        },
-      ],
-    });
-    return false;
-  }
-
-  return true;
 };
 
 export const validateServerAddress = (address: string) => {
@@ -531,4 +342,57 @@ export const checkLanguage = (lang: string | undefined, filter: string) => {
   return find.keywords.some((keyword) =>
     lang?.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
   );
+};
+
+export const formatBytes = (bytes: number, decimals: number) => {
+  if (bytes == 0) return "0 Bytes";
+  var k = 1024,
+    dm = decimals || 2,
+    sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
+    i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+};
+
+export const getSampVersions = (): SAMPDLLVersions[] => {
+  return [
+    "custom",
+    "037R1_samp.dll",
+    "037R2_samp.dll",
+    "037R3_samp.dll",
+    "037R31_samp.dll",
+    "037R4_samp.dll",
+    "037R5_samp.dll",
+    "03DL_samp.dll",
+  ];
+};
+
+export const getSampVersionName = (version: SAMPDLLVersions) => {
+  switch (version) {
+    case "037R1_samp.dll":
+      return "0.3.7-R1";
+    case "037R2_samp.dll":
+      return "0.3.7-R2";
+    case "037R3_samp.dll":
+      return "0.3.7-R3";
+    case "037R31_samp.dll":
+      return "0.3.7-R3-1";
+    case "037R4_samp.dll":
+      return "0.3.7-R4";
+    case "037R5_samp.dll":
+      return "0.3.7-R5";
+    case "03DL_samp.dll":
+      return "0.3.DL";
+    case "custom":
+      return "From GTASA Folder";
+  }
+};
+
+export const getSampVersionFromName = (name: string): SAMPDLLVersions => {
+  let ret: SAMPDLLVersions = "custom";
+  getSampVersions().forEach((ver) => {
+    if (getSampVersionName(ver) === name) {
+      ret = ver;
+    }
+  });
+  return ret;
 };

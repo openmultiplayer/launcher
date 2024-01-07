@@ -9,7 +9,7 @@ import { useContextMenu } from "../../states/contextMenu";
 import { usePersistentServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
-import { startGame } from "../../utils/helpers";
+import { startGame } from "../../utils/game";
 import { sc } from "../../utils/sizeScaler";
 
 const ContextMenu = () => {
@@ -79,13 +79,7 @@ const ContextMenu = () => {
             onHoverIn={() => setConnectBtnBgCol(theme.primary)}
             onHoverOut={() => setConnectBtnBgCol(theme.secondary)}
             onPress={() => {
-              startGame(
-                server,
-                nickName,
-                gtasaPath,
-                `${gtasaPath}/samp.dll`,
-                ""
-              );
+              startGame(server, nickName, gtasaPath, "");
               hide();
             }}
             style={{

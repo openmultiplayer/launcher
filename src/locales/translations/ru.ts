@@ -73,7 +73,7 @@ export default {
   cancel: "Отмена",
   gta_path_modal_cant_find_samp_title: "SA-MP не найден!",
   gta_path_modal_cant_find_samp_description:
-    'Не удается найти SA-MP в этой папке:\n  - "{{ path }}"\nОтсутствует "samp.dll" по указанному пути.\n\nЕсли у вас не установлен SA-MP, вы можете загрузить его здесь https://sa-mp.mp/ нажав **Загрузить**.',
+    'Не удается найти SA-MP в этой папке:\n  - "{{ path }}"\nОтсутствует "samp.dll" по указанному пути.\n',
   notification_add_to_favorites_title: "Добавлено в избранные!",
   notification_add_to_favorites_description:
     "{{ server }} добавлен в ваш список избранных.",

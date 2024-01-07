@@ -76,7 +76,7 @@ export default {
   cancel: "Kanselahin",
   gta_path_modal_cant_find_samp_title: "Hindi Makita ang SA-MP!",
   gta_path_modal_cant_find_samp_description:
-    'Hindi mahanap ang instalasyon ng SA-MP sa direktoryong ito:\n  - "{{ path }}"\nHindi makita ang "samp.dll" sa iyong ibinigay na landas.\n\nKung wala kang SA-MP na naka-install, maaari mong i-download ito mula sa https://sa-mp.mp/ sa pamamagitan ng pag-click sa **I-download**.',
+    'Hindi mahanap ang instalasyon ng SA-MP sa direktoryong ito:\n  - "{{ path }}"\nHindi makita ang "samp.dll" sa iyong ibinigay na landas.\n',
   notification_add_to_favorites_title: "Idinagdag sa Paborito!",
   notification_add_to_favorites_description:
     "Ang {{ server }} ay idinagdag sa iyong listahan ng paborito.",

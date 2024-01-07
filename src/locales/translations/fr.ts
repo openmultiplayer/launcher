@@ -79,7 +79,7 @@ export default {
   cancel: "Annuler",
   gta_path_modal_cant_find_samp_title: "Impossible de trouver SA-MP !",
   gta_path_modal_cant_find_samp_description:
-    'Impossible de trouver l\'installation de SA-MP dans ce répertoire :\n  - "{{ path }}"\nImpossible de trouver "samp.dll" dans le chemin spécifié.\n\nSi vous n\'avez pas installé SA-MP, vous pouvez le télécharger depuis https://sa-mp.mp/ en cliquant sur **Télécharger**.',
+    'Impossible de trouver l\'installation de SA-MP dans ce répertoire :\n  - "{{ path }}"\nImpossible de trouver "samp.dll" dans le chemin spécifié.\n.',
   notification_add_to_favorites_title: "Ajouté aux favoris !",
   notification_add_to_favorites_description:
     "{{ server }} a été ajouté à votre liste de favoris.",
