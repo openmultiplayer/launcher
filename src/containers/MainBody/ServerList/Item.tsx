@@ -63,7 +63,7 @@ const ServerItem = memo((props: IProps) => {
     showPrompt(true);
   };
 
-  const getServerIconColor = () => {
+  const getServerStatusIconColor = () => {
     if (server.hasPassword) {
       return "#eb4034";
     } else if (server.ping < 9999) {
@@ -73,13 +73,23 @@ const ServerItem = memo((props: IProps) => {
     }
   };
 
-  const getServerIconViewBackgroundColor = () => {
+  const getServerStatusIconViewBackgroundColor = () => {
     if (server.hasPassword) {
-      return "#eb40343b";
+      return "#eb40343A";
     } else if (server.ping < 9999) {
       return "#7AF1AA1A";
     } else {
       return theme.itemBackgroundColor;
+    }
+  };
+
+  const getServerStatusIconTitle = () => {
+    if (server.hasPassword) {
+      return t("locked");
+    } else if (server.ping < 9999) {
+      return t("unlocked");
+    } else {
+      return "Offline";
     }
   };
 
@@ -116,18 +126,18 @@ const ServerItem = memo((props: IProps) => {
           style={[
             styles.iconContainer,
             {
-              backgroundColor: getServerIconViewBackgroundColor(),
+              backgroundColor: getServerStatusIconViewBackgroundColor(),
             },
           ]}
         >
           <Icon
             svg
-            title={server.hasPassword ? t("locked") : t("unlocked")}
+            title={getServerStatusIconTitle()}
             image={
               server.hasPassword ? images.icons.locked : images.icons.unlocked
             }
             size={sc(20)}
-            color={getServerIconColor()}
+            color={getServerStatusIconColor()}
           />
         </View>
         <View
