@@ -52,51 +52,51 @@ export const mapAPIResponseServerListToAppStructure = (
 
 export const fetchServers = async (cached: boolean = true) => {
   if (cached) {
-    const { favorites } = usePersistentServers.getState();
-    if (Array.isArray(favorites)) {
-      // let's query servers from server list so players have updated data
-      for (
-        let i = 0;
-        i < favorites.length;
-        i += PARALLEL_SERVERS_TO_UPDATE_COUNT
-      ) {
-        setTimeout(() => {
-          for (
-            let offset = 0;
-            offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
-            offset++
-          ) {
-            if (favorites[i + offset]) {
-              queryServer(favorites[i + offset], "favorites", "basic");
-            }
-          }
-        }, 500 + (i % PARALLEL_SERVERS_TO_UPDATE_COUNT) * PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL);
-      }
-    }
+    // const { favorites } = usePersistentServers.getState();
+    // if (Array.isArray(favorites)) {
+    //   // let's query servers from server list so players have updated data
+    //   for (
+    //     let i = 0;
+    //     i < favorites.length;
+    //     i += PARALLEL_SERVERS_TO_UPDATE_COUNT
+    //   ) {
+    //     setTimeout(() => {
+    //       for (
+    //         let offset = 0;
+    //         offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
+    //         offset++
+    //       ) {
+    //         if (favorites[i + offset]) {
+    //           queryServer(favorites[i + offset], "favorites", "basic");
+    //         }
+    //       }
+    //     }, 500 + (i % PARALLEL_SERVERS_TO_UPDATE_COUNT) * PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL);
+    //   }
+    // }
 
     const response = await getCachedList();
     useServers.getState().setServers(response.servers);
 
-    Log.debug(response);
-    if (Array.isArray(response.servers)) {
-      // let's query servers from server list so players have updated data
-      for (
-        let i = 0;
-        i < response.servers.length;
-        i += PARALLEL_SERVERS_TO_UPDATE_COUNT
-      ) {
-        setTimeout(() => {
-          for (
-            let offset = 0;
-            offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
-            offset++
-          ) {
-            if (response.servers[i + offset])
-              queryServer(response.servers[i + offset], "internet", "basic");
-          }
-        }, 500 + (i / PARALLEL_SERVERS_TO_UPDATE_COUNT) * PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL);
-      }
-    }
+    // Log.debug(response);
+    // if (Array.isArray(response.servers)) {
+    //   // let's query servers from server list so players have updated data
+    //   for (
+    //     let i = 0;
+    //     i < response.servers.length;
+    //     i += PARALLEL_SERVERS_TO_UPDATE_COUNT
+    //   ) {
+    //     setTimeout(() => {
+    //       for (
+    //         let offset = 0;
+    //         offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
+    //         offset++
+    //       ) {
+    //         if (response.servers[i + offset])
+    //           queryServer(response.servers[i + offset], "internet", "basic");
+    //       }
+    //     }, 500 + (i / PARALLEL_SERVERS_TO_UPDATE_COUNT) * PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL);
+    //   }
+    // }
   }
 };
 

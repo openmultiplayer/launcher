@@ -102,6 +102,7 @@ export type SAMPDLLVersions =
   | "custom";
 
 export interface PerServerSettings {
-  nickname: string;
-  sampVersion: SAMPDLLVersions;
+  ipPort: string;
+  nickname?: string;
+  sampVersion?: SAMPDLLVersions;
 }
