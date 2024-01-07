@@ -102,6 +102,7 @@ const AddThirdPartyServerModal = () => {
           placeholder={"IP:Port"}
           placeholderTextColor={theme.textPlaceholder}
           value={serverAddress}
+          onSubmitEditing={() => addServer()}
           onChangeText={(text) => setServerAddress(text)}
           style={{
             fontFamily: "Proxima Nova Regular",
