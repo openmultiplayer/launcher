@@ -74,7 +74,7 @@ export default {
   cancel: "Zrušit",
   gta_path_modal_cant_find_samp_title: "Nepodařilo se nalézt SA-MP!",
   gta_path_modal_cant_find_samp_description:
-    'Nepodařilo se nalézt nainstalované SA-MP v této složce:\n  - "{{ path }}"\nNapodařilo se nalézt "samp.dll" v zadané cestě k souboru.\n\nPokud nemáte nainstalovné SA-MP, můžete jej stáhnout na https://sa-mp.mp/ kliknutím na "Stažení".',
+    'Nepodařilo se nalézt nainstalované SA-MP v této složce:\n  - "{{ path }}"\nNapodařilo se nalézt "samp.dll" v zadané cestě k souboru.\n',
   notification_add_to_favorites_title: "Přidáno do oblíbených!",
   notification_add_to_favorites_description:
     "{{ server }} byl přidán do vašeho seznamu oblíbených.",

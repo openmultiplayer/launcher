@@ -74,7 +74,7 @@ export default {
   cancel: "İptal",
   gta_path_modal_cant_find_samp_title: "SA-MP bulunamıyor!",
   gta_path_modal_cant_find_samp_description:
-    'Bu dizinde SA-MP bulunamıyor:\n  - "{{ path }}"\nVerdiğiniz yolda "samp.dll" bulunamıyor.\n\nEğer SA-MP yüklü değilse, https://sa-mp.mp/ adresinden **İndir** seçeneğine tıklayarak indirebilirsiniz.',
+    'Bu dizinde SA-MP bulunamıyor:\n  - "{{ path }}"\nVerdiğiniz yolda "samp.dll" bulunamıyor.\n',
   notification_add_to_favorites_title: "Favorilere Eklendi!",
   notification_add_to_favorites_description:
     "{{ server }} favori listenize eklendi.",

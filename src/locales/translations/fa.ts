@@ -74,7 +74,7 @@ export default {
   cancel: "کنسل",
   gta_path_modal_cant_find_samp_title: "مسیر SA-MP پیدا نشد!",
   gta_path_modal_cant_find_samp_description:
-    'مسیر نصب SA-MP در این پوشه پیدا نشد:\n  - "{{ path }}"\nفایل "samp.dll" پیدا نشد.\n\nاگر شما سمپ را ندارید, میتوانید از طریق\nhttps://sa-mp.mp/\nورژن مورد نظر خود را دانلود کنید. یا مستقیما روی **دانلود** کلیک کنید',
+    'مسیر نصب SA-MP در این پوشه پیدا نشد:\n  - "{{ path }}"\nفایل "samp.dll" پیدا نشد.\n',
   notification_add_to_favorites_title: "به مورد علاقه ها اضافه شد!",
   notification_add_to_favorites_description:
     "سرور {{ server }} به لیست مورد علاقه های شما اضافه شدt.",
