@@ -91,4 +91,9 @@ export default {
   run_as_admin: "Pokreni kao Admin",
   settings_general_tab_title: "Generalno",
   settings_lang_tab_title: "Jezici",
+  settings_advanced_tab_title: "Napredno",
+  settings_advanced_discord_status: "Uključi Discord status",
+  join_discord: "Pridruži se Discord Serveru",
+  samp_verison: "SA-MP Verzija",
+  change_version: "Promijeni Verziju",
 };
