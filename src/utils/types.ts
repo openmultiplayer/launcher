@@ -90,3 +90,18 @@ export interface APIResponseServer {
     [x: string]: string;
   };
 }
+
+export type SAMPDLLVersions =
+  | "037R1_samp.dll"
+  | "037R2_samp.dll"
+  | "037R3_samp.dll"
+  | "037R31_samp.dll"
+  | "037R4_samp.dll"
+  | "037R5_samp.dll"
+  | "03DL_samp.dll"
+  | "custom";
+
+export interface PerServerSettings {
+  nickname: string;
+  sampVersion: SAMPDLLVersions;
+}

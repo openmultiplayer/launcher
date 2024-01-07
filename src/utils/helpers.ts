@@ -8,8 +8,13 @@ import { useMessageBox } from "../states/messageModal";
 import { usePersistentServers, useServers } from "../states/servers";
 import { Log } from "./logger";
 import { queryServer } from "./query";
-import { APIResponseServer, Player, SearchData, Server } from "./types";
-import { SAMPDLLVersions } from "../states/settings";
+import {
+  APIResponseServer,
+  Player,
+  SAMPDLLVersions,
+  SearchData,
+  Server,
+} from "./types";
 
 const PARALLEL_SERVERS_TO_UPDATE_COUNT = 5;
 const PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL = 2000;
