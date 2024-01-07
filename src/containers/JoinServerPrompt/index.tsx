@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -26,14 +26,43 @@ import {
 } from "../../utils/helpers";
 import { Log } from "../../utils/logger";
 import { sc } from "../../utils/sizeScaler";
+import { usePersistentServers } from "../../states/servers";
+import { SAMPDLLVersions } from "../../utils/types";
 
 const JoinServerPrompt = () => {
   const { visible, server, showPrompt } = useJoinServerPrompt();
+  const { getServerSettings, setServerSettings, perServerSettings } =
+    usePersistentServers();
   const { height, width } = useWindowDimensions();
   const { theme } = useTheme();
   const [password, setPassword] = useState("");
-  const { nickName, gtasaPath, setNickName, sampVersion, setSampVersion } =
-    useSettings();
+  const [perServerVersion, setPerServerVersion] = useState<
+    SAMPDLLVersions | undefined
+  >();
+  const [perServerNickname, setPerServerNickname] = useState("");
+  const { nickName, gtasaPath, sampVersion, setSampVersion } = useSettings();
+
+  const settings = useMemo(() => {
+    if (server) {
+      return getServerSettings(server);
+    }
+    return undefined;
+  }, [server, perServerSettings]);
+
+  useEffect(() => {
+    if (settings) {
+      if (settings.nickname !== undefined) {
+        setPerServerNickname(settings.nickname);
+      }
+
+      if (settings.sampVersion !== undefined) {
+        setPerServerVersion(settings.sampVersion);
+      }
+    } else {
+      setPerServerNickname("");
+      setPerServerVersion(undefined);
+    }
+  }, [settings]);
 
   useEffect(() => {
     setPassword(server && server.password ? server.password : "");
@@ -135,15 +164,26 @@ const JoinServerPrompt = () => {
           <TextInput
             placeholderTextColor={theme.textPlaceholder}
             placeholder={t("server_join_prompt_nickname_input_placeholder")}
-            value={nickName}
-            onChangeText={(text) => setNickName(text)}
+            value={perServerNickname.length ? perServerNickname : nickName}
+            onChangeText={(text) => {
+              if (server) {
+                if (settings) {
+                  setServerSettings(server, text, settings.sampVersion);
+                } else {
+                  setServerSettings(server, text, undefined);
+                }
+              }
+            }}
             style={{
               fontFamily: "Proxima Nova Regular",
               fontSize: sc(17),
-              color: theme.textPrimary,
+              color: perServerNickname.length
+                ? theme.textPrimary
+                : `${theme.textPrimary}BB`,
               paddingHorizontal: sc(10),
               width: 300,
               marginTop: sc(5),
+              fontStyle: perServerNickname.length ? "normal" : "italic",
               backgroundColor: theme.textInputBackgroundColor,
               height: sc(38),
               borderRadius: sc(5),
@@ -164,7 +204,12 @@ const JoinServerPrompt = () => {
           }}
           onPress={() => {
             if (server) {
-              startGame(server, nickName, gtasaPath, password);
+              startGame(
+                server,
+                perServerNickname.length ? perServerNickname : nickName,
+                gtasaPath,
+                password
+              );
               showPrompt(false);
             }
           }}
@@ -191,7 +236,9 @@ const JoinServerPrompt = () => {
               flex: 1,
               backgroundColor: theme.textInputBackgroundColor,
             }}
-            value={getSampVersionName(sampVersion)}
+            value={getSampVersionName(
+              perServerVersion ? perServerVersion : sampVersion
+            )}
             items={getSampVersions().map((version) =>
               getSampVersionName(version)
             )}

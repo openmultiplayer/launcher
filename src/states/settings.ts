@@ -1,15 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-
-export type SAMPDLLVersions =
-  | "037R1_samp.dll"
-  | "037R2_samp.dll"
-  | "037R3_samp.dll"
-  | "037R31_samp.dll"
-  | "037R4_samp.dll"
-  | "037R5_samp.dll"
-  | "03DL_samp.dll"
-  | "custom";
+import { SAMPDLLVersions } from "../utils/types";
 
 interface SettingsPersistentState {
   nickName: string;
@@ -38,3 +29,4 @@ const useSettings = create<SettingsPersistentState>()(
 );
 
 export { useSettings };
+

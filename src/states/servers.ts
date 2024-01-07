@@ -1,7 +1,7 @@
 import { t } from "i18next";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { Server } from "../utils/types";
+import { PerServerSettings, SAMPDLLVersions, Server } from "../utils/types";
 import { useNotification } from "./notification";
 import { queryServer } from "../utils/query";
 
@@ -16,6 +16,7 @@ interface ServersState {
 interface ServersPersistentState {
   favorites: Server[];
   recentlyJoined: Server[];
+  perServerSettings: PerServerSettings[];
   setFavoritesList: (list: Server[]) => void;
   updateInFavoritesList: (server: Server) => void;
   addToFavorites: (server: Server) => void;
@@ -23,6 +24,12 @@ interface ServersPersistentState {
   addToRecentlyJoined: (address: Server) => void;
   clearRecentlyJoined: () => void;
   updateInRecentlyJoinedList: (server: Server) => void;
+  setServerSettings: (
+    server: Server,
+    nickname: string | undefined,
+    version: SAMPDLLVersions | undefined
+  ) => void;
+  getServerSettings: (server: Server) => PerServerSettings | undefined;
 }
 
 const useServers = create<ServersState>()((set, get) => ({
@@ -50,6 +57,7 @@ const usePersistentServers = create<ServersPersistentState>()(
     (set, get) => ({
       favorites: [],
       recentlyJoined: [],
+      perServerSettings: [],
       setFavoritesList: (list) => set({ favorites: list }),
       updateInFavoritesList: (server) =>
         set(() => {
@@ -141,6 +149,41 @@ const usePersistentServers = create<ServersPersistentState>()(
 
           return { recentlyJoined: list };
         }),
+      setServerSettings: (server, nickname, version) =>
+        set(() => {
+          const list = [...get().perServerSettings];
+
+          const index = list.findIndex(
+            (srv) => srv.ipPort === `${server.ip}:${server.port}`
+          );
+          if (index !== -1) {
+            list[index] = {
+              ipPort: `${server.ip}:${server.port}`,
+              nickname,
+              sampVersion: version,
+            };
+          } else {
+            list.push({
+              ipPort: `${server.ip}:${server.port}`,
+              nickname,
+              sampVersion: version,
+            });
+          }
+
+          return { perServerSettings: list };
+        }),
+      getServerSettings: (server) => {
+        const list = [...get().perServerSettings];
+
+        const index = list.findIndex(
+          (srv) => srv.ipPort === `${server.ip}:${server.port}`
+        );
+        if (index !== -1) {
+          return { ...list[index] };
+        } else {
+          return undefined;
+        }
+      },
     }),
     {
       name: "favorites-and-recentlyjoined-storage",
