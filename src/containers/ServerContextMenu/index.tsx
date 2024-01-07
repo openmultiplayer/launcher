@@ -79,13 +79,7 @@ const ContextMenu = () => {
             onHoverIn={() => setConnectBtnBgCol(theme.primary)}
             onHoverOut={() => setConnectBtnBgCol(theme.secondary)}
             onPress={() => {
-              startGame(
-                server,
-                nickName,
-                gtasaPath,
-                `${gtasaPath}/samp.dll`,
-                ""
-              );
+              startGame(server, nickName, gtasaPath, "");
               hide();
             }}
             style={{
