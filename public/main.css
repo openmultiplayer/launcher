@@ -190,6 +190,6 @@
   border-radius: 1000px;
 }
 
-#main-conatiner *:focus-visible {
+#main-container *:focus-visible {
   outline: none;
 }
