@@ -189,3 +189,7 @@
   bottom: 10px;
   border-radius: 1000px;
 }
+
+#main-conatiner *:focus-visible {
+  outline: none;
+}
