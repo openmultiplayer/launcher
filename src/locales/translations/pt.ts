@@ -94,4 +94,9 @@ export default {
   run_as_admin: "Executar como Administrador",
   settings_general_tab_title: "Geral",
   settings_lang_tab_title: "Idiomas",
+  settings_advanced_tab_title: "Avançado",
+  settings_advanced_discord_status: "Habilitar status no Discord",
+  join_discord: "Entrar no servidor do Discord",
+  samp_version: "Versão do SA-MP",
+  change_version: "Mudar versão",
 };

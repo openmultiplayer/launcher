@@ -227,7 +227,7 @@ const JoinServerPrompt = () => {
           }}
         >
           <Text semibold color={theme.textPrimary} size={2}>
-            {t("samp_verison")}:
+            {t("samp_version")}:
           </Text>
           <DropdownList
             style={{
