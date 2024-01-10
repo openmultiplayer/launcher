@@ -97,6 +97,6 @@ export default {
   settings_advanced_tab_title: "Avanzate",
   settings_advanced_discord_status: "Mostra stato su Discord",
   join_discord: "Unisciti su Discord",
-  samp_verison: "Versione SA-MP",
+  samp_version: "Versione SA-MP",
   change_version: "Cambia Versione",
 };
