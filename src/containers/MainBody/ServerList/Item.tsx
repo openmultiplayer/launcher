@@ -89,7 +89,7 @@ const ServerItem = memo((props: IProps) => {
     } else if (server.ping < 9999) {
       return t("unlocked");
     } else {
-      return "Offline";
+      return t("offline");
     }
   };
 

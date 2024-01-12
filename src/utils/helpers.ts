@@ -404,7 +404,7 @@ export const getSampVersionName = (version: SAMPDLLVersions) => {
     case "03DL_samp.dll":
       return "0.3.DL";
     case "custom":
-      return "From GTASA Folder";
+      return t("from_gtasa_folder");
   }
 };
 
