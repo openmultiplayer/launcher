@@ -67,7 +67,7 @@ export default {
   update_modal_skip_this_update: "跳过此次更新",
   gta_path_modal_cant_find_game_title: "找不到 GTA: San Andreas！",
   gta_path_modal_cant_find_game_description:
-    '未在以下目录找到 GTA: San Andreas：\n  - "{{ path }}"\n请确认 "gta_sa.exe" 是否在该路径。',
+    '未在以下目录找到 GTA: San Andreas：\n  - “{{ path }}”\n请确认 “gta_sa.exe” 是否在该路径。',
   open_settings: "打开设置",
   cancel: "取消",
   gta_path_modal_cant_find_samp_title: "找不到 SA-MP！",
