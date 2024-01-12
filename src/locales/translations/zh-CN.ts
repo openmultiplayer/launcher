@@ -61,7 +61,7 @@ export default {
   settings_credits_view_source_on_github: "在 GitHub 查看源代码",
   update_modal_update_available_title: "更新可用！",
   update_modal_update_available_description:
-    '新版本已经发布！\n当前版本： {{ version }}\n最新版本： {{ newVersion }}\n点击下载最新版',
+    '新版本已经发布！\n当前版本： {{ version }}\n最新版本： {{ newVersion }}\n点击“下载”进入最新下载页面',
   download: "下载",
   update_modal_remind_me_next_time: "下次提醒我",
   update_modal_skip_this_update: "跳过此次更新",
