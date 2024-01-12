@@ -19,6 +19,8 @@ import Russian from "./translations/ru";
 import Turkish from "./translations/tr";
 import Belarussian from "./translations/by";
 import Czech from "./translations/cz";
+import SChinese from "./translations/zh-CN";
+import TChinese from "./translations/zh-TW";
 
 export type LanguageType =
   | "en"
@@ -39,7 +41,9 @@ export type LanguageType =
   | "ru"
   | "tr"
   | "by"
-  | "cz";
+  | "cz"
+  | "zh-CN"
+  | "zh-TW";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -144,6 +148,16 @@ export const getLanguages = (): {
       type: "cz",
       translations: Czech,
     },
+    "zh-CN": {
+      label: "简体中文",
+      type: "zh-CN",
+      translations: SChinese,
+    },
+    "zh-TW": {
+      label: "繁體中文",
+      type: "zh-TW",
+      translations: TChinese,
+    }
   };
 };
 
