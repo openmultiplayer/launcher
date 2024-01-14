@@ -34,7 +34,7 @@
     "@tauri-apps/cli": "^1.5.9",
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
-    "@types/react-native": "^0.72.2",
+    "@types/react-native": "^0.73.0",
     "@vitejs/plugin-react": "^4.2.1",
     "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-react-native-web": "^0.19.10",
