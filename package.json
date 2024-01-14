@@ -13,32 +13,32 @@
     "start": "tauri dev"
   },
   "dependencies": {
-    "@react-native-clipboard/clipboard": "^1.12.1",
-    "@tauri-apps/api": "^1.4.0",
-    "axios": "^1.5.0",
-    "chart.js": "^4.4.0",
-    "i18next": "^23.7.3",
+    "@react-native-clipboard/clipboard": "^1.13.2",
+    "@tauri-apps/api": "^1.5.3",
+    "axios": "^1.6.5",
+    "chart.js": "^4.4.1",
+    "i18next": "^23.7.16",
     "patch-package": "^8.0.0",
     "postinstall-postinstall": "^2.1.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-i18next": "^13.4.0",
+    "react-i18next": "^14.0.0",
     "react-native-animatable": "^1.4.0",
     "react-native-big-list": "^1.6.1",
-    "react-native-web": "^0.19.7",
+    "react-native-web": "^0.19.10",
     "tauri-plugin-upload-api": "https://github.com/tauri-apps/tauri-plugin-upload#v1",
-    "zustand": "^4.4.1"
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.4.0",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
+    "@tauri-apps/cli": "^1.5.9",
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
     "@types/react-native": "^0.72.2",
-    "@vitejs/plugin-react": "^4.0.3",
+    "@vitejs/plugin-react": "^4.2.1",
     "babel-plugin-inline-import": "^3.0.0",
-    "babel-plugin-react-native-web": "^0.19.7",
+    "babel-plugin-react-native-web": "^0.19.10",
     "typescript": "^5.0.2",
-    "vite": "^4.4.4"
+    "vite": "^5.0.11"
   }
 }
