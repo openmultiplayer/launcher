@@ -92,4 +92,6 @@ export default {
   join_discord: "انضم إلى خادم Discord",
   samp_version: "إصدار SA-MP",
   change_version: "تغيير الإصدار",
+  offline: "غير متصل",
+  from_gtasa_folder: "من مجلد GTASA",
 };
