@@ -12,6 +12,10 @@ static mut SHOULD_SEND_UPDATE_TO_DISCORD: bool = true;
 pub fn toggle_drpc(toggle: bool) -> () {
     unsafe {
         SHOULD_SEND_UPDATE_TO_DISCORD = toggle;
+
+        if SHOULD_SEND_UPDATE_TO_DISCORD {
+            initialize_drpc();
+        }
     }
 }
 
@@ -50,8 +54,7 @@ pub fn initialize_drpc() -> () {
                         Ok(_) => {}
                         Err(_) => {}
                     };
-                    connected = false;
-                    continue;
+                    break;
                 }
             }
 
