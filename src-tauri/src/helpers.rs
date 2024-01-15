@@ -5,6 +5,7 @@ use chardet::{charset2encoding, detect};
 use charset_normalizer_rs::from_bytes;
 use encoding::label::encoding_from_whatwg_label;
 use encoding::DecoderTrap;
+use log::info;
 
 pub fn decode_buffer(buf: Vec<u8>) -> (String, String, String) {
     let buff_output: String;
@@ -72,7 +73,7 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                                             println!("Directory {} already exists", dir_path_str)
                                         }
                                     } else {
-                                        println!("ERROR: {}", e.to_string());
+                                        info!("[helpers.rs] copy_files: {}", e.to_string());
                                         return Err(e.to_string());
                                     }
                                 }
@@ -81,6 +82,7 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match copy_files(entry.path(), dest.as_ref().join(entry.file_name())) {
                                 Ok(_) => {}
                                 Err(e) => {
+                                    info!("[helpers.rs] copy_files: {}", e.to_string());
                                     return Err(e.to_string());
                                 }
                             }
@@ -90,14 +92,14 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match copy_results {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    println!("ERROR: {}", e.to_string());
+                                    info!("[helpers.rs] copy_files: {}", e.to_string());
                                     return Err(e.to_string());
                                 }
                             }
                         }
                     }
                     Err(e) => {
-                        println!("ERROR: {}", e.to_string());
+                        info!("[helpers.rs] copy_files: {}", e.to_string());
                         return Err(e.to_string());
                     }
                 }
@@ -105,7 +107,7 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
             return Ok(());
         }
         Err(e) => {
-            println!("ERROR: {}", e.to_string());
+            info!("[helpers.rs] copy_files: {}", e.to_string());
             return Err(e.to_string());
         }
     }
