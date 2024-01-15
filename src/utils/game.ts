@@ -2,6 +2,7 @@ import { fs, invoke, path, process } from "@tauri-apps/api";
 import { message } from "@tauri-apps/api/dialog";
 import { exists } from "@tauri-apps/api/fs";
 import { t } from "i18next";
+import { invoke_rpc } from "../api/rpc";
 import { ResourceInfo, validFileChecksums } from "../constants/app";
 import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
@@ -14,7 +15,7 @@ export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
   const dir = await path.appLocalDataDir();
   const shared = await path.join(dir, "samp", "shared");
-  await invoke("copy_files_to_gtasa", { src: shared, gtasaDir: gtasaPath })
+  await invoke_rpc("copy_files_to_gtasa", { src: shared, gtasaDir: gtasaPath })
     .then(() => {})
     .catch((e) => message(e, { title: "Error", type: "error" }));
 };

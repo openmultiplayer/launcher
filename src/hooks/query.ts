@@ -3,6 +3,8 @@ import { useServers } from "../states/servers";
 import { queryServer } from "../utils/query";
 import { ListType, Server } from "../utils/types";
 
+const QUERY_INTERVAL_DELAY_MS = 2000;
+
 export const useQuery = () => {
   const queryTimer = useRef<ReturnType<typeof setInterval> | undefined>(
     undefined
@@ -32,7 +34,7 @@ export const useQuery = () => {
       getServerInfo(srv, listType);
       queryTimer.current = setInterval(() => {
         getServerInfo(srv, listType);
-      }, 1000);
+      }, QUERY_INTERVAL_DELAY_MS);
     }
   };
 
