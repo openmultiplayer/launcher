@@ -920,7 +920,7 @@ dependencies = [
  "serde",
  "shrinkwraprs",
  "stopwatch2",
- "sysinfo",
+ "sysinfo 0.29.11",
  "thiserror",
  "widestring",
  "winapi",
@@ -2420,7 +2420,7 @@ dependencies = [
  "serde_json",
  "sevenz-rust",
  "simple-logging",
- "sysinfo",
+ "sysinfo 0.30.5",
  "tauri",
  "tauri-build",
  "tauri-plugin-upload",
@@ -3638,8 +3638,22 @@ dependencies = [
  "libc",
  "ntapi",
  "once_cell",
- "rayon",
  "winapi",
+]
+
+[[package]]
+name = "sysinfo"
+version = "0.30.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1fb4f3438c8f6389c864e61221cbc97e9bca98b4daf39a5beb7bea660f528bb2"
+dependencies = [
+ "cfg-if",
+ "core-foundation-sys",
+ "libc",
+ "ntapi",
+ "once_cell",
+ "rayon",
+ "windows 0.52.0",
 ]
 
 [[package]]
@@ -5029,6 +5043,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e686886bc078bc1b0b600cac0147aadb815089b6e4da64016cbd754b6342700f"
 dependencies = [
  "windows-targets 0.48.5",
+]
+
+[[package]]
+name = "windows"
+version = "0.52.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e48a53791691ab099e5e2ad123536d0fff50652600abaf43bbf952894110d0be"
+dependencies = [
+ "windows-core",
+ "windows-targets 0.52.0",
 ]
 
 [[package]]
