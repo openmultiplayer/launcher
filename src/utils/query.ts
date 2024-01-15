@@ -38,7 +38,7 @@ export const queryServer = (
 
 const getServerInfo = async (ip: string, port: number, listType: ListType) => {
   try {
-    const serverInfo: string = await invoke_rpc("request_server_info", {
+    const serverInfo: any = await invoke_rpc("request_server_info", {
       ip: ip,
       port: port,
     });
@@ -199,16 +199,18 @@ const getServerOmpExtraInfo = async (
 
 const getServerPing = async (ip: string, port: number, listType: ListType) => {
   try {
-    const serverPing = await invoke_rpc("ping_server", {
-      ip: ip,
-      port: port,
-    });
+    const serverPing = parseInt(
+      await invoke_rpc("ping_server", {
+        ip: ip,
+        port: port,
+      })
+    );
 
     let server = getServerFromList(ip, port, listType);
     if (server) {
       let ping = server.ping;
 
-      if (typeof serverPing === "number") {
+      if (!isNaN(serverPing)) {
         if (serverPing !== 9999) {
           ping = serverPing;
         } else {

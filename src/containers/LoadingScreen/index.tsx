@@ -118,9 +118,11 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     const list: any[] = [];
     files.forEach((file: any) => collectFiles(file, list));
 
-    const checksums = (await invoke_rpc("get_checksum_of_files", {
-      list: list,
-    })) as string[];
+    const checksums: string[] = JSON.parse(
+      await invoke_rpc("get_checksum_of_files", {
+        list: list,
+      })
+    );
 
     const results = await validateFileChecksums(checksums);
     if (results.includes(false)) {

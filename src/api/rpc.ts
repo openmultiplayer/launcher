@@ -18,5 +18,6 @@ export const invoke_rpc = async (method: string, params: object) => {
     Log.debug(`RPC request failed with status ${response.status}`);
   }
 
-  return response.json();
+  const text = await response.text();
+  return text;
 };
