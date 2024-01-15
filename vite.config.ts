@@ -15,7 +15,7 @@ const extensions = [
   ".json",
 ];
 
-export default defineConfig(async () => ({
+export default defineConfig({
   define: {
     global: "window",
     __DEV__: false,
@@ -33,7 +33,7 @@ export default defineConfig(async () => ({
   plugins: [
     {
       name: "treat-js-files-as-jsx",
-      async transform(code, id) {
+      async transform(code: any, id: any) {
         if (!id.match(/node_modules\/.*\.js$/)) return null;
         // Use the exposed transform from vite, instead of directly
         // transforming with esbuild
@@ -78,4 +78,4 @@ export default defineConfig(async () => ({
   build: {
     chunkSizeWarningLimit: 700,
   },
-}));
+});
