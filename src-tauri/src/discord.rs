@@ -4,7 +4,7 @@ use discord_rich_presence::{
     DiscordIpc, DiscordIpcClient,
 };
 use std::time::{SystemTime, UNIX_EPOCH};
-use sysinfo::{ProcessExt, System, SystemExt};
+use sysinfo::System;
 use tauri::async_runtime::block_on;
 
 static mut SHOULD_SEND_UPDATE_TO_DISCORD: bool = true;
