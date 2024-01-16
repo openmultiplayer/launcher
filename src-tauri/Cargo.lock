@@ -4159,7 +4159,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-upload"
 version = "0.0.0"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#c5e8cd31ec86ba7ddcd524f1377a5bf09229fb9e"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#83f9899f7853dec8a8bd19e32d86550d14646d50"
 dependencies = [
  "futures-util",
  "log",
