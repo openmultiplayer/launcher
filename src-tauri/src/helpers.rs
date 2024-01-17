@@ -24,13 +24,20 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
         
     // Determine the most likely actual encoding
     let actual_encoding = if charset_normalizer_encoding == "macintosh" {
+        // Use windows-1251 if charset_normalizer detects macintosh
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
     } else if chardetng_encoding == "GBK" || chardetng_encoding == "GB2312" ||
               chardet_encoding == "GBK" || chardet_encoding == "GB2312" {
+        // Use GB18030 for Chinese characters if detected as GBK or GB2312
         Encoding::for_label("GB18030".as_bytes()).unwrap_or(UTF_8)
     } else if chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251" {
+        // Use windows-1251 if chardetng detects windows-1252 and chardet detects windows-1251
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
+    } else if chardet_encoding == "ISO-8859-1" && charset_normalizer_encoding == "ibm866" {
+        // Use windows-1252 if chardet detects ISO-8859-1 and charset normalizer detects ibm866
+        Encoding::for_label("windows-1252".as_bytes()).unwrap_or(UTF_8)
     } else {
+        // Default to the encoding detected by chardetng
         Encoding::for_label(chardetng_encoding.as_bytes()).unwrap_or(UTF_8)
     };
     
