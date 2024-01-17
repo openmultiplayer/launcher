@@ -2,55 +2,47 @@ use std::fs;
 use std::path::Path;
 
 use chardet::{charset2encoding, detect};
+use chardetng::EncodingDetector;
 use charset_normalizer_rs::from_bytes;
-use encoding::label::encoding_from_whatwg_label;
-use encoding::DecoderTrap;
+use encoding_rs::{Encoding, UTF_8};
 use log::info;
 
-pub fn decode_buffer(buf: Vec<u8>) -> (String, String, String) {
-    let buff_output: String;
-    let first_encoding: String;
-    let second_encoding: String;
-    let mut str_encoding: String;
+/// Decodes a buffer of bytes into a string, detecting the encoding
+pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
+    // Using chardetng for encoding detection
+    let mut detector = EncodingDetector::new();
+    detector.feed(&buf, true);
+    let chardetng_encoding = detector.guess(None, true).name();
 
-    // chardet
-    first_encoding = charset2encoding(&detect(&buf).0).to_string();
+    // Using chardet for encoding detection
+    let chardet_encoding = charset2encoding(&detect(&buf).0).to_string();
 
-    // charset_normalizer_rs
-    second_encoding = match from_bytes(&buf, None).get_best() {
-        Some(cd) => cd.encoding().to_string(),
-        None => "not_found".to_string(),
-    };
-
-    str_encoding = first_encoding.clone();
-
-    if first_encoding == "KOI8-R"
-        || first_encoding == "MacCyrillic"
-        || first_encoding == "x-mac-cyrillic"
-    {
-        str_encoding = "cp1251".to_string();
-    }
-
-    if second_encoding == "koi8-r" || second_encoding == "macintosh" || second_encoding == "ibm866"
-    {
-        str_encoding = "cp1251".to_string();
-    }
-
-    // if str_encoding.len() < 1 {
-    //     str_encoding = "cp1251".to_string();
-    // }
-
-    let coder = encoding_from_whatwg_label(str_encoding.as_str());
-    if coder.is_some() {
-        buff_output = coder
-            .unwrap()
-            .decode(&buf, DecoderTrap::Ignore)
-            .expect("Error");
+    // Using charset_normalizer_rs for encoding detection
+    let charset_normalizer_encoding = from_bytes(&buf, None).get_best()
+        .map(|cd| cd.encoding().to_string())
+        .unwrap_or_else(|| "not_found".to_string());
+        
+    // Determine the most likely actual encoding
+    let actual_encoding = if charset_normalizer_encoding == "macintosh" {
+        Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
+    } else if chardetng_encoding == "GBK" || chardetng_encoding == "GB2312" ||
+              chardet_encoding == "GBK" || chardet_encoding == "GB2312" {
+        Encoding::for_label("GB18030".as_bytes()).unwrap_or(UTF_8)
+    } else if chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251" {
+        Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
     } else {
-        buff_output = String::from_utf8_lossy(buf.as_slice()).to_string();
-    }
+        Encoding::for_label(chardetng_encoding.as_bytes()).unwrap_or(UTF_8)
+    };
+    
+    // Decode the buffer using the determined encoding
+    // Note: Error handling for decoding errors is intentionally omitted. 
+    // In cases where there are minor errors in the text (like a few corrupted characters),
+    // this approach ensures that the text is still usable, albeit with some minor imperfections.
+    let (decoded, _, _had_errors) = actual_encoding.decode(&buf);
+    let buff_output = decoded.into_owned();
 
-    (buff_output, first_encoding, second_encoding)
+    // Return the decoded string and the encoding name
+    (buff_output, actual_encoding.name().to_string())
 }
 
 pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), String> {
