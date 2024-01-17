@@ -622,6 +622,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a48563284b67c003ba0fb7243c87fab68885e1532c605704228a80238512e31"
 
 [[package]]
+name = "chardetng"
+version = "0.1.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "14b8f0b65b7b08ae3c8187e8d77174de20cb6777864c6b832d8ad365999cf1ea"
+dependencies = [
+ "cfg-if",
+ "encoding_rs",
+ "memchr",
+]
+
+[[package]]
 name = "charset-normalizer-rs"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2659,11 +2670,12 @@ dependencies = [
  "actix-web",
  "byteorder",
  "chardet",
+ "chardetng",
  "charset-normalizer-rs",
  "dirs-next",
  "discord-rich-presence",
  "dll-syringe",
- "encoding",
+ "encoding_rs",
  "log",
  "md5",
  "regex",
