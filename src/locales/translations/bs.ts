@@ -96,4 +96,6 @@ export default {
   join_discord: "Pridruži se Discord Serveru",
   samp_version: "SA-MP Verzija",
   change_version: "Promijeni Verziju",
+  offline: "Offline",
+  from_gtasa_folder: "Iz GTASA Foldera",
 };
