@@ -34,27 +34,42 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     // ));
 
     // Determine the most likely actual encoding
-    let actual_encoding = if chardet_encoding == "ascii" && charset_normalizer_encoding == "ascii" {
+    let actual_encoding = if chardet_encoding.to_lowercase() == "ascii"
+        && charset_normalizer_encoding.to_lowercase() == "ascii"
+    {
         // Default to UTF-8 if both chardet and charset normalizer detect ASCII
         Encoding::for_label("UTF_8".as_bytes()).unwrap_or(UTF_8)
-    } else if (chardetng_encoding == "GBK" && charset_normalizer_encoding == "windows-874")
-        || (chardetng_encoding == "GBK" && charset_normalizer_encoding == "ibm866")
-        || charset_normalizer_encoding == "macintosh"
+    } else if chardet_encoding.to_lowercase() == "koi8-r"
+        && charset_normalizer_encoding.to_lowercase() == "koi8-r"
     {
-        // Use windows-1251 for GBK and windows-874 or GBK and IBM866 combination, or when charset normalizer detects macintosh
+        // Use windows-1251 if both chardet and charset normalizer detect KOI8-R
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
-    } else if (chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251")
-        || (chardet_encoding == "ISO-8859-1"
-            && (charset_normalizer_encoding == "ibm866"
-                || charset_normalizer_encoding == "iso-8859-2"
-                || charset_normalizer_encoding == "windows-874"
-                || charset_normalizer_encoding == "iso-8859-1"))
-        || (chardetng_encoding == "GBK" && chardet_encoding == "ISO-8859-1")
+    } else if (chardetng_encoding.to_lowercase() == "gbk"
+        && (chardet_encoding.to_lowercase() == "windows-1255"
+            || charset_normalizer_encoding.to_lowercase() == "ibm866"))
+        || chardet_encoding.to_lowercase() == "x-mac-cyrillic"
+        || charset_normalizer_encoding.to_lowercase() == "macintosh"
+    {
+        // Use windows-1251 for various combinations
+        Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
+    } else if (chardetng_encoding.to_lowercase() == "windows-1252"
+        && chardet_encoding.to_lowercase() == "windows-1251")
+        || (chardet_encoding.to_lowercase() == "iso-8859-1"
+            && (charset_normalizer_encoding.to_lowercase() == "iso-8859-2"
+                || charset_normalizer_encoding.to_lowercase() == "windows-874"
+                || charset_normalizer_encoding.to_lowercase() == "iso-8859-1"
+                || charset_normalizer_encoding.to_lowercase() == "ibm866"))
+        || (chardetng_encoding.to_lowercase() == "gbk"
+            && chardet_encoding.to_lowercase() == "iso-8859-1")
+        || (chardetng_encoding.to_lowercase() == "shift_jis"
+            && chardet_encoding.to_lowercase() == "iso-8859-1")
     {
         // Use windows-1252 for various combinations
         Encoding::for_label("windows-1252".as_bytes()).unwrap_or(UTF_8)
-    } else if chardetng_encoding == "GBK" || chardet_encoding == "GB2312" {
-        // Use GB18030 for Chinese when chardetng detects GBK or chardet detects GB2312
+    } else if chardetng_encoding.to_lowercase() == "gbk"
+        || chardet_encoding.to_lowercase() == "gb2312"
+    {
+        // Use GB18030 when chardetng detects GBK or chardet detects GB2312
         Encoding::for_label("GB18030".as_bytes()).unwrap_or(UTF_8)
     } else {
         // Default to the encoding detected by chardetng
