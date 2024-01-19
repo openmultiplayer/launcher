@@ -18,35 +18,61 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     let chardet_encoding = charset2encoding(&detect(&buf).0).to_string();
 
     // Using charset_normalizer_rs for encoding detection
-    let charset_normalizer_encoding = from_bytes(&buf, None).get_best()
+    let charset_normalizer_encoding = from_bytes(&buf, None)
+        .get_best()
         .map(|cd| cd.encoding().to_string())
         .unwrap_or_else(|| "not_found".to_string());
-        
-    // Determine the most likely actual encoding
-    let actual_encoding = if charset_normalizer_encoding == "macintosh" {
-        // Use windows-1251 if charset_normalizer detects macintosh
+
+    // Collect encoding results for debug
+    // let mut messages: Vec<String> = Vec::new();
+    // messages.push(format!("Input: {}", String::from_utf8_lossy(&buf)));
+    // messages.push(format!("\tchardetng: {}", chardetng_encoding));
+    // messages.push(format!("\tchardet: {}", chardet_encoding));
+    // messages.push(format!(
+    //     "\tcharset_normalizer: {}",
+    //     charset_normalizer_encoding
+    // ));
+
+    let actual_encoding = if chardet_encoding == "ascii" && charset_normalizer_encoding == "ascii" {
+        // Default to UTF-8 if both chardet and charset normalizer detect ASCII
+        Encoding::for_label("UTF_8".as_bytes()).unwrap_or(UTF_8)
+    } else if (chardetng_encoding == "GBK" && charset_normalizer_encoding == "ibm866")
+        || charset_normalizer_encoding == "macintosh"
+    {
+        // Use windows-1251 for GBK and IBM866 combination, or when charset normalizer detects macintosh
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
-    } else if chardetng_encoding == "GBK" || chardetng_encoding == "GB2312" ||
-              chardet_encoding == "GBK" || chardet_encoding == "GB2312" {
-        // Use GB18030 for Chinese characters if detected as GBK or GB2312
-        Encoding::for_label("GB18030".as_bytes()).unwrap_or(UTF_8)
-    } else if chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251" {
-        // Use windows-1251 if chardetng detects windows-1252 and chardet detects windows-1251
-        Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
-    } else if chardet_encoding == "ISO-8859-1" && charset_normalizer_encoding == "ibm866" {
-        // Use windows-1252 if chardet detects ISO-8859-1 and charset normalizer detects ibm866
+    } else if (chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251")
+        || (chardet_encoding == "ISO-8859-1"
+            && (charset_normalizer_encoding == "ibm866"
+                || charset_normalizer_encoding == "iso-8859-2"
+                || charset_normalizer_encoding == "windows-874"
+                || charset_normalizer_encoding == "iso-8859-1"))
+        || (chardetng_encoding == "GBK" && chardet_encoding == "ISO-8859-1")
+    {
+        // Use windows-1252 for various combinations
         Encoding::for_label("windows-1252".as_bytes()).unwrap_or(UTF_8)
+    } else if chardetng_encoding == "GBK" || chardet_encoding == "GB2312" {
+        // Use GB18030 for Chinese when chardetng detects GBK or chardet detects GB2312
+        Encoding::for_label("GB18030".as_bytes()).unwrap_or(UTF_8)
     } else {
         // Default to the encoding detected by chardetng
         Encoding::for_label(chardetng_encoding.as_bytes()).unwrap_or(UTF_8)
     };
-    
+
     // Decode the buffer using the determined encoding
-    // Note: Error handling for decoding errors is intentionally omitted. 
+    // Note: Error handling for decoding errors is intentionally omitted.
     // In cases where there are minor errors in the text (like a few corrupted characters),
     // this approach ensures that the text is still usable, albeit with some minor imperfections.
     let (decoded, _, _had_errors) = actual_encoding.decode(&buf);
     let buff_output = decoded.into_owned();
+
+    // Print debug information
+    // messages.push(format!("\tfinal: {}", actual_encoding.name().to_string()));
+    // for message in messages {
+    //     print!("{}", message);
+    //     print!("\t");
+    // }
+    // println!();
 
     // Return the decoded string and the encoding name
     (buff_output, actual_encoding.name().to_string())
