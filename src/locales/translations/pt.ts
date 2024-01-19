@@ -99,4 +99,6 @@ export default {
   join_discord: "Entrar no servidor do Discord",
   samp_version: "Versão do SA-MP",
   change_version: "Mudar versão",
+  offline: "Offline",
+  from_gtasa_folder: "Da pasta do GTASA"
 };
