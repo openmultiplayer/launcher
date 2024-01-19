@@ -33,6 +33,7 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     //     charset_normalizer_encoding
     // ));
 
+    // Determine the most likely actual encoding
     let actual_encoding = if chardet_encoding == "ascii" && charset_normalizer_encoding == "ascii" {
         // Default to UTF-8 if both chardet and charset normalizer detect ASCII
         Encoding::for_label("UTF_8".as_bytes()).unwrap_or(UTF_8)
