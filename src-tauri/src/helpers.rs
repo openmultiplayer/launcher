@@ -37,10 +37,11 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     let actual_encoding = if chardet_encoding == "ascii" && charset_normalizer_encoding == "ascii" {
         // Default to UTF-8 if both chardet and charset normalizer detect ASCII
         Encoding::for_label("UTF_8".as_bytes()).unwrap_or(UTF_8)
-    } else if (chardetng_encoding == "GBK" && charset_normalizer_encoding == "ibm866")
+    } else if (chardetng_encoding == "GBK" && charset_normalizer_encoding == "windows-874")
+        || (chardetng_encoding == "GBK" && charset_normalizer_encoding == "ibm866")
         || charset_normalizer_encoding == "macintosh"
     {
-        // Use windows-1251 for GBK and IBM866 combination, or when charset normalizer detects macintosh
+        // Use windows-1251 for GBK and windows-874 or GBK and IBM866 combination, or when charset normalizer detects macintosh
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
     } else if (chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251")
         || (chardet_encoding == "ISO-8859-1"
