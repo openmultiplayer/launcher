@@ -15,7 +15,7 @@ export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
   const dir = await path.appLocalDataDir();
   const shared = await path.join(dir, "samp", "shared");
-  await invoke_rpc("copy_files_to_gtasa", { src: shared, gtasaDir: gtasaPath })
+  await invoke_rpc("copy_files_to_gtasa", { src: shared, gtasa_dir: gtasaPath })
     .then(() => {})
     .catch((e) => message(e, { title: "Error", type: "error" }));
 };

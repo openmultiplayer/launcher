@@ -52,7 +52,7 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
         if (downloadedSize.current === total) {
           await invoke_rpc("extract_7z", {
             path: archive,
-            outputPath: samp,
+            output_path: samp,
           });
           setDownloading(false);
           finishLoading(1);
