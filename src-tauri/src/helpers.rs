@@ -12,15 +12,15 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     // Using chardetng for encoding detection
     let mut detector = EncodingDetector::new();
     detector.feed(&buf, true);
-    let chardetng_encoding = detector.guess(None, true).name();
+    let chardetng_encoding = detector.guess(None, true).name().to_lowercase();
 
     // Using chardet for encoding detection
-    let chardet_encoding = charset2encoding(&detect(&buf).0).to_string();
+    let chardet_encoding = charset2encoding(&detect(&buf).0).to_string().to_lowercase();
 
     // Using charset_normalizer_rs for encoding detection
     let charset_normalizer_encoding = from_bytes(&buf, None)
         .get_best()
-        .map(|cd| cd.encoding().to_string())
+        .map(|cd| cd.encoding().to_string().to_lowercase())
         .unwrap_or_else(|| "not_found".to_string());
 
     // Collect encoding results for debug
@@ -34,41 +34,31 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     // ));
 
     // Determine the most likely actual encoding
-    let actual_encoding = if chardet_encoding.to_lowercase() == "ascii"
-        && charset_normalizer_encoding.to_lowercase() == "ascii"
-    {
+    let actual_encoding = if chardet_encoding == "ascii" && charset_normalizer_encoding == "ascii" {
         // Default to UTF-8 if both chardet and charset normalizer detect ASCII
         Encoding::for_label("UTF_8".as_bytes()).unwrap_or(UTF_8)
-    } else if chardet_encoding.to_lowercase() == "koi8-r"
-        && charset_normalizer_encoding.to_lowercase() == "koi8-r"
-    {
+    } else if chardet_encoding == "koi8-r" && charset_normalizer_encoding == "koi8-r" {
         // Use windows-1251 if both chardet and charset normalizer detect KOI8-R
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
-    } else if (chardetng_encoding.to_lowercase() == "gbk"
-        && (chardet_encoding.to_lowercase() == "windows-1255"
-            || charset_normalizer_encoding.to_lowercase() == "ibm866"))
-        || chardet_encoding.to_lowercase() == "x-mac-cyrillic"
-        || charset_normalizer_encoding.to_lowercase() == "macintosh"
+    } else if (chardetng_encoding == "gbk"
+        && (chardet_encoding == "windows-1255" || charset_normalizer_encoding == "ibm866"))
+        || chardet_encoding == "x-mac-cyrillic"
+        || charset_normalizer_encoding == "macintosh"
     {
         // Use windows-1251 for various combinations
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
-    } else if (chardetng_encoding.to_lowercase() == "windows-1252"
-        && chardet_encoding.to_lowercase() == "windows-1251")
-        || (chardet_encoding.to_lowercase() == "iso-8859-1"
-            && (charset_normalizer_encoding.to_lowercase() == "iso-8859-2"
-                || charset_normalizer_encoding.to_lowercase() == "windows-874"
-                || charset_normalizer_encoding.to_lowercase() == "iso-8859-1"
-                || charset_normalizer_encoding.to_lowercase() == "ibm866"))
-        || (chardetng_encoding.to_lowercase() == "gbk"
-            && chardet_encoding.to_lowercase() == "iso-8859-1")
-        || (chardetng_encoding.to_lowercase() == "shift_jis"
-            && chardet_encoding.to_lowercase() == "iso-8859-1")
+    } else if (chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251")
+        || (chardet_encoding == "iso-8859-1"
+            && (charset_normalizer_encoding == "iso-8859-2"
+                || charset_normalizer_encoding == "windows-874"
+                || charset_normalizer_encoding == "iso-8859-1"
+                || charset_normalizer_encoding == "ibm866"))
+        || (chardetng_encoding == "gbk" && chardet_encoding == "iso-8859-1")
+        || (chardetng_encoding == "shift_jis" && chardet_encoding == "iso-8859-1")
     {
         // Use windows-1252 for various combinations
         Encoding::for_label("windows-1252".as_bytes()).unwrap_or(UTF_8)
-    } else if chardetng_encoding.to_lowercase() == "gbk"
-        || chardet_encoding.to_lowercase() == "gb2312"
-    {
+    } else if chardetng_encoding == "gbk" || chardet_encoding == "gb2312" {
         // Use GB18030 when chardetng detects GBK or chardet detects GB2312
         Encoding::for_label("GB18030".as_bytes()).unwrap_or(UTF_8)
     } else {
