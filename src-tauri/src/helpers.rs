@@ -37,15 +37,13 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     let actual_encoding = if chardet_encoding == "ascii" && charset_normalizer_encoding == "ascii" {
         // Default to UTF-8 if both chardet and charset normalizer detect ASCII
         Encoding::for_label("UTF_8".as_bytes()).unwrap_or(UTF_8)
-    } else if chardet_encoding == "koi8-r" && charset_normalizer_encoding == "koi8-r" {
-        // Use windows-1251 if both chardet and charset normalizer detect KOI8-R
-        Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
     } else if (chardetng_encoding == "gbk"
         && (chardet_encoding == "windows-1255" || charset_normalizer_encoding == "ibm866"))
         || chardet_encoding == "x-mac-cyrillic"
         || charset_normalizer_encoding == "macintosh"
+        || (chardet_encoding == "koi8-r" && charset_normalizer_encoding == "koi8-r")
     {
-        // Use windows-1251 for various combinations
+        // Use windows-1251 if both chardet and charset normalizer detect KOI8-R and for various other combinations
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
     } else if (chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251")
         || (chardet_encoding == "iso-8859-1"
@@ -96,7 +94,7 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                         if ty.is_dir() {
                             let dir_path = dest.as_ref().join(entry.file_name());
                             let dir_path_str = dir_path.to_str().unwrap();
-                            let dir_creation_results = fs::create_dir(dir_path.to_owned());
+                            let dir_creation_results = fs::create_dir(&dir_path);
                             match dir_creation_results {
                                 Ok(_) => {}
                                 Err(e) => {
@@ -105,7 +103,7 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                                             println!("Directory {} already exists", dir_path_str)
                                         }
                                     } else {
-                                        info!("[helpers.rs] copy_files: {}", e.to_string());
+                                        info!("[helpers.rs] copy_files: {}", e);
                                         return Err(e.to_string());
                                     }
                                 }
@@ -114,8 +112,8 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match copy_files(entry.path(), dest.as_ref().join(entry.file_name())) {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    info!("[helpers.rs] copy_files: {}", e.to_string());
-                                    return Err(e.to_string());
+                                    info!("[helpers.rs] copy_files: {}", e);
+                                    return Err(e);
                                 }
                             }
                         } else {
@@ -124,23 +122,23 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match copy_results {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    info!("[helpers.rs] copy_files: {}", e.to_string());
+                                    info!("[helpers.rs] copy_files: {}", e);
                                     return Err(e.to_string());
                                 }
                             }
                         }
                     }
                     Err(e) => {
-                        info!("[helpers.rs] copy_files: {}", e.to_string());
+                        info!("[helpers.rs] copy_files: {}", e);
                         return Err(e.to_string());
                     }
                 }
             }
-            return Ok(());
+            Ok(())
         }
         Err(e) => {
-            info!("[helpers.rs] copy_files: {}", e.to_string());
-            return Err(e.to_string());
+            info!("[helpers.rs] copy_files: {}", e);
+            Err(e.to_string())
         }
     }
 }

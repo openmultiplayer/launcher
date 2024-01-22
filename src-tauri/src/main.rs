@@ -9,7 +9,6 @@ mod rpcs;
 mod samp;
 
 use log::LevelFilter;
-use runas;
 use tauri::Manager;
 use tauri::PhysicalSize;
 
@@ -28,12 +27,12 @@ async fn inject(
 
 #[tauri::command]
 fn get_gtasa_path_from_samp() -> String {
-    samp::get_gtasa_path().to_string()
+    samp::get_gtasa_path()
 }
 
 #[tauri::command]
 fn get_nickname_from_samp() -> String {
-    samp::get_nickname().to_string()
+    samp::get_nickname()
 }
 
 #[tauri::command]
