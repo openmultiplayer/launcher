@@ -96,7 +96,7 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                         if ty.is_dir() {
                             let dir_path = dest.as_ref().join(entry.file_name());
                             let dir_path_str = dir_path.to_str().unwrap();
-                            let dir_creation_results = fs::create_dir(dir_path.to_owned());
+                            let dir_creation_results = fs::create_dir(&dir_path);
                             match dir_creation_results {
                                 Ok(_) => {}
                                 Err(e) => {
@@ -105,7 +105,7 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                                             println!("Directory {} already exists", dir_path_str)
                                         }
                                     } else {
-                                        info!("[helpers.rs] copy_files: {}", e.to_string());
+                                        info!("[helpers.rs] copy_files: {}", e);
                                         return Err(e.to_string());
                                     }
                                 }
@@ -114,8 +114,8 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match copy_files(entry.path(), dest.as_ref().join(entry.file_name())) {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    info!("[helpers.rs] copy_files: {}", e.to_string());
-                                    return Err(e.to_string());
+                                    info!("[helpers.rs] copy_files: {}", e);
+                                    return Err(e);
                                 }
                             }
                         } else {
@@ -124,23 +124,23 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match copy_results {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    info!("[helpers.rs] copy_files: {}", e.to_string());
+                                    info!("[helpers.rs] copy_files: {}", e);
                                     return Err(e.to_string());
                                 }
                             }
                         }
                     }
                     Err(e) => {
-                        info!("[helpers.rs] copy_files: {}", e.to_string());
+                        info!("[helpers.rs] copy_files: {}", e);
                         return Err(e.to_string());
                     }
                 }
             }
-            return Ok(());
+            Ok(())
         }
         Err(e) => {
-            info!("[helpers.rs] copy_files: {}", e.to_string());
-            return Err(e.to_string());
+            info!("[helpers.rs] copy_files: {}", e);
+            Err(e.to_string())
         }
     }
 }

@@ -15,7 +15,7 @@ pub struct Query {
     socket: UdpSocket,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct InfoPacket {
     pub password: bool,
     pub players: u16,
@@ -25,49 +25,17 @@ pub struct InfoPacket {
     pub language: String,
 }
 
-impl Default for InfoPacket {
-    fn default() -> Self {
-        Self {
-            password: false,
-            players: 0,
-            max_players: 0,
-            hostname: String::new(),
-            gamemode: String::new(),
-            language: String::new(),
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct Player {
     pub name: String,
     pub score: i32,
 }
 
-impl Default for Player {
-    fn default() -> Self {
-        Self {
-            name: String::new(),
-            score: 0,
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Default)]
 pub struct ExtraInfoPacket {
     pub discord_link: String,
     pub light_banner_url: String,
     pub dark_banner_url: String,
-}
-
-impl Default for ExtraInfoPacket {
-    fn default() -> Self {
-        Self {
-            discord_link: String::new(),
-            light_banner_url: String::new(),
-            dark_banner_url: String::new(),
-        }
-    }
 }
 
 impl Query {
@@ -138,16 +106,15 @@ impl Query {
 
     pub async fn recv(&self) -> Result<String, std::io::Error> {
         let mut buf = [0; 1500];
-        let amt;
-        match timeout_at(
+        let amt = match timeout_at(
             Instant::now() + Duration::from_secs(2),
             self.socket.recv(&mut buf),
         )
         .await?
         {
-            Ok(n) => amt = n,
+            Ok(n) => n,
             Err(e) => return Err(e),
-        }
+        };
 
         if amt == 0 {
             return Ok(String::from("no_data"));

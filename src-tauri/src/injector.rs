@@ -98,7 +98,10 @@ pub async fn run_samp(
                 return Err("need_admin".to_string());
             }
 
-            return Err(format!("Spawning process failed (error code: {})", raw_os_err).to_owned());
+            Err(format!(
+                "Spawning process failed (error code: {})",
+                raw_os_err
+            ))
         }
     }
 }
@@ -119,7 +122,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32) -> Result<(), String> 
 
                     if times == 10 {
                         info!("[injector.rs] Dll injection failed: {}", e.to_string());
-                        Err(format!("Injecting dll failed: {}", e.to_string()).to_owned())
+                        Err(format!("Injecting dll failed: {}", e.to_string()))
                     } else {
                         inject_dll(child, dll_path, times + 1)
                     }
@@ -128,7 +131,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32) -> Result<(), String> 
         }
         Err(e) => {
             info!("[injector.rs] Process creation failed: {}", e.to_string());
-            Err(format!("Finding GTASA process failed: {}", e.to_string()).to_owned())
+            Err(format!("Finding GTASA process failed: {}", e.to_string()))
         }
     }
 }
