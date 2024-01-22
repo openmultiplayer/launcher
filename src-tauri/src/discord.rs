@@ -51,10 +51,7 @@ pub fn initialize_drpc() {
 
         loop {
             if !*SHOULD_SEND_UPDATE_TO_DISCORD.lock().unwrap() {
-                match client.close() {
-                    Ok(_) => {}
-                    Err(_) => {}
-                };
+                let _ = client.close();
                 break;
             }
 
@@ -128,7 +125,7 @@ pub fn initialize_drpc() {
                 }
                 let nick_name_detail = format!("Playing as {}", name);
                 let full_server_address = format!("{}:{}", ip, port);
-                hostname = if hostname.len() > 0 {
+                hostname = if !hostname.is_empty() {
                     hostname
                 } else {
                     "Unable to get server name".to_string()

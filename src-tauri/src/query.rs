@@ -138,11 +138,12 @@ impl Query {
     }
 
     fn build_info_packet(&self, mut packet: Cursor<Vec<u8>>) -> Result<String, std::io::Error> {
-        let mut data = InfoPacket::default();
-
-        data.password = packet.read_i8().unwrap() != 0;
-        data.players = packet.read_u16::<LittleEndian>().unwrap();
-        data.max_players = packet.read_u16::<LittleEndian>().unwrap();
+        let mut data = InfoPacket {
+            password: packet.read_i8().unwrap() != 0,
+            players: packet.read_u16::<LittleEndian>().unwrap(),
+            max_players: packet.read_u16::<LittleEndian>().unwrap(),
+            ..Default::default()
+        };
 
         let hostname_len = packet.read_u32::<LittleEndian>().unwrap();
         let mut hostname_buf = vec![0u8; hostname_len as usize];

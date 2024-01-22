@@ -75,7 +75,7 @@ pub async fn run_samp(
         .arg("-p")
         .arg(format!("{}", port));
 
-    if password.len() > 0 {
+    if !password.is_empty() {
         ready_for_exec = ready_for_exec.arg("-z").arg(password);
     }
 
