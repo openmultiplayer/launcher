@@ -31,14 +31,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run UPX against portable version
-        uses: crazy-max/ghaction-upx@v3
-        with:
-          version: latest
-          files: |
-            ./src-tauri/target/release/omp-launcher.exe
-          args: -9 -fq
-
       - name: Generate artifact name
         id: vars
         shell: bash
