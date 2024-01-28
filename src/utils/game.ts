@@ -1,5 +1,4 @@
 import { fs, invoke, path, process } from "@tauri-apps/api";
-import { message } from "@tauri-apps/api/dialog";
 import { exists } from "@tauri-apps/api/fs";
 import { t } from "i18next";
 import { invoke_rpc } from "../api/rpc";
@@ -9,15 +8,20 @@ import { useMessageBox } from "../states/messageModal";
 import { usePersistentServers, useServers } from "../states/servers";
 import { useSettings } from "../states/settings";
 import { useSettingsModal } from "../states/settingsModal";
+import { Log } from "./logger";
+import { sc } from "./sizeScaler";
 import { Server } from "./types";
 
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
   const dir = await path.appLocalDataDir();
   const shared = await path.join(dir, "samp", "shared");
-  await invoke_rpc("copy_files_to_gtasa", { src: shared, gtasa_dir: gtasaPath })
-    .then(() => {})
-    .catch((e) => message(e, { title: "Error", type: "error" }));
+  await invoke_rpc("copy_files_to_gtasa", {
+    src: shared,
+    gtasa_dir: gtasaPath,
+  }).then((e) => {
+    throw e;
+  });
 };
 
 const isFileAvailableinGTASADir = async (file: ResourceInfo) => {
@@ -36,7 +40,13 @@ export const checkResourceFilesAvailability = async () => {
   validFileChecksums.forEach((file) => {
     if (file.requiredInGameDir) {
       promises.push(
-        new Promise(async () => await isFileAvailableinGTASADir(file))
+        new Promise(async (resolve, reject) => {
+          try {
+            resolve(await isFileAvailableinGTASADir(file));
+          } catch (e) {
+            reject(e);
+          }
+        })
       );
     }
   });
@@ -126,6 +136,51 @@ export const startGame = async (
       }
     }
   );
+
+  if (sampVersion !== "custom") {
+    let failExecution = false;
+    try {
+      const checks = await checkResourceFilesAvailability();
+      if (checks.includes(false)) {
+        Log.debug(
+          "Failed file validation, let's copy files into GTASA directory"
+        );
+        await copySharedFilesIntoGameFolder();
+      }
+    } catch (e) {
+      if (e === "need_admin") {
+        const { showMessageBox, hideMessageBox } = useMessageBox.getState();
+        showMessageBox({
+          title: t("admin_permissions_required_modal_title"),
+          description: t("admin_permissions_required_modal_description"),
+          boxWidth: sc(500),
+          buttons: [
+            {
+              title: t("run_as_admin"),
+              onPress: async () => {
+                await invoke("rerun_as_admin").then(() => {
+                  process.exit();
+                });
+              },
+            },
+            {
+              title: t("cancel"),
+              onPress: () => {
+                showPrompt(true);
+                setServer(server);
+                hideMessageBox();
+              },
+            },
+          ],
+        });
+      }
+      failExecution = true;
+    }
+
+    if (failExecution) {
+      return;
+    }
+  }
 
   if (sampVersion === "custom" && !foundSampInGtaFolder) {
     showMessageBox({
