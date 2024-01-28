@@ -140,7 +140,20 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     if (await fs.exists(samp)) {
       const archive = await path.join(samp, "samp_clients.7z");
       if (await fs.exists(archive)) {
-        processFileChecksums();
+        const checksums: string[] = JSON.parse(
+          await invoke_rpc("get_checksum_of_files", {
+            list: [archive],
+          })
+        );
+
+        if (checksums.length) {
+          const resource = validFileChecksums.get("samp_clients.7z");
+          if (resource && resource.checksum === checksums[0].split("|")[1]) {
+            processFileChecksums();
+            return;
+          }
+        }
+        downloadResources(samp);
       } else {
         downloadResources(samp);
       }
