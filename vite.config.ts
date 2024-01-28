@@ -19,6 +19,7 @@ export default defineConfig({
   define: {
     global: "window",
     __DEV__: false,
+    DEBUG_MODE: process.env.TAURI_DEBUG,
   },
   optimizeDeps: {
     force: true,
@@ -77,5 +78,7 @@ export default defineConfig({
   envPrefix: ["VITE_", "TAURI_"],
   build: {
     chunkSizeWarningLimit: 700,
+    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+    sourcemap: !!process.env.TAURI_DEBUG,
   },
 });
