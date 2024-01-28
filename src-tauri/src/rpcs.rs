@@ -238,7 +238,10 @@ async fn rpc_handler(
     */
     else if path.method == "copy_files_to_gtasa" {
         let params: CopyFilesToGtaSaParams = serde_json::from_str(params_str.as_str())?;
-        copy_files_to_gtasa(params.src.as_str(), params.gtasa_dir.as_str())?;
+        let result = copy_files_to_gtasa(params.src.as_str(), params.gtasa_dir.as_str());
+        if result.is_err() {
+            return Ok(HttpResponse::Ok().body(result.err().unwrap()));
+        }
         return Ok(HttpResponse::Ok().body("{}"));
     }
 
