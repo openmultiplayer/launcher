@@ -1,4 +1,3 @@
-import { process } from "@tauri-apps/api";
 import {
   LogicalSize,
   appWindow,
@@ -77,7 +76,7 @@ const App = () => {
       document.addEventListener("contextmenu", (event) => {
         try {
           // @ts-ignore
-          if (process && process.env.NODE_DEV !== "development") {
+          if (DEBUG_MODE == false) {
             event.preventDefault();
           }
         } catch (e) {}
