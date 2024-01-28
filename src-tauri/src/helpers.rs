@@ -99,21 +99,28 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match dir_creation_results {
                                 Ok(_) => {}
                                 Err(e) => {
+                                    println!("[helpers.rs] copy_files 1: {}", e);
+                                    info!("[helpers.rs] copy_files 1: {}", e);
+
                                     if e.raw_os_error().is_some() {
                                         if e.raw_os_error().unwrap() == 183 {
-                                            println!("Directory {} already exists", dir_path_str)
+                                            println!("Directory {} already exists", dir_path_str);
+                                            return Ok(());
                                         }
-                                    } else {
-                                        info!("[helpers.rs] copy_files: {}", e);
-                                        return Err(e.to_string());
+
+                                        if e.raw_os_error().unwrap() == 5 {
+                                            return Err("need_admin".to_string());
+                                        }
                                     }
+                                    return Err(e.to_string());
                                 }
                             }
 
                             match copy_files(entry.path(), dest.as_ref().join(entry.file_name())) {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    info!("[helpers.rs] copy_files: {}", e);
+                                    println!("[helpers.rs] copy_files 2: {}", e);
+                                    info!("[helpers.rs] copy_files 2: {}", e);
                                     return Err(e);
                                 }
                             }
@@ -123,13 +130,21 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match copy_results {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    info!("[helpers.rs] copy_files: {}", e);
+                                    println!("[helpers.rs] copy_files 3: {}", e);
+                                    info!("[helpers.rs] copy_files 3: {}", e);
+
+                                    if e.raw_os_error().is_some() {
+                                        if e.raw_os_error().unwrap() == 5 {
+                                            return Err("need_admin".to_string());
+                                        }
+                                    }
                                     return Err(e.to_string());
                                 }
                             }
                         }
                     }
                     Err(e) => {
+                        println!("[helpers.rs] copy_files 4: {}", e);
                         info!("[helpers.rs] copy_files: {}", e);
                         return Err(e.to_string());
                     }
@@ -138,6 +153,7 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
             Ok(())
         }
         Err(e) => {
+            println!("[helpers.rs] copy_files 5: {}", e);
             info!("[helpers.rs] copy_files: {}", e);
             Err(e.to_string())
         }
