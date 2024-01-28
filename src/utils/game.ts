@@ -1,4 +1,4 @@
-import { fs, invoke, path, process } from "@tauri-apps/api";
+import { fs, invoke, path, process, shell } from "@tauri-apps/api";
 import { exists } from "@tauri-apps/api/fs";
 import { t } from "i18next";
 import { invoke_rpc } from "../api/rpc";
@@ -185,9 +185,12 @@ export const startGame = async (
   if (sampVersion === "custom" && !foundSampInGtaFolder) {
     showMessageBox({
       title: t("gta_path_modal_cant_find_samp_title"),
-      description: t("gta_path_modal_cant_find_samp_description", {
-        path: gtasaPath,
-      }),
+      description:
+        t("gta_path_modal_cant_find_samp_description", {
+          path: gtasaPath,
+        }) +
+        `\n` +
+        t("gta_path_modal_cant_find_samp_description_2"),
       boxWidth: 360,
       buttonWidth: 150,
       buttons: [
@@ -197,6 +200,12 @@ export const startGame = async (
             hideMessageBox();
             setServer(server);
             showPrompt(true);
+          },
+        },
+        {
+          title: t("download"),
+          onPress: () => {
+            shell.open("https://uifserver.net/download/sa-mp-0.3.7-R5-1-MP-install.exe")
           },
         },
       ],
