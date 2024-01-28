@@ -46,7 +46,6 @@ winreg = "0.52.0"
 custom-protocol = ["tauri/custom-protocol"]
 
 [profile.release]
-panic = "abort"
 codegen-units = 1
 lto = true
 opt-level = "z"
