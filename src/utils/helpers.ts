@@ -126,8 +126,8 @@ export const fetchUpdateInfo = async () => {
           version,
           newVersion: updateInfo.version,
         }),
-        boxWidth: 550,
-        buttonWidth: 160,
+        boxWidth: 640,
+        buttonWidth: 200,
         buttons: [
           {
             title: t("download"),
