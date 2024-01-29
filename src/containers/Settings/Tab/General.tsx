@@ -135,7 +135,7 @@ const General = () => {
           style={[
             styles.browseButton,
             {
-              backgroundColor: theme.primary,
+              backgroundColor: `${theme.primary}BB`,
               borderColor: theme.textSecondary,
             },
           ]}
@@ -150,7 +150,7 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            backgroundColor: theme.primary,
+            backgroundColor: `${theme.primary}BB`,
             borderColor: theme.textSecondary,
           },
         ]}
@@ -164,7 +164,7 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            backgroundColor: theme.primary,
+            backgroundColor: `${theme.primary}BB`,
           },
         ]}
         onPress={() => importFavListFromSAMP()}
