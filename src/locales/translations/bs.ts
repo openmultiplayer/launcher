@@ -64,7 +64,7 @@ export default {
   update_modal_update_available_description:
     'Dostupan je novi build launcher-a!\nBuild verzija tvoga launhcer-a: {{ version }}\nTrenutna build verzija launcher-a: {{ newVersion }}\nKlikni "Skini" da otvorite stranicu izdanja',
   download: "Skini",
-  update_modal_remind_me_next_time: "Podjseti Me Slijedeći Put",
+  update_modal_remind_me_next_time: "Podsjeti Me Sljedeći Put",
   update_modal_skip_this_update: "Preskoči Ovo Ažuriranje",
   gta_path_modal_cant_find_game_title: "GTA: San Andreas nije pronađen!",
   gta_path_modal_cant_find_game_description:
