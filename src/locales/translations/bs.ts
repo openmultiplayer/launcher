@@ -94,6 +94,8 @@ export default {
   settings_advanced_tab_title: "Napredno",
   settings_advanced_discord_status: "Uključi Discord status",
   join_discord: "Pridruži se Discord Serveru",
-  samp_verison: "SA-MP Verzija",
+  samp_version: "SA-MP Verzija",
   change_version: "Promijeni Verziju",
+  offline: "Offline",
+  from_gtasa_folder: "Iz GTASA Foldera",
 };

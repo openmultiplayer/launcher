@@ -87,4 +87,11 @@ export default {
   admin_permissions_required_modal_description:
     'Падобна на тое, што для запуску GTA: San Andreas патрабуюцца правы адміністратара. Гэта можа адбыцца па розных прычынах, напрыклад, калі ваша гульня ўстаноўлена на дыску "C". Калі ласка, адкрыйце open.mp лаунчер паўторна ад імя адміністратара з дапамогай кнопкі" Запуск ад імя адміністратара " альбо ўручную',
   run_as_admin: "Запуск ад імя адмыністратора",
+  settings_general_tab_title: "Галоўнае",
+  settings_lang_tab_title: "Мова",
+  settings_advanced_tab_title: "Дадаткова",
+  settings_advanced_discord_status: "Уключыць статус Discord",
+  join_discord: "Далучыцца да сервера Discord",
+  samp_version: "SA-MP версія",
+  change_version: "Змяніць версію",
 };

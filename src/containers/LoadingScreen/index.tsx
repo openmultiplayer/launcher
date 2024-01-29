@@ -1,8 +1,9 @@
-import { fs, invoke, path } from "@tauri-apps/api";
+import { fs, path } from "@tauri-apps/api";
 import { FileEntry } from "@tauri-apps/api/fs";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { download } from "tauri-plugin-upload-api";
+import { invoke_rpc } from "../../api/rpc";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { validFileChecksums } from "../../constants/app";
@@ -49,9 +50,9 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
           percent: (downloadedSize.current * 100) / total,
         });
         if (downloadedSize.current === total) {
-          await invoke("extract_7z", {
+          await invoke_rpc("extract_7z", {
             path: archive,
-            outputPath: samp,
+            output_path: samp,
           });
           setDownloading(false);
           finishLoading(1);
@@ -63,7 +64,7 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
 
   const collectFiles = async (parent: FileEntry, list: any[]) => {
     if (parent.children && parent.children.length) {
-      parent.children.forEach((file) => collectFiles(file, list));
+      parent.children.forEach((file: any) => collectFiles(file, list));
     } else {
       list.push(parent.path);
     }
@@ -115,11 +116,13 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     const files = await fs.readDir(samp, { recursive: true });
 
     const list: any[] = [];
-    files.forEach((file) => collectFiles(file, list));
+    files.forEach((file: any) => collectFiles(file, list));
 
-    const checksums = (await invoke("get_checksum_of_files", {
-      list: list,
-    })) as string[];
+    const checksums: string[] = JSON.parse(
+      await invoke_rpc("get_checksum_of_files", {
+        list: list,
+      })
+    );
 
     const results = await validateFileChecksums(checksums);
     if (results.includes(false)) {
@@ -137,7 +140,20 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     if (await fs.exists(samp)) {
       const archive = await path.join(samp, "samp_clients.7z");
       if (await fs.exists(archive)) {
-        processFileChecksums();
+        const checksums: string[] = JSON.parse(
+          await invoke_rpc("get_checksum_of_files", {
+            list: [archive],
+          })
+        );
+
+        if (checksums.length) {
+          const resource = validFileChecksums.get("samp_clients.7z");
+          if (resource && resource.checksum === checksums[0].split("|")[1]) {
+            processFileChecksums();
+            return;
+          }
+        }
+        downloadResources(samp);
       } else {
         downloadResources(samp);
       }

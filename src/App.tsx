@@ -1,4 +1,3 @@
-import { invoke, process } from "@tauri-apps/api";
 import {
   LogicalSize,
   appWindow,
@@ -6,6 +5,7 @@ import {
 } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { invoke_rpc } from "./api/rpc";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
 import LoadingScreen from "./containers/LoadingScreen";
@@ -49,7 +49,7 @@ const App = () => {
   );
 
   const initializeApp = async () => {
-    invoke("toggle_drpc", {
+    invoke_rpc("toggle_drpc", {
       toggle: shouldUpdateDiscordStatus,
     });
     fetchServers();
@@ -76,7 +76,7 @@ const App = () => {
       document.addEventListener("contextmenu", (event) => {
         try {
           // @ts-ignore
-          if (process && process.env.NODE_DEV !== "development") {
+          if (DEBUG_MODE == false) {
             event.preventDefault();
           }
         } catch (e) {}

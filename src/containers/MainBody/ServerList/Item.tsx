@@ -1,6 +1,6 @@
 import { t } from "i18next";
-import { memo, useEffect, useRef } from "react";
-import { Animated, Pressable, StyleSheet, View } from "react-native";
+import { memo, useRef } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
@@ -19,44 +19,10 @@ interface IProps {
 
 const ServerItem = memo((props: IProps) => {
   const { server, index } = props;
-
-  const { theme } = useTheme();
-  const isSelectedRef = useRef(!!props.isSelected);
+  const { theme, themeType } = useTheme();
   const lastPressTime = useRef(0);
   const { showPrompt, setServer } = useJoinServerPrompt();
   const { show: showContextMenu } = useContextMenu();
-
-  useEffect(() => {
-    if (props.isSelected) {
-      fadeAnimValue.setValue(1);
-      isSelectedRef.current = true;
-    } else {
-      fadeAnimValue.setValue(0.5);
-      isSelectedRef.current = false;
-    }
-  }, [props.isSelected]);
-
-  const fadeAnimValue = useRef(new Animated.Value(0.5)).current;
-
-  const fadeInAnim = Animated.timing(fadeAnimValue, {
-    toValue: 1,
-    duration: 100,
-    useNativeDriver: false,
-  });
-
-  const fadeOutAnim = Animated.timing(fadeAnimValue, {
-    toValue: 0.5,
-    duration: 400,
-    useNativeDriver: false,
-  });
-
-  const fadeOut = () => {
-    if (!isSelectedRef.current) fadeOutAnim.start();
-  };
-
-  const fadeIn = () => {
-    if (!isSelectedRef.current) fadeInAnim.start();
-  };
 
   const onDoublePress = () => {
     setServer(server);
@@ -89,7 +55,7 @@ const ServerItem = memo((props: IProps) => {
     } else if (server.ping < 9999) {
       return t("unlocked");
     } else {
-      return "Offline";
+      return t("offline");
     }
   };
 
@@ -111,8 +77,6 @@ const ServerItem = memo((props: IProps) => {
     <Pressable
       key={"server-item-" + index}
       style={styles.pressableContainer}
-      onHoverIn={() => !props.isSelected && fadeIn()}
-      onHoverOut={() => !props.isSelected && fadeOut()}
       onPress={() => onPress()}
       // @ts-ignore
       onContextMenu={(e) => {
@@ -141,6 +105,13 @@ const ServerItem = memo((props: IProps) => {
           />
         </View>
         <View
+          id={
+            !props.isSelected
+              ? themeType === "dark"
+                ? "server-list-item-dark"
+                : "server-list-item-light"
+              : undefined
+          }
           style={[
             {
               flexDirection: "row",
@@ -153,22 +124,10 @@ const ServerItem = memo((props: IProps) => {
               borderColor: theme.primary,
               backgroundColor: props.isSelected
                 ? theme.primary + "7D"
-                : "transparent",
+                : undefined,
             },
           ]}
         >
-          {!props.isSelected && (
-            <Animated.View
-              style={[
-                StyleSheet.absoluteFill,
-                {
-                  backgroundColor: theme.serverListItemBackgroundColor,
-                  opacity: fadeAnimValue,
-                  borderRadius: sc(5),
-                },
-              ]}
-            />
-          )}
           {server.usingOmp && (
             <div
               style={{

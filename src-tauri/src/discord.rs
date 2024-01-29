@@ -3,19 +3,25 @@ use discord_rich_presence::{
     activity::{self, Timestamps},
     DiscordIpc, DiscordIpcClient,
 };
+use std::error::Error;
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
-use sysinfo::{ProcessExt, System, SystemExt};
+use sysinfo::System;
 use tauri::async_runtime::block_on;
 
-static mut SHOULD_SEND_UPDATE_TO_DISCORD: bool = true;
+static SHOULD_SEND_UPDATE_TO_DISCORD: Mutex<bool> = Mutex::new(true);
 
-pub fn toggle_drpc(toggle: bool) -> () {
-    unsafe {
-        SHOULD_SEND_UPDATE_TO_DISCORD = toggle;
+pub fn toggle_drpc(toggle: bool) -> Result<(), Box<dyn Error>> {
+    let mut discord_update = SHOULD_SEND_UPDATE_TO_DISCORD.lock()?;
+    *discord_update = toggle;
+
+    if *discord_update {
+        initialize_drpc();
     }
+    Ok(())
 }
 
-pub fn initialize_drpc() -> () {
+pub fn initialize_drpc() {
     std::thread::spawn(move || {
         #[allow(unused_assignments)]
         let mut connected = false;
@@ -44,15 +50,9 @@ pub fn initialize_drpc() -> () {
         let mut in_game = false;
 
         loop {
-            unsafe {
-                if !SHOULD_SEND_UPDATE_TO_DISCORD {
-                    match client.close() {
-                        Ok(_) => {}
-                        Err(_) => {}
-                    };
-                    connected = false;
-                    continue;
-                }
+            if !*SHOULD_SEND_UPDATE_TO_DISCORD.lock().unwrap() {
+                let _ = client.close();
+                break;
             }
 
             if !connected {
@@ -125,7 +125,7 @@ pub fn initialize_drpc() -> () {
                 }
                 let nick_name_detail = format!("Playing as {}", name);
                 let full_server_address = format!("{}:{}", ip, port);
-                hostname = if hostname.len() > 0 {
+                hostname = if !hostname.is_empty() {
                     hostname
                 } else {
                     "Unable to get server name".to_string()

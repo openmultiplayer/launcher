@@ -91,5 +91,12 @@ export default {
   settings_general_tab_title: "عمومی",
   settings_lang_tab_title: "زبان ها",
   settings_advanced_tab_title: "پیشرفته",
-  settings_advanced_discord_status: "قعال سازی وضعیت دیسکورد",
+  settings_advanced_discord_status: "فعال سازی وضعیت دیسکورد",
+  join_discord: "عضویت در دیسکورد",
+  samp_version: "نسخه سمپ",
+  change_version: "تغییر نسخه",
+  offline: "آفلاین",
+  from_gtasa_folder: "پوشه جی تی ای",
+  gta_path_modal_cant_find_samp_description_2:
+    "لطفا نسخه دیگری انتخاب کنید یا به صورت دستی سمپ را دانلود و نصب کنید.",
 };

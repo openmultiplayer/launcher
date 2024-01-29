@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke_rpc } from "../api/rpc";
 import { usePersistentServers, useServers } from "../states/servers";
 import { Log } from "./logger";
 import { ListType, Server } from "./types";
@@ -38,7 +38,7 @@ export const queryServer = (
 
 const getServerInfo = async (ip: string, port: number, listType: ListType) => {
   try {
-    const serverInfo = await invoke<string>("request_server_info", {
+    const serverInfo: any = await invoke_rpc("request_server_info", {
       ip: ip,
       port: port,
     });
@@ -76,7 +76,7 @@ const getServerPlayers = async (
   listType: ListType
 ) => {
   try {
-    const serverPlayers = await invoke<string>("request_server_players", {
+    const serverPlayers = await invoke_rpc("request_server_players", {
       ip: ip,
       port: port,
     });
@@ -108,7 +108,7 @@ const getServerPlayers = async (
 
 const getServerRules = async (ip: string, port: number, listType: ListType) => {
   try {
-    const serverRules = await invoke<string>("request_server_rules", {
+    const serverRules = await invoke_rpc("request_server_rules", {
       ip: ip,
       port: port,
     });
@@ -156,7 +156,7 @@ const getServerOmpExtraInfo = async (
   ompExtraInfoLastCheck[`${ip}:${port}`] = Date.now();
 
   try {
-    const serverOmpExtraInfo = await invoke<string>(
+    const serverOmpExtraInfo = await invoke_rpc(
       "request_server_omp_extra_info",
       {
         ip: ip,
@@ -199,16 +199,18 @@ const getServerOmpExtraInfo = async (
 
 const getServerPing = async (ip: string, port: number, listType: ListType) => {
   try {
-    const serverPing = await invoke<string>("ping_server", {
-      ip: ip,
-      port: port,
-    });
+    const serverPing = parseInt(
+      await invoke_rpc("ping_server", {
+        ip: ip,
+        port: port,
+      })
+    );
 
     let server = getServerFromList(ip, port, listType);
     if (server) {
       let ping = server.ping;
 
-      if (typeof serverPing === "number") {
+      if (!isNaN(serverPing)) {
         if (serverPing !== 9999) {
           ping = serverPing;
         } else {
@@ -216,6 +218,8 @@ const getServerPing = async (ip: string, port: number, listType: ListType) => {
             ping = serverPing;
           }
         }
+      } else {
+        ping = 9999;
       }
 
       server = {

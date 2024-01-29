@@ -91,6 +91,10 @@ export default {
   settings_advanced_tab_title: "Advanced",
   settings_advanced_discord_status: "Enable Discord status",
   join_discord: "Join Discord Server",
-  samp_verison: "SA-MP Version",
+  samp_version: "SA-MP Version",
   change_version: "Change Version",
+  offline: "Offline",
+  from_gtasa_folder: "From GTASA Folder",
+  gta_path_modal_cant_find_samp_description_2:
+    "Please choose another version or download and install SA-MP manually.",
 };

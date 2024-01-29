@@ -7,12 +7,8 @@ Made with Tauri + React-Native ❤️
 Use open.mp launcher to enjoy a live, reliable, and populated server list to find any server you want to play on!  
 Just download it from [Releases](https://github.com/openmultiplayer/launcher/releases/latest) page and run it!
 
-For users using old Windows 10, Windows 8(.1), or Windows 7, if you do not have WebView2 installed (comes preinstalled in newer Windows 10 and 11 setups, and comes with Microsoft Edge), you must download **WebView2** from [Here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)  
-https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section
-
-**Note**: Download Evergreen Bootstrapper and let installer download the right version for you for best experience.
-
-**Note**: You still need samp installed to play, you can install samp from https://sa-mp.mp/downloads/ .
+### Important Note:
+For users using old Windows 10, Windows 8(.1), or Windows 7, if you do not have WebView2 installed (comes preinstalled in newer Windows 10 and 11 setups, and comes with Microsoft Edge), You must install this launcher using **setup** file in releases section.  
 
 # Development
 

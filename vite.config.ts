@@ -15,10 +15,11 @@ const extensions = [
   ".json",
 ];
 
-export default defineConfig(async () => ({
+export default defineConfig({
   define: {
     global: "window",
     __DEV__: false,
+    DEBUG_MODE: process.env.TAURI_DEBUG,
   },
   optimizeDeps: {
     force: true,
@@ -33,7 +34,7 @@ export default defineConfig(async () => ({
   plugins: [
     {
       name: "treat-js-files-as-jsx",
-      async transform(code, id) {
+      async transform(code: any, id: any) {
         if (!id.match(/node_modules\/.*\.js$/)) return null;
         // Use the exposed transform from vite, instead of directly
         // transforming with esbuild
@@ -77,5 +78,7 @@ export default defineConfig(async () => ({
   envPrefix: ["VITE_", "TAURI_"],
   build: {
     chunkSizeWarningLimit: 700,
+    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+    sourcemap: !!process.env.TAURI_DEBUG,
   },
-}));
+});
