@@ -91,7 +91,7 @@ export default {
   settings_lang_tab_title: "Языки",
   settings_advanced_tab_title: "Дополнительно",
   settings_advanced_discord_status: "Включить статус Discord",
-  join_discord: "Присоединиться к серверу Discord",
+  join_discord: "Присоединиться к Discord",
   samp_version: "SA-MP версия",
   change_version: "Изменить версию",
 };
