@@ -94,4 +94,8 @@ export default {
   join_discord: "Присоединиться к Discord",
   samp_version: "SA-MP версия",
   change_version: "Изменить версию",
+  offline: "Оффлайн",
+  from_gtasa_folder: "Из папки GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "Пожалуйста, выберите другую версию или загрузите и установите SA-MP вручную.",
 };
