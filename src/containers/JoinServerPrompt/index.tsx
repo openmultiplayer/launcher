@@ -12,21 +12,16 @@ import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
+import { usePersistentServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
-import {
-  checkResourceFilesAvailability,
-  copySharedFilesIntoGameFolder,
-  startGame,
-} from "../../utils/game";
+import { startGame } from "../../utils/game";
 import {
   getSampVersionFromName,
   getSampVersionName,
   getSampVersions,
 } from "../../utils/helpers";
-import { Log } from "../../utils/logger";
 import { sc } from "../../utils/sizeScaler";
-import { usePersistentServers } from "../../states/servers";
 import { SAMPDLLVersions } from "../../utils/types";
 
 const JoinServerPrompt = () => {
@@ -245,15 +240,6 @@ const JoinServerPrompt = () => {
             onChange={async (value) => {
               const version = getSampVersionFromName(value);
               setSampVersion(version);
-              if (version !== "custom") {
-                const checks = await checkResourceFilesAvailability();
-                if (checks.includes(false)) {
-                  Log.debug(
-                    "Failed file validation, let's copy files into GTASA directory"
-                  );
-                  await copySharedFilesIntoGameFolder();
-                }
-              }
             }}
           />
         </View>

@@ -2,54 +2,86 @@ use std::fs;
 use std::path::Path;
 
 use chardet::{charset2encoding, detect};
+use chardetng::EncodingDetector;
 use charset_normalizer_rs::from_bytes;
-use encoding::label::encoding_from_whatwg_label;
-use encoding::DecoderTrap;
+use encoding_rs::{Encoding, UTF_8};
+use log::info;
 
-pub fn decode_buffer(buf: Vec<u8>) -> (String, String, String) {
-    let buff_output: String;
-    let first_encoding: String;
-    let second_encoding: String;
-    let mut str_encoding: String;
+/// Decodes a buffer of bytes into a string, detecting the encoding
+pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
+    // Using chardetng for encoding detection
+    let mut detector = EncodingDetector::new();
+    detector.feed(&buf, true);
+    let chardetng_encoding = detector.guess(None, true).name().to_lowercase();
 
-    // chardet
-    first_encoding = charset2encoding(&detect(&buf).0).to_string();
+    // Using chardet for encoding detection
+    let chardet_encoding = charset2encoding(&detect(&buf).0).to_string().to_lowercase();
 
-    // charset_normalizer_rs
-    second_encoding = match from_bytes(&buf, None).get_best() {
-        Some(cd) => cd.encoding().to_string(),
-        None => "not_found".to_string(),
+    // Using charset_normalizer_rs for encoding detection
+    let charset_normalizer_encoding = from_bytes(&buf, None)
+        .get_best()
+        .map(|cd| cd.encoding().to_string().to_lowercase())
+        .unwrap_or_else(|| "not_found".to_string());
+
+    // Collect encoding results for debug
+    // let mut messages: Vec<String> = Vec::new();
+    // messages.push(format!("Input: {}", String::from_utf8_lossy(&buf)));
+    // messages.push(format!("\tchardetng: {}", chardetng_encoding));
+    // messages.push(format!("\tchardet: {}", chardet_encoding));
+    // messages.push(format!(
+    //     "\tcharset_normalizer: {}",
+    //     charset_normalizer_encoding
+    // ));
+
+    // Determine the most likely actual encoding
+    let actual_encoding = if chardet_encoding == "ascii" && charset_normalizer_encoding == "ascii" {
+        // Default to UTF-8 if both chardet and charset normalizer detect ASCII
+        Encoding::for_label("UTF_8".as_bytes()).unwrap_or(UTF_8)
+    } else if ((chardet_encoding == "koi8-r" && charset_normalizer_encoding == "koi8-r")
+        || chardetng_encoding == "gbk"
+            && (chardet_encoding == "windows-1255" || charset_normalizer_encoding == "ibm866"))
+        || chardet_encoding == "x-mac-cyrillic"
+        || charset_normalizer_encoding == "macintosh"
+        || (chardetng_encoding == "iso-8859-2" && chardet_encoding == "iso-8859-1")
+    {
+        // Use windows-1251 for various combinations
+        Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
+    } else if (chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251")
+        || (chardet_encoding == "iso-8859-1"
+            && (charset_normalizer_encoding == "iso-8859-2"
+                || charset_normalizer_encoding == "windows-874"
+                || charset_normalizer_encoding == "iso-8859-1"
+                || charset_normalizer_encoding == "ibm866"
+                || charset_normalizer_encoding == "euc-kr"))
+        || (chardetng_encoding == "shift_jis" && chardet_encoding == "iso-8859-1")
+    {
+        // Use windows-1252 for various combinations
+        Encoding::for_label("windows-1252".as_bytes()).unwrap_or(UTF_8)
+    } else if chardetng_encoding == "gbk" || chardet_encoding == "gb2312" {
+        // Use GB18030 when chardetng detects GBK or chardet detects GB2312
+        Encoding::for_label("GB18030".as_bytes()).unwrap_or(UTF_8)
+    } else {
+        // Default to the encoding detected by chardetng
+        Encoding::for_label(chardetng_encoding.as_bytes()).unwrap_or(UTF_8)
     };
 
-    str_encoding = first_encoding.clone();
+    // Decode the buffer using the determined encoding
+    // Note: Error handling for decoding errors is intentionally omitted.
+    // In cases where there are minor errors in the text (like a few corrupted characters),
+    // this approach ensures that the text is still usable, albeit with some minor imperfections.
+    let (decoded, _, _had_errors) = actual_encoding.decode(&buf);
+    let buff_output = decoded.into_owned();
 
-    if first_encoding == "KOI8-R"
-        || first_encoding == "MacCyrillic"
-        || first_encoding == "x-mac-cyrillic"
-    {
-        str_encoding = "cp1251".to_string();
-    }
-
-    if second_encoding == "koi8-r" || second_encoding == "macintosh" || second_encoding == "ibm866"
-    {
-        str_encoding = "cp1251".to_string();
-    }
-
-    // if str_encoding.len() < 1 {
-    //     str_encoding = "cp1251".to_string();
+    // Print debug information
+    // messages.push(format!("\tfinal: {}", actual_encoding.name().to_string()));
+    // for message in messages {
+    //     print!("{}", message);
+    //     print!("\t");
     // }
+    // println!();
 
-    let coder = encoding_from_whatwg_label(str_encoding.as_str());
-    if coder.is_some() {
-        buff_output = coder
-            .unwrap()
-            .decode(&buf, DecoderTrap::Ignore)
-            .expect("Error");
-    } else {
-        buff_output = String::from_utf8_lossy(buf.as_slice()).to_string();
-    }
-
-    (buff_output, first_encoding, second_encoding)
+    // Return the decoded string and the encoding name
+    (buff_output, actual_encoding.name().to_string())
 }
 
 pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), String> {
@@ -63,25 +95,33 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                         if ty.is_dir() {
                             let dir_path = dest.as_ref().join(entry.file_name());
                             let dir_path_str = dir_path.to_str().unwrap();
-                            let dir_creation_results = fs::create_dir(dir_path.to_owned());
+                            let dir_creation_results = fs::create_dir(&dir_path);
                             match dir_creation_results {
                                 Ok(_) => {}
                                 Err(e) => {
+                                    println!("[helpers.rs] copy_files 1: {}", e);
+                                    info!("[helpers.rs] copy_files 1: {}", e);
+
                                     if e.raw_os_error().is_some() {
                                         if e.raw_os_error().unwrap() == 183 {
-                                            println!("Directory {} already exists", dir_path_str)
+                                            println!("Directory {} already exists", dir_path_str);
+                                            return Ok(());
                                         }
-                                    } else {
-                                        println!("ERROR: {}", e.to_string());
-                                        return Err(e.to_string());
+
+                                        if e.raw_os_error().unwrap() == 5 {
+                                            return Err("need_admin".to_string());
+                                        }
                                     }
+                                    return Err(e.to_string());
                                 }
                             }
 
                             match copy_files(entry.path(), dest.as_ref().join(entry.file_name())) {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    return Err(e.to_string());
+                                    println!("[helpers.rs] copy_files 2: {}", e);
+                                    info!("[helpers.rs] copy_files 2: {}", e);
+                                    return Err(e);
                                 }
                             }
                         } else {
@@ -90,23 +130,32 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), S
                             match copy_results {
                                 Ok(_) => {}
                                 Err(e) => {
-                                    println!("ERROR: {}", e.to_string());
+                                    println!("[helpers.rs] copy_files 3: {}", e);
+                                    info!("[helpers.rs] copy_files 3: {}", e);
+
+                                    if e.raw_os_error().is_some() {
+                                        if e.raw_os_error().unwrap() == 5 {
+                                            return Err("need_admin".to_string());
+                                        }
+                                    }
                                     return Err(e.to_string());
                                 }
                             }
                         }
                     }
                     Err(e) => {
-                        println!("ERROR: {}", e.to_string());
+                        println!("[helpers.rs] copy_files 4: {}", e);
+                        info!("[helpers.rs] copy_files: {}", e);
                         return Err(e.to_string());
                     }
                 }
             }
-            return Ok(());
+            Ok(())
         }
         Err(e) => {
-            println!("ERROR: {}", e.to_string());
-            return Err(e.to_string());
+            println!("[helpers.rs] copy_files 5: {}", e);
+            info!("[helpers.rs] copy_files: {}", e);
+            Err(e.to_string())
         }
     }
 }

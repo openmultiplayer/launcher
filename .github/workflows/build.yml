@@ -20,23 +20,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install Rust nightly toolchain
-        uses: dtolnay/rust-toolchain@nightly
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: nightly
 
       - name: Install frontend dependencies
-        run: yarn install # change this to npm or pnpm depending on which one you use
+        run: yarn install
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run UPX against portable version
-        uses: crazy-max/ghaction-upx@v3
-        with:
-          version: latest
-          files: |
-            ./src-tauri/target/release/omp-launcher.exe
-          args: -9 -fq
 
       - name: Generate artifact name
         id: vars
@@ -46,7 +39,7 @@ jobs:
           echo "artifact_name=${artifact_name}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.vars.outputs.artifact_name }}
           path: src-tauri/target/release/omp-launcher.exe

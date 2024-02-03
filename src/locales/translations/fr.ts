@@ -83,4 +83,26 @@ export default {
   notification_add_to_favorites_title: "Ajouté aux favoris !",
   notification_add_to_favorites_description:
     "{{ server }} a été ajouté à votre liste de favoris.",
+  nickname_modal_name_not_set_title: "Pas de pseudo !",
+  nickname_modal_name_not_set_description:
+    "Vous devez choisir un pseudonyme avant de rejoindre un serveur.",
+  gta_path_modal_path_not_set_title:
+    "Le chemin vers GTA : San Andreas n'est pas sélectionné !",
+  gta_path_modal_path_not_set_description:
+    "Vous n'avez pas sélectionné le chemin vers GTA : San Andreas, allez dans les paramètres puis cherchez le dossier du jeu.",
+  admin_permissions_required_modal_title: "Permissions admin requises !",
+  admin_permissions_required_modal_description:
+    'Il semblerait que votre jeu GTA : San Andreas a besoin des permissions administrateur pour se lancer. Cela peut être dû à de nombreuses raisons, comme le fait d\'avoir le jeu installé sur le lecteur "C:". Prière de ré-ouvrir le lanceur open.mp en tant qu\'administrateur, soit en utilisant le bouton "Exécuter en tant qu\'administrateur" ou manuellement vous-même.',
+  run_as_admin: "Exécuter en tant qu'administrateur",
+  settings_general_tab_title: "Général",
+  settings_lang_tab_title: "Langues",
+  settings_advanced_tab_title: "Avancé",
+  settings_advanced_discord_status: "Activer le statut Discord",
+  join_discord: "Rejoindre le serveur Discord",
+  samp_version: "Version de SA-MP",
+  change_version: "Changer de version",
+  offline: "Hors-ligne",
+  from_gtasa_folder: "Depuis le dossier GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "Veuillez choisir une autre version ou télécharger et installer SA-MP manuellement.",
 };

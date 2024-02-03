@@ -88,4 +88,13 @@ export default {
   run_as_admin: "Als Admin ausführen",
   settings_general_tab_title: "Allgemein",
   settings_lang_tab_title: "Sprachen",
+  settings_advanced_tab_title: "Erweitert",
+  settings_advanced_discord_status: "Discord Status aktivieren",
+  join_discord: "Discord beitreten",
+  samp_version: "SA-MP Version",
+  change_version: "Version ändern",
+  offline: "Offline",
+  from_gtasa_folder: "aus GTASA Ordner",
+  gta_path_modal_cant_find_samp_description_2:
+    "Bitte wähle eine Andere Version oder installiere SA-MP manuell.",
 };

@@ -1,11 +1,11 @@
+import { t } from "i18next";
 import { Pressable, StyleSheet, View } from "react-native";
+import { invoke_rpc } from "../../../api/rpc";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
 import { useGenericPersistentState } from "../../../states/genericStates";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
-import { t } from "i18next";
-import { invoke } from "@tauri-apps/api";
 
 const Advanced = () => {
   const { theme } = useTheme();
@@ -35,7 +35,7 @@ const Advanced = () => {
             alignItems: "center",
           }}
           onPress={async () => {
-            await invoke("toggle_drpc", {
+            await invoke_rpc("toggle_drpc", {
               toggle: !shouldUpdateDiscordStatus,
             });
             toggleDiscordStatus(!shouldUpdateDiscordStatus);
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     height: 29,
     borderRadius: 8,
     borderWidth: 2,
+    // @ts-ignore
     outlineStyle: "none",
   },
   browseButton: {

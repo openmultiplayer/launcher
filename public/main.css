@@ -1,3 +1,23 @@
+#server-list-item-dark {
+  background-color: #30303880;
+  transition: 0.4s;
+}
+
+#server-list-item-dark:hover {
+  background-color: #303038FF;
+  transition: 0.2s;
+}
+
+#server-list-item-light {
+  background-color: #E9ECF280;
+  transition: 0.4s;
+}
+
+#server-list-item-light:hover {
+  background-color: #E9ECF2FF;
+  transition: 0.2s;
+}
+
 #scroll::-webkit-scrollbar-track {
   background: #ffffff40;
 }

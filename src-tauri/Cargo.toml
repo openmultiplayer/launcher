@@ -10,33 +10,43 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.4", features = [] }
+tauri-build = { version = "1.5.1", features = [] }
 
 [dependencies]
-tauri = { version = "1.4", features = [ "fs-all", "path-all", "macos-private-api", "process-all", "window-all", "dialog-all", "os-all", "shell-open"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-tokio = { version = "1.32.0", features = ["full"] }
-byteorder = "1.4.3"
+tauri = { version = "1.5.4", features = [ "fs-all", "path-all", "macos-private-api", "process-all", "window-all", "dialog-all", "os-all", "shell-open"] }
+serde = { version = "1.0.196", features = ["derive"] }
+serde_json = "1.0.112"
+tokio = { version = "1.35.1", features = ["full"] }
+byteorder = "1.5.0"
 chardet = "0.2.4"
-encoding = "0.2.33"
+chardetng = "0.1.17"
+encoding_rs = "0.8.33"
 dirs-next = "2.0.0"
 discord-rich-presence = "0.2.3"
-regex = "1.10.2"
+regex = "1.10.3"
 runas = "1.1.0"
-sysinfo = "0.29.10"
+sysinfo = "0.30.5"
 simple-logging = "2.0.2"
 log = "0.4.20"
 charset-normalizer-rs = "1.0.6"
 tauri-plugin-upload = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 sevenz-rust = "0.5.4"
 md5 = "0.7.0"
+actix-web = "4.4.1"
+actix-rt = "2.9.0"
+actix-cors = "0.7.0"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 dll-syringe = "0.15.2"
-winreg = "0.51.0"
+winreg = "0.52.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+strip = true

@@ -135,7 +135,7 @@ const General = () => {
           style={[
             styles.browseButton,
             {
-              backgroundColor: theme.primary,
+              backgroundColor: `${theme.primary}BB`,
               borderColor: theme.textSecondary,
             },
           ]}
@@ -150,7 +150,7 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            backgroundColor: theme.primary,
+            backgroundColor: `${theme.primary}BB`,
             borderColor: theme.textSecondary,
           },
         ]}
@@ -164,7 +164,7 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            backgroundColor: theme.primary,
+            backgroundColor: `${theme.primary}BB`,
           },
         ]}
         onPress={() => importFavListFromSAMP()}
@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: sc(38),
     borderRadius: sc(5),
+    // @ts-ignore
     outlineStyle: "none",
     fontFamily: "Proxima Nova Regular",
     fontSize: sc(17),

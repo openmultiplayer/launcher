@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     height: 29,
     borderRadius: 8,
     borderWidth: 2,
+    // @ts-ignore
     outlineStyle: "none",
   },
   browseButton: {

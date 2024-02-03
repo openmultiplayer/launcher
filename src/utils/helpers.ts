@@ -16,7 +16,7 @@ import {
   Server,
 } from "./types";
 
-const PARALLEL_SERVERS_TO_UPDATE_COUNT = 5;
+const PARALLEL_SERVERS_TO_UPDATE_COUNT = 2;
 const PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL = 2000;
 
 export const languageFilters: {
@@ -40,7 +40,7 @@ export const mapAPIResponseServerListToAppStructure = (
       version: server.core.vn,
       rules: server.ru,
       players: [] as Player[],
-      ping: 0,
+      ping: 9999,
       password: "",
       usingOmp: server.core.omp,
       partner: server.core.pr,
@@ -126,8 +126,8 @@ export const fetchUpdateInfo = async () => {
           version,
           newVersion: updateInfo.version,
         }),
-        boxWidth: 550,
-        buttonWidth: 160,
+        boxWidth: 640,
+        buttonWidth: 200,
         buttons: [
           {
             title: t("download"),

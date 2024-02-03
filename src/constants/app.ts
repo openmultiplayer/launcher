@@ -1,6 +1,7 @@
 export const VERSION = "2";
 
 type ResourceName =
+  | "samp_clients.7z"
   | "037R1_samp.dll"
   | "037R2_samp.dll"
   | "037R3_samp.dll"
@@ -34,11 +35,12 @@ export interface ResourceInfo {
 
 export const validFileChecksums = new Map<ResourceName, ResourceInfo>();
 
-/*
-5572377f1c6f9fbcb673a8cf26c19984 : C:/Users/Amyr/AppData/Local/com.open.mp/samp/samp_clients.7z
-*/
-
 const fillvalidFileChecksumsMap = () => {
+  validFileChecksums.set("samp_clients.7z", {
+    path: "samp/",
+    name: "samp_clients.7z",
+    checksum: "5572377f1c6f9fbcb673a8cf26c19984",
+  });
   validFileChecksums.set("037R1_samp.dll", {
     path: "samp/0.3.7-R1/",
     name: "samp.dll",
