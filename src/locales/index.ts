@@ -21,6 +21,7 @@ import Belarussian from "./translations/by";
 import Czech from "./translations/cz";
 import SChinese from "./translations/zh-CN";
 import TChinese from "./translations/zh-TW";
+import Sindhi from "./translations/sn";
 
 export type LanguageType =
   | "en"
@@ -43,7 +44,8 @@ export type LanguageType =
   | "by"
   | "cz"
   | "zh-CN"
-  | "zh-TW";
+  | "zh-TW"
+  | "sn";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -157,6 +159,11 @@ export const getLanguages = (): {
       label: "繁體中文",
       type: "zh-TW",
       translations: TChinese,
+    },
+    "sn": {
+      label: "سنڌي",
+      type: "sn",
+      translations: Sindhi,
     }
   };
 };
