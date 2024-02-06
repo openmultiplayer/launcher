@@ -12,6 +12,7 @@ import Hindi from "./translations/hi";
 import Hungarian from "./translations/hu";
 import Indonesian from "./translations/id";
 import Italian from "./translations/it";
+import Lithuanian from "./translations/lt";
 import Polish from "./translations/pl";
 import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
@@ -32,6 +33,7 @@ export type LanguageType =
   | "de"
   | "hi"
   | "it"
+  | "lt"
   | "ro"
   | "hu"
   | "pt"
@@ -94,6 +96,11 @@ export const getLanguages = (): {
       label: "Italiano",
       type: "it",
       translations: Italian,
+    },
+    lt: {
+      label: "Lietuvių",
+      type: "lt",
+      translations: Lithuanian,
     },
     hu: {
       label: "Magyar",
