@@ -94,4 +94,6 @@ export default {
   change_version: "تغيير الإصدار",
   offline: "غير متصل",
   from_gtasa_folder: "من مجلد GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "يرجى اختيار إصدار آخر أو تنزيل وتثبيت SA-MP يدويًا.",
 };
