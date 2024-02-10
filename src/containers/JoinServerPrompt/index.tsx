@@ -12,7 +12,7 @@ import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
-import { usePersistentServers } from "../../states/servers";
+import { usePersistentServers, useServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
 import { startGame } from "../../utils/game";
@@ -26,8 +26,14 @@ import { SAMPDLLVersions } from "../../utils/types";
 
 const JoinServerPrompt = () => {
   const { visible, server, showPrompt } = useJoinServerPrompt();
-  const { getServerSettings, setServerSettings, perServerSettings } =
-    usePersistentServers();
+  const {
+    getServerSettings,
+    setServerSettings,
+    updateInFavoritesList,
+    updateInRecentlyJoinedList,
+    perServerSettings,
+  } = usePersistentServers();
+  const { updateServer } = useServers();
   const { height, width } = useWindowDimensions();
   const { theme } = useTheme();
   const [password, setPassword] = useState("");
@@ -199,11 +205,20 @@ const JoinServerPrompt = () => {
           }}
           onPress={() => {
             if (server) {
+              if (server.hasPassword && password.length) {
+                const srvCpy = { ...server };
+                srvCpy.password = password;
+
+                updateServer(srvCpy);
+                updateInFavoritesList(srvCpy);
+                updateInRecentlyJoinedList(srvCpy);
+              }
+
               startGame(
                 server,
                 perServerNickname.length ? perServerNickname : nickName,
                 gtasaPath,
-                password
+                server.hasPassword ? password : ""
               );
               showPrompt(false);
             }
