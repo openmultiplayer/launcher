@@ -23,6 +23,7 @@ import Czech from "./translations/cz";
 import SChinese from "./translations/zh-CN";
 import TChinese from "./translations/zh-TW";
 import Sindhi from "./translations/sn";
+import Vietnamese from "./translations/vi";
 
 export type LanguageType =
   | "en"
@@ -47,7 +48,8 @@ export type LanguageType =
   | "cz"
   | "zh-CN"
   | "zh-TW"
-  | "sn";
+  | "sn"
+  | "vi";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -171,6 +173,11 @@ export const getLanguages = (): {
       label: "سنڌي",
       type: "sn",
       translations: Sindhi,
+    },
+    "vi": {
+      label: "Tiếng Việt",
+      type: "vi",
+      translations: Vietnamese,
     }
   };
 };
