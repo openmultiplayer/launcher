@@ -98,4 +98,6 @@ export default {
   change_version: "Promijeni Verziju",
   offline: "Offline",
   from_gtasa_folder: "Iz GTASA Foldera",
+  gta_path_modal_cant_find_samp_description_2:
+    "Molimo vas da odaberete drugu verziju ili preuzmite i instalirajte SA-MP ručno.",
 };

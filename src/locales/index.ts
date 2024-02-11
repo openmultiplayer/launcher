@@ -12,6 +12,7 @@ import Hindi from "./translations/hi";
 import Hungarian from "./translations/hu";
 import Indonesian from "./translations/id";
 import Italian from "./translations/it";
+import Lithuanian from "./translations/lt";
 import Polish from "./translations/pl";
 import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
@@ -21,6 +22,8 @@ import Belarussian from "./translations/by";
 import Czech from "./translations/cz";
 import SChinese from "./translations/zh-CN";
 import TChinese from "./translations/zh-TW";
+import Sindhi from "./translations/sn";
+import Vietnamese from "./translations/vi";
 
 export type LanguageType =
   | "en"
@@ -31,6 +34,7 @@ export type LanguageType =
   | "de"
   | "hi"
   | "it"
+  | "lt"
   | "ro"
   | "hu"
   | "pt"
@@ -43,7 +47,9 @@ export type LanguageType =
   | "by"
   | "cz"
   | "zh-CN"
-  | "zh-TW";
+  | "zh-TW"
+  | "sn"
+  | "vi";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -92,6 +98,11 @@ export const getLanguages = (): {
       label: "Italiano",
       type: "it",
       translations: Italian,
+    },
+    lt: {
+      label: "Lietuvių",
+      type: "lt",
+      translations: Lithuanian,
     },
     hu: {
       label: "Magyar",
@@ -157,6 +168,16 @@ export const getLanguages = (): {
       label: "繁體中文",
       type: "zh-TW",
       translations: TChinese,
+    },
+    "sn": {
+      label: "سنڌي",
+      type: "sn",
+      translations: Sindhi,
+    },
+    "vi": {
+      label: "Tiếng Việt",
+      type: "vi",
+      translations: Vietnamese,
     }
   };
 };

@@ -5,7 +5,7 @@ import { invoke_rpc } from "../api/rpc";
 import { ResourceInfo, validFileChecksums } from "../constants/app";
 import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
-import { usePersistentServers, useServers } from "../states/servers";
+import { usePersistentServers } from "../states/servers";
 import { useSettings } from "../states/settings";
 import { useSettingsModal } from "../states/settingsModal";
 import { Log } from "./logger";
@@ -60,25 +60,11 @@ export const startGame = async (
   gtasaPath: string,
   password: string
 ) => {
-  const {
-    addToRecentlyJoined,
-    updateInFavoritesList,
-    updateInRecentlyJoinedList,
-  } = usePersistentServers.getState();
-  const { updateServer } = useServers.getState();
+  const { addToRecentlyJoined } = usePersistentServers.getState();
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
   const { sampVersion } = useSettings.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
-
-  if (password.length) {
-    const srvCpy = { ...server };
-    srvCpy.password = password;
-
-    updateServer(srvCpy);
-    updateInFavoritesList(srvCpy);
-    updateInRecentlyJoinedList(srvCpy);
-  }
 
   if (!gtasaPath || gtasaPath.length < 1) {
     showMessageBox({
@@ -205,7 +191,9 @@ export const startGame = async (
         {
           title: t("download"),
           onPress: () => {
-            shell.open("https://uifserver.net/download/sa-mp-0.3.7-R5-1-MP-install.exe")
+            shell.open(
+              "https://uifserver.net/download/sa-mp-0.3.7-R5-1-MP-install.exe"
+            );
           },
         },
       ],
