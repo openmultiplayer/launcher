@@ -27,7 +27,7 @@ regex = "1.10.3"
 runas = "1.1.0"
 sysinfo = "0.30.5"
 simple-logging = "2.0.2"
-log = "0.4.20"
+log = "0.4.21"
 charset-normalizer-rs = "1.0.6"
 tauri-plugin-upload = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 sevenz-rust = "0.5.4"
