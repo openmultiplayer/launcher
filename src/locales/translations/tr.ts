@@ -59,7 +59,7 @@ export default {
     "İstemci verilerini sıfırla (ayarları ve listeleri temizler)",
   settings_new_update_available:
     "⚠ Yeni Güncelleme Mevcut. İndirmek için Tıklayınız! ⚠",
-  settings_credits_made_by: "❤️ ile @CanerKaraca23 tarafından çevirildi",
+  settings_credits_made_by: "❤️ ile @ulasbayraktar tarafından çevirildi",
   settings_credits_view_source_on_github: "GitHub'da kaynak kodunu görüntüle",
   update_modal_update_available_title: "Güncelleme Mevcut!",
   update_modal_update_available_description:
