@@ -33,7 +33,7 @@
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.9",
     "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
+    "@types/react-dom": "^18.2.23",
     "@types/react-native": "^0.73.0",
     "@vitejs/plugin-react": "^4.2.1",
     "babel-plugin-inline-import": "^3.0.0",
