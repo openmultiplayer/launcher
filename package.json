@@ -15,7 +15,7 @@
   "dependencies": {
     "@react-native-clipboard/clipboard": "^1.13.2",
     "@tauri-apps/api": "^1.5.3",
-    "axios": "^1.6.7",
+    "axios": "^1.7.2",
     "chart.js": "^4.4.1",
     "i18next": "^23.7.20",
     "patch-package": "^8.0.0",
