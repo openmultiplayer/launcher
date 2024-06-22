@@ -24,6 +24,7 @@ import SChinese from "./translations/zh-CN";
 import TChinese from "./translations/zh-TW";
 import Sindhi from "./translations/sn";
 import Vietnamese from "./translations/vi";
+import Tamil from "./translations/ta";
 
 export type LanguageType =
   | "en"
@@ -49,7 +50,8 @@ export type LanguageType =
   | "zh-CN"
   | "zh-TW"
   | "sn"
-  | "vi";
+  | "vi"
+  | "ta";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -178,6 +180,11 @@ export const getLanguages = (): {
       label: "Tiếng Việt",
       type: "vi",
       translations: Vietnamese,
+    },
+    "ta": {
+      label: "தமிழ்",
+      type: "ta",
+      translations: Tamil,
     }
   };
 };
