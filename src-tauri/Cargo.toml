@@ -35,6 +35,7 @@ md5 = "0.7.0"
 actix-web = "4.4.1"
 actix-rt = "2.9.0"
 actix-cors = "0.7.0"
+clap = "4.5.7"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 dll-syringe = "0.15.2"
