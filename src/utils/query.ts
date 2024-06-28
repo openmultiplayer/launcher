@@ -189,6 +189,8 @@ const getServerOmpExtraInfo = async (
               data.discord_link && data.discord_link.length
                 ? data.discord_link
                 : undefined,
+            logo:
+              data.logo_url && data.logo_url.length ? data.logo_url : undefined,
           },
         };
         updateServerEveryWhere(server);

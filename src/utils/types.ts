@@ -29,19 +29,7 @@ export interface Server {
     bannerLight?: string;
     bannerDark?: string;
     discordInvite?: string;
-    discordStatus?: {
-      appId: string;
-      largeImage: {
-        asset: string;
-        text: string;
-      };
-      smallImage: {
-        asset: string;
-        text: string;
-      };
-      title: string;
-      description: string;
-    };
+    logo?: string;
   };
   rules: {
     artwork: string;

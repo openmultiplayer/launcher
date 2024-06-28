@@ -1,6 +1,7 @@
 import { t } from "i18next";
 import { useEffect, useMemo, useState } from "react";
 import {
+  Image,
   TextInput,
   TouchableOpacity,
   View,
@@ -35,7 +36,7 @@ const JoinServerPrompt = () => {
   } = usePersistentServers();
   const { updateServer } = useServers();
   const { height, width } = useWindowDimensions();
-  const { theme } = useTheme();
+  const { theme, themeType } = useTheme();
   const [password, setPassword] = useState("");
   const [perServerVersion, setPerServerVersion] = useState<
     SAMPDLLVersions | undefined
@@ -69,11 +70,32 @@ const JoinServerPrompt = () => {
     setPassword(server && server.password ? server.password : "");
   }, [server]);
 
+  const bannerUrl = useMemo(() => {
+    if (server && server.omp) {
+      if (themeType === "dark") {
+        if (server.omp.bannerDark && server.omp.bannerDark.length)
+          return server.omp.bannerDark;
+      } else {
+        if (server.omp.bannerLight && server.omp.bannerLight.length)
+          return server.omp.bannerLight;
+      }
+    }
+    return "";
+  }, [server]);
+
+  const logoUrl = useMemo(() => {
+    if (server && server.omp) {
+      if (server.omp.logo && server.omp.logo.length) return server.omp.logo;
+    }
+    return "";
+  }, [server]);
+
   if (!visible) {
     return null;
   }
 
-  const HEIGHT = server?.hasPassword ? 316 : 248;
+  const HEIGHT =
+    (server?.hasPassword ? 316 : 248) + (bannerUrl.length ? 77 : 0);
   const WIDTH = 320;
 
   return (
@@ -96,14 +118,89 @@ const JoinServerPrompt = () => {
           shadowRadius: 10,
           alignItems: "center",
           paddingVertical: sc(11),
+          paddingTop: bannerUrl.length ? sc(0) : undefined,
         }}
       >
-        <Icon
-          svg
-          image={server?.hasPassword ? images.icons.locked : images.icons.play}
-          size={sc(30)}
-          color={server?.hasPassword ? "#36363F" : theme.primary}
-        />
+        {bannerUrl.length ? (
+          <View
+            style={{
+              width: "100%",
+              height: 70 + sc(11),
+              marginHorizontal: "5%",
+              // backgroundColor: "red",
+              overflow: "hidden",
+              borderTopLeftRadius: sc(10),
+              borderTopRightRadius: sc(10),
+            }}
+          >
+            <Image
+              source={{ uri: bannerUrl }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                height: "100%",
+                width: "100%",
+              }}
+              resizeMode="cover"
+            />
+          </View>
+        ) : null}
+
+        {logoUrl.length ? (
+          <View
+            style={{
+              marginTop: 7,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+              paddingRight: sc(20),
+              paddingLeft: sc(10),
+            }}
+          >
+            <View
+              style={{
+                marginTop: -40,
+                marginBottom: -10,
+                backgroundColor: theme.itemBackgroundColor,
+                height: 70,
+                width: 70,
+                borderRadius: 1000,
+                borderWidth: 2,
+                borderColor: theme.serverListItemBackgroundColor,
+                overflow: "hidden",
+              }}
+            >
+              <Image
+                source={{ uri: logoUrl }}
+                style={{
+                  height: "100%",
+                  width: "100%",
+                }}
+                resizeMode="cover"
+              />
+            </View>
+            <Icon
+              svg
+              image={
+                server?.hasPassword ? images.icons.locked : images.icons.play
+              }
+              size={sc(30)}
+              color={server?.hasPassword ? "#36363F" : theme.primary}
+            />
+          </View>
+        ) : (
+          <Icon
+            style={{ marginTop: 7 }}
+            svg
+            image={
+              server?.hasPassword ? images.icons.locked : images.icons.play
+            }
+            size={sc(30)}
+            color={server?.hasPassword ? "#36363F" : theme.primary}
+          />
+        )}
+
         <View
           style={{
             width: "100%",
@@ -261,18 +358,26 @@ const JoinServerPrompt = () => {
         <TouchableOpacity
           style={{
             position: "absolute",
-            top: sc(15),
-            right: sc(15),
-            height: sc(20),
-            width: sc(20),
+            ...(bannerUrl.length
+              ? {
+                  top: sc(5),
+                  right: sc(5),
+                  height: sc(30),
+                  width: sc(30),
+                  borderRadius: sc(3),
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: theme.primary,
+                }
+              : { top: sc(15), right: sc(15), height: sc(20), width: sc(20) }),
             zIndex: 0,
           }}
           onPress={() => showPrompt(false)}
         >
           <Icon
             image={images.icons.close}
-            size={sc(20)}
-            color={theme.textSecondary}
+            size={bannerUrl.length ? sc(15) : sc(20)}
+            color={bannerUrl.length ? "white" : theme.textSecondary}
           />
         </TouchableOpacity>
       </View>
