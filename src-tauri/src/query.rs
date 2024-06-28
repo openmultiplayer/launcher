@@ -36,6 +36,7 @@ pub struct ExtraInfoPacket {
     pub discord_link: String,
     pub light_banner_url: String,
     pub dark_banner_url: String,
+    pub logo_url: String,
 }
 
 impl Query {
@@ -183,6 +184,11 @@ impl Query {
         banner_url_buf = vec![0u8; banner_url_len as usize];
         packet.read_exact(&mut banner_url_buf).unwrap();
         data.dark_banner_url = helpers::decode_buffer(banner_url_buf).0;
+
+        let logo_url_len = packet.read_u32::<LittleEndian>().unwrap();
+        let mut logo_url_buf = vec![0u8; logo_url_len as usize];
+        packet.read_exact(&mut logo_url_buf).unwrap();
+        data.logo_url = helpers::decode_buffer(logo_url_buf).0;
 
         Ok(serde_json::to_string(&data).unwrap())
     }

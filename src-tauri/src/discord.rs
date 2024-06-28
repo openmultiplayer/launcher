@@ -42,6 +42,8 @@ pub fn initialize_drpc() {
             .as_secs();
 
         let mut hostname = "Unknown".to_string();
+        let mut large_logo = "logo".to_string();
+        let mut small_logo = "players".to_string();
         let mut players = "0/0".to_string();
         let mut name: String = "Unknown".to_string();
         let mut ip: String = "Unknown".to_string();
@@ -107,6 +109,23 @@ pub fn initialize_drpc() {
                                 hostname = "".to_string();
                             }
                         }
+
+                        // Get discord rpc logo
+                        let _ = block_on(q.send('o'));
+                        match block_on(q.recv()) {
+                            Ok(p) => {
+                                let extra_info: query::ExtraInfoPacket =
+                                    serde_json::from_str(p.as_str()).unwrap();
+
+                                if extra_info.logo_url.len() > 0 {
+                                    large_logo = extra_info.logo_url;
+                                    small_logo = "logo".to_string();
+                                }
+                            }
+                            Err(_e) => {
+                                // println!("{}", e.to_string());
+                            }
+                        }
                     }
                     Err(_e) => {
                         // println!("{}", e.to_string());
@@ -136,9 +155,9 @@ pub fn initialize_drpc() {
                     .details(hostname.as_str())
                     .assets(
                         activity::Assets::new()
-                            .large_image("logo")
+                            .large_image(large_logo.as_str())
                             .large_text(nick_name_detail.as_str())
-                            .small_image("players")
+                            .small_image(small_logo.as_str())
                             .small_text(players.as_str()),
                     )
                     .timestamps(timestamp.clone().start(start_time.try_into().unwrap()));
