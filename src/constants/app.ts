@@ -1,4 +1,4 @@
-export const VERSION = "2";
+export const VERSION = "3";
 
 type ResourceName =
   | "samp_clients.7z"
