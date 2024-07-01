@@ -1695,10 +1695,10 @@ babel-plugin-polyfill-regenerator@^0.5.5:
   dependencies:
     "@babel/helper-define-polyfill-provider" "^0.5.0"
 
-babel-plugin-react-native-web@^0.19.10:
-  version "0.19.10"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.19.10.tgz#581ea0638c7303a870174b72eb6a793e8287371f"
-  integrity sha512-NshrsILJNbNbnMz7Ms14fa5PBJErYablPkCbSvbg0qn5rmruD2WzQqD+Dg8F45yG7i2nENDvKSwsa+1XPLcg4w==
+babel-plugin-react-native-web@^0.19.12:
+  version "0.19.12"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.19.12.tgz#90481ee72b515020b06cb644abe1e8a16590bd86"
+  integrity sha512-eYZ4+P6jNcB37lObWIg0pUbi7+3PKoU1Oie2j0C8UF3cXyXoR74tO2NBjI/FORb2LJyItJZEAmjU5pSaJYEL1w==
 
 babel-plugin-transform-flow-enums@^0.0.2:
   version "0.0.2"
