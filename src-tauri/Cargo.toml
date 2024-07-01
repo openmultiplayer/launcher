@@ -20,7 +20,7 @@ tokio = { version = "1.35.1", features = ["full"] }
 byteorder = "1.5.0"
 chardet = "0.2.4"
 chardetng = "0.1.17"
-encoding_rs = "0.8.33"
+encoding_rs = "0.8.34"
 dirs-next = "2.0.0"
 discord-rich-presence = "0.2.3"
 regex = "1.10.3"
