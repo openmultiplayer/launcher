@@ -2763,6 +2763,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-upload",
  "tokio",
+ "winapi",
  "winreg 0.52.0",
 ]
 
