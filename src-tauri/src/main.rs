@@ -12,7 +12,7 @@ use std::process::exit;
 
 use clap::Parser;
 use injector::run_samp;
-use log::LevelFilter;
+use log::{error, LevelFilter};
 use tauri::Manager;
 use tauri::PhysicalSize;
 
@@ -110,7 +110,7 @@ async fn main() {
         let _ = rt.block_on(rpcs::initialize_rpc());
     });
 
-    tauri::Builder::default()
+    match tauri::Builder::default()
         .plugin(tauri_plugin_upload::init())
         .setup(|app| {
             let main_window = app.get_window("main").unwrap();
@@ -127,5 +127,10 @@ async fn main() {
             get_samp_favorite_list,
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+    {
+        Ok(_) => {}
+        Err(e) => {
+            error!("[main.rs] Running tauri instance failed: {}", e.to_string());
+        }
+    };
 }
