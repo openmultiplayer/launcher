@@ -49,9 +49,10 @@ async fn inject(
     port: i32,
     exe: &str,
     dll: &str,
+    omp_file: &str,
     password: &str,
 ) -> Result<(), String> {
-    injector::run_samp(name, ip, port, exe, dll, password).await
+    injector::run_samp(name, ip, port, exe, dll, omp_file, password).await
 }
 
 #[tauri::command]
@@ -95,6 +96,11 @@ async fn main() {
                 args.port,
                 args.gamepath.as_str(),
                 format!("{}/samp.dll", args.gamepath).as_str(),
+                format!(
+                    "{}/com.open.mp/omp/omp-client.dll",
+                    dirs_next::data_local_dir().unwrap().to_str().unwrap()
+                )
+                .as_str(),
                 "",
             )
             .await;

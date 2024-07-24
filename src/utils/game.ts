@@ -216,12 +216,16 @@ export const startGame = async (
   let sampDllPath =
     sampVersion === "custom" ? idealSAMPDllPath : ourSAMPDllPath;
 
+  const dir = await path.appLocalDataDir();
+  const ompFile = await path.join(dir, "omp/omp-client.dll");
+
   invoke("inject", {
     name: nickname,
     ip: server.ip,
     port: server.port,
     exe: gtasaPath,
     dll: sampDllPath,
+    ompFile: ompFile,
     password: password,
   })
     .then(() => {

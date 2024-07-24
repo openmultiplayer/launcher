@@ -12,6 +12,7 @@ pub async fn run_samp(
     port: i32,
     executable_dir: &str,
     dll_path: &str,
+    omp_file: &str,
     password: &str,
 ) -> Result<(), String> {
     Ok(())
@@ -24,6 +25,7 @@ pub async fn run_samp(
     port: i32,
     executable_dir: &str,
     dll_path: &str,
+    omp_file: &str,
     password: &str,
 ) -> Result<(), String> {
     // Prepare the command to spawn the executable
@@ -60,7 +62,7 @@ pub async fn run_samp(
                         ip,
                         e.to_string()
                     );
-                    "".to_string()
+                    " ".to_string()
                 }
             }
         }
@@ -84,7 +86,12 @@ pub async fn run_samp(
     match process {
         Ok(p) => {
             // let target_process = .unwrap();
-            inject_dll(p.id(), dll_path, 0)
+            match inject_dll(p.id(), dll_path, 0) {
+                Ok(_) => inject_dll(p.id(), omp_file, 0),
+                Err(e) => {
+                    return Err(e);
+                }
+            }
         }
         Err(e) => {
             info!("[injector.rs] Process creation failed: {}", e.to_string());
@@ -98,10 +105,10 @@ pub async fn run_samp(
                 return Err("need_admin".to_string());
             }
 
-            Err(format!(
+            return Err(format!(
                 "Spawning process failed (error code: {})",
                 raw_os_err
-            ))
+            ));
         }
     }
 }
@@ -174,7 +181,11 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32) -> Result<(), String> 
                     std::thread::sleep(ten_millis);
 
                     if times == 10 {
-                        info!("[injector.rs] Dll injection failed: {}", e.to_string());
+                        info!(
+                            "[injector.rs] Dll {} injection failed: {}",
+                            dll_path,
+                            e.to_string()
+                        );
                         Err(format!("Injecting dll failed: {}", e.to_string()))
                     } else {
                         inject_dll(child, dll_path, times + 1)
