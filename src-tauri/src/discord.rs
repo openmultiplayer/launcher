@@ -146,6 +146,8 @@ pub fn initialize_drpc() {
                 }
                 let nick_name_detail = format!("Playing as {}", name);
                 let full_server_address = format!("{}:{}", ip, port);
+                let play_together_link =
+                    format!("omp-launcher://{}", full_server_address.to_string());
                 hostname = if !hostname.is_empty() {
                     hostname
                 } else {
@@ -162,7 +164,11 @@ pub fn initialize_drpc() {
                             .small_image(small_logo.as_str())
                             .small_text(players.as_str()),
                     )
-                    .timestamps(timestamp.clone().start(start_time.try_into().unwrap()));
+                    .timestamps(timestamp.clone().start(start_time.try_into().unwrap()))
+                    .buttons(vec![
+                        activity::Button::new("🎮 Player Together", play_together_link.as_str()),
+                        activity::Button::new("📥 Download Launcher", "https://www.open.mp/"),
+                    ]);
 
                 match client.set_activity(activity) {
                     Ok(_) => {}
@@ -192,7 +198,11 @@ pub fn initialize_drpc() {
                             .large_image("logo")
                             .large_text("Idle"),
                     )
-                    .timestamps(timestamp.clone().start(start_time.try_into().unwrap()));
+                    .timestamps(timestamp.clone().start(start_time.try_into().unwrap()))
+                    .buttons(vec![activity::Button::new(
+                        "📥 Download Launcher",
+                        "https://www.open.mp/",
+                    )]);
 
                 match client.set_activity(activity) {
                     Ok(_) => {}
