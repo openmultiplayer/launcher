@@ -1,7 +1,7 @@
 {
   "name": "omp-launcher",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.4.0",
   "type": "module",
   "homepage": "https://github.com/openmultiplayer/launcher",
   "author": "Amyr (iAmir) Ahmady (https://github.com/AmyrAhmady)",
