@@ -207,7 +207,7 @@ pub fn initialize_drpc() {
                 };
             }
 
-            std::thread::sleep(std::time::Duration::from_millis(1000));
+            std::thread::sleep(std::time::Duration::from_millis(5000));
         }
     });
 }
