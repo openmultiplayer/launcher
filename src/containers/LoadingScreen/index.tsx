@@ -13,6 +13,8 @@ import { useGenericPersistentState } from "../../states/genericStates";
 import { useTheme } from "../../states/theme";
 import { formatBytes } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
+import { getUpdateInfo } from "../../api/apis";
+import { UpdateInfo, useAppState } from "../../states/app";
 
 const LoadingScreen = (props: { onEnd: () => void }) => {
   const { theme, themeType } = useTheme();
@@ -35,7 +37,7 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     }, delay);
   };
 
-  const downloadResources = async (samp: string) => {
+  const downloadSAMPFiles = async (samp: string) => {
     const archive = await path.join(samp, "samp_clients.7z");
     setDownloading(true);
     setDownloadInfo({ size: 0, total: 0, percent: 0 });
@@ -49,17 +51,37 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
           total: total,
           percent: (downloadedSize.current * 100) / total,
         });
-        if (downloadedSize.current === total) {
+        if (downloadedSize.current >= total) {
           await invoke_rpc("extract_7z", {
             path: archive,
             output_path: samp,
           });
+          downloadedSize.current = 0;
           setDownloading(false);
-          finishLoading(1);
+          processFileChecksums(false);
         }
-        console.log(`Downloaded ${downloadedSize.current} of ${total} bytes`);
+        // console.log(`Downloaded ${downloadedSize.current} of ${total} bytes`);
       }
     );
+  };
+
+  const downloadOmpFile = async (ompFile: string, link: string) => {
+    setDownloading(true);
+    setDownloadInfo({ size: 0, total: 0, percent: 0 });
+    download(link, ompFile, async (progress, total) => {
+      downloadedSize.current += progress;
+      setDownloadInfo({
+        size: downloadedSize.current,
+        total: total,
+        percent: (downloadedSize.current * 100) / total,
+      });
+      if (downloadedSize.current >= total) {
+        downloadedSize.current = 0;
+        setDownloading(false);
+        setTimeout(() => processFileChecksums(false), 500);
+      }
+      // console.log(`Downloaded ${downloadedSize.current} of ${total} bytes`);
+    });
   };
 
   const collectFiles = async (parent: FileEntry, list: any[]) => {
@@ -110,7 +132,55 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     return Promise.all(promises);
   };
 
-  const processFileChecksums = async () => {
+  const processOmpPluginVerification = async () => {
+    const updateInfo = useAppState.getState().updateInfo;
+    let response: { success: boolean; info: UpdateInfo | undefined } = {
+      success: false,
+      info: undefined,
+    };
+
+    if (updateInfo === undefined) {
+      response = await getUpdateInfo();
+    } else {
+      response = { success: true, info: updateInfo };
+    }
+
+    if (response.success && response.info) {
+      useAppState.getState().setUpdateInfo(response.info);
+
+      const dir = await path.appLocalDataDir();
+      const ompFolder = await path.join(dir, "omp");
+      const ompFile = await path.join(ompFolder, "omp-client.dll");
+      if (!(await fs.exists(ompFolder))) {
+        fs.createDir(ompFolder);
+        downloadOmpFile(ompFile, response.info.ompPluginDownload);
+        return false;
+      }
+
+      if (!(await fs.exists(ompFile))) {
+        downloadOmpFile(ompFile, response.info.ompPluginDownload);
+        return false;
+      }
+
+      const checksums: string[] = JSON.parse(
+        await invoke_rpc("get_checksum_of_files", {
+          list: [ompFile],
+        })
+      );
+
+      if (checksums.length) {
+        if (response.info.ompPluginChecksum == checksums[0].split("|")[1]) {
+          return true;
+        }
+      }
+
+      downloadOmpFile(ompFile, response.info.ompPluginDownload);
+      return false;
+    }
+    return true;
+  };
+
+  const processFileChecksums = async (late = true) => {
     const dir = await path.appLocalDataDir();
     const samp = await path.join(dir, "samp");
     const files = await fs.readDir(samp, { recursive: true });
@@ -128,9 +198,11 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     if (results.includes(false)) {
       await fs.removeDir(samp, { recursive: true });
       await fs.createDir(samp);
-      downloadResources(samp);
+      downloadSAMPFiles(samp);
     } else {
-      finishLoading(1000);
+      if (await processOmpPluginVerification()) {
+        finishLoading(late ? 1000 : 1);
+      }
     }
   };
 
@@ -153,13 +225,13 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
             return;
           }
         }
-        downloadResources(samp);
+        downloadSAMPFiles(samp);
       } else {
-        downloadResources(samp);
+        downloadSAMPFiles(samp);
       }
     } else {
       fs.createDir(samp);
-      downloadResources(samp);
+      downloadSAMPFiles(samp);
     }
   };
 
