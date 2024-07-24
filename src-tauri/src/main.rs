@@ -85,6 +85,7 @@ fn get_samp_favorite_list() -> String {
 
 #[tokio::main]
 async fn main() {
+    tauri_plugin_deep_link::prepare("com.open.mp");
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
     let args = Args::parse();
@@ -119,10 +120,18 @@ async fn main() {
     match tauri::Builder::default()
         .plugin(tauri_plugin_upload::init())
         .setup(|app| {
+            let handle = app.handle();
             let main_window = app.get_window("main").unwrap();
             main_window
                 .set_min_size(Some(PhysicalSize::new(1000, 700)))
                 .unwrap();
+
+            tauri_plugin_deep_link::register("omp-launcher", move |request| {
+                dbg!(&request);
+                handle.emit_all("scheme-request-received", request).unwrap();
+            })
+            .unwrap();
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

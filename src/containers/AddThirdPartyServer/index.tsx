@@ -1,5 +1,6 @@
+import { listen } from "@tauri-apps/api/event";
 import { t } from "i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -23,6 +24,23 @@ const AddThirdPartyServerModal = () => {
   const { theme } = useTheme();
   const [serverAddress, setServerAddress] = useState("");
   const { addToFavorites } = usePersistentServers();
+
+  useEffect(() => {
+    const unlisten = listen<string>("scheme-request-received", (event) => {
+      if (typeof event.payload === "string") {
+        const serverAddress = event.payload
+          .replace("omp-launcher://", "")
+          .replace("/", "");
+
+        showAddThirdPartyServer(true);
+        setServerAddress(serverAddress);
+      }
+    });
+
+    return () => {
+      unlisten.then((f) => f());
+    };
+  }, []);
 
   if (!visible) {
     return null;
