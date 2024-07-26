@@ -25,6 +25,7 @@ import TChinese from "./translations/zh-TW";
 import Sindhi from "./translations/sn";
 import Vietnamese from "./translations/vi";
 import Tamil from "./translations/ta";
+import Ukrainian from "./translations/ua";
 
 export type LanguageType =
   | "en"
@@ -51,7 +52,8 @@ export type LanguageType =
   | "zh-TW"
   | "sn"
   | "vi"
-  | "ta";
+  | "ta"
+  | "ua";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -185,6 +187,11 @@ export const getLanguages = (): {
       label: "தமிழ்",
       type: "ta",
       translations: Tamil,
+    },
+    "ua": {
+      label: "Українська",
+      type: "ua",
+      translations: Ukrainian,
     }
   };
 };
