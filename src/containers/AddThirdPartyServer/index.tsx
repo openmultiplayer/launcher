@@ -29,7 +29,7 @@ const AddThirdPartyServerModal = () => {
     const unlisten = listen<string>("scheme-request-received", (event) => {
       if (typeof event.payload === "string") {
         const serverAddress = event.payload
-          .replace("omp-launcher://", "")
+          .replace("omp://", "")
           .replace("/", "");
 
         showAddThirdPartyServer(true);

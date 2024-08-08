@@ -126,7 +126,7 @@ async fn main() {
                 .set_min_size(Some(PhysicalSize::new(1000, 700)))
                 .unwrap();
 
-            tauri_plugin_deep_link::register("omp-launcher", move |request| {
+            tauri_plugin_deep_link::register("omp", move |request| {
                 dbg!(&request);
                 handle.emit_all("scheme-request-received", request).unwrap();
             })
