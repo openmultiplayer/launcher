@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 import { t } from "i18next";
 import { useEffect, useState } from "react";
@@ -7,12 +8,12 @@ import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { usePersistentServers } from "../../states/servers";
+import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
+import { startGame } from "../../utils/game";
 import { validateServerAddress } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
 import { Server } from "../../utils/types";
-import { startGame } from "../../utils/game";
-import { useSettings } from "../../states/settings";
 
 const ExternalServerHandler = () => {
   const [visible, showModal] = useState(false);
@@ -23,11 +24,31 @@ const ExternalServerHandler = () => {
   const { addToFavorites } = usePersistentServers();
 
   useEffect(() => {
+    (async () => {
+      const value = await invoke<string>("get_uri_scheme_value");
+      if (
+        value.length &&
+        (value.includes("omp://") || value.includes("samp://"))
+      ) {
+        const serverAddress = value
+          .replace("omp://", "")
+          .replace("samp://", "")
+          .replace("/", "");
+
+        showModal(true);
+        setServerAddress(serverAddress);
+      }
+    })();
+
     const unlisten = listen<string>("scheme-request-received", (event) => {
       if (typeof event.payload === "string") {
-        if (event.payload.includes("omp://")) {
+        if (
+          event.payload.includes("omp://") ||
+          event.payload.includes("samp://")
+        ) {
           const serverAddress = event.payload
             .replace("omp://", "")
+            .replace("samp://", "")
             .replace("/", "");
 
           showModal(true);

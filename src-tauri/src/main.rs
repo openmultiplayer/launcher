@@ -10,6 +10,7 @@ mod samp;
 
 use std::env;
 use std::process::exit;
+use std::sync::Mutex;
 
 use gumdrop::Options;
 use injector::run_samp;
@@ -35,7 +36,13 @@ struct CliArgs {
     gamepath: Option<String>,
 }
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+static URI_SCHEME_VALUE: Mutex<String> = Mutex::new(String::new());
+
+#[tauri::command]
+async fn get_uri_scheme_value() -> String {
+    URI_SCHEME_VALUE.lock().unwrap().clone()
+}
+
 #[tauri::command]
 async fn inject(
     name: &str,
@@ -153,6 +160,7 @@ Options:
         .plugin(tauri_plugin_upload::init())
         .setup(|app| {
             let handle = app.handle();
+            let handle2 = app.handle();
             let main_window = app.get_window("main").unwrap();
             main_window
                 .set_min_size(Some(PhysicalSize::new(1000, 700)))
@@ -160,13 +168,26 @@ Options:
 
             tauri_plugin_deep_link::register("omp", move |request| {
                 dbg!(&request);
+                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+                *uri_scheme_value = request.clone();
                 handle.emit_all("scheme-request-received", request).unwrap();
+            })
+            .unwrap();
+
+            tauri_plugin_deep_link::register("samp", move |request| {
+                dbg!(&request);
+                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+                *uri_scheme_value = request.clone();
+                handle2
+                    .emit_all("scheme-request-received", request)
+                    .unwrap();
             })
             .unwrap();
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            get_uri_scheme_value,
             inject,
             get_gtasa_path_from_samp,
             get_nickname_from_samp,
