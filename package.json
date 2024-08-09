@@ -10,7 +10,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "start": "tauri dev"
+    "start": "tauri dev",
+    "release": "tauri build -t i686-pc-windows-msvc"
   },
   "dependencies": {
     "@react-native-clipboard/clipboard": "^1.14.1",
