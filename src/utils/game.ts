@@ -5,7 +5,7 @@ import { invoke_rpc } from "../api/rpc";
 import { ResourceInfo, validFileChecksums } from "../constants/app";
 import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
-import { usePersistentServers } from "../states/servers";
+import { usePersistentServers, useServers } from "../states/servers";
 import { useSettings } from "../states/settings";
 import { useSettingsModal } from "../states/settingsModal";
 import { Log } from "./logger";
@@ -65,6 +65,7 @@ export const startGame = async (
   const { show: showSettings } = useSettingsModal.getState();
   const { sampVersion } = useSettings.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
+  const { setSelected } = useServers.getState();
 
   if (!gtasaPath || gtasaPath.length < 1) {
     showMessageBox({
@@ -230,6 +231,7 @@ export const startGame = async (
   })
     .then(() => {
       addToRecentlyJoined(server);
+      setSelected(undefined);
     })
     .catch(async (e) => {
       if (e == "need_admin") {
