@@ -8,37 +8,31 @@ mod query;
 mod rpcs;
 mod samp;
 
+use std::env;
 use std::process::exit;
 
-use clap::Parser;
+use gumdrop::Options;
 use injector::run_samp;
 use log::{error, LevelFilter};
 use tauri::Manager;
 use tauri::PhysicalSize;
 
-/// Simple program to greet a person
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-#[clap(disable_help_flag = true)]
-struct Args {
-    #[clap(long, action = clap::ArgAction::HelpLong)]
-    help: Option<bool>,
+#[derive(Debug, Options)]
+struct CliArgs {
+    #[options(no_short, help = "print help message")]
+    help: bool,
 
-    /// Server IP
-    #[arg(short, long, default_value_t = String::new())]
-    host: String,
+    #[options(help = "target server IP address")]
+    host: Option<String>,
 
-    /// Server port
-    #[arg(short, long, default_value_t = 0)]
-    port: i32,
+    #[options(help = "target server port")]
+    port: Option<i32>,
 
-    /// Nickname
-    #[arg(short, long, default_value_t = String::new())]
-    name: String,
+    #[options(help = "nickname to join server with")]
+    name: Option<String>,
 
-    /// Game path
-    #[arg(short, long, default_value_t = String::new())]
-    gamepath: String,
+    #[options(help = "game path to use for both game executable and samp.dll")]
+    gamepath: Option<String>,
 }
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -88,28 +82,66 @@ async fn main() {
     tauri_plugin_deep_link::prepare("com.open.mp");
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
-    let args = Args::parse();
-    if args.host.len() > 0 && args.name.len() > 0 && args.port > 0 {
-        if args.gamepath.len() > 0 {
-            let _ = run_samp(
-                args.name.as_str(),
-                args.host.as_str(),
-                args.port,
-                args.gamepath.as_str(),
-                format!("{}/samp.dll", args.gamepath).as_str(),
-                format!(
-                    "{}/com.open.mp/omp/omp-client.dll",
-                    dirs_next::data_local_dir().unwrap().to_str().unwrap()
-                )
-                .as_str(),
-                "",
-            )
-            .await;
-            exit(0)
-        } else {
-            println!("You must provide game path using --game or -g. Read more about arguments in --help");
-            exit(0)
+    #[cfg(windows)]
+    {
+        use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
+        let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
+    }
+
+    let raw_args: Vec<String> = env::args().collect();
+    let parse_args_result = CliArgs::parse_args_default::<String>(&raw_args[1..]);
+    match parse_args_result {
+        Ok(args) => {
+            if args.help {
+                println!(
+                    "Open Multiplayer Launcher
+
+Usage: {} [OPTIONS]
+
+Options:
+      --help
+  -h, --host <HOST>          Server IP
+  -p, --port <PORT>          Server port
+  -n, --name <NAME>          Nickname
+  -g, --gamepath <GAMEPATH>  Game path
+                ",
+                    raw_args[0]
+                );
+                exit(0)
+            }
+
+            if args.host.is_some() && args.name.is_some() && args.port.is_some() {
+                if args.gamepath.is_some() && args.gamepath.as_ref().unwrap().len() > 0 {
+                    let _ = run_samp(
+                        args.name.unwrap().as_str(),
+                        args.host.unwrap().as_str(),
+                        args.port.unwrap(),
+                        args.gamepath.as_ref().unwrap().as_str(),
+                        format!("{}/samp.dll", args.gamepath.as_ref().unwrap()).as_str(),
+                        format!(
+                            "{}/com.open.mp/omp/omp-client.dll",
+                            dirs_next::data_local_dir().unwrap().to_str().unwrap()
+                        )
+                        .as_str(),
+                        "",
+                    )
+                    .await;
+                    exit(0)
+                } else {
+                    println!("You must provide game path using --game or -g. Read more about arguments in --help");
+                    exit(0)
+                }
+            }
         }
+        Err(e) => {
+            println!("{}", e);
+        }
+    };
+
+    #[cfg(windows)]
+    {
+        use windows::Win32::System::Console::FreeConsole;
+        let _ = unsafe { FreeConsole() };
     }
 
     std::thread::spawn(move || {
