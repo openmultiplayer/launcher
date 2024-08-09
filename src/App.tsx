@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { invoke_rpc } from "./api/rpc";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
+import ExternalServerHandler from "./containers/ExternalServerHandler";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
 import LoadingScreen from "./containers/LoadingScreen";
 import MainView from "./containers/MainBody";
@@ -129,6 +130,7 @@ const App = () => {
           <JoinServerPrompt />
           <SettingsModal />
           <AddThirdPartyServerModal />
+          <ExternalServerHandler />
           <Notification />
           <MessageBox />
         </View>
