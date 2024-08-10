@@ -30,7 +30,7 @@ import { sc } from "./utils/sizeScaler";
 import { DEBUG_MODE, IN_GAME } from "./constants/app";
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!IN_GAME);
   const [maximized, setMaximized] = useState(false);
   const { theme } = useTheme();
   const { language, shouldUpdateDiscordStatus } = useGenericPersistentState();
