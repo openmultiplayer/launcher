@@ -27,6 +27,7 @@ import {
   generateLanguageFilters,
 } from "./utils/helpers";
 import { sc } from "./utils/sizeScaler";
+import { DEBUG_MODE, IN_GAME } from "./constants/app";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -76,7 +77,6 @@ const App = () => {
     const setupListeners = async () => {
       document.addEventListener("contextmenu", (event) => {
         try {
-          // @ts-ignore
           if (DEBUG_MODE == false) {
             event.preventDefault();
           }

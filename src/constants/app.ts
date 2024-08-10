@@ -1,4 +1,5 @@
 export const VERSION = "4";
+export const DEBUG_MODE = process.argv[3] && process.argv[3] == "--ompdebug";
 
 type ResourceName =
   | "samp_clients.7z"
