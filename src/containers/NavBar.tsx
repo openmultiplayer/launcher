@@ -1,7 +1,9 @@
 import { t } from "i18next";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from "../components/Icon";
 import TabBar from "../components/TabBar";
+import Text from "../components/Text";
+import { IN_GAME } from "../constants/app";
 import { images } from "../constants/images";
 import { useGenericTempState } from "../states/genericStates";
 import { useSettings } from "../states/settings";
@@ -33,46 +35,63 @@ const NavBar = () => {
           list={list}
           selected={listType}
         />
-        <View style={styles.inputs}>
-          <View style={styles.nicknameContainer}>
-            <View
-              style={{
-                height: sc(35),
-                width: sc(35),
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: theme.itemBackgroundColor,
-                borderRadius: sc(5),
-              }}
+        {IN_GAME ? (
+          <View style={styles.inputs}>
+            <TouchableOpacity
+              style={[
+                styles.reconnectContainer,
+                // @ts-ignore
+                {
+                  backgroundColor: theme.primary,
+                  filter: `drop-shadow(0 0 20px ${theme.primary}44)`,
+                },
+              ]}
             >
-              <Icon
-                title={t("nickname")}
-                image={images.icons.nickname}
-                size={sc(16)}
-                color={theme.textSecondary}
+              <Text style={{ fontSize: sc(18) }} color={"white"} semibold>
+                {t("reconnect")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.inputs}>
+            <View style={styles.nicknameContainer}>
+              <View
+                style={[
+                  styles.nicknameIconContainer,
+                  {
+                    backgroundColor: theme.itemBackgroundColor,
+                  },
+                ]}
+              >
+                <Icon
+                  title={t("nickname")}
+                  image={images.icons.nickname}
+                  size={sc(16)}
+                  color={theme.textSecondary}
+                />
+              </View>
+              <TextInput
+                value={nickName}
+                onChangeText={(text) => setNickName(text)}
+                placeholder={t("nickname") + "..."}
+                placeholderTextColor={theme.textSecondary}
+                style={{
+                  fontFamily: "Proxima Nova Regular",
+                  backgroundColor: theme.textInputBackgroundColor,
+                  color: theme.textPrimary,
+                  fontSize: sc(17),
+                  width: sc(160),
+                  marginLeft: sc(10),
+                  height: sc(35),
+                  paddingHorizontal: sc(5),
+                  borderRadius: sc(5),
+                  // @ts-ignore
+                  outlineStyle: "none",
+                }}
               />
             </View>
-            <TextInput
-              value={nickName}
-              onChangeText={(text) => setNickName(text)}
-              placeholder={t("nickname") + "..."}
-              placeholderTextColor={theme.textSecondary}
-              style={{
-                fontFamily: "Proxima Nova Regular",
-                backgroundColor: theme.textInputBackgroundColor,
-                color: theme.textPrimary,
-                fontSize: sc(17),
-                width: sc(160),
-                marginLeft: sc(10),
-                height: sc(35),
-                paddingHorizontal: sc(5),
-                borderRadius: sc(5),
-                // @ts-ignore
-                outlineStyle: "none",
-              }}
-            />
           </View>
-        </View>
+        )}
       </View>
     </>
   );
@@ -109,6 +128,20 @@ const styles = StyleSheet.create({
     height: sc(35),
     flexDirection: "row",
     alignItems: "center",
+  },
+  nicknameIconContainer: {
+    height: sc(35),
+    width: sc(35),
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: sc(5),
+  },
+  reconnectContainer: {
+    height: sc(35),
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: sc(20),
+    borderRadius: sc(5),
   },
   nicknameInput: {},
 });

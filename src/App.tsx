@@ -6,6 +6,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { invoke_rpc } from "./api/rpc";
+import { DEBUG_MODE, IN_GAME } from "./constants/app";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import ExternalServerHandler from "./containers/ExternalServerHandler";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
@@ -27,7 +28,6 @@ import {
   generateLanguageFilters,
 } from "./utils/helpers";
 import { sc } from "./utils/sizeScaler";
-import { DEBUG_MODE, IN_GAME } from "./constants/app";
 
 const App = () => {
   const [loading, setLoading] = useState(!IN_GAME);
@@ -112,12 +112,15 @@ const App = () => {
   }
 
   return (
-    <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>
+    <View
+      style={[styles.app, { padding: maximized || IN_GAME ? 0 : 4 }]}
+      key={language}
+    >
       <View
         style={[
           styles.appView,
           {
-            borderRadius: maximized ? 0 : sc(10),
+            borderRadius: maximized || IN_GAME ? 0 : sc(10),
             backgroundColor: theme.secondary,
           },
         ]}
