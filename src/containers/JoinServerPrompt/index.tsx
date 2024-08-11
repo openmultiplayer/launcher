@@ -96,7 +96,7 @@ const JoinServerPrompt = () => {
 
   const bigView = bannerUrl.length || logoUrl.length;
 
-  const HEIGHT = (server?.hasPassword ? 316 : 248) + (bigView ? 77 : 0);
+  const HEIGHT = (server?.hasPassword ? 316 : 248) + (bigView ? 77 : 7);
   const WIDTH = 320;
 
   return (
