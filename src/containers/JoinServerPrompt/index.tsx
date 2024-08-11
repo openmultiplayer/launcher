@@ -94,8 +94,9 @@ const JoinServerPrompt = () => {
     return null;
   }
 
-  const HEIGHT =
-    (server?.hasPassword ? 316 : 248) + (bannerUrl.length ? 77 : 0);
+  const bigView = bannerUrl.length || logoUrl.length;
+
+  const HEIGHT = (server?.hasPassword ? 316 : 248) + (bigView ? 77 : 0);
   const WIDTH = 320;
 
   return (
@@ -118,16 +119,16 @@ const JoinServerPrompt = () => {
           shadowRadius: 10,
           alignItems: "center",
           paddingVertical: sc(11),
-          paddingTop: bannerUrl.length ? sc(0) : undefined,
+          paddingTop: bigView ? sc(0) : undefined,
         }}
       >
-        {bannerUrl.length ? (
+        {bigView ? (
           <View
             style={{
               width: "100%",
               height: 70 + sc(11),
               marginHorizontal: "5%",
-              // backgroundColor: "red",
+              backgroundColor: theme.itemBackgroundColor,
               overflow: "hidden",
               borderTopLeftRadius: sc(10),
               borderTopRightRadius: sc(10),
@@ -358,7 +359,7 @@ const JoinServerPrompt = () => {
         <TouchableOpacity
           style={{
             position: "absolute",
-            ...(bannerUrl.length
+            ...(bigView
               ? {
                   top: sc(5),
                   right: sc(5),
@@ -376,8 +377,8 @@ const JoinServerPrompt = () => {
         >
           <Icon
             image={images.icons.close}
-            size={bannerUrl.length ? sc(15) : sc(20)}
-            color={bannerUrl.length ? "white" : theme.textSecondary}
+            size={bigView ? sc(15) : sc(20)}
+            color={bigView ? "white" : theme.textSecondary}
           />
         </TouchableOpacity>
       </View>
