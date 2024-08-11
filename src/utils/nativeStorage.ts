@@ -39,4 +39,17 @@ class NativeStorage {
 }
 
 const nativeStorage = new NativeStorage();
+
+export const nativeStateStorage: any = {
+  getItem: async (key: string) => {
+    return await nativeStorage.getItem(key);
+  },
+  setItem: async (key: string, value: string) => {
+    await nativeStorage.setItem(key, value);
+  },
+  removeItem: async (key: string) => {
+    await nativeStorage.removeItem(key);
+  },
+};
+
 export default nativeStorage;
