@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 // use serde_json::json;
+mod commands;
 mod discord;
 mod helpers;
 mod injector;
@@ -41,47 +42,6 @@ static URI_SCHEME_VALUE: Mutex<String> = Mutex::new(String::new());
 #[tauri::command]
 async fn get_uri_scheme_value() -> String {
     URI_SCHEME_VALUE.lock().unwrap().clone()
-}
-
-#[tauri::command]
-async fn inject(
-    name: &str,
-    ip: &str,
-    port: i32,
-    exe: &str,
-    dll: &str,
-    omp_file: &str,
-    password: &str,
-) -> Result<(), String> {
-    injector::run_samp(name, ip, port, exe, dll, omp_file, password).await
-}
-
-#[tauri::command]
-fn get_gtasa_path_from_samp() -> String {
-    samp::get_gtasa_path()
-}
-
-#[tauri::command]
-fn get_nickname_from_samp() -> String {
-    samp::get_nickname()
-}
-
-#[tauri::command]
-fn rerun_as_admin() -> Result<String, String> {
-    let res = std::env::current_exe();
-    match res {
-        Ok(p) => {
-            let path = p.into_os_string().into_string().unwrap();
-            runas::Command::new(path).arg("").status().unwrap();
-            Ok("SUCCESS".to_string())
-        }
-        Err(_) => Err("FAILED".to_string()),
-    }
-}
-
-#[tauri::command]
-fn get_samp_favorite_list() -> String {
-    samp::get_samp_favorite_list()
 }
 
 #[tokio::main]
@@ -188,11 +148,15 @@ Options:
         })
         .invoke_handler(tauri::generate_handler![
             get_uri_scheme_value,
-            inject,
-            get_gtasa_path_from_samp,
-            get_nickname_from_samp,
-            rerun_as_admin,
-            get_samp_favorite_list,
+            commands::inject,
+            commands::get_gtasa_path_from_samp,
+            commands::get_nickname_from_samp,
+            commands::rerun_as_admin,
+            commands::get_samp_favorite_list,
+            commands::get_item,
+            commands::set_item,
+            commands::remove_item,
+            commands::get_all_items
         ])
         .run(tauri::generate_context!())
     {
