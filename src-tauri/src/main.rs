@@ -10,9 +10,11 @@ mod rpcs;
 mod samp;
 
 use std::env;
+use std::path::PathBuf;
 use std::process::exit;
 use std::sync::Mutex;
 
+use commands::AppState;
 use gumdrop::Options;
 use injector::run_samp;
 use log::{error, LevelFilter};
@@ -117,6 +119,12 @@ Options:
     });
 
     match tauri::Builder::default()
+        .manage(AppState {
+            storage_file: PathBuf::from(format!(
+                "{}/com.open.mp/storage.json",
+                dirs_next::data_local_dir().unwrap().to_str().unwrap()
+            )),
+        })
         .plugin(tauri_plugin_upload::init())
         .setup(|app| {
             let handle = app.handle();

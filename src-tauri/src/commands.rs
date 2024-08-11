@@ -8,7 +8,7 @@ use crate::{injector, samp};
 
 #[derive(Default)]
 pub struct AppState {
-    storage_file: PathBuf,
+    pub storage_file: PathBuf,
 }
 
 #[tauri::command]
