@@ -11,9 +11,19 @@ pub struct AppState {
     pub storage_file: PathBuf,
 }
 
+fn ensure_storage_file(storage_file: &PathBuf) -> Result<(), String> {
+    if !storage_file.exists() {
+        // Create an empty JSON file
+        fs::write(storage_file, "{}").map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 #[tauri::command]
 pub fn get_item(state: State<AppState>, key: String) -> Result<Option<String>, String> {
     let storage_file = state.storage_file.clone();
+    ensure_storage_file(&storage_file)?;
+
     let data = fs::read_to_string(&storage_file).map_err(|e| e.to_string())?;
     let json_data: Value = serde_json::from_str(&data).map_err(|e| e.to_string())?;
 
@@ -25,6 +35,8 @@ pub fn get_item(state: State<AppState>, key: String) -> Result<Option<String>, S
 #[tauri::command]
 pub fn set_item(state: State<AppState>, key: String, value: String) -> Result<(), String> {
     let storage_file = state.storage_file.clone();
+    ensure_storage_file(&storage_file)?;
+
     let data = fs::read_to_string(&storage_file).map_err(|e| e.to_string())?;
     let mut json_data: Value = serde_json::from_str(&data).map_err(|e| e.to_string())?;
 
@@ -37,6 +49,8 @@ pub fn set_item(state: State<AppState>, key: String, value: String) -> Result<()
 #[tauri::command]
 pub fn remove_item(state: State<AppState>, key: String) -> Result<(), String> {
     let storage_file = state.storage_file.clone();
+    ensure_storage_file(&storage_file)?;
+
     let data = fs::read_to_string(&storage_file).map_err(|e| e.to_string())?;
     let mut json_data: Value = serde_json::from_str(&data).map_err(|e| e.to_string())?;
 
@@ -49,6 +63,8 @@ pub fn remove_item(state: State<AppState>, key: String) -> Result<(), String> {
 #[tauri::command]
 pub fn get_all_items(state: State<AppState>) -> Result<String, String> {
     let storage_file = state.storage_file.clone();
+    ensure_storage_file(&storage_file)?;
+
     let data = fs::read_to_string(&storage_file).unwrap_or_else(|_| "{}".to_string());
     Ok(data)
 }
