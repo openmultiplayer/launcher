@@ -10,11 +10,9 @@ mod rpcs;
 mod samp;
 
 use std::env;
-use std::path::PathBuf;
 use std::process::exit;
 use std::sync::Mutex;
 
-use commands::AppState;
 use gumdrop::Options;
 use injector::run_samp;
 use log::{error, LevelFilter};
@@ -53,8 +51,11 @@ async fn main() {
 
     #[cfg(windows)]
     {
-        use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
-        let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
+        #[cfg(not(debug_assertions))]
+        {
+            use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
+            let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
+        }
     }
 
     let raw_args: Vec<String> = env::args().collect();
@@ -109,8 +110,11 @@ Options:
 
     #[cfg(windows)]
     {
-        use windows::Win32::System::Console::FreeConsole;
-        let _ = unsafe { FreeConsole() };
+        #[cfg(not(debug_assertions))]
+        {
+            use windows::Win32::System::Console::FreeConsole;
+            let _ = unsafe { FreeConsole() };
+        }
     }
 
     std::thread::spawn(move || {
@@ -119,12 +123,6 @@ Options:
     });
 
     match tauri::Builder::default()
-        .manage(AppState {
-            storage_file: PathBuf::from(format!(
-                "{}/com.open.mp/storage.json",
-                dirs_next::data_local_dir().unwrap().to_str().unwrap()
-            )),
-        })
         .plugin(tauri_plugin_upload::init())
         .setup(|app| {
             let handle = app.handle();
@@ -160,11 +158,7 @@ Options:
             commands::get_gtasa_path_from_samp,
             commands::get_nickname_from_samp,
             commands::rerun_as_admin,
-            commands::get_samp_favorite_list,
-            commands::get_item,
-            commands::set_item,
-            commands::remove_item,
-            commands::get_all_items
+            commands::get_samp_favorite_list
         ])
         .run(tauri::generate_context!())
     {

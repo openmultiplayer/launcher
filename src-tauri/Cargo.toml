@@ -38,6 +38,7 @@ actix-cors = "0.7"
 winapi = "0.3"
 tauri-plugin-deep-link = "0.1.2"
 gumdrop = "0.8.1"
+lazy_static = "1.4"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 dll-syringe = "0.15"

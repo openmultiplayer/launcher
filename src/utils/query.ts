@@ -164,8 +164,6 @@ const getServerOmpExtraInfo = async (
       }
     );
 
-    console.log(serverOmpExtraInfo);
-
     let server = getServerFromList(ip, port, listType);
     if (server) {
       if (serverOmpExtraInfo === "no_data") {

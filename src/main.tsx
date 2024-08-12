@@ -16,6 +16,7 @@ async function runner() {
   if (favsStr) {
     const favs = JSON.parse(favsStr);
     const settingsNewStr = await nativeStorage.getItem("settings-storage");
+    console.log(typeof settingsNewStr, settingsNewStr);
 
     const hasNativeData =
       settingsNewStr === null
@@ -43,6 +44,8 @@ async function runner() {
         const theme = JSON.parse(themeStr);
         useTheme.setState(theme.state);
       }
+    } else {
+      useSettings.setState({ dataMerged: true });
     }
   }
 

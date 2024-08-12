@@ -2846,6 +2846,7 @@ dependencies = [
  "dll-syringe",
  "encoding_rs",
  "gumdrop",
+ "lazy_static",
  "log",
  "md5",
  "regex",
