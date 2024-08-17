@@ -24,21 +24,25 @@ const ExternalServerHandler = () => {
   const { addToFavorites } = usePersistentServers();
 
   useEffect(() => {
-    (async () => {
-      const value = await invoke<string>("get_uri_scheme_value");
-      if (
-        value.length &&
-        (value.includes("omp://") || value.includes("samp://"))
-      ) {
-        const serverAddress = value
-          .replace("omp://", "")
-          .replace("samp://", "")
-          .replace("/", "");
+    try {
+      (async () => {
+        const value = await invoke<string>("get_uri_scheme_value");
+        if (
+          value.length &&
+          (value.includes("omp://") || value.includes("samp://"))
+        ) {
+          const serverAddress = value
+            .replace("omp://", "")
+            .replace("samp://", "")
+            .replace("/", "");
 
-        showModal(true);
-        setServerAddress(serverAddress);
-      }
-    })();
+          showModal(true);
+          setServerAddress(serverAddress);
+        }
+      })();
+    } catch (e) {
+      console.log(e);
+    }
 
     const unlisten = listen<string>("scheme-request-received", (event) => {
       if (typeof event.payload === "string") {

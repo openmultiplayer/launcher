@@ -15,7 +15,7 @@ use std::sync::Mutex;
 
 use gumdrop::Options;
 use injector::run_samp;
-use log::{error, LevelFilter};
+use log::{error, info, LevelFilter};
 use tauri::Manager;
 use tauri::PhysicalSize;
 
@@ -104,7 +104,12 @@ Options:
             }
         }
         Err(e) => {
-            println!("{}", e);
+            if raw_args[1].contains("omp://") || raw_args[1].contains("samp://") {
+                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+                *uri_scheme_value = String::from(raw_args[1].as_str());
+            } else {
+                info!("Unknown argument has been passed: {}", e);
+            }
         }
     };
 
@@ -135,7 +140,7 @@ Options:
             tauri_plugin_deep_link::register("omp", move |request| {
                 dbg!(&request);
                 let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
-                *uri_scheme_value = request.clone();
+                *uri_scheme_value = String::from(request.as_str());
                 handle.emit_all("scheme-request-received", request).unwrap();
             })
             .unwrap();
@@ -143,7 +148,8 @@ Options:
             tauri_plugin_deep_link::register("samp", move |request| {
                 dbg!(&request);
                 let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
-                *uri_scheme_value = request.clone();
+                (*uri_scheme_value).clone_from(&request);
+                *uri_scheme_value = String::from(request.as_str());
                 handle2
                     .emit_all("scheme-request-received", request)
                     .unwrap();
