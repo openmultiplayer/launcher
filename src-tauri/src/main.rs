@@ -16,6 +16,7 @@ use std::sync::Mutex;
 use gumdrop::Options;
 use injector::run_samp;
 use log::{error, info, LevelFilter};
+// use std::io::Read;
 use tauri::Manager;
 use tauri::PhysicalSize;
 
@@ -46,6 +47,12 @@ async fn get_uri_scheme_value() -> String {
 
 #[tokio::main]
 async fn main() {
+    // let mut f = std::fs::File::open("D:\\Projects\\open.mp\\Launcher-tauri\\omp-launcher\\omp-client.dll").unwrap();
+    // let mut contents = Vec::<u8>::new();
+    // f.read_to_end(&mut contents).unwrap();
+    // let digest = md5::compute(contents.as_slice());
+    // println!("{:x}", digest);
+
     tauri_plugin_deep_link::prepare("com.open.mp");
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
