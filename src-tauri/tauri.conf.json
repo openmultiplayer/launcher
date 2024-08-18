@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "omp-launcher",
-    "version": "1.0.0"
+    "version": "1.4.0"
   },
   "tauri": {
     "allowlist": {
@@ -58,7 +58,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "open.mp launcher",
+        "title": "Open Multiplayer Launcher",
         "width": 1000,
         "height": 700,
         "decorations": false,

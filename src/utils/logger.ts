@@ -1,3 +1,5 @@
+import { DEBUG_MODE } from "../constants/app";
+
 export namespace Log {
   export const info = (message?: any, ...optionalParams: any[]) => {
     console.log(message, ...optionalParams);
@@ -5,7 +7,6 @@ export namespace Log {
 
   export const debug = (message?: any, ...optionalParams: any[]) => {
     try {
-      // @ts-ignore
       if (DEBUG_MODE) {
         console.log(message, ...optionalParams);
       }

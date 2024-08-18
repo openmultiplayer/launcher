@@ -17,9 +17,9 @@ const extensions = [
 
 export default defineConfig({
   define: {
+    process: process,
     global: "window",
     __DEV__: false,
-    DEBUG_MODE: process.env.TAURI_DEBUG,
   },
   optimizeDeps: {
     force: true,

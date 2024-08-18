@@ -6,6 +6,8 @@ export interface UpdateInfo {
   version: string;
   download: string;
   changelog: string;
+  ompPluginChecksum: string;
+  ompPluginDownload: string;
 }
 
 interface AppState {
@@ -35,4 +37,3 @@ const useAppState = create<AppState>()((set) => ({
 }));
 
 export { useAppState };
-

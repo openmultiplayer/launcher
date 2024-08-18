@@ -12,7 +12,7 @@ For users using old Windows 10, Windows 8(.1), or Windows 7, if you do not have 
 
 # Development
 
-### For all OS's:
+### For all OSes:
 
 - Install [nightly version](https://rust-lang.github.io/rustup/concepts/channels.html) of rust toolchain
 - Install [NodeJS](https://nodejs.org/en/download) and `npm` (or `yarn` or anything else)  

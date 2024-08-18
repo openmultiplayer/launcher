@@ -88,4 +88,14 @@ export default {
   notification_add_to_favorites_title: "Dodano do Ulubionych!",
   notification_add_to_favorites_description:
     "{{ server }} został dodany do listy ulubionych.",
+  settings_general_tab_title: "Ogólne",
+  settings_lang_tab_title: "Język",
+  settings_advanced_tab_title: "Zaawansowane",
+  settings_advanced_discord_status: "Włącz status Discord",
+  join_discord: "Dołącz na serwer Discord",
+  samp_version: "Wersja SA-MP",
+  change_version: "Zmień wersję",
+  offline: "Niedostępny",
+  from_gtasa_folder: "Z folderu GTASA",
+  gta_path_modal_cant_find_samp_description_2: "Wybierz inną wersję lub pobierz i zainstaluj SA-MP ręcznie.",
 };
