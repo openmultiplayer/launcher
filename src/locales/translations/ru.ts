@@ -98,4 +98,6 @@ export default {
   from_gtasa_folder: "Из папки GTASA",
   gta_path_modal_cant_find_samp_description_2:
     "Пожалуйста, выберите другую версию или загрузите и установите SA-MP вручную.",
+  add_or_play_external_server: "Добавить в избранные или играть",
+  reconnect: "Переподключиться",
 };
