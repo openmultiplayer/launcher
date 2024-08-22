@@ -22,7 +22,7 @@ export default {
   copy: "COPIAR",
   remove_from_favorites: "Remover dos favoritos",
   add_to_favorites: "Adicionar aos favoritos",
-  filters: "Filters",
+  filters: "Filtros",
   filter_only_omp_servers: "Apenas servidores open.mp",
   filter_non_empty_servers: "Servidores não vazios",
   filter_unpassworded_servers: "Servidores sem senha",
