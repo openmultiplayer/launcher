@@ -1,16 +1,28 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "monthly"
+      interval: monthly
 
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: /
     schedule:
-      interval: "monthly"
+      interval: monthly
+    allow:
+      - dependency-type: all
+    groups:
+      npm:
+        patterns:
+          - "*"
 
-  - package-ecosystem: "cargo"
-    directory: "src-tauri"
+  - package-ecosystem: cargo
+    directory: src-tauri
     schedule:
-      interval: "monthly"
+      interval: monthly
+    allow:
+      - dependency-type: all
+    groups:
+      crates:
+        patterns:
+          - "*"
