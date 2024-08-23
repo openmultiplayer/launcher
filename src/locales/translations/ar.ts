@@ -96,4 +96,6 @@ export default {
   from_gtasa_folder: "من مجلد GTASA",
   gta_path_modal_cant_find_samp_description_2:
     "يرجى اختيار إصدار آخر أو تنزيل وتثبيت SA-MP يدويًا.",
+  add_or_play_external_server: "أضف إلى المفضلة أو العب",
+  reconnect: "إعادة الاتصال",
 };
