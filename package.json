@@ -20,7 +20,7 @@
     "@tauri-apps/api": "^1.6.0",
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",
-    "i18next": "^23.12.1",
+    "i18next": "^23.14.0",
     "patch-package": "^8.0.0",
     "postinstall-postinstall": "^2.1.0",
     "react": "^18.3.1",
