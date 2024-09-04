@@ -31,6 +31,10 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     i18n.changeLanguage(language);
   }, [language]);
 
+  useEffect(() => {
+    validateResources();
+  }, []);
+
   const finishLoading = (delay: number) => {
     setTimeout(() => {
       props.onEnd();
@@ -38,31 +42,36 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
   };
 
   const downloadSAMPFiles = async (samp: string) => {
+    console.log("start", "downloadSAMPFiles");
     const archive = await path.join(samp, "samp_clients.7z");
     setDownloading(true);
     setDownloadInfo({ size: 0, total: 0, percent: 0 });
-    download(
-      "https://assets.open.mp/samp_clients.7z",
-      archive,
-      async (progress, total) => {
-        downloadedSize.current += progress;
-        setDownloadInfo({
-          size: downloadedSize.current,
-          total: total,
-          percent: (downloadedSize.current * 100) / total,
-        });
-        if (downloadedSize.current >= total) {
-          await invoke_rpc("extract_7z", {
-            path: archive,
-            output_path: samp,
+    try {
+      download(
+        "https://assets.open.mp/samp_clients.7z",
+        archive,
+        async (progress, total) => {
+          downloadedSize.current += progress;
+          setDownloadInfo({
+            size: downloadedSize.current,
+            total: total,
+            percent: (downloadedSize.current * 100) / total,
           });
-          downloadedSize.current = 0;
-          setDownloading(false);
-          processFileChecksums(false);
+          if (downloadedSize.current >= total) {
+            await invoke_rpc("extract_7z", {
+              path: archive,
+              output_path: samp,
+            });
+            downloadedSize.current = 0;
+            setDownloading(false);
+            processFileChecksums(false);
+          }
+          // console.log(`Downloaded ${downloadedSize.current} of ${total} bytes`);
         }
-        // console.log(`Downloaded ${downloadedSize.current} of ${total} bytes`);
-      }
-    );
+      );
+    } catch (e) {
+      console.log("download error", e);
+    }
   };
 
   const downloadOmpFile = async (ompFile: string, link: string) => {
@@ -181,6 +190,7 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
   };
 
   const processFileChecksums = async (late = true) => {
+    console.log("start", "processFileChecksums");
     const dir = await path.appLocalDataDir();
     const samp = await path.join(dir, "samp");
     const files = await fs.readDir(samp, { recursive: true });
@@ -204,11 +214,14 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
         finishLoading(late ? 1000 : 1);
       }
     }
+    console.log("end", "processFileChecksums");
   };
 
   const validateResources = async () => {
+    console.log("start", "validateResources");
     const dir = await path.appLocalDataDir();
     const samp = await path.join(dir, "samp");
+    console.log("whaaaaqt?")
     if (await fs.exists(samp)) {
       const archive = await path.join(samp, "samp_clients.7z");
       if (await fs.exists(archive)) {
@@ -233,11 +246,8 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
       fs.createDir(samp);
       downloadSAMPFiles(samp);
     }
+    console.log("end", "validateResources");
   };
-
-  useEffect(() => {
-    validateResources();
-  }, []);
 
   const progressBar = useMemo(() => {
     return (
