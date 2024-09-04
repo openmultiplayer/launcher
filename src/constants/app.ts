@@ -1,4 +1,6 @@
-export const VERSION = "2";
+export const VERSION = "4";
+export const IN_GAME = process.argv[4] && process.argv[4] == "--ingame";
+export const DEBUG_MODE = process.argv[3] && process.argv[3] == "--ompdebug";
 
 type ResourceName =
   | "samp_clients.7z"

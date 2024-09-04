@@ -7,6 +7,7 @@ import { images } from "../constants/images";
 import { useSettingsModal } from "../states/settingsModal";
 import { useTheme } from "../states/theme";
 import { sc } from "../utils/sizeScaler";
+import { IN_GAME } from "../constants/app";
 
 const NativeWindowTitleBarButtons = ({
   size = sc(30),
@@ -177,24 +178,28 @@ const WindowTitleBar = () => {
             }
           }}
         />
-        <CustomWindowTitleBarButtons
-          title={t("settings")}
-          image={images.icons.settings}
-          marginRight={sc(16)}
-          color={theme.textSecondary}
-          backgroundColor={theme.itemBackgroundColor}
-          onPress={() => showSettings()}
-        />
-        <NativeWindowTitleBarButtons
-          title={t("minimize")}
-          image={images.icons.windowMinimize}
-          onPress={() => appWindow.minimize()}
-        />
-        <NativeWindowTitleBarButtons
-          title={t("maximize")}
-          image={images.icons.windowMaximize}
-          onPress={() => appWindow.toggleMaximize()}
-        />
+        {!IN_GAME && (
+          <>
+            <CustomWindowTitleBarButtons
+              title={t("settings")}
+              image={images.icons.settings}
+              marginRight={sc(16)}
+              color={theme.textSecondary}
+              backgroundColor={theme.itemBackgroundColor}
+              onPress={() => showSettings()}
+            />
+            <NativeWindowTitleBarButtons
+              title={t("minimize")}
+              image={images.icons.windowMinimize}
+              onPress={() => appWindow.minimize()}
+            />
+            <NativeWindowTitleBarButtons
+              title={t("maximize")}
+              image={images.icons.windowMaximize}
+              onPress={() => appWindow.toggleMaximize()}
+            />
+          </>
+        )}
         <NativeWindowTitleBarButtons
           title={t("close")}
           image={images.icons.windowClose}

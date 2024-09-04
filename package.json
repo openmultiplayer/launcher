@@ -1,44 +1,47 @@
 {
   "name": "omp-launcher",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.4.0",
   "type": "module",
   "homepage": "https://github.com/openmultiplayer/launcher",
   "author": "Amyr (iAmir) Ahmady (https://github.com/AmyrAhmady)",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "vite -- --ompdebug",
+    "dev-ingame": "vite -- --ompdebug --ingame",
+    "build": "tsc && vite build -- --omprelease",
+    "build-ingame": "tsc && vite build -- --omprelease --ingame",
     "preview": "vite preview",
     "tauri": "tauri",
-    "start": "tauri dev"
+    "start": "tauri dev",
+    "release": "tauri build -t i686-pc-windows-msvc"
   },
   "dependencies": {
-    "@react-native-clipboard/clipboard": "^1.13.2",
-    "@tauri-apps/api": "^1.5.3",
-    "axios": "^1.6.7",
-    "chart.js": "^4.4.1",
-    "i18next": "^23.7.20",
+    "@react-native-clipboard/clipboard": "^1.14.1",
+    "@tauri-apps/api": "^1.6.0",
+    "axios": "^1.7.2",
+    "chart.js": "^4.4.3",
+    "i18next": "^23.12.1",
     "patch-package": "^8.0.0",
     "postinstall-postinstall": "^2.1.0",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.2.0",
-    "react-i18next": "^14.0.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^14.1.2",
     "react-native-animatable": "^1.4.0",
     "react-native-big-list": "^1.6.1",
-    "react-native-web": "^0.19.10",
+    "react-native-web": "^0.19.12",
     "tauri-plugin-upload-api": "https://github.com/tauri-apps/tauri-plugin-upload#v1",
-    "zustand": "^4.5.0"
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.5.9",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
+    "@tauri-apps/cli": "^1.6.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/react-native": "^0.73.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "babel-plugin-inline-import": "^3.0.0",
-    "babel-plugin-react-native-web": "^0.19.10",
+    "babel-plugin-react-native-web": "^0.19.12",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12"
+    "vite": "^5.3.3"
   }
 }

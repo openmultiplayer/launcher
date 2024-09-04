@@ -60,25 +60,12 @@ export const startGame = async (
   gtasaPath: string,
   password: string
 ) => {
-  const {
-    addToRecentlyJoined,
-    updateInFavoritesList,
-    updateInRecentlyJoinedList,
-  } = usePersistentServers.getState();
-  const { updateServer } = useServers.getState();
+  const { addToRecentlyJoined } = usePersistentServers.getState();
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
   const { sampVersion } = useSettings.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
-
-  if (password.length) {
-    const srvCpy = { ...server };
-    srvCpy.password = password;
-
-    updateServer(srvCpy);
-    updateInFavoritesList(srvCpy);
-    updateInRecentlyJoinedList(srvCpy);
-  }
+  const { setSelected } = useServers.getState();
 
   if (!gtasaPath || gtasaPath.length < 1) {
     showMessageBox({
@@ -205,7 +192,9 @@ export const startGame = async (
         {
           title: t("download"),
           onPress: () => {
-            shell.open("https://uifserver.net/download/sa-mp-0.3.7-R5-1-MP-install.exe")
+            shell.open(
+              "https://uifserver.net/download/sa-mp-0.3.7-R5-1-MP-install.exe"
+            );
           },
         },
       ],
@@ -228,16 +217,21 @@ export const startGame = async (
   let sampDllPath =
     sampVersion === "custom" ? idealSAMPDllPath : ourSAMPDllPath;
 
+  const dir = await path.appLocalDataDir();
+  const ompFile = await path.join(dir, "omp/omp-client.dll");
+
   invoke("inject", {
     name: nickname,
     ip: server.ip,
     port: server.port,
     exe: gtasaPath,
     dll: sampDllPath,
+    ompFile: ompFile,
     password: password,
   })
     .then(() => {
       addToRecentlyJoined(server);
+      setSelected(undefined);
     })
     .catch(async (e) => {
       if (e == "need_admin") {
