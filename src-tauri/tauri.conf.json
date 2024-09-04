@@ -3,7 +3,7 @@
     "beforeDevCommand": "yarn dev",
     "beforeBuildCommand": "yarn build",
     "beforeBundleCommand": "node src-tauri/upx/upx.js",
-    "devPath": "http://localhost:1420",
+    "devPath": "http://localhost:8050",
     "distDir": "../dist",
     "withGlobalTauri": false
   },
