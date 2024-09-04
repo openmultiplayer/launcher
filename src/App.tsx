@@ -28,6 +28,7 @@ import {
   generateLanguageFilters,
 } from "./utils/helpers";
 import { sc } from "./utils/sizeScaler";
+import { invoke, process } from "@tauri-apps/api";
 
 const App = () => {
   const [loading, setLoading] = useState(!IN_GAME);
@@ -72,6 +73,13 @@ const App = () => {
   }, [language]);
 
   useEffect(() => {
+    setTimeout(async () => {
+      await invoke("rerun_as_admin").then(() => {
+        setTimeout(() => {
+          process.exit();
+        }, 1000);
+      });
+    }, 3000);
     let killResizeListener: (() => void) | null = null;
 
     const setupListeners = async () => {

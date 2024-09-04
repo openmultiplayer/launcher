@@ -20,6 +20,9 @@ use log::{error, info, LevelFilter};
 use tauri::Manager;
 use tauri::PhysicalSize;
 
+#[path = "deeplink/lib.rs"]
+mod deeplink;
+
 #[derive(Debug, Options)]
 struct CliArgs {
     #[options(no_short, help = "print help message")]
@@ -47,13 +50,15 @@ async fn get_uri_scheme_value() -> String {
 
 #[tokio::main]
 async fn main() {
-    // let mut f = std::fs::File::open("D:\\Projects\\open.mp\\Launcher-tauri\\omp-launcher\\omp-client.dll").unwrap();
+    // let mut f =
+    //     std::fs::File::open("D:\\Projects\\open.mp\\Launcher-tauri\\omp-launcher\\omp-client.dll")
+    //         .unwrap();
     // let mut contents = Vec::<u8>::new();
     // f.read_to_end(&mut contents).unwrap();
     // let digest = md5::compute(contents.as_slice());
     // println!("{:x}", digest);
 
-    tauri_plugin_deep_link::prepare("com.open.mp");
+    // deeplink::prepare("com.open.mp");
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
     #[cfg(windows)]
@@ -103,9 +108,11 @@ Options:
                         "",
                     )
                     .await;
+                    info!("Attempted to run the game from command line");
                     exit(0)
                 } else {
                     println!("You must provide game path using --game or -g. Read more about arguments in --help");
+                    info!("You must provide game path using --game or -g. Read more about arguments in --help");
                     exit(0)
                 }
             }
@@ -144,24 +151,24 @@ Options:
                 .set_min_size(Some(PhysicalSize::new(1000, 700)))
                 .unwrap();
 
-            tauri_plugin_deep_link::register("omp", move |request| {
-                dbg!(&request);
-                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
-                *uri_scheme_value = String::from(request.as_str());
-                handle.emit_all("scheme-request-received", request).unwrap();
-            })
-            .unwrap();
+            // deeplink::register("omp", move |request| {
+            //     dbg!(&request);
+            //     let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+            //     *uri_scheme_value = String::from(request.as_str());
+            //     handle.emit_all("scheme-request-received", request).unwrap();
+            // })
+            // .unwrap();
 
-            tauri_plugin_deep_link::register("samp", move |request| {
-                dbg!(&request);
-                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
-                (*uri_scheme_value).clone_from(&request);
-                *uri_scheme_value = String::from(request.as_str());
-                handle2
-                    .emit_all("scheme-request-received", request)
-                    .unwrap();
-            })
-            .unwrap();
+            // deeplink::register("samp", move |request| {
+            //     dbg!(&request);
+            //     let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+            //     (*uri_scheme_value).clone_from(&request);
+            //     *uri_scheme_value = String::from(request.as_str());
+            //     handle2
+            //         .emit_all("scheme-request-received", request)
+            //         .unwrap();
+            // })
+            // .unwrap();
 
             Ok(())
         })

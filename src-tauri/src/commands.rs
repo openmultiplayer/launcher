@@ -1,4 +1,7 @@
+use std::process::Command;
+
 use crate::{injector, samp};
+use log::info;
 
 #[tauri::command]
 pub async fn inject(
@@ -29,10 +32,22 @@ pub fn rerun_as_admin() -> Result<String, String> {
     match res {
         Ok(p) => {
             let path = p.into_os_string().into_string().unwrap();
-            runas::Command::new(path).arg("").status().unwrap();
+
+            // Run a delayed command to relaunch the app as admin
+            runas::Command::new("cmd")
+                .args(&["/C", "cmd", "/C", &format!("timeout /T 3  \"{}\"", path)])
+                .status()
+                .expect("Failed to execute command");
+
+            // Terminate the current process
+            // std::process::exit(0);
+
             Ok("SUCCESS".to_string())
         }
-        Err(_) => Err("FAILED".to_string()),
+        Err(e) => {
+            info!("{}", e.to_string());
+            Err("FAILED".to_string())
+        }
     }
 }
 
