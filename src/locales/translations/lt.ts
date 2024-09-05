@@ -81,10 +81,10 @@ export default {
     "Prieš prisijungdami prie serverio, turite pasirinkti slapyvardį.",
   gta_path_modal_path_not_set_title: "GTA: San Andreas aplankas nenustatytas!",
   gta_path_modal_path_not_set_description:
-    "Jūs nenustatėte GTA: San Andreas aplanko, eikite į nustatymus ir ieškokite žaidimo aplanko.",
+    "Jūs nenustatėte GTA: San Andreas aplanko, eikite į nustatymus ir nurodykite žaidimo aplanką.",
   admin_permissions_required_modal_title: "Reikalingos administratoriaus teisės!",
   admin_permissions_required_modal_description:
-    'It seems like your GTA: San Andreas game requires administration permissions to run. This can be due to many causes, like having your game installed in "C" drive. Please re-open open.mp launcher as administrator either using "Run as Admin" button or manually by yourself',
+    'Atrodo, kad jūsų GTA: San Andreas žaidimui reikalingos administravimo teisės. Taip gali būti dėl daugelio priežasčių, pvz., žaidimo įdiegimo „C“ diske. Iš naujo atidarykite open.mp kaip administratorius naudodami mygtuką „Paleisti kaip administratoriui“ arba nustatykite patys rankiniu būdu',
   run_as_admin: "Paleisti kaip administratorius",
   settings_general_tab_title: "Pagrindiniai",
   settings_lang_tab_title: "Kalbos",
