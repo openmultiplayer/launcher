@@ -36,6 +36,9 @@ struct CliArgs {
 
     #[options(help = "game path to use for both game executable and samp.dll")]
     gamepath: Option<String>,
+
+    #[options(short = "P", help = "target server password")]
+    password: Option<String>,
 }
 
 static URI_SCHEME_VALUE: Mutex<String> = Mutex::new(String::new());
@@ -81,6 +84,7 @@ Options:
   -p, --port <PORT>          Server port
   -n, --name <NAME>          Nickname
   -g, --gamepath <GAMEPATH>  Game path
+  -P, --password <PASSWORD>  Server password (optional)
                 ",
                     raw_args[0]
                 );
@@ -100,7 +104,7 @@ Options:
                             dirs_next::data_local_dir().unwrap().to_str().unwrap()
                         )
                         .as_str(),
-                        "",
+                        args.password.unwrap_or(String::from("")).as_str(),
                     )
                     .await;
                     exit(0)
