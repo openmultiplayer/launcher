@@ -46,6 +46,11 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     {
         // Use windows-1251 for various combinations
         Encoding::for_label("windows-1251".as_bytes()).unwrap_or(UTF_8)
+    } else if chardetng_encoding == "windows-1250"
+        && (chardet_encoding == "iso-8859-1" || charset_normalizer_encoding == "windows-1251")
+    {
+        // Use windows-1250 for various combinations
+        Encoding::for_label("windows-1250".as_bytes()).unwrap_or(UTF_8)
     } else if (chardetng_encoding == "windows-1252" && chardet_encoding == "windows-1251")
         || (chardet_encoding == "iso-8859-1"
             && (charset_normalizer_encoding == "iso-8859-2"
