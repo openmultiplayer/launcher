@@ -31,7 +31,7 @@
     "react-native-big-list": "^1.6.1",
     "react-native-web": "^0.19.12",
     "tauri-plugin-upload-api": "https://github.com/tauri-apps/tauri-plugin-upload#v1",
-    "zustand": "^4.5.4"
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.6.0",
