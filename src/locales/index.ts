@@ -27,6 +27,7 @@ import Sindhi from "./translations/sn";
 import Vietnamese from "./translations/vi";
 import Tamil from "./translations/ta";
 import Ukrainian from "./translations/ua";
+import Georgian from "./translations/ge";
 
 export type LanguageType =
   | "en"
@@ -55,7 +56,8 @@ export type LanguageType =
   | "sn"
   | "vi"
   | "ta"
-  | "ua";
+  | "ua"
+  | "ge";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -194,6 +196,11 @@ export const getLanguages = (): {
       label: "Українська",
       type: "ua",
       translations: Ukrainian,
+    },
+    "ge": {
+      label: "ქართული",
+      type: "ge",
+      translations: Georgian,
     },
     "sr": {
       label: "Српски",
