@@ -98,4 +98,6 @@ export default {
   offline: "Niedostępny",
   from_gtasa_folder: "Z folderu GTASA",
   gta_path_modal_cant_find_samp_description_2: "Wybierz inną wersję lub pobierz i zainstaluj SA-MP ręcznie.",
+  add_or_play_external_server: "Dodaj do ulubionych lub graj",
+  reconnect: "Połącz ponownie",
 };
