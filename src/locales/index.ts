@@ -17,6 +17,7 @@ import Polish from "./translations/pl";
 import Portuguese from "./translations/pt";
 import Romanian from "./translations/ro";
 import Russian from "./translations/ru";
+import Serbian from "./translations/sr";
 import Turkish from "./translations/tr";
 import Belarussian from "./translations/by";
 import Czech from "./translations/cz";
@@ -46,6 +47,7 @@ export type LanguageType =
   | "pl"
   | "bs"
   | "ru"
+  | "sr"
   | "tr"
   | "by"
   | "cz"
@@ -199,6 +201,11 @@ export const getLanguages = (): {
       label: "ქართული",
       type: "ge",
       translations: Georgian,
+    },
+    "sr": {
+      label: "Српски",
+      type: "sr",
+      translations: Serbian,
     }
   };
 };
