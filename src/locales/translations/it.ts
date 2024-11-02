@@ -102,5 +102,7 @@ export default {
   offline: "Offline",
   from_gtasa_folder: "Cartella di GTASA",
   gta_path_modal_cant_find_samp_description_2:
-    "Scegli un'altra versione o scarica e installa SA-MP manualmente.",  
+    "Scegli un'altra versione o scarica e installa SA-MP manualmente.",
+  add_or_play_external_server: "Aggiungi ai favoriti o gioca",
+  reconnect: "Ricollegati",  
 };
