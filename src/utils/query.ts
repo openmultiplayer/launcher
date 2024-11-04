@@ -132,7 +132,7 @@ const getServerRules = async (ip: string, port: number, listType: ListType) => {
 
       let isOmp = false;
 
-      if (rules["allow_DL"]) {
+      if (rules["allowed_clients"]) {
         isOmp = true;
       } else {
         if (rules.version && rules.version.includes("omp ")) {
