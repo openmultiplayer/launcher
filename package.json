@@ -41,7 +41,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-react-native-web": "^0.19.12",
-    "typescript": "^5.3.3",
+    "typescript": "^5.7.2",
     "vite": "^5.3.3"
   }
 }
