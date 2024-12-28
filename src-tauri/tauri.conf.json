@@ -48,7 +48,25 @@
         "icons/128x128@2x.png",
         "icons/icon.icns",
         "icons/icon.ico"
-      ]
+      ],
+      "windows": {
+        "allowDowngrades": true,
+        "certificateThumbprint": null,
+        "digestAlgorithm": null,
+        "nsis": {
+          "template": "./nsis/installer.nsi",
+          "installMode": "perMachine"
+        },
+        "signCommand": null,
+        "timestampUrl": null,
+        "tsp": false,
+        "webviewFixedRuntimePath": null,
+        "webviewInstallMode": {
+          "silent": false,
+          "type": "downloadBootstrapper"
+        },
+        "wix": null
+      }
     },
     "security": {
       "csp": null
