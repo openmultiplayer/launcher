@@ -43,14 +43,14 @@ pub fn register<F: FnMut(String) + Send + 'static>(scheme: &str, handler: F) -> 
     Ok(())
 }
 
-pub fn unregister(scheme: &str) -> Result<()> {
-    let hkcu = RegKey::predef(HKEY_CURRENT_USER);
-    let base = Path::new("Software").join("Classes").join(scheme);
+// pub fn unregister(scheme: &str) -> Result<()> {
+//     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
+//     let base = Path::new("Software").join("Classes").join(scheme);
 
-    hkcu.delete_subkey_all(base)?;
+//     hkcu.delete_subkey_all(base)?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
 pub fn listen<F: FnMut(String) + Send + 'static>(mut handler: F) -> Result<()> {
     std::thread::spawn(move || {
@@ -102,10 +102,6 @@ pub fn prepare(identifier: &str) {
             );
         };
         let _ = conn.write_all(b"\n");
-
-        if arg1.len() > 0 {
-            std::process::exit(0);
-        }
     };
     ID.set(identifier.to_string())
         .expect("prepare() called more than once with different identifiers.");

@@ -153,24 +153,24 @@ Options:
                 .set_min_size(Some(PhysicalSize::new(1000, 700)))
                 .unwrap();
 
-            // deeplink::register("omp", move |request| {
-            //     dbg!(&request);
-            //     let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
-            //     *uri_scheme_value = String::from(request.as_str());
-            //     handle.emit_all("scheme-request-received", request).unwrap();
-            // })
-            // .unwrap();
+            deeplink::register("omp", move |request| {
+                dbg!(&request);
+                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+                *uri_scheme_value = String::from(request.as_str());
+                handle.emit_all("scheme-request-received", request).unwrap();
+            })
+            .unwrap();
 
-            // deeplink::register("samp", move |request| {
-            //     dbg!(&request);
-            //     let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
-            //     (*uri_scheme_value).clone_from(&request);
-            //     *uri_scheme_value = String::from(request.as_str());
-            //     handle2
-            //         .emit_all("scheme-request-received", request)
-            //         .unwrap();
-            // })
-            // .unwrap();
+            deeplink::register("samp", move |request| {
+                dbg!(&request);
+                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+                (*uri_scheme_value).clone_from(&request);
+                *uri_scheme_value = String::from(request.as_str());
+                handle2
+                    .emit_all("scheme-request-received", request)
+                    .unwrap();
+            })
+            .unwrap();
 
             Ok(())
         })
