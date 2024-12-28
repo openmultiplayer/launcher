@@ -43,7 +43,7 @@ const getServerInfo = async (ip: string, port: number, listType: ListType) => {
       port: port,
     });
 
-    if (serverInfo === "no_data") {
+    if (serverInfo === "no_data" || serverInfo == "timed out") {
       return Log.debug(
         "[query.ts: getServerInfo]",
         "There was a problem getting server main info"
@@ -81,7 +81,7 @@ const getServerPlayers = async (
       port: port,
     });
 
-    if (serverPlayers === "no_data") {
+    if (serverPlayers === "no_data" || serverPlayers == "timed out") {
       return Log.debug(
         "[query.ts: getServerPlayers]",
         "There was a problem getting server player list"
@@ -113,7 +113,11 @@ const getServerRules = async (ip: string, port: number, listType: ListType) => {
       port: port,
     });
 
-    if (serverRules === "no_data" || !Array.isArray(JSON.parse(serverRules))) {
+    if (
+      serverRules === "no_data" ||
+      serverRules == "timed out" ||
+      !Array.isArray(JSON.parse(serverRules))
+    ) {
       return Log.debug(
         "[query.ts: getServerRules]",
         "There was a problem getting server rule list"
@@ -166,7 +170,10 @@ const getServerOmpExtraInfo = async (
 
     let server = getServerFromList(ip, port, listType);
     if (server) {
-      if (serverOmpExtraInfo === "no_data") {
+      if (
+        serverOmpExtraInfo === "no_data" ||
+        serverOmpExtraInfo == "timed out"
+      ) {
         return;
       }
 
