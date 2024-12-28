@@ -432,7 +432,7 @@ fn init_storage_file() {
     let mut storage_file_guard = STORAGE_FILE.lock().unwrap();
     if storage_file_guard.is_none() {
         *storage_file_guard = Some(PathBuf::from(format!(
-            "{}/com.open.mp/storage.json",
+            "{}/mp.open.launcher/storage.json",
             dirs_next::data_local_dir().unwrap().to_str().unwrap()
         )));
     }

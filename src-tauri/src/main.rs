@@ -59,7 +59,7 @@ async fn main() {
     // let digest = md5::compute(contents.as_slice());
     // println!("{:x}", digest);
 
-    // deeplink::prepare("com.open.mp");
+    deeplink::prepare("mp.open.launcher");
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
     #[cfg(windows)]
@@ -102,7 +102,7 @@ Options:
                         args.gamepath.as_ref().unwrap().as_str(),
                         format!("{}/samp.dll", args.gamepath.as_ref().unwrap()).as_str(),
                         format!(
-                            "{}/com.open.mp/omp/omp-client.dll",
+                            "{}/mp.open.launcher/omp/omp-client.dll",
                             dirs_next::data_local_dir().unwrap().to_str().unwrap()
                         )
                         .as_str(),
@@ -179,8 +179,8 @@ Options:
             commands::inject,
             commands::get_gtasa_path_from_samp,
             commands::get_nickname_from_samp,
-            commands::rerun_as_admin,
-            commands::get_samp_favorite_list
+            commands::get_samp_favorite_list,
+            commands::rerun_as_admin
         ])
         .run(tauri::generate_context!())
     {
