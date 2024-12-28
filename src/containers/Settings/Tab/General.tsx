@@ -9,7 +9,7 @@ import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
 import { checkDirectoryValidity } from "../../../utils/game";
 import { Log } from "../../../utils/logger";
-import nativeStorage from "../../../utils/nativeStorage";
+import { stateStorage } from "../../../utils/stateStorage";
 import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 
@@ -182,7 +182,7 @@ const General = () => {
           },
         ]}
         onPress={() => {
-          nativeStorage.clear();
+          stateStorage.clear();
           localStorage.clear();
           window.location.reload();
         }}

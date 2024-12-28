@@ -1,7 +1,7 @@
 import { t } from "i18next";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { nativeStateStorage } from "../utils/nativeStorage";
+import { stateStorage } from "../utils/stateStorage";
 import { queryServer } from "../utils/query";
 import { PerServerSettings, SAMPDLLVersions, Server } from "../utils/types";
 import { useNotification } from "./notification";
@@ -188,7 +188,7 @@ const usePersistentServers = create<ServersPersistentState>()(
     }),
     {
       name: "favorites-and-recentlyjoined-storage",
-      storage: createJSONStorage(() => nativeStateStorage),
+      storage: createJSONStorage(() => stateStorage),
     }
   )
 );

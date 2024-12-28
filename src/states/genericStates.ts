@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { LanguageType } from "../locales";
-import { nativeStateStorage } from "../utils/nativeStorage";
+import { stateStorage } from "../utils/stateStorage";
 import { ListType, SearchData } from "../utils/types";
 
 interface GenericTempStates {
@@ -60,7 +60,7 @@ const useGenericPersistentState = create<GenericPersistentStates>()(
     }),
     {
       name: "generic-state-storage",
-      storage: createJSONStorage(() => nativeStateStorage),
+      storage: createJSONStorage(() => stateStorage),
     }
   )
 );
