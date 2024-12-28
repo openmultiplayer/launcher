@@ -5,7 +5,6 @@ import {
 } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { invoke_rpc } from "./api/rpc";
 import { DEBUG_MODE, IN_GAME } from "./constants/app";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import ExternalServerHandler from "./containers/ExternalServerHandler";
@@ -28,13 +27,12 @@ import {
   generateLanguageFilters,
 } from "./utils/helpers";
 import { sc } from "./utils/sizeScaler";
-import { invoke, process } from "@tauri-apps/api";
 
 const App = () => {
   const [loading, setLoading] = useState(!IN_GAME);
   const [maximized, setMaximized] = useState(false);
   const { theme } = useTheme();
-  const { language, shouldUpdateDiscordStatus } = useGenericPersistentState();
+  const { language } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
   const mainWindowSize = useRef<LogicalSize>();
 
@@ -52,9 +50,6 @@ const App = () => {
   );
 
   const initializeApp = async () => {
-    invoke_rpc("toggle_drpc", {
-      toggle: shouldUpdateDiscordStatus,
-    });
     fetchServers();
     fetchUpdateInfo();
     generateLanguageFilters();
@@ -73,13 +68,6 @@ const App = () => {
   }, [language]);
 
   useEffect(() => {
-    setTimeout(async () => {
-      await invoke("rerun_as_admin").then(() => {
-        setTimeout(() => {
-          process.exit();
-        }, 1000);
-      });
-    }, 3000);
     let killResizeListener: (() => void) | null = null;
 
     const setupListeners = async () => {

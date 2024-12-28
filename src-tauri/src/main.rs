@@ -1,8 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 // use serde_json::json;
+mod background_thread;
 mod commands;
-mod discord;
 mod helpers;
 mod injector;
 mod query;
@@ -13,6 +13,7 @@ use std::env;
 use std::process::exit;
 use std::sync::Mutex;
 
+use background_thread::initialize_background_thread;
 use gumdrop::Options;
 use injector::run_samp;
 use log::{error, info, LevelFilter};
@@ -136,6 +137,7 @@ Options:
         }
     }
 
+    initialize_background_thread();
     std::thread::spawn(move || {
         let rt = actix_rt::Runtime::new().unwrap();
         let _ = rt.block_on(rpcs::initialize_rpc());

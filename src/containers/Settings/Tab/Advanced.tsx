@@ -1,6 +1,5 @@
 import { t } from "i18next";
 import { Pressable, StyleSheet, View } from "react-native";
-import { invoke_rpc } from "../../../api/rpc";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
 import { useGenericPersistentState } from "../../../states/genericStates";
@@ -30,23 +29,21 @@ const Advanced = () => {
         }}
       >
         <Pressable
+          disabled={true}
           style={{
             flexDirection: "row",
             alignItems: "center",
           }}
           onPress={async () => {
-            await invoke_rpc("toggle_drpc", {
-              toggle: !shouldUpdateDiscordStatus,
-            });
+            return;
             toggleDiscordStatus(!shouldUpdateDiscordStatus);
           }}
         >
-          <CheckBox
-            value={shouldUpdateDiscordStatus}
-            style={{ marginRight: sc(7) }}
-          />
-          <Text semibold color={theme.textPrimary} size={2}>
-            {t("settings_advanced_discord_status")}
+          <CheckBox value={true} style={{ marginRight: sc(7) }} />
+          <Text semibold color={theme.textPlaceholder} size={2}>
+            {`${t("settings_advanced_discord_status")} ${t(
+              "settings_advanced_discord_status_moved_to_game_menu"
+            )}`}
           </Text>
         </Pressable>
       </View>

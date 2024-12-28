@@ -14,8 +14,8 @@ use std::sync::Mutex;
 use std::time::Instant;
 use tokio::sync::Semaphore;
 
+use crate::helpers;
 use crate::query;
-use crate::{discord, helpers};
 
 static STORAGE_FILE: Mutex<Option<PathBuf>> = Mutex::new(None);
 
@@ -37,11 +37,6 @@ struct RpcMethod {
 struct ServerQueryMethodParams {
     ip: String,
     port: i32,
-}
-
-#[derive(Deserialize)]
-struct ToggleDiscordRPCParams {
-    toggle: bool,
 }
 
 #[derive(Deserialize)]
@@ -136,10 +131,6 @@ async fn ping_server(ip: &str, port: i32) -> Result<u32, String> {
         }
         Err(_) => Ok(9999),
     }
-}
-
-fn toggle_drpc(toggle: bool) -> Result<(), Box<dyn Error>> {
-    discord::toggle_drpc(toggle)
 }
 
 fn get_checksum_of_files(list: Vec<String>) -> Vec<String> {
@@ -289,14 +280,6 @@ async fn rpc_handler(
             return Ok(HttpResponse::Ok().body(result?));
         }
         return Ok(HttpResponse::Ok().body(result?));
-    }
-    /*
-     method: toggle_drpc
-    */
-    else if path.method == "toggle_drpc" {
-        let params: ToggleDiscordRPCParams = serde_json::from_str(params_str.as_str())?;
-        toggle_drpc(params.toggle)?;
-        return Ok(HttpResponse::Ok().body("{}"));
     }
     /*
      method: get_checksum_of_files
