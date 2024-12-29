@@ -11,6 +11,7 @@ import { useSettingsModal } from "../states/settingsModal";
 import { Log } from "./logger";
 import { sc } from "./sizeScaler";
 import { Server } from "./types";
+import { useGenericPersistentState } from "../states/genericStates";
 
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
@@ -66,6 +67,7 @@ export const startGame = async (
   const { sampVersion } = useSettings.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
   const { setSelected } = useServers.getState();
+  const { shouldUpdateDiscordStatus } = useGenericPersistentState.getState();
 
   if (!gtasaPath || gtasaPath.length < 1) {
     showMessageBox({
@@ -228,6 +230,7 @@ export const startGame = async (
     dll: sampDllPath,
     ompFile: ompFile,
     password: password,
+    discord: shouldUpdateDiscordStatus,
   })
     .then(() => {
       addToRecentlyJoined(server);

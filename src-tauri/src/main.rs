@@ -116,6 +116,7 @@ Options:
                         )
                         .as_str(),
                         &password,
+                        true,
                     )
                     .await;
                     info!("Attempted to run the game from command line");

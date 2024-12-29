@@ -9,8 +9,9 @@ pub async fn inject(
     dll: &str,
     omp_file: &str,
     password: &str,
+    discord: bool,
 ) -> Result<(), String> {
-    injector::run_samp(name, ip, port, exe, dll, omp_file, password).await
+    injector::run_samp(name, ip, port, exe, dll, omp_file, password, discord).await
 }
 
 #[tauri::command]

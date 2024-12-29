@@ -29,20 +29,18 @@ const Advanced = () => {
         }}
       >
         <Pressable
-          disabled={true}
           style={{
             flexDirection: "row",
             alignItems: "center",
           }}
           onPress={async () => {
-            return;
             toggleDiscordStatus(!shouldUpdateDiscordStatus);
           }}
         >
           <CheckBox value={true} style={{ marginRight: sc(7) }} />
-          <Text semibold color={theme.textPlaceholder} size={2}>
+          <Text semibold color={theme.textPrimary} size={2}>
             {`${t("settings_advanced_discord_status")} ${t(
-              "settings_advanced_discord_status_moved_to_game_menu"
+              "settings_advanced_discord_status_requires_restart"
             )}`}
           </Text>
         </Pressable>
