@@ -35,6 +35,9 @@ struct CliArgs {
     #[options(help = "target server port")]
     port: Option<i32>,
 
+    #[options(help = "target server password")]
+    password: Option<String>,
+
     #[options(help = "nickname to join server with")]
     name: Option<String>,
 
@@ -85,6 +88,7 @@ Options:
       --help
   -h, --host <HOST>          Server IP
   -p, --port <PORT>          Server port
+  -P, --password <PASSWORD>  Server password
   -n, --name <NAME>          Nickname
   -g, --gamepath <GAMEPATH>  Game path
                 ",
@@ -95,6 +99,11 @@ Options:
 
             if args.host.is_some() && args.name.is_some() && args.port.is_some() {
                 if args.gamepath.is_some() && args.gamepath.as_ref().unwrap().len() > 0 {
+                    let password : String = if args.password.is_some() { 
+                        args.password.unwrap()
+                    } else { 
+                        "".to_string()
+                    };
                     let _ = run_samp(
                         args.name.unwrap().as_str(),
                         args.host.unwrap().as_str(),
@@ -106,7 +115,7 @@ Options:
                             dirs_next::data_local_dir().unwrap().to_str().unwrap()
                         )
                         .as_str(),
-                        "",
+                        &password,
                     )
                     .await;
                     info!("Attempted to run the game from command line");
