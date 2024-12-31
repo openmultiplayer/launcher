@@ -29,7 +29,9 @@ const AddThirdPartyServerModal = () => {
     if (visible) {
       clipboard.readText().then((text) => {
         if (text) {
-          setServerAddress(text);
+          if(validateServerAddress(text)) {
+            setServerAddress(text);
+          }
         }
       });
     }
