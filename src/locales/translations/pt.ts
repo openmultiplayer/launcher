@@ -100,5 +100,5 @@ export default {
   add_or_play_external_server: "Adicionar aos favoritos ou jogar",
   reconnect: "Reconectar",
   settings_advanced_discord_status_requires_restart:
-    "(Requer reiniciar o jogo para aplicar a configuração)",
+    "(Requer reiniciar o jogo para aplicar)",
 };
