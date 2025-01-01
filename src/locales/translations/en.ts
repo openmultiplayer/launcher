@@ -101,4 +101,5 @@ export default {
   reconnect: "Reconnect",
   settings_advanced_discord_status_requires_restart:
     "(Requires restarting the game to take action)",
+  server_status: "Offline",
 };

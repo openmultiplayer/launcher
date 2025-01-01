@@ -25,6 +25,7 @@ export interface Server {
   ping: number;
   players: Player[];
   password: string;
+  isOffline: boolean;
   omp?: {
     bannerLight?: string;
     bannerDark?: string;

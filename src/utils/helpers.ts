@@ -218,11 +218,14 @@ export const sortAndSearchInServerList = (
     languages,
   } = searchData;
   let list = servers.filter((server) => {
+    const nonEmptyCheck = nonEmpty ? 
+      (server.playerCount > 0 && !server.isOffline) : true;
+
     const ompCheck = ompOnly ? server.usingOmp === true : true;
+    
     const partnershipCheck = checkForPartnership
       ? server.partner === true
       : true;
-    const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
     const unpasswordedCheck = unpassworded
       ? server.hasPassword === false
       : true;
@@ -254,6 +257,10 @@ export const sortAndSearchInServerList = (
 
   if (sortPing !== "none") {
     list = list.sort((a, b) => {
+
+      if (a.ping === 9999 && b.ping !== 9999) return 1;
+      if (a.ping !== 9999 && b.ping === 9999) return -1;
+
       if (sortPing === "descending") {
         return a.ping - b.ping;
       } else {
@@ -321,32 +328,32 @@ const addLanguageFilter = (name: string, keywords: string[]) => {
 
 export const generateLanguageFilters = () => {
   addLanguageFilter("English", ["English", "EN", "Eng"]);
-  addLanguageFilter("Arabic", ["Arabic", "العربية"]);
-  addLanguageFilter("Czech", ["Czech", "CZ", "Čeština"]);
-  addLanguageFilter("Chinese", ["Chinese", "CN", "ZH", "中文"]);
-  addLanguageFilter("Bulgarian", ["Bulgarian", "BG", "Български"]);
+  addLanguageFilter("Arabic", ["Arabic", "???????"]);
+  addLanguageFilter("Czech", ["Czech", "CZ", "?e�tina"]);
+  addLanguageFilter("Chinese", ["Chinese", "CN", "ZH", "??"]);
+  addLanguageFilter("Bulgarian", ["Bulgarian", "BG", "?????????"]);
   addLanguageFilter("Dutch", ["Dutch", "NL"]);
-  addLanguageFilter("French", ["French", "FR", "Français"]);
-  addLanguageFilter("Georgian", ["Georgian", "KA", "ქართული"]);
+  addLanguageFilter("French", ["French", "FR", "Fran�ais"]);
+  addLanguageFilter("Georgian", ["Georgian", "KA", "???????"]);
   addLanguageFilter("German", ["German", "DE", "GER", "Deutsch"]);
-  addLanguageFilter("Greek", ["Greek", "EL", "Ελληνικά"]);
+  addLanguageFilter("Greek", ["Greek", "EL", "????????"]);
   addLanguageFilter("Hungarian", ["Hungarian", "HU", "Magyar"]);
   addLanguageFilter("Indonesian", ["Indonesian", "ID", "Bahasa Indonesia "]);
   addLanguageFilter("Italian", ["Italian", "IT", "Italiano"]);
-  addLanguageFilter("Lithuanian", ["Lithuanian", "LT", "Lietuvių"]);
+  addLanguageFilter("Lithuanian", ["Lithuanian", "LT", "Lietuvi?"]);
   addLanguageFilter("Polish", ["Polish", "PL", "Polski"]);
-  addLanguageFilter("Portuguese", ["Portuguese", "PT", "Português"]);
-  addLanguageFilter("Romanian", ["Romanian", "RO", "Română"]);
-  addLanguageFilter("Russian", ["Russian", "RU", "RUS", "Русский"]);
-  addLanguageFilter("Spanish", ["Spanish", "ES", "Español"]);
+  addLanguageFilter("Portuguese", ["Portuguese", "PT", "Portugu�s"]);
+  addLanguageFilter("Romanian", ["Romanian", "RO", "Rom�n?"]);
+  addLanguageFilter("Russian", ["Russian", "RU", "RUS", "???????"]);
+  addLanguageFilter("Spanish", ["Spanish", "ES", "Espa�ol"]);
   addLanguageFilter("Swedish", ["Swedish", "SV", "Svenska"]);
-  addLanguageFilter("Turkish", ["Turkish", "TR", "Türkçe"]);
-  addLanguageFilter("Ukrainian", ["Ukrainian", "UK", "Українська"]);
+  addLanguageFilter("Turkish", ["Turkish", "TR", "T�rk�e"]);
+  addLanguageFilter("Ukrainian", ["Ukrainian", "UK", "??????????"]);
   addLanguageFilter("Vietnamese", [
     "Vietnamese",
     "VI",
     "Viet Nam",
-    "Tiếng Việt",
+    "Ti?ng Vi?t",
   ]);
 };
 

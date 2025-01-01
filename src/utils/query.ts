@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { invoke_rpc } from "../api/rpc";
 import { usePersistentServers, useServers } from "../states/servers";
 import { Log } from "./logger";
@@ -42,14 +43,28 @@ const getServerInfo = async (ip: string, port: number, listType: ListType) => {
       ip: ip,
       port: port,
     });
-
     if (serverInfo === "no_data" || serverInfo == "timed out") {
+      let server = getServerFromList(ip, port, listType);
+      if (server && !server.isOffline) {
+
+        server = { 
+          ...server, 
+          ping: 9999,
+          playerCount: 0,  
+          maxPlayers: 0,
+          gameMode: "-",
+          hostname: `(${t("server_status")}) ${server.hostname}`,
+          language: "-",
+          isOffline: true
+        };
+        updateServerEveryWhere(server);
+      }
       return Log.debug(
         "[query.ts: getServerInfo]",
         "There was a problem getting server main info"
       );
     }
-
+    
     let queryObj = JSON.parse(serverInfo);
     const data = {
       hasPassword: queryObj.password,
@@ -58,15 +73,30 @@ const getServerInfo = async (ip: string, port: number, listType: ListType) => {
       hostname: queryObj.hostname,
       gameMode: queryObj.gamemode,
       language: queryObj.language,
+      isOffline: false
     };
-
     let server = getServerFromList(ip, port, listType);
     if (server) {
       server = { ...server, ...data };
       updateServerEveryWhere(server);
     }
   } catch (e) {
-    Log.debug("[query.ts: getServerInfo]", e);
+    let server = getServerFromList(ip, port, listType);
+    if (server && !server.isOffline) {
+
+      server = { 
+        ...server,
+        ping: 9999,
+        playerCount: 0,
+        maxPlayers: 0, 
+        gameMode: "-",
+        hostname: `(${t("server_status")}) ${server.hostname}`,
+        language: "-",
+        isOffline: true
+      };
+      updateServerEveryWhere(server);
+      Log.debug("[query.ts: getServerInfo]", e);
+    }
   }
 };
 

@@ -150,7 +150,9 @@ const ServerItem = memo((props: IProps) => {
               { paddingLeft: server.usingOmp ? 0 : sc(10) },
             ]}
           >
-            <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
+            <Text style={{ fontSize: sc(17) }} 
+              color={server.isOffline ? theme.textSecondary : theme.textPrimary}
+            >
               {server.hostname}
             </Text>
           </View>

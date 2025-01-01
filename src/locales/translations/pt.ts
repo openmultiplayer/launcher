@@ -85,5 +85,6 @@ export default {
   from_gtasa_folder: "Da pasta do GTASA",
   gta_path_modal_cant_find_samp_description_2: "Escolha outra versão ou instale o SA-MP manualmente.",
   add_or_play_external_server: "Adicionar aos favoritos ou jogar",
-  reconnect: "Reconectar"
+  reconnect: "Reconectar",
+  server_status: "Desligado",
 };
