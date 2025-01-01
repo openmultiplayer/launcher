@@ -1099,10 +1099,10 @@
   resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
   integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
 
-"@react-native-clipboard/clipboard@^1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.14.1.tgz#835f82fc86881a0808a8405f2576617bb5383554"
-  integrity sha512-SM3el0A28SwoeJljVNhF217o0nI4E7RfalLmuRQcT1/7tGcxUjgFa3jyrEndYUct8/uxxK5EUNGUu1YEDqzxqw==
+"@react-native-clipboard/clipboard@^1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.15.0.tgz#dcd47279b159289f11b31edf976723ad3984e0ce"
+  integrity sha512-YDMC3E956jn9zE11uKGcQDKS1SO9q72iNHxZyrKY5y9XYwZcA9vo3Xk74+zRnf7cM48drDO0s9lyAPUlOvyhrw==
 
 "@react-native-community/cli-clean@12.3.0":
   version "12.3.0"
