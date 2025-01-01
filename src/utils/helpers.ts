@@ -328,32 +328,32 @@ const addLanguageFilter = (name: string, keywords: string[]) => {
 
 export const generateLanguageFilters = () => {
   addLanguageFilter("English", ["English", "EN", "Eng"]);
-  addLanguageFilter("Arabic", ["Arabic", "???????"]);
-  addLanguageFilter("Czech", ["Czech", "CZ", "?e�tina"]);
-  addLanguageFilter("Chinese", ["Chinese", "CN", "ZH", "??"]);
-  addLanguageFilter("Bulgarian", ["Bulgarian", "BG", "?????????"]);
+  addLanguageFilter("Arabic", ["Arabic", "العربية"]);
+  addLanguageFilter("Czech", ["Czech", "CZ", "Čeština"]);
+  addLanguageFilter("Chinese", ["Chinese", "CN", "ZH", "中文"]);
+  addLanguageFilter("Bulgarian", ["Bulgarian", "BG", "Български"]);
   addLanguageFilter("Dutch", ["Dutch", "NL"]);
-  addLanguageFilter("French", ["French", "FR", "Fran�ais"]);
-  addLanguageFilter("Georgian", ["Georgian", "KA", "???????"]);
+  addLanguageFilter("French", ["French", "FR", "Français"]);
+  addLanguageFilter("Georgian", ["Georgian", "KA", "ქართული"]);
   addLanguageFilter("German", ["German", "DE", "GER", "Deutsch"]);
-  addLanguageFilter("Greek", ["Greek", "EL", "????????"]);
+  addLanguageFilter("Greek", ["Greek", "EL", "Ελληνικά"]);
   addLanguageFilter("Hungarian", ["Hungarian", "HU", "Magyar"]);
   addLanguageFilter("Indonesian", ["Indonesian", "ID", "Bahasa Indonesia "]);
   addLanguageFilter("Italian", ["Italian", "IT", "Italiano"]);
-  addLanguageFilter("Lithuanian", ["Lithuanian", "LT", "Lietuvi?"]);
+  addLanguageFilter("Lithuanian", ["Lithuanian", "LT", "Lietuvių"]);
   addLanguageFilter("Polish", ["Polish", "PL", "Polski"]);
-  addLanguageFilter("Portuguese", ["Portuguese", "PT", "Portugu�s"]);
-  addLanguageFilter("Romanian", ["Romanian", "RO", "Rom�n?"]);
-  addLanguageFilter("Russian", ["Russian", "RU", "RUS", "???????"]);
-  addLanguageFilter("Spanish", ["Spanish", "ES", "Espa�ol"]);
+  addLanguageFilter("Portuguese", ["Portuguese", "PT", "Português"]);
+  addLanguageFilter("Romanian", ["Romanian", "RO", "Română"]);
+  addLanguageFilter("Russian", ["Russian", "RU", "RUS", "Русский"]);
+  addLanguageFilter("Spanish", ["Spanish", "ES", "Español"]);
   addLanguageFilter("Swedish", ["Swedish", "SV", "Svenska"]);
-  addLanguageFilter("Turkish", ["Turkish", "TR", "T�rk�e"]);
-  addLanguageFilter("Ukrainian", ["Ukrainian", "UK", "??????????"]);
+  addLanguageFilter("Turkish", ["Turkish", "TR", "Türkçe"]);
+  addLanguageFilter("Ukrainian", ["Ukrainian", "UK", "Українська"]);
   addLanguageFilter("Vietnamese", [
     "Vietnamese",
     "VI",
     "Viet Nam",
-    "Ti?ng Vi?t",
+    "Tiếng Việt",
   ]);
 };
 
