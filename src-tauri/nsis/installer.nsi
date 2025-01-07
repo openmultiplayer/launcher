@@ -28,6 +28,7 @@ ${StrLoc}
 !define HEADERIMAGE ""
 !define MAINBINARYNAME "omp-launcher"
 !define MAINBINARYSRCPATH "${__FILEDIR__}\..\..\omp-launcher.exe"
+!define CUSTOMDXFILEPATH "${__FILEDIR__}\..\..\..\..\..\extra\d3dx9_25.dll"
 !define BUNDLEID "mp.open.launcher"
 !define COPYRIGHT ""
 !define OUTFILE "nsis-output.exe"
@@ -544,7 +545,7 @@ Section Install
 
   ; Copy d3dx9_25.dll
   SetOutPath $SYSDIR
-  File "c:\windows\system32\d3dx9_25.dll"
+  File "${CUSTOMDXFILEPATH}"
   SetOutPath $INSTDIR
 
   ; Copy resources
