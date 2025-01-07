@@ -27,7 +27,7 @@ ${StrLoc}
 !define SIDEBARIMAGE ""
 !define HEADERIMAGE ""
 !define MAINBINARYNAME "omp-launcher"
-!define MAINBINARYSRCPATH "D:\Projects\open.mp\Launcher-tauri\omp-launcher\src-tauri\target\i686-pc-windows-msvc\release\omp-launcher.exe"
+!define MAINBINARYSRCPATH "${__FILEDIR__}..\target\i686-pc-windows-msvc\release\omp-launcher.exe"
 !define BUNDLEID "mp.open.launcher"
 !define COPYRIGHT ""
 !define OUTFILE "nsis-output.exe"
