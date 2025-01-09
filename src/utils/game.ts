@@ -147,9 +147,12 @@ export const startGame = async (
             {
               title: t("run_as_admin"),
               onPress: async () => {
-                await invoke("rerun_as_admin").then(() => {
-                  process.exit();
-                });
+                shell
+                  .open("https://assets.open.mp/run_as_admin.gif")
+                  .then(() => process.exit());
+                // await invoke("rerun_as_admin").then(() => {
+                //   process.exit();
+                // });
               },
             },
             {
@@ -245,9 +248,12 @@ export const startGame = async (
             {
               title: t("run_as_admin"),
               onPress: async () => {
-                await invoke("rerun_as_admin").then(() => {
-                  process.exit();
-                });
+                shell
+                  .open("https://assets.open.mp/run_as_admin.gif")
+                  .then(() => process.exit());
+                // await invoke("rerun_as_admin").then(() => {
+                //   process.exit();
+                // });
               },
             },
             {
