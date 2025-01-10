@@ -99,4 +99,6 @@ export default {
         "Молимо изаберите другу верзију или преузмите и инсталирајте SA-MP ручно.",
     add_or_play_external_server: "Додај у омиљене или играј",
     reconnect: "Повежи се поново",
+    settings_advanced_discord_status_requires_restart:
+    "(Захтева поновно покретање игре да би акција ступила на снагу)", 
 };
