@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+omp-launcher-setup.exe
+omp-client.dll
