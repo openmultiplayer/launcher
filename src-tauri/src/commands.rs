@@ -1,4 +1,4 @@
-use crate::{injector, samp};
+use crate::{background_thread::check_for_new_instance_and_close, injector, samp};
 
 #[tauri::command]
 pub async fn inject(
@@ -9,8 +9,9 @@ pub async fn inject(
     dll: &str,
     omp_file: &str,
     password: &str,
+    discord: bool,
 ) -> Result<(), String> {
-    injector::run_samp(name, ip, port, exe, dll, omp_file, password).await
+    injector::run_samp(name, ip, port, exe, dll, omp_file, password, discord).await
 }
 
 #[tauri::command]
@@ -30,6 +31,7 @@ pub fn rerun_as_admin() -> Result<String, String> {
         Ok(p) => {
             let path = p.into_os_string().into_string().unwrap();
             runas::Command::new(path).arg("").status().unwrap();
+            check_for_new_instance_and_close();
             Ok("SUCCESS".to_string())
         }
         Err(_) => Err("FAILED".to_string()),

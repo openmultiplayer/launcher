@@ -1,5 +1,6 @@
+import { clipboard } from "@tauri-apps/api";
 import { t } from "i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -23,6 +24,16 @@ const AddThirdPartyServerModal = () => {
   const { theme } = useTheme();
   const [serverAddress, setServerAddress] = useState("");
   const { addToFavorites } = usePersistentServers();
+
+  useEffect(() => {
+    if (visible) {
+      clipboard.readText().then((text) => {
+        if (text) {
+          setServerAddress(text);
+        }
+      });
+    }
+  }, [visible]);
 
   if (!visible) {
     return null;

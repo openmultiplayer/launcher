@@ -120,7 +120,7 @@ const ServerItem = memo((props: IProps) => {
               borderRadius: sc(5),
             },
             {
-              borderWidth: props.isSelected ? 1 : 0,
+              // borderWidth: props.isSelected ? 1 : 0,
               borderColor: theme.primary,
               backgroundColor: props.isSelected
                 ? theme.primary + "7D"
