@@ -198,7 +198,7 @@ export const startGame = async (
           title: t("download"),
           onPress: () => {
             shell.open(
-              "https://uifserver.net/download/sa-mp-0.3.7-R5-1-MP-install.exe"
+              "https://uifserver.net/download/sa-mp-0.3.7-R5-2-MP-install.exe"
             );
           },
         },
