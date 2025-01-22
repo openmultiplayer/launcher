@@ -88,7 +88,7 @@ export default {
   run_as_admin: "Paleisti kaip administratoriui",
   settings_general_tab_title: "Pagrindiniai",
   settings_lang_tab_title: "Kalbos",
-  settings_advanced_tab_title: "Išplėstinai",
+  settings_advanced_tab_title: "Išplėstiniai",
   settings_advanced_discord_status: "Rodyti Discord būseną",
   join_discord: "Jungtis į Discord Serverį",
   samp_version: "SA-MP Versija",
@@ -97,4 +97,8 @@ export default {
   from_gtasa_folder: "Iš GTASA aplanko",
   gta_path_modal_cant_find_samp_description_2:
     "Pasirinkite kitą versiją arba atsisiųskite ir įdiekite SA-MP rankiniu būdu.",
+  add_or_play_external_server: "Pridėti prie mėgstamiausių arba žaisti",
+  reconnect: "Jungtis iš naujo",
+  settings_advanced_discord_status_requires_restart:
+    "(Norint užbaigti veiksmą, reikia paleisti žaidimą iš naujo)",
 };
