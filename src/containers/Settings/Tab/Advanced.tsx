@@ -37,7 +37,7 @@ const Advanced = () => {
             toggleDiscordStatus(!shouldUpdateDiscordStatus);
           }}
         >
-          <CheckBox value={true} style={{ marginRight: sc(7) }} />
+          <CheckBox value={shouldUpdateDiscordStatus} style={{ marginRight: sc(7) }} />
           <Text semibold color={theme.textPrimary} size={2}>
             {`${t("settings_advanced_discord_status")} ${t(
               "settings_advanced_discord_status_requires_restart"
