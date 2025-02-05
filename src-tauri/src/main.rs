@@ -20,6 +20,8 @@ use log::{error, info, LevelFilter};
 // use std::io::Read;
 use tauri::Manager;
 use tauri::PhysicalSize;
+use std::fs;
+use tauri::api::path::app_data_dir;
 
 #[path = "deeplink/lib.rs"]
 #[cfg(target_os = "windows")]
@@ -161,10 +163,18 @@ Options:
     match tauri::Builder::default()
         .plugin(tauri_plugin_upload::init())
         .setup(|app| {
+            let handle = app.handle();
             let main_window = app.get_window("main").unwrap();
             main_window
                 .set_min_size(Some(PhysicalSize::new(1000, 700)))
                 .unwrap();
+
+            let config = handle.config();
+            if let Some(path) = app_data_dir(&config) {
+                if let Err(e) = fs::create_dir_all(&path) {
+                    println!("Failed to create app data directory: {}", e);
+                }
+            }
 
             #[cfg(windows)]
             {
