@@ -1,11 +1,11 @@
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
 import { getLanguages } from "../../../locales";
 import { useGenericPersistentState } from "../../../states/genericStates";
 import { useSettingsModal } from "../../../states/settingsModal";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
+import RadioButton from "../../../components/RadioButton";
 
 const Appearance = () => {
   const { language, setLanguage } = useGenericPersistentState();
@@ -49,7 +49,7 @@ const Appearance = () => {
                   hideSettings();
                 }}
               >
-                <CheckBox
+                <RadioButton
                   value={language === lang.type}
                   style={{ marginRight: sc(10) }}
                 />
