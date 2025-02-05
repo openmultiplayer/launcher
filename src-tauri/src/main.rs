@@ -22,6 +22,7 @@ use tauri::Manager;
 use tauri::PhysicalSize;
 
 #[path = "deeplink/lib.rs"]
+#[cfg(target_os = "windows")]
 mod deeplink;
 
 #[derive(Debug, Options)]
@@ -62,7 +63,11 @@ async fn main() {
     // let digest = md5::compute(contents.as_slice());
     // println!("{:x}", digest);
 
-    deeplink::prepare("mp.open.launcher");
+    #[cfg(windows)]
+    {
+        deeplink::prepare("mp.open.launcher");
+    }
+
     simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
 
     #[cfg(windows)]
@@ -156,31 +161,35 @@ Options:
     match tauri::Builder::default()
         .plugin(tauri_plugin_upload::init())
         .setup(|app| {
-            let handle = app.handle();
-            let handle2 = app.handle();
             let main_window = app.get_window("main").unwrap();
             main_window
                 .set_min_size(Some(PhysicalSize::new(1000, 700)))
                 .unwrap();
 
-            deeplink::register("omp", move |request| {
-                dbg!(&request);
-                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
-                *uri_scheme_value = String::from(request.as_str());
-                handle.emit_all("scheme-request-received", request).unwrap();
-            })
-            .unwrap();
+            #[cfg(windows)]
+            {
+                let handle = app.handle();
+                let handle2 = app.handle();
 
-            deeplink::register("samp", move |request| {
-                dbg!(&request);
-                let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
-                (*uri_scheme_value).clone_from(&request);
-                *uri_scheme_value = String::from(request.as_str());
-                handle2
-                    .emit_all("scheme-request-received", request)
-                    .unwrap();
-            })
-            .unwrap();
+                deeplink::register("omp", move |request| {
+                    dbg!(&request);
+                    let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+                    *uri_scheme_value = String::from(request.as_str());
+                    handle.emit_all("scheme-request-received", request).unwrap();
+                })
+                .unwrap();
+
+                deeplink::register("samp", move |request| {
+                    dbg!(&request);
+                    let mut uri_scheme_value = URI_SCHEME_VALUE.lock().unwrap();
+                    (*uri_scheme_value).clone_from(&request);
+                    *uri_scheme_value = String::from(request.as_str());
+                    handle2
+                        .emit_all("scheme-request-received", request)
+                        .unwrap();
+                })
+                .unwrap();
+            }
 
             Ok(())
         })

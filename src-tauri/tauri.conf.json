@@ -30,7 +30,7 @@
       },
       "fs": {
         "all": true,
-        "scope": ["**"],
+        "scope": ["**", "**/*", "/**/*", "$HOME/.local/**"],
         "exists": true
       },
       "shell": {
