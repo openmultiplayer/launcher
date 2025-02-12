@@ -28,6 +28,7 @@ import Vietnamese from "./translations/vi";
 import Tamil from "./translations/ta";
 import Ukrainian from "./translations/ua";
 import Georgian from "./translations/ge";
+import Finnish from "./translations/fi";
 
 export type LanguageType =
   | "en"
@@ -57,7 +58,8 @@ export type LanguageType =
   | "vi"
   | "ta"
   | "ua"
-  | "ge";
+  | "ge"
+  | "fi";
 
 export const getLanguages = (): {
   [x: string]: {
@@ -206,6 +208,11 @@ export const getLanguages = (): {
       label: "Српски",
       type: "sr",
       translations: Serbian,
+    },
+    fi: {
+      label: "Suomi",
+      type: "fi",
+      translations: Finnish,
     }
   };
 };
