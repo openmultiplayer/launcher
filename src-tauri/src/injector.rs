@@ -1,19 +1,24 @@
 #[cfg(target_os = "windows")]
 use dll_syringe::{process::OwnedProcess, Syringe};
+#[cfg(target_os = "windows")]
 use log::info;
+#[cfg(target_os = "windows")]
 use regex::Regex;
+#[cfg(target_os = "windows")]
 use std::process::Command;
+#[cfg(target_os = "windows")]
 use tokio::net::lookup_host;
 
 #[cfg(not(target_os = "windows"))]
 pub async fn run_samp(
-    name: &str,
-    ip: &str,
-    port: i32,
-    executable_dir: &str,
-    dll_path: &str,
-    omp_file: &str,
-    password: &str,
+    _name: &str,
+    _ip: &str,
+    _port: i32,
+    _executable_dir: &str,
+    _dll_path: &str,
+    _omp_file: &str,
+    _password: &str,
+    _discord: bool,
 ) -> Result<(), String> {
     Ok(())
 }
@@ -27,6 +32,7 @@ pub async fn run_samp(
     dll_path: &str,
     omp_file: &str,
     password: &str,
+    discord: bool,
 ) -> Result<(), String> {
     // Prepare the command to spawn the executable
     let mut cmd = Command::new(format!("{}/gta_sa.exe", executable_dir));
@@ -79,6 +85,10 @@ pub async fn run_samp(
 
     if !password.is_empty() {
         ready_for_exec = ready_for_exec.arg("-z").arg(password);
+    }
+
+    if discord {
+        ready_for_exec = ready_for_exec.arg("--discord");
     }
 
     let process = ready_for_exec.current_dir(executable_dir).spawn();

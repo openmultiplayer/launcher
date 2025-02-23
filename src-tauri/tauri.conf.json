@@ -2,18 +2,20 @@
   "build": {
     "beforeDevCommand": "yarn dev",
     "beforeBuildCommand": "yarn build",
-    "beforeBundleCommand": "node src-tauri/upx/upx.js",
-    "devPath": "http://localhost:1420",
+    "devPath": "http://localhost:8050",
     "distDir": "../dist",
     "withGlobalTauri": false
   },
   "package": {
     "productName": "omp-launcher",
-    "version": "1.4.0"
+    "version": "1.5.2"
   },
   "tauri": {
     "allowlist": {
       "all": false,
+      "clipboard": {
+        "all": true
+      },
       "path": {
         "all": true
       },
@@ -28,7 +30,7 @@
       },
       "fs": {
         "all": true,
-        "scope": ["**"],
+        "scope": ["**", "**/*", "/**/*", "$HOME/.local/**"],
         "exists": true
       },
       "shell": {
@@ -42,14 +44,32 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.open.mp",
+      "identifier": "mp.open.launcher",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
         "icons/128x128@2x.png",
         "icons/icon.icns",
         "icons/icon.ico"
-      ]
+      ],
+      "windows": {
+        "allowDowngrades": true,
+        "certificateThumbprint": null,
+        "digestAlgorithm": null,
+        "nsis": {
+          "template": "./nsis/installer.nsi",
+          "installMode": "perMachine"
+        },
+        "signCommand": null,
+        "timestampUrl": null,
+        "tsp": false,
+        "webviewFixedRuntimePath": null,
+        "webviewInstallMode": {
+          "silent": false,
+          "type": "downloadBootstrapper"
+        },
+        "wix": null
+      }
     },
     "security": {
       "csp": null

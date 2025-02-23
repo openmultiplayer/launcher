@@ -1,10 +1,17 @@
+#[cfg(target_os = "windows")]
 use crate::helpers;
+#[cfg(target_os = "windows")]
 use byteorder::{LittleEndian, ReadBytesExt};
 use serde::{Deserialize, Serialize};
+#[cfg(target_os = "windows")]
 use std::fs::File;
+#[cfg(target_os = "windows")]
 use std::io::Cursor;
+#[cfg(target_os = "windows")]
 use std::io::Read;
+#[cfg(target_os = "windows")]
 use std::path::Path;
+#[cfg(target_os = "windows")]
 use tauri::api::path::document_dir;
 #[cfg(target_os = "windows")]
 use winreg::enums::*;

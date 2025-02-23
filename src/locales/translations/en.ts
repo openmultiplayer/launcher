@@ -99,4 +99,6 @@ export default {
     "Please choose another version or download and install SA-MP manually.",
   add_or_play_external_server: "Add to favorites or play",
   reconnect: "Reconnect",
+  settings_advanced_discord_status_requires_restart:
+    "(Requires restarting the game to take action)",
 };

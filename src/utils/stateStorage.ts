@@ -81,21 +81,22 @@ class NativeStorage {
   }
 }
 
+// @ts-ignore
 const nativeStorage = new NativeStorage();
 
-export const nativeStateStorage: any = {
-  getItem: async (key: string) => {
-    return await nativeStorage.getItem(key);
-  },
-  setItem: async (key: string, value: string) => {
-    await nativeStorage.setItem(key, value);
-  },
-  removeItem: async (key: string) => {
-    await nativeStorage.removeItem(key);
-  },
-  clear: async () => {
-    await nativeStorage.clear();
-  },
-};
+// export const stateStorage: any = {
+//   getItem: async (key: string) => {
+//     return await nativeStorage.getItem(key);
+//   },
+//   setItem: async (key: string, value: string) => {
+//     await nativeStorage.setItem(key, value);
+//   },
+//   removeItem: async (key: string) => {
+//     await nativeStorage.removeItem(key);
+//   },
+//   clear: async () => {
+//     await nativeStorage.clear();
+//   },
+// };
 
-export default nativeStorage;
+export const stateStorage = localStorage;

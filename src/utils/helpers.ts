@@ -240,6 +240,7 @@ export const sortAndSearchInServerList = (
       });
     }
 
+    const loweredQuery = query.toLowerCase();
     return (
       server.ip &&
       partnershipCheck &&
@@ -248,7 +249,8 @@ export const sortAndSearchInServerList = (
       nonEmptyCheck &&
       languageResult &&
       server.hostname &&
-      server.hostname.toLowerCase().includes(query.toLowerCase())
+      server.hostname.toLowerCase().includes(loweredQuery) ||
+      server.gameMode.toLowerCase().includes(loweredQuery)
     );
   });
 

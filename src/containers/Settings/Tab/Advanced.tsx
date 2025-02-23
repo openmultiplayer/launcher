@@ -1,6 +1,5 @@
 import { t } from "i18next";
 import { Pressable, StyleSheet, View } from "react-native";
-import { invoke_rpc } from "../../../api/rpc";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
 import { useGenericPersistentState } from "../../../states/genericStates";
@@ -35,18 +34,14 @@ const Advanced = () => {
             alignItems: "center",
           }}
           onPress={async () => {
-            await invoke_rpc("toggle_drpc", {
-              toggle: !shouldUpdateDiscordStatus,
-            });
             toggleDiscordStatus(!shouldUpdateDiscordStatus);
           }}
         >
-          <CheckBox
-            value={shouldUpdateDiscordStatus}
-            style={{ marginRight: sc(7) }}
-          />
+          <CheckBox value={shouldUpdateDiscordStatus} style={{ marginRight: sc(7) }} />
           <Text semibold color={theme.textPrimary} size={2}>
-            {t("settings_advanced_discord_status")}
+            {`${t("settings_advanced_discord_status")} ${t(
+              "settings_advanced_discord_status_requires_restart"
+            )}`}
           </Text>
         </Pressable>
       </View>

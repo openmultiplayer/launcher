@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { nativeStateStorage } from "../utils/nativeStorage";
+import { stateStorage } from "../utils/stateStorage";
 import { SAMPDLLVersions } from "../utils/types";
 
 interface SettingsPersistentState {
@@ -26,7 +26,7 @@ const useSettings = create<SettingsPersistentState>()(
     }),
     {
       name: "settings-storage",
-      storage: createJSONStorage(() => nativeStateStorage),
+      storage: createJSONStorage(() => stateStorage),
     }
   )
 );

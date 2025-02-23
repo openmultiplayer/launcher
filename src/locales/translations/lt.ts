@@ -81,14 +81,14 @@ export default {
     "Prieš prisijungdami prie serverio, turite pasirinkti slapyvardį.",
   gta_path_modal_path_not_set_title: "GTA: San Andreas aplankas nenustatytas!",
   gta_path_modal_path_not_set_description:
-    "Jūs nenustatėte GTA: San Andreas aplanko, eikite į nustatymus ir ieškokite žaidimo aplanko.",
+    "Jūs nenustatėte GTA: San Andreas aplanko, eikite į nustatymus ir nurodykite žaidimo aplanką.",
   admin_permissions_required_modal_title: "Reikalingos administratoriaus teisės!",
   admin_permissions_required_modal_description:
-    'It seems like your GTA: San Andreas game requires administration permissions to run. This can be due to many causes, like having your game installed in "C" drive. Please re-open open.mp launcher as administrator either using "Run as Admin" button or manually by yourself',
-  run_as_admin: "Paleisti kaip administratorius",
+    'Atrodo, kad jūsų GTA: San Andreas žaidimui reikalingos administravimo teisės. Taip gali būti dėl daugelio priežasčių, pvz., žaidimo įdiegimo „C“ diske. Iš naujo atidarykite open.mp kaip administratorius naudodami mygtuką „Paleisti kaip administratoriui“ arba nustatykite patys rankiniu būdu',
+  run_as_admin: "Paleisti kaip administratoriui",
   settings_general_tab_title: "Pagrindiniai",
   settings_lang_tab_title: "Kalbos",
-  settings_advanced_tab_title: "Išplėstinai",
+  settings_advanced_tab_title: "Išplėstiniai",
   settings_advanced_discord_status: "Rodyti Discord būseną",
   join_discord: "Jungtis į Discord Serverį",
   samp_version: "SA-MP Versija",
@@ -97,4 +97,8 @@ export default {
   from_gtasa_folder: "Iš GTASA aplanko",
   gta_path_modal_cant_find_samp_description_2:
     "Pasirinkite kitą versiją arba atsisiųskite ir įdiekite SA-MP rankiniu būdu.",
+  add_or_play_external_server: "Pridėti prie mėgstamiausių arba žaisti",
+  reconnect: "Jungtis iš naujo",
+  settings_advanced_discord_status_requires_restart:
+    "(Norint užbaigti veiksmą, reikia paleisti žaidimą iš naujo)",
 };
