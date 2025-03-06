@@ -14,6 +14,7 @@ import { Server } from "./types";
 import { useGenericPersistentState } from "../states/genericStates";
 import { save, open } from '@tauri-apps/api/dialog';
 import { useNotification } from "../states/notification";
+import { fetchServers } from "../utils/helpers";
 
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
@@ -342,7 +343,6 @@ export const exportFavoriteListFile = async () => {
       servers: favorites.map(server => ({
         ip: server.ip,
         port: server.port,
-        name: server.hostname,
         password: server.password || ""
       }))
     };
@@ -408,10 +408,13 @@ export const importFavoriteListFile = async () => {
      
       for (const importedServer of data.servers) {
         if (importedServer.ip && importedServer.port) {
+          
+          const tempHostname = `${importedServer.ip}:${importedServer.port}`;
+
           const serverInfo: Server = {
             ip: importedServer.ip,
             port: Number(importedServer.port),
-            hostname: importedServer.name || "Imported Server",
+            hostname: tempHostname,
             playerCount: 0,
             maxPlayers: 0,
             gameMode: "-",
@@ -430,6 +433,8 @@ export const importFavoriteListFile = async () => {
           importCount++;
         }
       }
+
+      fetchServers(true);
      
       showNotification(
         t("import_successful_title"),
