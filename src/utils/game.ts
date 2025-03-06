@@ -363,7 +363,7 @@ export const exportFavoriteListFile = async () => {
       const { showNotification } = useNotification.getState();
       showNotification(
         t("export_successful_title"),
-        t("export_successful_description", { count: favorites.length, path: savePath })
+        t("export_successful_description")
       );
     }
   } catch (error) {
@@ -383,7 +383,7 @@ export const exportFavoriteListFile = async () => {
 
 export const importFavoriteListFile = async () => {
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
-  
+ 
   try {
     const selected = await open({
       multiple: false,
@@ -433,7 +433,7 @@ export const importFavoriteListFile = async () => {
      
       showNotification(
         t("import_successful_title"),
-        t("import_successful_description", { count: importCount, path: selected })
+        t("import_successful_description")
       );
      
     } catch (parseError) {
