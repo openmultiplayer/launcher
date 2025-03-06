@@ -101,4 +101,16 @@ export default {
   reconnect: "Reconnect",
   settings_advanced_discord_status_requires_restart:
     "(Requires restarting the game to take action)",
+  settings_export_favorite_list_file: "Export favorites list to file",
+  settings_import_favorite_list_file: "Import favorites list from file",
+  export_no_servers_description: "You don't have any favourite servers to export.",
+  export_successful_title: "Export Complete",
+  export_successful_description: "{count} servers exported to {path}.",
+  export_failed_title: "Export Failed",
+  export_failed_description: "An error occurred while exporting your favorite servers.",
+  import_successful_title: "Import Complete",
+  import_successful_description: "{count} servers imported from {path}.",
+  import_failed_title: "Import Failed",
+  import_failed_description: "An error occurred while importing your favorite servers.",
+  import_invalid_data_description: "The selected file contains invalid data. Please select a valid favorites list file.",
 };

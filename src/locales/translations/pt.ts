@@ -101,4 +101,16 @@ export default {
   reconnect: "Reconectar",
   settings_advanced_discord_status_requires_restart:
     "(Requer reiniciar o jogo para aplicar)",
+  settings_export_favorite_list_file: "Exportar lista de favoritos para um arquivo",
+  settings_import_favorite_list_file: "Importar lista de favoritos de um arquivo",
+  export_no_servers_description: "Você não tem servidores favoritos para exportar.",
+  export_successful_title: "Exportação Concluída",
+  export_successful_description: "{count} servidores exportados para {path}.",
+  export_failed_title: "Falha na Exportação",
+  export_failed_description: "Ocorreu um erro ao exportar seus servidores favoritos.",
+  import_successful_title: "Importação Concluída",
+  import_successful_description: "{count} servidores importados de {path}.",
+  import_failed_title: "Falha na Importação",
+  import_failed_description: "Ocorreu um erro ao importar seus servidores favoritos.",
+  import_invalid_data_description: "O arquivo selecionado contém dados inválidos. Selecione um arquivo de lista de favoritos válido.",
 };

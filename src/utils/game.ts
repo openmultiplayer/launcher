@@ -1,5 +1,5 @@
 import { fs, invoke, path, process, shell } from "@tauri-apps/api";
-import { exists } from "@tauri-apps/api/fs";
+import { exists, writeTextFile, readTextFile } from "@tauri-apps/api/fs";
 import { t } from "i18next";
 import { invoke_rpc } from "../api/rpc";
 import { ResourceInfo, validFileChecksums } from "../constants/app";
@@ -12,6 +12,8 @@ import { Log } from "./logger";
 import { sc } from "./sizeScaler";
 import { Server } from "./types";
 import { useGenericPersistentState } from "../states/genericStates";
+import { save, open } from '@tauri-apps/api/dialog';
+import { useNotification } from "../states/notification";
 
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
@@ -314,4 +316,151 @@ export const checkDirectoryValidity = async (
   }
 
   return true;
+};
+
+export const exportFavoriteListFile = async () => {
+  const { favorites } = usePersistentServers.getState();
+  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
+ 
+  if (!favorites.length) {
+    showMessageBox({
+      title: t("export_failed_title"),
+      description: t("export_no_servers_description"),
+      buttons: [
+        {
+          title: "OK",
+          onPress: () => hideMessageBox(),
+        },
+      ],
+    });
+    return;
+  }
+ 
+  try {
+    const exportData = {
+      version: 1,
+      servers: favorites.map(server => ({
+        ip: server.ip,
+        port: server.port,
+        name: server.hostname,
+        password: server.password || ""
+      }))
+    };
+   
+    const jsonString = JSON.stringify(exportData, null, 2);
+   
+    const savePath = await save({
+      filters: [{
+        name: 'JSON',
+        extensions: ['json']
+      }],
+      defaultPath: 'omp_servers.json'
+    });
+   
+    if (savePath) {
+      await writeTextFile(savePath, jsonString);
+     
+      const { showNotification } = useNotification.getState();
+      showNotification(
+        t("export_successful_title"),
+        t("export_successful_description", { count: favorites.length, path: savePath })
+      );
+    }
+  } catch (error) {
+    Log.debug("Error exporting servers:", error);
+    showMessageBox({
+      title: t("export_failed_title"),
+      description: t("export_failed_description"),
+      buttons: [
+        {
+          title: "OK",
+          onPress: () => hideMessageBox(),
+        },
+      ],
+    });
+  }
+};
+
+export const importFavoriteListFile = async () => {
+  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
+  
+  try {
+    const selected = await open({
+      multiple: false,
+      filters: [{
+        name: 'JSON',
+        extensions: ['json']
+      }]
+    });
+    if (!selected) return;
+    const fileContent = await readTextFile(selected as string);
+    const { addToFavorites } = usePersistentServers.getState();
+    const { showNotification } = useNotification.getState();
+   
+    try {
+      const data = JSON.parse(fileContent);
+     
+      if (!data.servers || !Array.isArray(data.servers)) {
+        throw new Error("Invalid file format: missing servers array");
+      }
+     
+      let importCount = 0;
+     
+      for (const importedServer of data.servers) {
+        if (importedServer.ip && importedServer.port) {
+          const serverInfo: Server = {
+            ip: importedServer.ip,
+            port: Number(importedServer.port),
+            hostname: importedServer.name || "Imported Server",
+            playerCount: 0,
+            maxPlayers: 0,
+            gameMode: "-",
+            language: "-",
+            hasPassword: !!importedServer.password,
+            version: "-",
+            usingOmp: false,
+            partner: false,
+            ping: 9999,
+            players: [],
+            password: importedServer.password || "",
+            rules: {} as Server["rules"],
+          };
+         
+          addToFavorites(serverInfo);
+          importCount++;
+        }
+      }
+     
+      showNotification(
+        t("import_successful_title"),
+        t("import_successful_description", { count: importCount, path: selected })
+      );
+     
+    } catch (parseError) {
+      showMessageBox({
+        title: t("import_failed_title"),
+        description: t("import_invalid_data_description"),
+        buttons: [
+          {
+            title: "OK",
+            onPress: () => hideMessageBox(),
+          },
+        ],
+      });
+      Log.debug("Error parsing imported file:", parseError);
+    }
+   
+  } catch (error) {
+    showMessageBox({
+      title: t("import_failed_title"),
+      description: t("import_failed_description"),
+      buttons: [
+        {
+          title: "OK",
+          onPress: () => hideMessageBox(),
+        },
+      ],
+    });
+    Log.debug("Error importing servers:", error);
+  }
 };
