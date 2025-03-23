@@ -1,8 +1,8 @@
+import Icon from "../../../components/Icon";
+import Text from "../../../components/Text";
 import { t } from "i18next";
 import { memo, useRef } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import Icon from "../../../components/Icon";
-import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { useContextMenu } from "../../../states/contextMenu";
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
@@ -33,9 +33,19 @@ const ServerItem = memo((props: IProps) => {
     if (server.hasPassword) {
       return "#eb4034";
     } else if (server.ping < 9999) {
-      return "#7AF1AA";
+      return themeType == "dark" ? "#7AF1AA" : "#13B955";
     } else {
-      return "#36363F";
+      return themeType == "dark" ? "#6D7071" : "#6D7071";
+    }
+  };
+
+  const getServerStatusIcon = () => {
+    if (server.hasPassword) {
+      return images.icons.locked;
+    } else if (server.ping < 9999) {
+      return images.icons.unlocked;
+    } else {
+      return images.icons.shieldQuestion;
     }
   };
 
@@ -43,7 +53,7 @@ const ServerItem = memo((props: IProps) => {
     if (server.hasPassword) {
       return "#eb40343A";
     } else if (server.ping < 9999) {
-      return "#7AF1AA1A";
+      return themeType == "dark" ? "#7AF1AA1A" : "#13B9551C";
     } else {
       return theme.itemBackgroundColor;
     }
@@ -97,9 +107,7 @@ const ServerItem = memo((props: IProps) => {
           <Icon
             svg
             title={getServerStatusIconTitle()}
-            image={
-              server.hasPassword ? images.icons.locked : images.icons.unlocked
-            }
+            image={getServerStatusIcon()}
             size={sc(20)}
             color={getServerStatusIconColor()}
           />
@@ -137,8 +145,9 @@ const ServerItem = memo((props: IProps) => {
               <View style={[styles.iconContainer, { marginHorizontal: sc(3) }]}>
                 <Icon
                   title={t("openmp_server")}
-                  image={images.icons.omp}
+                  image={images.icons.badgeCheck}
                   size={sc(23)}
+                  color={theme.primary}
                 />
               </View>
             </div>

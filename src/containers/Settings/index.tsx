@@ -1,25 +1,26 @@
-import { shell } from "@tauri-apps/api";
-import { t } from "i18next";
-import { useState } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import Advanced from "./Tab/Advanced";
+import General from "./Tab/General";
 import Icon from "../../components/Icon";
+import Languages from "./Tab/Languages";
 import StaticModal from "../../components/StaticModal";
 import TabBar from "../../components/TabBar";
 import Text from "../../components/Text";
+import { shell } from "@tauri-apps/api";
+import { t } from "i18next";
+import { useState } from "react";
 import { images } from "../../constants/images";
 import { useAppState } from "../../states/app";
 import { useGenericPersistentState } from "../../states/genericStates";
 import { useSettingsModal } from "../../states/settingsModal";
 import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
-import General from "./Tab/General";
-import Languages from "./Tab/Languages";
-import Advanced from "./Tab/Advanced";
+
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 
 const MODAL_WIDTH = 500;
 const MODAL_HEIGHT = 300;
@@ -75,16 +76,21 @@ const SettingsModal = () => {
         />
         {renderTab()}
         <View style={styles.appInfoContainer}>
-          <Text size={2} color={theme.textPrimary}>
-            {t("settings_credits_made_by")}{" "}
-            <Text
-              size={2}
-              onPress={() => shell.open("https://open.mp/")}
-              color={theme.primary}
-            >
-              open.mp
-            </Text>{" "}
-            |{" "}
+          <Text
+            style={styles.appInfoContainer}
+            size={2}
+            color={theme.textPrimary}
+          >
+            <Text size={2}>
+              {t("settings_credits_made_by")}
+              <Text
+                size={2}
+                onPress={() => shell.open("https://open.mp/")}
+                color={theme.primary}
+              >
+                {" open.mp"}
+              </Text>
+            </Text>
             <Text
               size={2}
               onPress={() =>
@@ -93,8 +99,8 @@ const SettingsModal = () => {
               color={theme.primary}
             >
               {t("settings_credits_view_source_on_github")}
-            </Text>{" "}
-            | v{nativeAppVersion} Build {version}
+            </Text>
+            v{nativeAppVersion} Build {version}
           </Text>
         </View>
         <TouchableOpacity
@@ -131,9 +137,12 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   appInfoContainer: {
-    height: 30,
+    height: 65,
     justifyContent: "center",
     width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    gap: 3,
     alignItems: "center",
   },
 });
