@@ -1,15 +1,14 @@
+import Text from "../../../components/Text";
 import { invoke, shell } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 import { t } from "i18next";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import Text from "../../../components/Text";
 import { useAppState } from "../../../states/app";
 import { usePersistentServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
 import { checkDirectoryValidity } from "../../../utils/game";
 import { Log } from "../../../utils/logger";
-import { stateStorage } from "../../../utils/stateStorage";
 import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 
@@ -136,7 +135,7 @@ const General = () => {
           style={[
             styles.browseButton,
             {
-              backgroundColor: `${theme.primary}BB`,
+              backgroundColor: `${theme.primary}`,
               borderColor: theme.textSecondary,
             },
           ]}
@@ -151,13 +150,13 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            backgroundColor: `${theme.primary}BB`,
+            backgroundColor: `${theme.itemBackgroundColor}`,
             borderColor: theme.textSecondary,
           },
         ]}
         onPress={() => importDataFromSAMP()}
       >
-        <Text semibold color={"#FFFFFF"} size={2}>
+        <Text semibold color={theme.textPrimary} size={2}>
           {t("settings_import_nickname_gta_path_from_samp")}
         </Text>
       </TouchableOpacity>
@@ -165,16 +164,16 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            backgroundColor: `${theme.primary}BB`,
+            backgroundColor: `${theme.itemBackgroundColor}`,
           },
         ]}
         onPress={() => importFavListFromSAMP()}
       >
-        <Text semibold color={"#FFFFFF"} size={2}>
+        <Text semibold color={theme.textPrimary} size={2}>
           {t("settings_import_samp_favorite_list")}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={[
           styles.resetButton,
           {
@@ -190,7 +189,7 @@ const General = () => {
         <Text semibold color={"#FFFFFF"} size={2}>
           {t("settings_reset_application_data")}
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View style={styles.appInfoContainer}>
         {updateInfo && updateInfo.version != version && (
           <Text

@@ -1,10 +1,11 @@
-import { t } from "i18next";
-import { Pressable, StyleSheet, View } from "react-native";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
+import { t } from "i18next";
+import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useGenericPersistentState } from "../../../states/genericStates";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
+import { stateStorage } from "../../../utils/stateStorage";
 
 const Advanced = () => {
   const { theme } = useTheme();
@@ -26,6 +27,7 @@ const Advanced = () => {
           height: "100%",
           width: "100%",
           marginTop: sc(10),
+          gap: 8,
         }}
       >
         <Pressable
@@ -37,13 +39,33 @@ const Advanced = () => {
             toggleDiscordStatus(!shouldUpdateDiscordStatus);
           }}
         >
-          <CheckBox value={shouldUpdateDiscordStatus} style={{ marginRight: sc(7) }} />
+          <CheckBox
+            value={shouldUpdateDiscordStatus}
+            style={{ marginRight: sc(7) }}
+          />
           <Text semibold color={theme.textPrimary} size={2}>
             {`${t("settings_advanced_discord_status")} ${t(
               "settings_advanced_discord_status_requires_restart"
             )}`}
           </Text>
         </Pressable>
+        <TouchableOpacity
+          style={[
+            styles.resetButton,
+            {
+              backgroundColor: "red",
+            },
+          ]}
+          onPress={() => {
+            stateStorage.clear();
+            localStorage.clear();
+            window.location.reload();
+          }}
+        >
+          <Text semibold color={"#FFFFFF"} size={2}>
+            {t("settings_reset_application_data")}
+          </Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.pathInputContainer}></View>
     </View>

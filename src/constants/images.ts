@@ -1,6 +1,8 @@
 export const images = {
   logoDark: "logo-dark-trans.svg",
   icons: {
+    badgeCheck: "icons/badge_check.svg",
+    shieldQuestion: "icons/shield_question.svg",
     settings: "icons/settings.svg",
     info: "icons/info.png",
     nickname: "icons/nickname.svg",

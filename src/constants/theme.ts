@@ -16,17 +16,17 @@ export const darkThemeColors: ThemeColors = {
   textSecondary: "#FFFFFF40",
   textPlaceholder: "#909090",
   itemBackgroundColor: "#222227",
-  textInputBackgroundColor: "#16161A",
+  textInputBackgroundColor: "#222227",
   serverListItemBackgroundColor: "#303038",
 };
 
 export const lightThemeColors: ThemeColors = {
   primary: "#897AF1",
-  secondary: "#FFFFFF",
+  secondary: "#E8EBEE",
   textPrimary: "#1A1A1E",
   textSecondary: "#1A1A1E80",
   textPlaceholder: "#6D7071",
-  itemBackgroundColor: "#F3F6FC",
-  textInputBackgroundColor: "#F3F6FC",
+  itemBackgroundColor: "#DCE0E5",
+  textInputBackgroundColor: "#DCE0E5",
   serverListItemBackgroundColor: "#E9ECF2",
 };

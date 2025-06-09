@@ -1,22 +1,23 @@
+import Chart from "../PingChart";
+import Icon from "../../components/Icon";
+import Text from "../../components/Text";
 import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
 import { shell } from "@tauri-apps/api";
 import { t } from "i18next";
 import { useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import Icon from "../../components/Icon";
-import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { usePersistentServers, useServers } from "../../states/servers";
 import { useTheme } from "../../states/theme";
 import { validateWebUrl } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
-import Chart from "../PingChart";
 
 const PropInfo = (props: {
   glow?: boolean;
   text: string;
   icon: string;
   iconSize: number;
+  iconColor?: string;
   iconTitle: string;
   buttonText?: string;
   buttonOnPress?: () => void;
@@ -34,7 +35,7 @@ const PropInfo = (props: {
         title={props.iconTitle}
         image={props.icon}
         size={props.iconSize}
-        // color={theme.textSecondary}
+        color={props.iconColor || theme.textSecondary}
       />
     </div>
   ) : (
@@ -42,7 +43,7 @@ const PropInfo = (props: {
       title={props.iconTitle}
       image={props.icon}
       size={props.iconSize}
-      color={theme.textSecondary}
+      color={props.iconColor || theme.textSecondary}
     />
   );
 
@@ -133,16 +134,22 @@ const BottomBar = () => {
           style={{ flex: 0.6, top: sc(5), justifyContent: "space-between" }}
         >
           <PropInfo
-            iconTitle={server.usingOmp ? t("openmp_server") : ""}
-            icon={server.usingOmp ? images.icons.omp : images.icons.internet}
+            iconTitle={
+              server.usingOmp ? t("openmp_server") : "Server not using openmp"
+            }
+            icon={
+              server.usingOmp ? images.icons.badgeCheck : images.icons.internet
+            }
             iconSize={server.usingOmp ? sc(20) : sc(16)}
+            iconColor={server.usingOmp ? theme.primary : theme.textPlaceholder}
             text={server.hostname}
             glow={server.usingOmp}
           />
           <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
             <PropInfo
-              iconTitle={""}
+              iconTitle={"Server IP"}
               icon={images.icons.ip}
+              iconColor={theme.textPlaceholder}
               iconSize={sc(14)}
               text={`${server.ip}:${server.port}`}
               buttonText={t("copy")}
@@ -204,7 +211,7 @@ const BottomBar = () => {
             </TouchableOpacity>
           ) : (
             <PropInfo
-              iconTitle={""}
+              iconTitle={"Game Mode"}
               icon={images.icons.mode}
               iconSize={sc(17)}
               text={`${server.gameMode}`}
