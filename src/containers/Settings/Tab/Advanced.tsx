@@ -1,16 +1,16 @@
 import { t } from "i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, TouchableOpacity } from "react-native";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
 import { useGenericPersistentState } from "../../../states/genericStates";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
+import { exportFavoriteListFile, importFavoriteListFile } from "../../../utils/game";
 
 const Advanced = () => {
   const { theme } = useTheme();
   const { shouldUpdateDiscordStatus, toggleDiscordStatus } =
     useGenericPersistentState();
-
   return (
     <View
       style={{
@@ -44,12 +44,40 @@ const Advanced = () => {
             )}`}
           </Text>
         </Pressable>
+        <TouchableOpacity 
+          style={[
+            styles.importButton, 
+            { 
+              backgroundColor: `${theme.primary}BB`,
+              borderColor: theme.primary
+            }
+          ]} 
+          onPress={() => exportFavoriteListFile()}
+        >
+          <Text semibold color={"#FFFFFF"} size={2}>
+            {t("settings_export_favorite_list_file")}
+          </Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[
+            styles.importButton, 
+            { 
+              backgroundColor: `${theme.primary}BB`,
+              borderColor: theme.primary
+            }
+          ]} 
+          onPress={() => importFavoriteListFile()}
+        >
+          <Text semibold color={"#FFFFFF"} size={2}>
+            {t("settings_import_favorite_list_file")}
+          </Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.pathInputContainer}></View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   pathInputContainer: {
     flexDirection: "row",
