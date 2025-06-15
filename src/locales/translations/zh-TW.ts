@@ -14,8 +14,7 @@ export default {
   server: "伺服器",
   address: "地址",
   players: "玩家",
-  server_join_prompt_enter_password:
-    "該伺服器已受保護，請輸入密碼.",
+  server_join_prompt_enter_password: "該伺服器已受保護，請輸入密碼.",
   server_join_prompt_enter_password_input_placeholder: "輸入密碼..",
   server_join_prompt_nickname_input_placeholder: "輸入暱稱...",
   connect: "連接",
@@ -41,21 +40,18 @@ export default {
   clear_recently_joined_list: "清空最近加入的伺服器記錄",
   refresh_servers: "刷新伺服器列表",
   play: "進入遊戲",
-  remove_selected_server_from_favorites:
-    "從收藏夾中移除選定的伺服器",
+  remove_selected_server_from_favorites: "從收藏夾中移除選定的伺服器",
   add_selected_server_to_favorites: "將選定的伺服器添加至收藏夾",
   add_server: "添加伺服器",
   hide_player_and_rule_list: "隱藏玩家和規則列表",
   show_player_and_rule_list: "顯示玩家和規則列表",
   copy_server_info: "複製伺服器信息",
-  settings_gta_path_input_label:
-    "GTA: San Andreas 遊戲路徑",
+  settings_gta_path_input_label: "GTA: San Andreas 遊戲路徑",
   browse: "瀏覽",
   settings_import_nickname_gta_path_from_samp:
     "從 SA-MP 設置中導入暱稱和 gtasa 路徑",
   settings_import_samp_favorite_list: "從 SA-MP 數據中導入收藏夾列表",
-  settings_reset_application_data:
-    "重置應用數據 (清空設置和列表)",
+  settings_reset_application_data: "重置應用數據 (清空設置和列表)",
   settings_new_update_available: "⚠ 新更新可用. 點擊下載! ⚠",
   settings_credits_made_by: "用❤️製造 by",
   settings_credits_view_source_on_github: "在 GitHub 上查看源碼",
@@ -77,8 +73,7 @@ export default {
   notification_add_to_favorites_description:
     "{{ server }} 已添加至您的收藏夾列表.",
   nickname_modal_name_not_set_title: "未填寫暱稱!",
-  nickname_modal_name_not_set_description:
-    "加入伺服器前請先設置您的暱稱.",
+  nickname_modal_name_not_set_description: "加入伺服器前請先設置您的暱稱.",
   gta_path_modal_path_not_set_title: "未設置 GTA: San Andreas 路徑!",
   gta_path_modal_path_not_set_description:
     "您沒有設置 GTA: San Andreas 的遊戲路徑, 請先設置您的遊戲路徑.",
@@ -99,4 +94,18 @@ export default {
     "請選擇其他版本，或手動下載並安裝 SA-MP.",
   add_or_play_external_server: "添加至收藏夾或直接進入遊戲",
   reconnect: "重新連接",
+  settings_advanced_discord_status_requires_restart: "（需重啟遊戲方可生效）",
+  settings_export_favorite_list_file: "導出收藏伺服器列表至檔案",
+  settings_import_favorite_list_file: "從檔案導入收藏伺服器列表",
+  export_no_servers_description: "當前無收藏伺服器可供導出",
+  export_successful_title: "導出完成",
+  export_successful_description: "伺服器列表已成功導出",
+  export_failed_title: "導出失敗",
+  export_failed_description: "導出收藏伺服器時發生錯誤",
+  import_successful_title: "導入完成",
+  import_successful_description: "伺服器列表已成功導入",
+  import_failed_title: "導入失敗",
+  import_failed_description: "導入收藏伺服器時發生錯誤",
+  import_invalid_data_description:
+    "所選檔案含無效資料，請選擇有效的收藏列表檔案",
 };
