@@ -1,5 +1,23 @@
+===================================================================
+Trademark and Branding Restrictions – Supplement to MPL 2.0 License
+===================================================================
+
+The names "open.mp", "open multiplayer", "omp, and all associated visual elements including but not limited to the application icon, logo, internal and display names, title bar name, bundle identifier, and any other references to "open.mp" or "open multiplayer" are trademarks of the open.mp project.
+
+Redistribution of this software, including modified versions, is permitted under the terms of the Mozilla Public License 2.0 (MPL 2.0), only if:
+
+- The original application name, branding, icons, logos, and all other identifiers are fully preserved and unmodified.
+- You do not rename or rebrand the application in any way.
+- You do not use this software as the basis for a renamed or rebranded product.
+- You do not present the software under a different project, company, or identity.
+
+Redistribution of modified versions under any other name, branding, or identity is strictly prohibited, unless you receive explicit written permission from the open.mp project.
+
+These restrictions apply in addition to the MPL 2.0 license and govern all uses of the "open.mp" and "open multiplayer" trademarks and branding assets.
+
+===================================================================
 Mozilla Public License Version 2.0
-==================================
+===================================================================
 
 1. Definitions
 --------------
