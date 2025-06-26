@@ -18,10 +18,10 @@ use gumdrop::Options;
 use injector::run_samp;
 use log::{error, info, LevelFilter};
 // use std::io::Read;
-use tauri::Manager;
-use tauri::PhysicalSize;
 use std::fs;
 use tauri::api::path::app_data_dir;
+use tauri::Manager;
+use tauri::PhysicalSize;
 
 #[path = "deeplink/lib.rs"]
 #[cfg(target_os = "windows")]
@@ -106,9 +106,9 @@ Options:
 
             if args.host.is_some() && args.name.is_some() && args.port.is_some() {
                 if args.gamepath.is_some() && args.gamepath.as_ref().unwrap().len() > 0 {
-                    let password : String = if args.password.is_some() { 
+                    let password: String = if args.password.is_some() {
                         args.password.unwrap()
-                    } else { 
+                    } else {
                         "".to_string()
                     };
                     let _ = run_samp(
@@ -209,7 +209,8 @@ Options:
             commands::get_gtasa_path_from_samp,
             commands::get_nickname_from_samp,
             commands::get_samp_favorite_list,
-            commands::rerun_as_admin
+            commands::rerun_as_admin,
+            query::query_server
         ])
         .run(tauri::generate_context!())
     {

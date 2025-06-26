@@ -91,8 +91,9 @@ export const fetchServers = async (cached: boolean = true) => {
             offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
             offset++
           ) {
-            if (response.servers[i + offset])
+            if (response.servers[i + offset]) {
               queryServer(response.servers[i + offset], "internet", "basic");
+            }
           }
         }, 500 + (i / PARALLEL_SERVERS_TO_UPDATE_COUNT) * PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL);
       }

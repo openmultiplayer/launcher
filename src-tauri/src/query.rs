@@ -1,14 +1,22 @@
 use actix_web::web::Buf;
 use byteorder::{LittleEndian, ReadBytesExt};
+use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::io::{Cursor, Read};
+use std::collections::HashMap;
+use std::io::{Cursor, Error, ErrorKind, Read};
+use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
 use std::{net::Ipv4Addr, time::Duration};
 use tokio::net::{lookup_host, UdpSocket};
 use tokio::time::timeout_at;
 use tokio::time::Instant;
 
 use crate::helpers;
+
+static OMP_EXTRA_INFO_LAST_UPDATE_LIST: Lazy<Mutex<HashMap<String, u64>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
+const OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS: u64 = 3;
 
 pub struct Query {
     address: Ipv4Addr,
@@ -38,6 +46,21 @@ pub struct ExtraInfoPacket {
     pub light_banner_url: String,
     pub dark_banner_url: String,
     pub logo_url: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Default)]
+pub struct ServerQueryResponse {
+    pub info: Option<String>,
+    pub extra_info: Option<String>,
+    pub players: Option<String>,
+    pub rules: Option<String>,
+    pub ping: Option<u32>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Default)]
+pub struct ErrorResponse {
+    pub info: String,
+    pub error: bool,
 }
 
 impl Query {
@@ -119,7 +142,7 @@ impl Query {
         };
 
         if amt == 0 {
-            return Ok(String::from("no_data"));
+            return Err(Error::new(ErrorKind::Other, String::from("no_data")));
         }
 
         let query_type = buf[10] as char;
@@ -135,7 +158,7 @@ impl Query {
         } else if query_type == 'p' {
             Ok(String::from("pong"))
         } else {
-            Ok(String::from("no_data"))
+            Err(Error::new(ErrorKind::Other, String::from("no_data")))
         }
     }
 
@@ -236,5 +259,120 @@ impl Query {
         }
 
         Ok(serde_json::to_string(&rules).unwrap())
+    }
+}
+
+#[tauri::command]
+pub async fn query_server(
+    ip: &str,
+    port: i32,
+    info: bool,
+    extra_info: bool,
+    players: bool,
+    rules: bool,
+    ping: bool,
+) -> Result<String, String> {
+    match Query::new(ip, port).await {
+        Ok(q) => {
+            let mut result = ServerQueryResponse {
+                info: None,
+                extra_info: None,
+                players: None,
+                rules: None,
+                ping: None,
+            };
+
+            if info {
+                let _ = q.send('i').await;
+                result.info = Some(match q.recv().await {
+                    Ok(p) => format!("{}", p),
+                    Err(e) => {
+                        let mut error_details = ErrorResponse::default();
+                        error_details.error = true;
+                        error_details.info = e.to_string();
+                        serde_json::to_string(&error_details).unwrap()
+                    }
+                });
+            }
+
+            if players {
+                let _ = q.send('c').await;
+                result.players = Some(match q.recv().await {
+                    Ok(p) => format!("{}", p),
+                    Err(e) => {
+                        let mut error_details = ErrorResponse::default();
+                        error_details.error = true;
+                        error_details.info = e.to_string();
+                        serde_json::to_string(&error_details).unwrap()
+                    }
+                });
+            }
+
+            if rules {
+                let _ = q.send('r').await;
+                result.rules = Some(match q.recv().await {
+                    Ok(p) => format!("{}", p),
+                    Err(e) => {
+                        let mut error_details = ErrorResponse::default();
+                        error_details.error = true;
+                        error_details.info = e.to_string();
+                        serde_json::to_string(&error_details).unwrap()
+                    }
+                });
+            }
+
+            if extra_info {
+                let now = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs();
+
+                let key = format!("{}:{}", ip, port);
+
+                let should_request = {
+                    let mut map = OMP_EXTRA_INFO_LAST_UPDATE_LIST.lock().unwrap();
+                    match map.get(&key) {
+                        Some(&last_time)
+                            if now - last_time < OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS =>
+                        {
+                            false
+                        }
+                        _ => {
+                            map.insert(key.clone(), now);
+                            true
+                        }
+                    }
+                };
+
+                if should_request {
+                    let _ = q.send('o').await;
+                    result.extra_info = Some(match q.recv().await {
+                        Ok(p) => format!("{}", p),
+                        Err(e) => {
+                            let mut error_details = ErrorResponse::default();
+                            error_details.error = true;
+                            error_details.info = e.to_string();
+                            serde_json::to_string(&error_details).unwrap()
+                        }
+                    });
+                }
+            }
+
+            if ping {
+                let _ = q.send('p').await;
+                let before = Instant::now();
+                match q.recv().await {
+                    Ok(_p) => {
+                        result.ping = Some(before.elapsed().as_millis() as u32);
+                    }
+                    Err(_) => {
+                        result.ping = Some(9999);
+                    }
+                }
+            }
+
+            Ok(serde_json::to_string(&result).unwrap())
+        }
+        Err(e) => Err(e.to_string()),
     }
 }

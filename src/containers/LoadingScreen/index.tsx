@@ -221,7 +221,7 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
     console.log("start", "validateResources");
     const dir = await path.appLocalDataDir();
     const samp = await path.join(dir, "samp");
-    console.log("whaaaaqt?")
+
     if (await fs.exists(samp)) {
       const archive = await path.join(samp, "samp_clients.7z");
       if (await fs.exists(archive)) {
