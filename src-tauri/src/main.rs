@@ -9,6 +9,13 @@ mod query;
 mod rpcs;
 mod samp;
 
+#[path = "nativestorage/lib.rs"]
+mod nativestorage;
+
+#[path = "deeplink/lib.rs"]
+#[cfg(target_os = "windows")]
+mod deeplink;
+
 use std::env;
 use std::process::exit;
 use std::sync::Mutex;
@@ -22,10 +29,6 @@ use std::fs;
 use tauri::api::path::app_data_dir;
 use tauri::Manager;
 use tauri::PhysicalSize;
-
-#[path = "deeplink/lib.rs"]
-#[cfg(target_os = "windows")]
-mod deeplink;
 
 #[derive(Debug, Options)]
 struct CliArgs {

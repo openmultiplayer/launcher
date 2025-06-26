@@ -72,6 +72,7 @@ export default defineConfig({
   server: {
     port: 8050,
     strictPort: true,
+		host: "0.0.0.0",
   },
   // 3. to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
