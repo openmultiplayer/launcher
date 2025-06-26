@@ -250,8 +250,8 @@ export const sortAndSearchInServerList = (
       nonEmptyCheck &&
       languageResult &&
       server.hostname &&
-      server.hostname.toLowerCase().includes(loweredQuery) ||
-      server.gameMode.toLowerCase().includes(loweredQuery)
+      (server.hostname.toLowerCase().includes(loweredQuery) ||
+        server.gameMode.toLowerCase().includes(loweredQuery))
     );
   });
 
