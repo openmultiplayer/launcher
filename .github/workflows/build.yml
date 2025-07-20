@@ -18,11 +18,11 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: latest
 
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly-2024-01-01  # Specific nightly version that works with dll-syringe, remove when it gets fixed so we can use latest
+          toolchain: nightly
 
       - name: Install frontend dependencies
         run: yarn install
