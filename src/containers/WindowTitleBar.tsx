@@ -203,7 +203,21 @@ const WindowTitleBar = () => {
         <NativeWindowTitleBarButtons
           title={t("close")}
           image={images.icons.windowClose}
-          onPress={() => appWindow.close()}
+          onPress={() => {
+            if (IN_GAME) {
+              invoke("send_message_to_game", {
+                id: IN_GAME_PROCESS_ID,
+                message: "close_overlay",
+              });
+            }
+
+            setTimeout(
+              () => {
+                appWindow.close();
+              },
+              IN_GAME ? 300 : 0
+            );
+          }}
         />
       </View>
     </View>
