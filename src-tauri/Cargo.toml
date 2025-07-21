@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "clipboard-all", "fs-all", "path-all", "macos-private-api", "process-all", "window-all", "dialog-all", "os-all", "shell-open"] }
+tauri = { version = "1.8.3", features = [ "clipboard-all", "fs-all", "path-all", "macos-private-api", "process-all", "window-all", "dialog-all", "os-all", "shell-open"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
@@ -47,11 +47,21 @@ interprocess = { version = "1.2.1", default-features = false }
 windows-sys = { version = "0.52.0", features = [
     "Win32_Foundation",
     "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_Shell",
     "Win32_UI_WindowsAndMessaging",
 ] }
 winreg = "0.52.0"
 dll-syringe = "0.15.2"
-windows = { version = "0.58.0", features = ["Win32_System_Console", "Win32_Foundation"] }
+windows = { version = "0.39.0", features = [
+    "Win32_System_Console",
+    "Win32_Foundation",
+    "Win32_UI",
+    "Win32_Web",
+    "Win32_UI_Shell",
+    "Win32_System_Com",
+    "Win32_System_Com_StructuredStorage"
+] }
+webview2-com = "0.19.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
