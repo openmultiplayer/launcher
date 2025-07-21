@@ -1,8 +1,10 @@
+import { emit, listen } from "@tauri-apps/api/event";
+import { appWindow } from "@tauri-apps/api/window";
 import { t } from "i18next";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { stateStorage } from "../utils/stateStorage";
 import { queryServer } from "../utils/query";
+import { stateStorage } from "../utils/stateStorage";
 import { PerServerSettings, SAMPDLLVersions, Server } from "../utils/types";
 import { useNotification } from "./notification";
 
@@ -71,6 +73,10 @@ const usePersistentServers = create<ServersPersistentState>()(
             list[index] = { ...server };
           }
 
+          setTimeout(() => {
+            emit("updateInFavoritesList", server);
+          }, 200);
+
           return { favorites: list };
         }),
       addToFavorites: (server) =>
@@ -108,6 +114,10 @@ const usePersistentServers = create<ServersPersistentState>()(
 
           queryServer(server, "favorites", "basic");
 
+          setTimeout(() => {
+            emit("addToFavorites", server);
+          }, 200);
+
           return { favorites: cpy };
         }),
       removeFromFavorites: (server) =>
@@ -119,6 +129,11 @@ const usePersistentServers = create<ServersPersistentState>()(
           if (findIndex !== -1) {
             cpy.splice(findIndex, 1);
           }
+
+          setTimeout(() => {
+            emit("addToFavorites", server);
+          }, 200);
+
           return { favorites: cpy };
         }),
       addToRecentlyJoined: (server) =>
@@ -134,6 +149,10 @@ const usePersistentServers = create<ServersPersistentState>()(
             cpy.push(server);
           }
 
+          setTimeout(() => {
+            emit("addToFavorites", server);
+          }, 200);
+
           return { recentlyJoined: cpy };
         }),
       clearRecentlyJoined: () => set(() => ({ recentlyJoined: [] })),
@@ -147,6 +166,10 @@ const usePersistentServers = create<ServersPersistentState>()(
           if (index !== -1) {
             list[index] = { ...server };
           }
+
+          setTimeout(() => {
+            emit("addToFavorites", server);
+          }, 200);
 
           return { recentlyJoined: list };
         }),
@@ -192,5 +215,35 @@ const usePersistentServers = create<ServersPersistentState>()(
     }
   )
 );
+
+listen("updateInFavoritesList", (ev) => {
+  if (ev.windowLabel != appWindow.label) {
+    usePersistentServers.persist.rehydrate();
+  }
+});
+
+listen("addToFavorites", (ev) => {
+  if (ev.windowLabel != appWindow.label) {
+    usePersistentServers.persist.rehydrate();
+  }
+});
+
+listen("addToRecentlyJoined", (ev) => {
+  if (ev.windowLabel != appWindow.label) {
+    usePersistentServers.persist.rehydrate();
+  }
+});
+
+listen("removeFromFavorites", (ev) => {
+  if (ev.windowLabel != appWindow.label) {
+    usePersistentServers.persist.rehydrate();
+  }
+});
+
+listen("updateInRecentlyJoinedList", (ev) => {
+  if (ev.windowLabel != appWindow.label) {
+    usePersistentServers.persist.rehydrate();
+  }
+});
 
 export { usePersistentServers, useServers };
