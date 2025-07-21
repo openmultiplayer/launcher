@@ -1,20 +1,25 @@
 import { fs, invoke, path, process, shell } from "@tauri-apps/api";
-import { exists, writeTextFile, readTextFile } from "@tauri-apps/api/fs";
+import { open, save } from "@tauri-apps/api/dialog";
+import { exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { t } from "i18next";
 import { invoke_rpc } from "../api/rpc";
-import { ResourceInfo, validFileChecksums } from "../constants/app";
+import {
+  IN_GAME,
+  IN_GAME_PROCESS_ID,
+  ResourceInfo,
+  validFileChecksums,
+} from "../constants/app";
+import { useGenericPersistentState } from "../states/genericStates";
 import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
+import { useNotification } from "../states/notification";
 import { usePersistentServers, useServers } from "../states/servers";
 import { useSettings } from "../states/settings";
 import { useSettingsModal } from "../states/settingsModal";
+import { fetchServers, getIpAddress } from "../utils/helpers";
 import { Log } from "./logger";
 import { sc } from "./sizeScaler";
 import { Server } from "./types";
-import { useGenericPersistentState } from "../states/genericStates";
-import { save, open } from '@tauri-apps/api/dialog';
-import { useNotification } from "../states/notification";
-import { fetchServers } from "../utils/helpers";
 
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
@@ -64,6 +69,14 @@ export const startGame = async (
   gtasaPath: string,
   password: string
 ) => {
+  if (IN_GAME) {
+    invoke("send_message_to_game", {
+      id: IN_GAME_PROCESS_ID,
+      message: `connect:${await getIpAddress(server.ip)}:${server.port}`,
+    });
+    return;
+  }
+
   const { addToRecentlyJoined } = usePersistentServers.getState();
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
@@ -230,7 +243,7 @@ export const startGame = async (
 
   invoke("inject", {
     name: nickname,
-    ip: server.ip,
+    ip: await getIpAddress(server.ip),
     port: server.port,
     exe: gtasaPath,
     dll: sampDllPath,
