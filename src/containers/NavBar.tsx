@@ -1,9 +1,10 @@
+import { invoke } from "@tauri-apps/api";
 import { t } from "i18next";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from "../components/Icon";
 import TabBar from "../components/TabBar";
 import Text from "../components/Text";
-import { IN_GAME } from "../constants/app";
+import { IN_GAME, IN_GAME_PROCESS_ID } from "../constants/app";
 import { images } from "../constants/images";
 import { useGenericTempState } from "../states/genericStates";
 import { useSettings } from "../states/settings";
@@ -38,6 +39,12 @@ const NavBar = () => {
         {IN_GAME ? (
           <View style={styles.inputs}>
             <TouchableOpacity
+              onPress={() => {
+                invoke("send_message_to_game", {
+                  id: IN_GAME_PROCESS_ID,
+                  message: `reconnect`,
+                });
+              }}
               style={[
                 styles.reconnectContainer,
                 // @ts-ignore
