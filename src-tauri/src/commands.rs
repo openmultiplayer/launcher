@@ -1,4 +1,5 @@
 use crate::{background_thread::check_for_new_instance_and_close, injector, samp};
+use log::info;
 
 #[tauri::command]
 pub async fn inject(
