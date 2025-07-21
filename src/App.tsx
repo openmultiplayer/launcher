@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api";
 import {
   LogicalSize,
   appWindow,
@@ -5,7 +6,7 @@ import {
 } from "@tauri-apps/api/window";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { DEBUG_MODE, IN_GAME } from "./constants/app";
+import { DEBUG_MODE, IN_GAME, IN_GAME_PROCESS_ID } from "./constants/app";
 import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
 import ExternalServerHandler from "./containers/ExternalServerHandler";
 import JoinServerPrompt from "./containers/JoinServerPrompt";
@@ -22,11 +23,13 @@ import { useGenericPersistentState } from "./states/genericStates";
 import { useTheme } from "./states/theme";
 import { debounce } from "./utils/debounce";
 import {
+  checkIfProcessAlive,
   fetchServers,
   fetchUpdateInfo,
   generateLanguageFilters,
 } from "./utils/helpers";
 import { sc } from "./utils/sizeScaler";
+// import MouseFollower from "./components/MouseFollower";
 
 const App = () => {
   const [loading, setLoading] = useState(!IN_GAME);
@@ -84,6 +87,20 @@ const App = () => {
 
     setupListeners();
     initializeApp();
+
+    if (IN_GAME) {
+      setInterval(async () => {
+        if ((await checkIfProcessAlive(IN_GAME_PROCESS_ID)) == false) {
+          invoke("send_message_to_game", {
+            id: IN_GAME_PROCESS_ID,
+            message: "close_overlay",
+          });
+          setTimeout(() => {
+            appWindow.close();
+          }, 300);
+        }
+      }, 200);
+    }
 
     return () => {
       if (killResizeListener) killResizeListener();
