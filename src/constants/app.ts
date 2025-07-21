@@ -1,5 +1,9 @@
 export const VERSION = "5";
-export const IN_GAME = process.argv[4] && process.argv[4] == "--ingame";
+
+const params = new URLSearchParams(window.location.search);
+const attachedId = params.get("attached_id");
+export const IN_GAME = attachedId !== null;
+export const IN_GAME_PROCESS_ID = attachedId ? parseInt(attachedId) : 0;
 export const DEBUG_MODE = process.argv[3] && process.argv[3] == "--ompdebug";
 
 type ResourceName =
