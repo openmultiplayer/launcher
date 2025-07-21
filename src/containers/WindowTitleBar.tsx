@@ -7,7 +7,8 @@ import { images } from "../constants/images";
 import { useSettingsModal } from "../states/settingsModal";
 import { useTheme } from "../states/theme";
 import { sc } from "../utils/sizeScaler";
-import { IN_GAME } from "../constants/app";
+import { IN_GAME, IN_GAME_PROCESS_ID } from "../constants/app";
+import { invoke } from "@tauri-apps/api";
 
 const NativeWindowTitleBarButtons = ({
   size = sc(30),
@@ -144,7 +145,7 @@ const WindowTitleBar = () => {
         </Text>
       </View>
       <div
-        data-tauri-drag-region
+        data-tauri-drag-region={!IN_GAME}
         style={{
           position: "absolute",
           top: 0,
