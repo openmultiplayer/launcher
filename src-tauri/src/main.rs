@@ -5,6 +5,7 @@ mod background_thread;
 mod commands;
 mod helpers;
 mod injector;
+mod ipc;
 mod query;
 mod rpcs;
 mod samp;
@@ -204,6 +205,7 @@ Options:
                 .unwrap();
             }
 
+            ipc::listen_for_ipc(handle);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -213,7 +215,11 @@ Options:
             commands::get_nickname_from_samp,
             commands::get_samp_favorite_list,
             commands::rerun_as_admin,
-            query::query_server
+            commands::resolve_hostname,
+            commands::is_process_alive,
+            commands::log,
+            query::query_server,
+            ipc::send_message_to_game
         ])
         .run(tauri::generate_context!())
     {
