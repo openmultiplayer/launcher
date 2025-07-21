@@ -8,9 +8,11 @@ import {
   useWindowDimensions,
 } from "react-native";
 import DropdownList from "../../components/DropdownList";
+import FeatureDisabledOverlay from "../../components/FeatureDisabledOverlay";
 import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
+import { IN_GAME } from "../../constants/app";
 import { images } from "../../constants/images";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../states/servers";
@@ -256,106 +258,117 @@ const JoinServerPrompt = () => {
             />
           </View>
         )}
-        <View style={{ marginTop: sc(10) }}>
-          <Text semibold color={theme.textPrimary} size={2}>
-            {t("nickname")}:
-          </Text>
-          <TextInput
-            placeholderTextColor={theme.textPlaceholder}
-            placeholder={t("server_join_prompt_nickname_input_placeholder")}
-            value={perServerNickname.length ? perServerNickname : nickName}
-            onChangeText={(text) => {
-              if (server) {
-                if (settings) {
-                  setServerSettings(server, text, settings.sampVersion);
-                } else {
-                  setServerSettings(server, text, undefined);
+        <View>
+          <View style={{ marginTop: sc(10) }}>
+            <Text semibold color={theme.textPrimary} size={2}>
+              {t("nickname")}:
+            </Text>
+            <TextInput
+              placeholderTextColor={theme.textPlaceholder}
+              placeholder={t("server_join_prompt_nickname_input_placeholder")}
+              value={perServerNickname.length ? perServerNickname : nickName}
+              onChangeText={(text) => {
+                if (server) {
+                  if (settings) {
+                    setServerSettings(server, text, settings.sampVersion);
+                  } else {
+                    setServerSettings(server, text, undefined);
+                  }
                 }
-              }
-            }}
+              }}
+              style={{
+                fontFamily: "Proxima Nova Regular",
+                fontSize: sc(17),
+                color: perServerNickname.length
+                  ? theme.textPrimary
+                  : `${theme.textPrimary}BB`,
+                paddingHorizontal: sc(10),
+                width: 300,
+                marginTop: sc(5),
+                fontStyle: perServerNickname.length ? "normal" : "italic",
+                backgroundColor: theme.textInputBackgroundColor,
+                height: sc(38),
+                borderRadius: sc(5),
+                // @ts-ignore
+                outlineStyle: "none",
+              }}
+            />
+          </View>
+          <TouchableOpacity
             style={{
-              fontFamily: "Proxima Nova Regular",
-              fontSize: sc(17),
-              color: perServerNickname.length
-                ? theme.textPrimary
-                : `${theme.textPrimary}BB`,
-              paddingHorizontal: sc(10),
+              top: sc(52),
               width: 300,
-              marginTop: sc(5),
-              fontStyle: perServerNickname.length ? "normal" : "italic",
-              backgroundColor: theme.textInputBackgroundColor,
               height: sc(38),
+              backgroundColor: theme.primary,
               borderRadius: sc(5),
-              // @ts-ignore
-              outlineStyle: "none",
+              justifyContent: "center",
+              alignItems: "center",
             }}
-          />
-        </View>
-        <TouchableOpacity
-          style={{
-            top: sc(52),
-            width: 300,
-            height: sc(38),
-            backgroundColor: theme.primary,
-            borderRadius: sc(5),
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => {
-            if (server) {
-              if (server.hasPassword && password.length) {
-                const srvCpy = { ...server };
-                srvCpy.password = password;
+            onPress={() => {
+              if (server) {
+                if (server.hasPassword && password.length) {
+                  const srvCpy = { ...server };
+                  srvCpy.password = password;
 
-                updateServer(srvCpy);
-                updateInFavoritesList(srvCpy);
-                updateInRecentlyJoinedList(srvCpy);
+                  updateServer(srvCpy);
+                  updateInFavoritesList(srvCpy);
+                  updateInRecentlyJoinedList(srvCpy);
+                }
+
+                startGame(
+                  server,
+                  perServerNickname.length ? perServerNickname : nickName,
+                  gtasaPath,
+                  server.hasPassword ? password : ""
+                );
+                showPrompt(false);
               }
-
-              startGame(
-                server,
-                perServerNickname.length ? perServerNickname : nickName,
-                gtasaPath,
-                server.hasPassword ? password : ""
-              );
-              showPrompt(false);
-            }
-          }}
-        >
-          <Text semibold color={"#FFFFFF"} size={2}>
-            {t("connect")}
-          </Text>
-        </TouchableOpacity>
-        <View
-          style={{
-            top: -sc(28),
-            width: 300,
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Text semibold color={theme.textPrimary} size={2}>
-            {t("samp_version")}:
-          </Text>
-          <DropdownList
+            }}
+          >
+            <Text semibold color={"#FFFFFF"} size={2}>
+              {t("connect")}
+            </Text>
+          </TouchableOpacity>
+          <View
             style={{
-              marginLeft: sc(10),
-              height: sc(30),
-              flex: 1,
-              backgroundColor: theme.textInputBackgroundColor,
+              top: -sc(28),
+              width: 300,
+              flexDirection: "row",
+              alignItems: "center",
             }}
-            value={getSampVersionName(
-              perServerVersion ? perServerVersion : sampVersion
-            )}
-            items={getSampVersions().map((version) =>
-              getSampVersionName(version)
-            )}
-            onChange={async (value) => {
-              const version = getSampVersionFromName(value);
-              setSampVersion(version);
-            }}
-          />
+          >
+            <Text semibold color={theme.textPrimary} size={2}>
+              {t("samp_version")}:
+            </Text>
+            <DropdownList
+              style={{
+                marginLeft: sc(10),
+                height: sc(30),
+                flex: 1,
+                backgroundColor: theme.textInputBackgroundColor,
+              }}
+              value={getSampVersionName(
+                perServerVersion ? perServerVersion : sampVersion
+              )}
+              items={getSampVersions().map((version) =>
+                getSampVersionName(version)
+              )}
+              onChange={async (value) => {
+                const version = getSampVersionFromName(value);
+                setSampVersion(version);
+              }}
+            />
+          </View>
+          {IN_GAME && (
+            <FeatureDisabledOverlay
+              style={{
+                top: sc(5),
+                bottom: sc(20),
+              }}
+            />
+          )}
         </View>
+
         <TouchableOpacity
           style={{
             position: "absolute",
