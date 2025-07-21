@@ -1,4 +1,4 @@
-import { shell } from "@tauri-apps/api";
+import { invoke, shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
 import { type } from "@tauri-apps/api/os";
 import { t } from "i18next";
@@ -158,11 +158,7 @@ export const fetchUpdateInfo = async () => {
 };
 
 export const validateServerAddress = (address: string) => {
-  if (
-    /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
-      address
-    )
-  ) {
+  if (isIPv4(address)) {
     return true;
   } else {
     // Check if it's localhost
@@ -201,6 +197,26 @@ export const validateWebUrl = (url: string) => {
   }
   return false;
 };
+
+const isIPv4 = (address: string) => {
+  return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+    address
+  );
+};
+
+export async function getIpAddress(hostname: string) {
+  if (isIPv4(hostname)) {
+    return hostname;
+  }
+
+  try {
+    const ip = await invoke("resolve_hostname", { hostname });
+    return ip;
+  } catch (err) {
+    console.error("Failed to resolve hostname:", err);
+    return null;
+  }
+}
 
 export const sortAndSearchInServerList = (
   servers: Server[],
@@ -420,3 +436,14 @@ export const getSampVersionFromName = (name: string): SAMPDLLVersions => {
   });
   return ret;
 };
+
+export async function checkIfProcessAlive(pid: number) {
+  try {
+    const alive = await invoke("is_process_alive", { pid });
+    console.log(`PID ${pid} alive:`, alive);
+    return alive;
+  } catch (err) {
+    console.error("Failed to check process:", err);
+    return false;
+  }
+}
