@@ -3,11 +3,7 @@ use dll_syringe::{process::OwnedProcess, Syringe};
 #[cfg(target_os = "windows")]
 use log::info;
 #[cfg(target_os = "windows")]
-use regex::Regex;
-#[cfg(target_os = "windows")]
 use std::process::Command;
-#[cfg(target_os = "windows")]
-use tokio::net::lookup_host;
 
 #[cfg(not(target_os = "windows"))]
 pub async fn run_samp(
@@ -37,49 +33,12 @@ pub async fn run_samp(
     // Prepare the command to spawn the executable
     let mut cmd = Command::new(format!("{}/gta_sa.exe", executable_dir));
 
-    let regex = Regex::new(r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$").unwrap();
-    let address = match regex.captures(ip) {
-        Some(_) => {
-            // it's valid ipv4, move on
-            ip.to_string()
-        }
-        None => {
-            info!(
-                "[injector.rs] Address {} is not IPv4, trying to perform host lookup.",
-                ip
-            );
-            let socket_addresses = lookup_host(format!("{}:{}", ip, port)).await;
-            match socket_addresses {
-                Ok(s) => {
-                    let mut ipv4 = "".to_string();
-                    for socket_address in s {
-                        if socket_address.is_ipv4() {
-                            // hostname is resolved to ipv4:port, lets split it by ":" and get ipv4 only
-                            let ip_port = socket_address.to_string();
-                            let vec: Vec<&str> = ip_port.split(':').collect();
-                            ipv4 = vec[0].to_string();
-                        }
-                    }
-                    ipv4
-                }
-                Err(e) => {
-                    info!(
-                        "[injector.rs] Host lookup for {} failed: {}",
-                        ip,
-                        e.to_string()
-                    );
-                    " ".to_string()
-                }
-            }
-        }
-    };
-
     let mut ready_for_exec = cmd
         .arg("-c")
         .arg("-n")
         .arg(name)
         .arg("-h")
-        .arg(address)
+        .arg(ip)
         .arg("-p")
         .arg(format!("{}", port));
 
