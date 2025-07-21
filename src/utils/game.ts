@@ -322,7 +322,7 @@ export const checkDirectoryValidity = async (
 export const exportFavoriteListFile = async () => {
   const { favorites } = usePersistentServers.getState();
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
- 
+
   if (!favorites.length) {
     showMessageBox({
       title: t("export_failed_title"),
@@ -336,31 +336,33 @@ export const exportFavoriteListFile = async () => {
     });
     return;
   }
- 
+
   try {
     const exportData = {
       version: 1,
-      servers: favorites.map(server => ({
+      servers: favorites.map((server) => ({
         ip: server.ip,
         port: server.port,
         name: server.hostname,
-        password: server.password || ""
-      }))
+        password: server.password || "",
+      })),
     };
-   
+
     const jsonString = JSON.stringify(exportData, null, 2);
-   
+
     const savePath = await save({
-      filters: [{
-        name: 'JSON',
-        extensions: ['json']
-      }],
-      defaultPath: 'omp_servers.json'
+      filters: [
+        {
+          name: "JSON",
+          extensions: ["json"],
+        },
+      ],
+      defaultPath: "omp_servers.json",
     });
-   
+
     if (savePath) {
       await writeTextFile(savePath, jsonString);
-     
+
       const { showNotification } = useNotification.getState();
       showNotification(
         t("export_successful_title"),
@@ -384,29 +386,31 @@ export const exportFavoriteListFile = async () => {
 
 export const importFavoriteListFile = async () => {
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
- 
+
   try {
     const selected = await open({
       multiple: false,
-      filters: [{
-        name: 'JSON',
-        extensions: ['json']
-      }]
+      filters: [
+        {
+          name: "JSON",
+          extensions: ["json"],
+        },
+      ],
     });
     if (!selected) return;
     const fileContent = await readTextFile(selected as string);
     const { addToFavorites } = usePersistentServers.getState();
     const { showNotification } = useNotification.getState();
-   
+
     try {
       const data = JSON.parse(fileContent);
-     
+
       if (!data.servers || !Array.isArray(data.servers)) {
         throw new Error("Invalid file format: missing servers array");
       }
-     
+
       let importCount = 0;
-     
+
       for (const importedServer of data.servers) {
         if (importedServer.ip && importedServer.port) {
           const tempHostname = `${importedServer.ip}:${importedServer.port}`;
@@ -427,19 +431,18 @@ export const importFavoriteListFile = async () => {
             password: importedServer.password || "",
             rules: {} as Server["rules"],
           };
-         
+
           addToFavorites(serverInfo);
           importCount++;
         }
       }
 
       fetchServers(true);
-     
+
       showNotification(
         t("import_successful_title"),
         t("import_successful_description")
       );
-     
     } catch (parseError) {
       showMessageBox({
         title: t("import_failed_title"),
@@ -453,7 +456,6 @@ export const importFavoriteListFile = async () => {
       });
       Log.debug("Error parsing imported file:", parseError);
     }
-   
   } catch (error) {
     showMessageBox({
       title: t("import_failed_title"),
