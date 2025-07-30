@@ -209,3 +209,7 @@
   bottom: 10px;
   border-radius: 1000px;
 }
+
+#main-container *:focus-visible {
+  outline: none;
+}
