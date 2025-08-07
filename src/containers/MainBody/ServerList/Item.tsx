@@ -175,6 +175,8 @@ const ServerItem = memo((props: IProps) => {
               styles.iconContainer,
               {
                 backgroundColor: getServerStatusIconViewBackgroundColor(),
+                // @ts-ignore
+                userSelect: 'none',
               },
             ]}
           >
