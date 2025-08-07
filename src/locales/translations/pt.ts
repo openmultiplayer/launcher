@@ -113,4 +113,5 @@ export default {
   import_failed_title: "Falha na Importação",
   import_failed_description: "Ocorreu um erro ao importar seus servidores favoritos.",
   import_invalid_data_description: "O arquivo selecionado contém dados inválidos. Selecione um arquivo de lista de favoritos válido.",
+  drag_to_reorder: "Arrastar para reordenar",
 };
