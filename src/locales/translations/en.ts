@@ -113,5 +113,4 @@ export default {
   import_failed_title: "Import Failed",
   import_failed_description: "An error occurred while importing your favorite servers.",
   import_invalid_data_description: "The selected file contains invalid data. Please select a valid favorites list file.",
-  drag_to_reorder: "Drag to reorder",
 };
