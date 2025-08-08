@@ -24,7 +24,13 @@ interface IProps {
 }
 
 const ServerItem = memo((props: IProps) => {
-  const { server, index, isDraggable = false, isDraggedOver = false, isBeingDragged = false } = props;
+  const {
+    server,
+    index,
+    isDraggable = false,
+    isDraggedOver = false,
+    isBeingDragged = false,
+  } = props;
   const { theme, themeType } = useTheme();
   const lastPressTime = useRef(0);
   const { showPrompt, setServer } = useJoinServerPrompt();
@@ -32,51 +38,73 @@ const ServerItem = memo((props: IProps) => {
 
   const [isDragging, setIsDragging] = useState(false);
   const dragStartTime = useRef(0);
+  const hasStartedDragging = useRef(false);
 
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => {
-      return isDraggable && (props.isSelected || false);
-    },
+    onStartShouldSetPanResponder: () => isDraggable,
+
     onMoveShouldSetPanResponder: (_, gestureState) => {
-      const distance = Math.sqrt(gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy);
-      const isVerticalMovement = Math.abs(gestureState.dy) > Math.abs(gestureState.dx) * 0.5;
-      
-      return isDraggable && (props.isSelected || false) && distance > 8 && isVerticalMovement;
+      if (!isDraggable) return false;
+
+      const distance = Math.sqrt(
+        gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy
+      );
+
+      if (hasStartedDragging.current) return true;
+
+      if (distance > 2) {
+        const isMainlyVertical =
+          Math.abs(gestureState.dy) > Math.abs(gestureState.dx) * 0.5;
+        return isMainlyVertical;
+      }
+
+      return false;
     },
-    onPanResponderGrant: () => {
-      if (isDraggable && props.isSelected && props.onDragStart) {
+
+    onPanResponderGrant: (evt) => {
+      if (isDraggable && props.onDragStart) {
+        hasStartedDragging.current = true;
         setIsDragging(true);
+        document.body.style.cursor = "grabbing";
         dragStartTime.current = Date.now();
         props.onDragStart(server, index);
-      }
-    },
-    onPanResponderMove: (evt) => {
-      if (isDraggable && isDragging && props.onDragMove) {
-        const timeSinceStart = Date.now() - dragStartTime.current;
-        if (timeSinceStart > 50) {
+
+        if (props.onDragMove) {
           props.onDragMove(index, evt.nativeEvent.pageY);
         }
       }
     },
+
+    onPanResponderMove: (evt) => {
+      if (isDraggable && hasStartedDragging.current && props.onDragMove) {
+        props.onDragMove(index, evt.nativeEvent.pageY);
+      }
+    },
+
     onPanResponderRelease: () => {
-      if (isDraggable && isDragging) {
+      if (isDraggable && hasStartedDragging.current) {
+        hasStartedDragging.current = false;
         setIsDragging(false);
+        document.body.style.cursor = ""; // Add this
         if (props.onDragEnd) {
           props.onDragEnd();
         }
       }
     },
+
     onPanResponderTerminate: () => {
-      if (isDraggable && isDragging) {
+      if (isDraggable && hasStartedDragging.current) {
+        hasStartedDragging.current = false;
         setIsDragging(false);
+        document.body.style.cursor = ""; // Add this
         if (props.onDragEnd) {
           props.onDragEnd();
         }
       }
     },
-    onShouldBlockNativeResponder: () => {
-      return isDraggable && (props.isSelected || false) && isDragging;
-    },
+
+    onShouldBlockNativeResponder: () =>
+      isDraggable && hasStartedDragging.current,
   });
 
   const onDoublePress = () => {
@@ -115,6 +143,8 @@ const ServerItem = memo((props: IProps) => {
   };
 
   const onPress = () => {
+    if (hasStartedDragging.current) return;
+
     var delta = new Date().getTime() - lastPressTime.current;
 
     if (delta < 500) {
@@ -133,12 +163,15 @@ const ServerItem = memo((props: IProps) => {
       style={[
         styles.pressableContainer,
         {
+          // // @ts-ignore
+          // cursor: isDragging || isDraggedOver ? "grabbing" : "default",
+          marginTop: 0,
           opacity: isDragging || isBeingDragged ? 0.7 : 1,
           transform: isDragging ? [{ translateY: -5 }] : [],
           zIndex: isDragging ? 1000 : 1,
-        }
+        },
       ]}
-      {...(isDraggable && props.isSelected ? panResponder.panHandlers : {})}
+      {...(isDraggable ? panResponder.panHandlers : {})}
     >
       {/* Drop indicator */}
       {isDraggedOver && (
@@ -146,7 +179,7 @@ const ServerItem = memo((props: IProps) => {
           style={{
             height: 2,
             backgroundColor: theme.primary,
-            width: '100%',
+            width: "100%",
             marginBottom: 2,
           }}
         />
@@ -158,8 +191,8 @@ const ServerItem = memo((props: IProps) => {
           styles.pressableContainer,
           {
             // @ts-ignore
-            cursor: isDraggable && props.isSelected ? (isDragging ? 'grabbing' : 'grab') : 'default',
-          }
+            cursor: isDragging || isDraggedOver ? "grabbing" : "default",
+          },
         ]}
         onPress={() => onPress()}
         // @ts-ignore
@@ -176,7 +209,7 @@ const ServerItem = memo((props: IProps) => {
               {
                 backgroundColor: getServerStatusIconViewBackgroundColor(),
                 // @ts-ignore
-                userSelect: 'none',
+                userSelect: "none",
               },
             ]}
           >
@@ -220,7 +253,9 @@ const ServerItem = memo((props: IProps) => {
                   filter: `drop-shadow(0 0 8px ${theme.primary}CC)`,
                 }}
               >
-                <View style={[styles.iconContainer, { marginHorizontal: sc(3) }]}>
+                <View
+                  style={[styles.iconContainer, { marginHorizontal: sc(3) }]}
+                >
                   <Icon
                     title={t("openmp_server")}
                     image={images.icons.omp}
@@ -288,8 +323,6 @@ const ServerItem = memo((props: IProps) => {
 
 const styles = StyleSheet.create({
   pressableContainer: {
-    // @ts-ignore
-    cursor: "default",
     marginTop: sc(7),
   },
   serverContainer: {
