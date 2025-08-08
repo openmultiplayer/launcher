@@ -33,6 +33,7 @@ interface ServersPersistentState {
     version: SAMPDLLVersions | undefined
   ) => void;
   getServerSettings: (server: Server) => PerServerSettings | undefined;
+  reorderFavorites: (fromIndex: number, toIndex: number) => void;
 }
 
 const useServers = create<ServersState>()((set, get) => ({
@@ -208,6 +209,18 @@ const usePersistentServers = create<ServersPersistentState>()(
           return undefined;
         }
       },
+      reorderFavorites: (fromIndex, toIndex) =>
+        set(() => {
+          const list = [...get().favorites];
+          const [movedItem] = list.splice(fromIndex, 1);
+          list.splice(toIndex, 0, movedItem);
+          
+          setTimeout(() => {
+            emit("reorderFavorites", { fromIndex, toIndex });
+          }, 200);
+
+          return { favorites: list };
+        }),
     }),
     {
       name: "favorites-and-recentlyjoined-storage",
@@ -241,6 +254,12 @@ listen("removeFromFavorites", (ev) => {
 });
 
 listen("updateInRecentlyJoinedList", (ev) => {
+  if (ev.windowLabel != appWindow.label) {
+    usePersistentServers.persist.rehydrate();
+  }
+});
+
+listen("reorderFavorites", (ev) => {
   if (ev.windowLabel != appWindow.label) {
     usePersistentServers.persist.rehydrate();
   }
