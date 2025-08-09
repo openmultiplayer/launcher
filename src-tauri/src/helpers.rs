@@ -7,6 +7,8 @@ use charset_normalizer_rs::from_bytes;
 use encoding_rs::{Encoding, UTF_8};
 use log::info;
 
+use crate::constants::*;
+
 /// Decodes a buffer of bytes into a string, detecting the encoding
 pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     // Using chardetng for encoding detection
@@ -22,16 +24,6 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
         .get_best()
         .map(|cd| cd.encoding().to_string().to_lowercase())
         .unwrap_or_else(|| "not_found".to_string());
-
-    // Collect encoding results for debug
-    // let mut messages: Vec<String> = Vec::new();
-    // messages.push(format!("Input: {}", String::from_utf8_lossy(&buf)));
-    // messages.push(format!("\tchardetng: {}", chardetng_encoding));
-    // messages.push(format!("\tchardet: {}", chardet_encoding));
-    // messages.push(format!(
-    //     "\tcharset_normalizer: {}",
-    //     charset_normalizer_encoding
-    // ));
 
     // Determine the most likely actual encoding
     let actual_encoding = if chardet_encoding == "ascii" && charset_normalizer_encoding == "ascii" {
@@ -89,78 +81,48 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     (buff_output, actual_encoding.name().to_string())
 }
 
-pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> Result<(), String> {
-    let read_results = fs::read_dir(src);
-    match read_results {
-        Ok(files) => {
-            for entry in files {
-                match entry {
-                    Ok(entry) => {
-                        let ty = entry.file_type().unwrap();
-                        if ty.is_dir() {
-                            let dir_path = dest.as_ref().join(entry.file_name());
-                            let dir_path_str = dir_path.to_str().unwrap();
-                            let dir_creation_results = fs::create_dir(&dir_path);
-                            match dir_creation_results {
-                                Ok(_) => {}
-                                Err(e) => {
-                                    println!("[helpers.rs] copy_files 1: {}", e);
-                                    info!("[helpers.rs] copy_files 1: {}", e);
+pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> crate::errors::Result<()> {
+    let files = fs::read_dir(src).map_err(|e| crate::errors::LauncherError::from(e))?;
 
-                                    if e.raw_os_error().is_some() {
-                                        if e.raw_os_error().unwrap() == 183 {
-                                            println!("Directory {} already exists", dir_path_str);
-                                            return Ok(());
-                                        }
+    for entry_result in files {
+        let entry = entry_result.map_err(|e| crate::errors::LauncherError::from(e))?;
+        let ty = entry.file_type().map_err(|e| crate::errors::LauncherError::from(e))?;
+        if ty.is_dir() {
+            let dir_path = dest.as_ref().join(entry.file_name());
 
-                                        if e.raw_os_error().unwrap() == 5 {
-                                            return Err("need_admin".to_string());
-                                        }
-                                    }
-                                    return Err(e.to_string());
-                                }
-                            }
-
-                            match copy_files(entry.path(), dest.as_ref().join(entry.file_name())) {
-                                Ok(_) => {}
-                                Err(e) => {
-                                    println!("[helpers.rs] copy_files 2: {}", e);
-                                    info!("[helpers.rs] copy_files 2: {}", e);
-                                    return Err(e);
-                                }
-                            }
-                        } else {
-                            let copy_results =
-                                fs::copy(entry.path(), dest.as_ref().join(entry.file_name()));
-                            match copy_results {
-                                Ok(_) => {}
-                                Err(e) => {
-                                    println!("[helpers.rs] copy_files 3: {}", e);
-                                    info!("[helpers.rs] copy_files 3: {}", e);
-
-                                    if e.raw_os_error().is_some() {
-                                        if e.raw_os_error().unwrap() == 5 {
-                                            return Err("need_admin".to_string());
-                                        }
-                                    }
-                                    return Err(e.to_string());
-                                }
-                            }
-                        }
+            if let Err(e) = fs::create_dir(&dir_path) {
+                match e.raw_os_error() {
+                    Some(ERROR_DIRECTORY_EXISTS) => {
+                        info!("Directory {} already exists", dir_path.display());
+                        return Ok(());
                     }
-                    Err(e) => {
-                        println!("[helpers.rs] copy_files 4: {}", e);
-                        info!("[helpers.rs] copy_files: {}", e);
-                        return Err(e.to_string());
+                    Some(ERROR_ACCESS_DENIED) => {
+                        return Err(crate::errors::LauncherError::AccessDenied(format!(
+                            "Unable to create the directory \"{}\"",
+                            dir_path.display()
+                        )))
                     }
+                    _ => return Err(crate::errors::LauncherError::from(e)),
                 }
             }
-            Ok(())
-        }
-        Err(e) => {
-            println!("[helpers.rs] copy_files 5: {}", e);
-            info!("[helpers.rs] copy_files: {}", e);
-            Err(e.to_string())
+
+            copy_files(entry.path(), dest.as_ref().join(entry.file_name()))?;
+        } else {
+            let dest_path = dest.as_ref().join(entry.file_name());
+            if let Err(e) = fs::copy(entry.path(), dest_path.clone()) {
+                match e.raw_os_error() {
+                    Some(ERROR_ACCESS_DENIED) => {
+                        return Err(crate::errors::LauncherError::AccessDenied(format!(
+                            "Unable to copy file from \"{}\" to \"{}\"",
+                            entry.path().display(),
+                            dest_path.display()
+                        )))
+                    }
+                    _ => return Err(crate::errors::LauncherError::from(e)),
+                }
+            }
         }
     }
+
+    Ok(())
 }

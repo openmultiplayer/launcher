@@ -8,8 +8,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 
-use crate::helpers;
-use crate::nativestorage;
+use crate::{constants::*, errors::*, helpers};
 
 #[derive(Deserialize)]
 struct RpcParams {
@@ -38,45 +37,47 @@ struct CopyFilesToGtaSaParams {
     gtasa_dir: String,
 }
 
-fn get_checksum_of_files(list: Vec<String>) -> Vec<String> {
-    let mut result = Vec::<String>::new();
+fn get_checksum_of_files(list: Vec<String>) -> Result<Vec<String>> {
+    let mut result = Vec::new();
+    
     for file in list {
-        let file_path = file.to_owned();
-        let mut f = File::open(file_path).unwrap();
-        let mut contents = Vec::<u8>::new();
-        f.read_to_end(&mut contents).unwrap();
-        let digest = compute(contents.as_slice());
-        let mut combine = String::new();
-        combine.push_str(file.as_str());
-        combine.push('|');
-        combine.push_str(format!("{:x}", digest).as_str());
-        result.push(combine.to_string());
+        let mut f = File::open(&file)
+            .map_err(|e| LauncherError::Io(e))?;
+        
+        let mut contents = Vec::new();
+        f.read_to_end(&mut contents)
+            .map_err(|e| LauncherError::Io(e))?;
+        
+        let digest = compute(&contents);
+        let checksum_entry = format!("{}|{:x}", file, digest);
+        result.push(checksum_entry);
     }
-    result
+    
+    Ok(result)
 }
 
-fn extract_7z(path: &str, output_path: &str) -> Result<String, String> {
-    match decompress_file(path, output_path) {
-        Ok(_) => Ok("success".to_string()),
-        Err(e) => Err(e.to_string()),
-    }
+fn extract_7z(path: &str, output_path: &str) -> Result<()> {
+    decompress_file(path, output_path)
+        .map_err(|e| LauncherError::InternalError(format!("Failed to extract archive '{}': {}", path, e)))
 }
 
-fn copy_files_to_gtasa(src: &str, gtasa_dir: &str) -> Result<(), String> {
+fn copy_files_to_gtasa(src: &str, gtasa_dir: &str) -> Result<()> {
     helpers::copy_files(src, gtasa_dir)
+        .map_err(|_| LauncherError::InternalError("Failed to copy files".to_string()))
 }
 
 async fn rpc_handler(
     path: web::Path<RpcMethod>,
     payload: web::Json<RpcParams>,
-) -> Result<impl Responder, Box<dyn Error>> {
+) -> std::result::Result<impl Responder, Box<dyn Error>> {
     let params_str = serde_json::to_string(&payload.params)?;
     /*
      method: get_checksum_of_files
     */
     if path.method == "get_checksum_of_files" {
         let params: GetChecksumOfFilesParams = serde_json::from_str(params_str.as_str())?;
-        let result = get_checksum_of_files(params.list);
+        let result = get_checksum_of_files(params.list)
+            .map_err(|e| Box::new(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
         return Ok(HttpResponse::Ok().body(serde_json::to_string(&json!(result))?));
     }
     /*
@@ -84,7 +85,8 @@ async fn rpc_handler(
     */
     else if path.method == "extract_7z" {
         let params: Extract7zParams = serde_json::from_str(params_str.as_str())?;
-        extract_7z(params.path.as_str(), &params.output_path)?;
+        extract_7z(&params.path, &params.output_path)
+            .map_err(|e| Box::new(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
         return Ok(HttpResponse::Ok().body("{}"));
     }
     /*
@@ -92,11 +94,10 @@ async fn rpc_handler(
     */
     else if path.method == "copy_files_to_gtasa" {
         let params: CopyFilesToGtaSaParams = serde_json::from_str(params_str.as_str())?;
-        let result = copy_files_to_gtasa(params.src.as_str(), params.gtasa_dir.as_str());
-        if result.is_err() {
-            return Ok(HttpResponse::Ok().body(result.err().unwrap()));
+        match copy_files_to_gtasa(&params.src, &params.gtasa_dir) {
+            Ok(_) => return Ok(HttpResponse::Ok().body("{}")),
+            Err(e) => return Ok(HttpResponse::Ok().body(e.to_string())),
         }
-        return Ok(HttpResponse::Ok().body("{}"));
     }
 
     let response = format!(
@@ -106,17 +107,15 @@ async fn rpc_handler(
     Ok(HttpResponse::Ok().body(response))
 }
 
-pub async fn initialize_rpc() -> Result<(), std::io::Error> {
+pub async fn initialize_rpc() -> Result<()> {
     HttpServer::new(|| {
         App::new()
             .wrap(Cors::permissive())
-            .service(
-                web::resource("/sync_rpc/{method}")
-                    .route(web::post().to(nativestorage::sync_storage_rpc_handler)),
-            )
             .service(web::resource("/rpc/{method}").route(web::post().to(rpc_handler)))
     })
-    .bind("127.0.0.1:46290")?
+    .bind(format!("127.0.0.1:{}", RPC_PORT))
+        .map_err(|e| LauncherError::from(e))?
     .run()
     .await
+    .map_err(|e| LauncherError::from(e))
 }

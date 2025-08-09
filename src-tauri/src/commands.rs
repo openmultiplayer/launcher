@@ -1,4 +1,4 @@
-use crate::{background_thread::check_for_new_instance_and_close, injector, samp};
+use crate::{injector, samp};
 use log::info;
 
 #[tauri::command]
@@ -11,8 +11,10 @@ pub async fn inject(
     omp_file: &str,
     password: &str,
     discord: bool,
-) -> Result<(), String> {
-    injector::run_samp(name, ip, port, exe, dll, omp_file, password, discord).await
+) -> std::result::Result<(), String> {
+    injector::run_samp(name, ip, port, exe, dll, omp_file, password, discord)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -26,17 +28,19 @@ pub fn get_nickname_from_samp() -> String {
 }
 
 #[tauri::command]
-pub fn rerun_as_admin() -> Result<String, String> {
-    let res = std::env::current_exe();
-    match res {
-        Ok(p) => {
-            let path = p.into_os_string().into_string().unwrap();
-            runas::Command::new(path).arg("").status().unwrap();
-            check_for_new_instance_and_close();
-            Ok("SUCCESS".to_string())
-        }
-        Err(_) => Err("FAILED".to_string()),
-    }
+pub fn rerun_as_admin() -> std::result::Result<String, String> {
+    let exe_path = std::env::current_exe()
+        .map_err(|_| "Failed to get current executable path".to_string())?
+        .into_os_string()
+        .into_string()
+        .map_err(|_| "Failed to convert path to string".to_string())?;
+
+    runas::Command::new(exe_path)
+        .arg("")
+        .status()
+        .map_err(|_| "Failed to restart as administrator".to_string())?;
+
+    Ok("SUCCESS".to_string())
 }
 
 #[tauri::command]
@@ -45,21 +49,25 @@ pub fn get_samp_favorite_list() -> String {
 }
 
 #[tauri::command]
-pub fn resolve_hostname(hostname: String) -> Result<String, String> {
+pub fn resolve_hostname(hostname: String) -> std::result::Result<String, String> {
     use std::net::{IpAddr, ToSocketAddrs};
 
-    let addr = format!("{}:80", hostname);
-    match addr.to_socket_addrs() {
-        Ok(addrs) => {
-            for ip in addrs {
-                if let IpAddr::V4(ipv4) = ip.ip() {
-                    return Ok(ipv4.to_string());
-                }
-            }
-            Err("No IPv4 address found".to_string())
-        }
-        Err(e) => Err(format!("Failed to resolve: {}", e)),
+    if hostname.is_empty() {
+        return Err("Hostname cannot be empty".to_string());
     }
+
+    let addr = format!("{}:80", hostname);
+    let addrs = addr
+        .to_socket_addrs()
+        .map_err(|e| format!("Failed to resolve hostname '{}': {}", hostname, e))?;
+
+    for ip in addrs {
+        if let IpAddr::V4(ipv4) = ip.ip() {
+            return Ok(ipv4.to_string());
+        }
+    }
+
+    Err(format!("No IPv4 address found for hostname '{}'", hostname))
 }
 
 #[tauri::command]
@@ -80,7 +88,5 @@ pub fn is_process_alive(pid: u32) -> bool {
 
 #[tauri::command]
 pub fn log(msg: &str) -> () {
-    info!("{}", msg);
-    println!("{}", msg);
+    info!("Frontend log: {}", msg);
 }
-
