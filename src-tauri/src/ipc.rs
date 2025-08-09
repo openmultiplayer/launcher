@@ -132,18 +132,20 @@ pub fn listen_for_ipc(app_handle: AppHandle) {
 pub fn send_message_to_game(id: i32, message: &str) -> Result<()> {
     use std::io::Write;
 
-    let mut streams = GAME_STREAMS
-        .lock()
-        .map_err(|_| crate::errors::LauncherError::InternalError("Failed to acquire stream lock".to_string()))?;
+    let mut streams = GAME_STREAMS.lock().map_err(|_| {
+        crate::errors::LauncherError::InternalError("Failed to acquire stream lock".to_string())
+    })?;
 
     if let Some(stream) = streams.get_mut(&id) {
         let full_message = format!("{}\n", message);
-        stream
-            .write_all(full_message.as_bytes())
-            .map_err(|e| crate::errors::LauncherError::Network(format!("Failed to write to stream: {}", e)))?;
+        stream.write_all(full_message.as_bytes()).map_err(|e| {
+            crate::errors::LauncherError::Network(format!("Failed to write to stream: {}", e))
+        })?;
         Ok(())
     } else {
         log::warn!("No IPC stream found for process ID: {}", id);
-        Err(crate::errors::LauncherError::NotFound("no_stream_found".to_string()))
+        Err(crate::errors::LauncherError::NotFound(
+            "no_stream_found".to_string(),
+        ))
     }
 }

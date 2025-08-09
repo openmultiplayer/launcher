@@ -50,30 +50,25 @@ pub fn get_samp_favorite_list() -> String {
 
 #[cfg(target_os = "windows")]
 pub fn get_gtasa_path() -> String {
-    let key_result = RegKey::predef(HKEY_CURRENT_USER)
-        .open_subkey_with_flags(SAMP_REGISTRY_KEY, KEY_READ);
-    
+    let key_result =
+        RegKey::predef(HKEY_CURRENT_USER).open_subkey_with_flags(SAMP_REGISTRY_KEY, KEY_READ);
+
     match key_result {
-        Ok(key) => {
-            match key.get_value::<String, _>("gta_sa_exe") {
-                Ok(path) => path.replace(&format!("\\{}", GTA_SA_EXECUTABLE), ""),
-                Err(_) => String::new(),
-            }
-        }
+        Ok(key) => match key.get_value::<String, _>("gta_sa_exe") {
+            Ok(path) => path.replace(&format!("\\{}", GTA_SA_EXECUTABLE), ""),
+            Err(_) => String::new(),
+        },
         Err(_) => String::new(),
     }
 }
 
 #[cfg(target_os = "windows")]
 pub fn get_nickname() -> String {
-    let key_result = RegKey::predef(HKEY_CURRENT_USER)
-        .open_subkey_with_flags(SAMP_REGISTRY_KEY, KEY_READ);
-    
+    let key_result =
+        RegKey::predef(HKEY_CURRENT_USER).open_subkey_with_flags(SAMP_REGISTRY_KEY, KEY_READ);
+
     match key_result {
-        Ok(key) => {
-            key.get_value::<String, _>("PlayerName")
-                .unwrap_or_default()
-        }
+        Ok(key) => key.get_value::<String, _>("PlayerName").unwrap_or_default(),
         Err(_) => String::new(),
     }
 }

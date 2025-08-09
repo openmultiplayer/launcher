@@ -31,7 +31,11 @@ impl fmt::Display for LauncherError {
             LauncherError::Storage(msg) => write!(f, "Storage error: {}", msg),
             LauncherError::InvalidInput(msg) => write!(f, "Invalid input: {}", msg),
             LauncherError::NotFound(msg) => write!(f, "Not found: {}", msg),
-            LauncherError::AccessDenied(msg) => write!(f, "Access denied - administrator privileges required: {}", msg),
+            LauncherError::AccessDenied(msg) => write!(
+                f,
+                "Access denied - administrator privileges required: {}",
+                msg
+            ),
             LauncherError::InternalError(msg) => write!(f, "Internal error: {}", msg),
         }
     }

@@ -86,7 +86,9 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> crate::error
 
     for entry_result in files {
         let entry = entry_result.map_err(|e| crate::errors::LauncherError::from(e))?;
-        let ty = entry.file_type().map_err(|e| crate::errors::LauncherError::from(e))?;
+        let ty = entry
+            .file_type()
+            .map_err(|e| crate::errors::LauncherError::from(e))?;
         if ty.is_dir() {
             let dir_path = dest.as_ref().join(entry.file_name());
 

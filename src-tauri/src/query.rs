@@ -524,8 +524,7 @@ pub async fn query_server(
                 }
             }
 
-            serde_json::to_string(&result)
-                .map_err(|e| LauncherError::SerdeJson(e))
+            serde_json::to_string(&result).map_err(|e| LauncherError::SerdeJson(e))
         }
         Err(e) => Err(e),
     }

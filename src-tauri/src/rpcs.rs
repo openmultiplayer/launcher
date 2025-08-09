@@ -39,31 +39,41 @@ struct CopyFilesToGtaSaParams {
 
 fn get_checksum_of_files(list: Vec<String>) -> Result<Vec<String>> {
     let mut result = Vec::new();
-    
+
     for file in list {
-        let mut f = File::open(&file)
-            .map_err(|e| LauncherError::Io(e))?;
-        
+        let mut f = File::open(&file).map_err(|e| LauncherError::Io(e))?;
+
         let mut contents = Vec::new();
         f.read_to_end(&mut contents)
             .map_err(|e| LauncherError::Io(e))?;
-        
+
         let digest = compute(&contents);
         let checksum_entry = format!("{}|{:x}", file, digest);
         result.push(checksum_entry);
     }
-    
+
     Ok(result)
 }
 
 fn extract_7z(path: &str, output_path: &str) -> Result<()> {
-    decompress_file(path, output_path)
-        .map_err(|e| LauncherError::InternalError(format!("Failed to extract archive '{}': {}", path, e)))
+    decompress_file(path, output_path).map_err(|e| {
+        LauncherError::InternalError(format!("Failed to extract archive '{}': {}", path, e))
+    })
 }
 
-fn copy_files_to_gtasa(src: &str, gtasa_dir: &str) -> Result<()> {
-    helpers::copy_files(src, gtasa_dir)
-        .map_err(|_| LauncherError::InternalError("Failed to copy files".to_string()))
+fn copy_files_to_gtasa(src: &str, gtasa_dir: &str) -> std::result::Result<(), String> {
+    match helpers::copy_files(src, gtasa_dir) {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            log::warn!("{}", e);
+            match e {
+                LauncherError::AccessDenied(_) => {
+                    return Err("need_admin".to_string());
+                }
+                _ => return Err(e.to_string()),
+            }
+        }
+    }
 }
 
 async fn rpc_handler(
@@ -114,7 +124,7 @@ pub async fn initialize_rpc() -> Result<()> {
             .service(web::resource("/rpc/{method}").route(web::post().to(rpc_handler)))
     })
     .bind(format!("127.0.0.1:{}", RPC_PORT))
-        .map_err(|e| LauncherError::from(e))?
+    .map_err(|e| LauncherError::from(e))?
     .run()
     .await
     .map_err(|e| LauncherError::from(e))

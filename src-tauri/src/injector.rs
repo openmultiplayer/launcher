@@ -64,9 +64,12 @@ pub async fn run_samp(
             info!("[injector.rs] Process creation failed: {}", e);
 
             match e.raw_os_error() {
-                Some(ERROR_ELEVATION_REQUIRED) => {
-                    Err(LauncherError::AccessDenied("Unable to open game process".to_string()))
-                }
+                Some(ERROR_ELEVATION_REQUIRED) => Err(LauncherError::AccessDenied(
+                    "Unable to open game process".to_string(),
+                )),
+                Some(ERROR_ACCESS_DENIED) => Err(LauncherError::AccessDenied(
+                    "Unable to open game process".to_string(),
+                )),
                 _ => Err(LauncherError::Process(format!(
                     "Failed to spawn process: {}",
                     e
@@ -167,10 +170,19 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
         }
         Err(e) => {
             info!("[injector.rs] Failed to access process: {}", e);
-            Err(LauncherError::Process(format!(
-                "Failed to access process: {}",
-                e
-            )))
+
+            match e.raw_os_error() {
+                Some(ERROR_ELEVATION_REQUIRED) => Err(LauncherError::AccessDenied(
+                    "Unable to open game process".to_string(),
+                )),
+                Some(ERROR_ACCESS_DENIED) => Err(LauncherError::AccessDenied(
+                    "Unable to open game process".to_string(),
+                )),
+                _ => Err(LauncherError::Process(format!(
+                    "Failed to access process: {}",
+                    e
+                ))),
+            }
         }
     }
 }

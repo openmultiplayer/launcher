@@ -39,12 +39,13 @@ impl CliArgs {
 
         if let Some(ref gamepath) = self.gamepath {
             validation::validate_file_path(gamepath)?;
-            
+
             let gta_exe = format!("{}/{}", gamepath, GTA_SA_EXECUTABLE);
             if !std::path::Path::new(&gta_exe).exists() {
-                return Err(LauncherError::NotFound(
-                    format!("GTA San Andreas executable not found at: {}", gta_exe)
-                ));
+                return Err(LauncherError::NotFound(format!(
+                    "GTA San Andreas executable not found at: {}",
+                    gta_exe
+                )));
             }
         }
 

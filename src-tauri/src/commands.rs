@@ -1,4 +1,4 @@
-use crate::{injector, samp};
+use crate::{errors::LauncherError, injector, samp};
 use log::info;
 
 #[tauri::command]
@@ -12,9 +12,18 @@ pub async fn inject(
     password: &str,
     discord: bool,
 ) -> std::result::Result<(), String> {
-    injector::run_samp(name, ip, port, exe, dll, omp_file, password, discord)
-        .await
-        .map_err(|e| e.to_string())
+    match injector::run_samp(name, ip, port, exe, dll, omp_file, password, discord).await {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            log::warn!("{}", e);
+            match e {
+                LauncherError::AccessDenied(_) => {
+                    return Err("need_admin".to_string());
+                }
+                _ => return Err(e.to_string()),
+            }
+        }
+    }
 }
 
 #[tauri::command]
