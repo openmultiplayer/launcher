@@ -1,4 +1,21 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+
 import { useQuery } from "../../../../hooks/query";
 import { useGenericTempState } from "../../../../states/genericStates";
 import { usePersistentServers, useServers } from "../../../../states/servers";
@@ -6,19 +23,14 @@ import { sortAndSearchInServerList } from "../../../../utils/helpers";
 import { Server } from "../../../../utils/types";
 import List from "../List";
 import ServerItem from "./../Item";
-import { sc } from "../../../../utils/sizeScaler";
 
 const Favorites = () => {
   const { startQuery, stopQuery } = useQuery();
   const { favorites, updateInFavoritesList, reorderFavorites } = usePersistentServers();
   const { selected, setSelected } = useServers();
   const { searchData } = useGenericTempState();
-  
-  // Drag functionality state
-  const [draggedItem, setDraggedItem] = useState<{server: Server, index: number} | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-  const itemHeight = sc(39);
-  const listRef = useRef<any>(null);
+
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
     return () => {
@@ -48,88 +60,107 @@ const Favorites = () => {
     favorites,
   ]);
 
+  const isDraggable = useMemo(() => {
+    return searchData.query === "" &&
+      searchData.languages.length === 0 &&
+      !searchData.ompOnly &&
+      !searchData.nonEmpty &&
+      !searchData.unpassworded &&
+      searchData.sortPing === "none" &&
+      searchData.sortPlayer === "none" &&
+      searchData.sortName === "none" &&
+      searchData.sortMode === "none";
+  }, [searchData]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const onSelect = (server: Server) => {
     stopQuery();
     setSelected(server);
     startQuery(server, "favorites");
   };
 
-  const handleDragStart = (server: Server, index: number) => {
-    setDraggedItem({ server, index });
-    setDragOverIndex(index);
-  };
+  function handleDragStart(event: any) {
+    const { active } = event;
+    setActiveId(active.id);
+  }
 
-  const handleDragEnd = () => {
-    if (draggedItem && dragOverIndex !== null && draggedItem.index !== dragOverIndex) {
-      const draggedServer = draggedItem.server;
-      const targetServer = list[dragOverIndex];
-      
-      const originalDraggedIndex = favorites.findIndex(
-        (fav) => fav.ip === draggedServer.ip && fav.port === draggedServer.port
-      );
-      const originalTargetIndex = favorites.findIndex(
-        (fav) => fav.ip === targetServer.ip && fav.port === targetServer.port
-      );
-      
-      if (originalDraggedIndex !== -1 && originalTargetIndex !== -1) {
-        reorderFavorites(originalDraggedIndex, originalTargetIndex);
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = list.findIndex((server) => `${server.ip}:${server.port}` === active.id);
+      const newIndex = list.findIndex((server) => `${server.ip}:${server.port}` === over?.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const draggedServer = list[oldIndex];
+        const targetServer = list[newIndex];
+
+        const originalDraggedIndex = favorites.findIndex(
+          (fav) => fav.ip === draggedServer.ip && fav.port === draggedServer.port
+        );
+        const originalTargetIndex = favorites.findIndex(
+          (fav) => fav.ip === targetServer.ip && fav.port === targetServer.port
+        );
+
+        if (originalDraggedIndex !== -1 && originalTargetIndex !== -1) {
+          reorderFavorites(originalDraggedIndex, originalTargetIndex);
+        }
       }
     }
-    setDraggedItem(null);
-    setDragOverIndex(null);
-  };
 
-  const handleDragMove = (draggedIndex: number, y: number) => {
-    if (listRef.current && draggedItem) {
-      const listElement = listRef.current;
-      const listRect = listElement.getBoundingClientRect();
-      const relativeY = y - listRect.top;
-      const headerHeight = 26;
-      const adjustedY = relativeY - headerHeight;
-      let newHoverIndex = Math.floor(adjustedY / itemHeight);
-      newHoverIndex = Math.max(0, Math.min(newHoverIndex, list.length - 1));
-      
-      if (newHoverIndex !== draggedIndex && newHoverIndex !== dragOverIndex) {
-        setDragOverIndex(newHoverIndex);
-      }
-    }
-  };
+    setActiveId(null);
+  }
 
-  const isDraggable = useMemo(() => {
-    return searchData.query === "" && 
-           searchData.languages.length === 0 &&
-           !searchData.ompOnly &&
-           !searchData.nonEmpty &&
-           !searchData.unpassworded &&
-           searchData.sortPing === "none" &&
-           searchData.sortPlayer === "none" &&
-           searchData.sortName === "none" &&
-           searchData.sortMode === "none";
-  }, [searchData]);
+  const serverIds = list.map(server => `${server.ip}:${server.port}`);
 
   return (
-    <List
-      data={list}
-      listRef={listRef}
-      renderItem={(item, index) => (
-        <ServerItem
-          isSelected={
-            selected
-              ? selected.ip === item.ip && selected.port === item.port
-              : false
-          }
-          server={item}
-          index={index}
-          onSelect={(server) => onSelect(server)}
-          isDraggable={isDraggable}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          onDragMove={handleDragMove}
-          isDraggedOver={dragOverIndex === index}
-          isBeingDragged={draggedItem?.index === index}
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      modifiers={[
+        (args) => ({
+          ...args.transform,
+          x: 0,
+        })
+      ]}
+    >
+      <SortableContext
+        items={serverIds}
+        strategy={verticalListSortingStrategy}
+        disabled={!isDraggable}
+      >
+        <List
+          data={list}
+          renderItem={(item, index) => (
+            <ServerItem
+              key={`${item.ip}:${item.port}`}
+              isSelected={
+                selected
+                  ? selected.ip === item.ip && selected.port === item.port
+                  : false
+              }
+              server={item}
+              index={index}
+              onSelect={(server) => onSelect(server)}
+              isDraggable={isDraggable}
+              isBeingDragged={activeId === `${item.ip}:${item.port}`}
+            />
+          )}
         />
-      )}
-    />
+      </SortableContext>
+    </DndContext>
   );
 };
 

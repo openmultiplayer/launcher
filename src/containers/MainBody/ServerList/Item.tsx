@@ -1,6 +1,8 @@
 import { t } from "i18next";
-import { memo, useRef, useState } from "react";
-import { Pressable, StyleSheet, View, PanResponder } from "react-native";
+import { memo, useRef } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
@@ -16,10 +18,6 @@ interface IProps {
   isSelected?: boolean;
   onSelect?: (server: Server) => void;
   isDraggable?: boolean;
-  onDragStart?: (server: Server, index: number) => void;
-  onDragEnd?: () => void;
-  onDragMove?: (index: number, y: number) => void;
-  isDraggedOver?: boolean;
   isBeingDragged?: boolean;
 }
 
@@ -28,7 +26,6 @@ const ServerItem = memo((props: IProps) => {
     server,
     index,
     isDraggable = false,
-    isDraggedOver = false,
     isBeingDragged = false,
   } = props;
   const { theme, themeType } = useTheme();
@@ -36,76 +33,23 @@ const ServerItem = memo((props: IProps) => {
   const { showPrompt, setServer } = useJoinServerPrompt();
   const { show: showContextMenu } = useContextMenu();
 
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartTime = useRef(0);
-  const hasStartedDragging = useRef(false);
-
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => isDraggable,
-
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      if (!isDraggable) return false;
-
-      const distance = Math.sqrt(
-        gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy
-      );
-
-      if (hasStartedDragging.current) return true;
-
-      if (distance > 2) {
-        const isMainlyVertical =
-          Math.abs(gestureState.dy) > Math.abs(gestureState.dx) * 0.5;
-        return isMainlyVertical;
-      }
-
-      return false;
-    },
-
-    onPanResponderGrant: (evt) => {
-      if (isDraggable && props.onDragStart) {
-        hasStartedDragging.current = true;
-        setIsDragging(true);
-        document.body.style.cursor = "grabbing";
-        dragStartTime.current = Date.now();
-        props.onDragStart(server, index);
-
-        if (props.onDragMove) {
-          props.onDragMove(index, evt.nativeEvent.pageY);
-        }
-      }
-    },
-
-    onPanResponderMove: (evt) => {
-      if (isDraggable && hasStartedDragging.current && props.onDragMove) {
-        props.onDragMove(index, evt.nativeEvent.pageY);
-      }
-    },
-
-    onPanResponderRelease: () => {
-      if (isDraggable && hasStartedDragging.current) {
-        hasStartedDragging.current = false;
-        setIsDragging(false);
-        document.body.style.cursor = ""; // Add this
-        if (props.onDragEnd) {
-          props.onDragEnd();
-        }
-      }
-    },
-
-    onPanResponderTerminate: () => {
-      if (isDraggable && hasStartedDragging.current) {
-        hasStartedDragging.current = false;
-        setIsDragging(false);
-        document.body.style.cursor = ""; // Add this
-        if (props.onDragEnd) {
-          props.onDragEnd();
-        }
-      }
-    },
-
-    onShouldBlockNativeResponder: () =>
-      isDraggable && hasStartedDragging.current,
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: `${server.ip}:${server.port}`,
+    disabled: !isDraggable,
+    animateLayoutChanges: () => false,
   });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const onDoublePress = () => {
     setServer(server);
@@ -143,7 +87,7 @@ const ServerItem = memo((props: IProps) => {
   };
 
   const onPress = () => {
-    if (hasStartedDragging.current) return;
+    if (isDragging) return;
 
     var delta = new Date().getTime() - lastPressTime.current;
 
@@ -159,165 +103,157 @@ const ServerItem = memo((props: IProps) => {
   };
 
   return (
-    <View
-      style={[
-        styles.pressableContainer,
-        {
-          // // @ts-ignore
-          // cursor: isDragging || isDraggedOver ? "grabbing" : "default",
-          marginTop: 0,
-          opacity: isDragging || isBeingDragged ? 0.7 : 1,
-          transform: isDragging ? [{ translateY: -5 }] : [],
-          zIndex: isDragging ? 1000 : 1,
-        },
-      ]}
-      {...(isDraggable ? panResponder.panHandlers : {})}
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        opacity: isDragging || isBeingDragged ? 0.7 : 1,
+        zIndex: isDragging ? 1000 : 1,
+      }}
+      {...(isDraggable ? listeners : {})}
+      {...(isDraggable ? attributes : {})}
     >
-      {/* Drop indicator */}
-      {isDraggedOver && (
-        <View
-          style={{
-            height: 2,
-            backgroundColor: theme.primary,
-            width: "100%",
-            marginBottom: 2,
-          }}
-        />
-      )}
-
-      <Pressable
-        key={"server-item-" + index}
+      <View
         style={[
           styles.pressableContainer,
           {
-            // @ts-ignore
-            cursor: isDragging || isDraggedOver ? "grabbing" : "default",
+            marginTop: 0,
           },
         ]}
-        onPress={() => onPress()}
-        // @ts-ignore
-        onContextMenu={(e) => {
-          e.preventDefault();
-          showContextMenu({ x: e.clientX, y: e.clientY }, server);
-          return e;
-        }}
       >
-        <View style={styles.serverContainer}>
-          <View
-            style={[
-              styles.iconContainer,
-              {
-                backgroundColor: getServerStatusIconViewBackgroundColor(),
-                // @ts-ignore
-                userSelect: "none",
-              },
-            ]}
-          >
-            <Icon
-              svg
-              title={getServerStatusIconTitle()}
-              image={
-                server.hasPassword ? images.icons.locked : images.icons.unlocked
-              }
-              size={sc(20)}
-              color={getServerStatusIconColor()}
-            />
-          </View>
-          <View
-            id={
-              !props.isSelected
-                ? themeType === "dark"
-                  ? "server-list-item-dark"
-                  : "server-list-item-light"
-                : undefined
-            }
-            style={[
-              {
-                flexDirection: "row",
-                alignItems: "center",
-                flex: 1,
-                borderRadius: sc(5),
-              },
-              {
-                // borderWidth: props.isSelected ? 1 : 0,
-                borderColor: theme.primary,
-                backgroundColor: props.isSelected
-                  ? theme.primary + "7D"
-                  : undefined,
-              },
-            ]}
-          >
-            {server.usingOmp && (
-              <div
-                style={{
-                  filter: `drop-shadow(0 0 8px ${theme.primary}CC)`,
-                }}
-              >
-                <View
-                  style={[styles.iconContainer, { marginHorizontal: sc(3) }]}
-                >
-                  <Icon
-                    title={t("openmp_server")}
-                    image={images.icons.omp}
-                    size={sc(23)}
-                  />
-                </View>
-              </div>
-            )}
+        <Pressable
+          key={"server-item-" + index}
+          style={[
+            styles.pressableContainer,
+            {
+              // @ts-ignore
+              cursor: isDragging ? "grabbing" : isDraggable ? "grab" : "default",
+            },
+          ]}
+          onPress={() => onPress()}
+          // @ts-ignore
+          onContextMenu={(e) => {
+            e.preventDefault();
+            showContextMenu({ x: e.clientX, y: e.clientY }, server);
+            return e;
+          }}
+        >
+          <View style={styles.serverContainer}>
             <View
               style={[
-                styles.commonFieldContainer,
-                styles.hostNameContainer,
-                { paddingLeft: server.usingOmp ? 0 : sc(10) },
+                styles.iconContainer,
+                {
+                  backgroundColor: getServerStatusIconViewBackgroundColor(),
+                  // @ts-ignore
+                  userSelect: "none",
+                },
               ]}
             >
-              <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
-                {server.hostname}
-              </Text>
+              <Icon
+                svg
+                title={getServerStatusIconTitle()}
+                image={
+                  server.hasPassword ? images.icons.locked : images.icons.unlocked
+                }
+                size={sc(20)}
+                color={getServerStatusIconColor()}
+              />
             </View>
             <View
-              style={{
-                flex: 0.5,
-                minWidth: 300,
-                flexDirection: "row",
-                marginLeft: server.usingOmp ? -26 : 0,
-              }}
+              id={
+                !props.isSelected
+                  ? themeType === "dark"
+                    ? "server-list-item-dark"
+                    : "server-list-item-light"
+                  : undefined
+              }
+              style={[
+                {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  flex: 1,
+                  borderRadius: sc(5),
+                },
+                {
+                  borderColor: theme.primary,
+                  backgroundColor: props.isSelected
+                    ? theme.primary + "7D"
+                    : undefined,
+                },
+              ]}
             >
-              <View
-                style={[styles.commonFieldContainer, styles.pingFieldContainer]}
-              >
-                <Text style={{ fontSize: sc(17) }} color={theme.textSecondary}>
-                  {server.ping === 9999 ? "-" : server.ping}
-                </Text>
-              </View>
-              <View
-                style={[styles.commonFieldContainer, styles.gameModeContainer]}
-              >
-                <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
-                  {server.gameMode}
-                </Text>
-              </View>
+              {server.usingOmp && (
+                <div
+                  style={{
+                    filter: `drop-shadow(0 0 8px ${theme.primary}CC)`,
+                  }}
+                >
+                  <View
+                    style={[styles.iconContainer, { marginHorizontal: sc(3) }]}
+                  >
+                    <Icon
+                      title={t("openmp_server")}
+                      image={images.icons.omp}
+                      size={sc(23)}
+                    />
+                  </View>
+                </div>
+              )}
               <View
                 style={[
                   styles.commonFieldContainer,
-                  styles.playersFieldContainer,
+                  styles.hostNameContainer,
+                  { paddingLeft: server.usingOmp ? 0 : sc(10) },
                 ]}
               >
                 <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
-                  {server.playerCount}
-                  <Text
-                    style={{ fontSize: sc(17) }}
-                    color={theme.textPrimary + "AA"}
-                  >
-                    /{server.maxPlayers}
-                  </Text>
+                  {server.hostname}
                 </Text>
+              </View>
+              <View
+                style={{
+                  flex: 0.5,
+                  minWidth: 300,
+                  flexDirection: "row",
+                  marginLeft: server.usingOmp ? -26 : 0,
+                }}
+              >
+                <View
+                  style={[styles.commonFieldContainer, styles.pingFieldContainer]}
+                >
+                  <Text style={{ fontSize: sc(17) }} color={theme.textSecondary}>
+                    {server.ping === 9999 ? "-" : server.ping}
+                  </Text>
+                </View>
+                <View
+                  style={[styles.commonFieldContainer, styles.gameModeContainer]}
+                >
+                  <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
+                    {server.gameMode}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.commonFieldContainer,
+                    styles.playersFieldContainer,
+                  ]}
+                >
+                  <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
+                    {server.playerCount}
+                    <Text
+                      style={{ fontSize: sc(17) }}
+                      color={theme.textPrimary + "AA"}
+                    >
+                      /{server.maxPlayers}
+                    </Text>
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </Pressable>
-    </View>
+        </Pressable>
+      </View>
+    </div>
   );
 });
 
