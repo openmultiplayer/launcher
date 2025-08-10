@@ -1,11 +1,10 @@
 import { t } from "i18next";
 import { memo, useRef } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import Icon from "../../../components/Icon";
 import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
+import { useDraggableItem } from "../../../hooks/draggable";
 import { useContextMenu } from "../../../states/contextMenu";
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { useTheme } from "../../../states/theme";
@@ -22,38 +21,32 @@ interface IProps {
 }
 
 const ServerItem = memo((props: IProps) => {
-  const {
-    server,
-    index,
-    isDraggable = false,
-    isBeingDragged = false,
-  } = props;
+  const { server, index, isDraggable = false, isBeingDragged = false } = props;
   const { theme, themeType } = useTheme();
   const lastPressTime = useRef(0);
   const { showPrompt, setServer } = useJoinServerPrompt();
   const { show: showContextMenu } = useContextMenu();
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: `${server.ip}:${server.port}`,
-    disabled: !isDraggable,
-    animateLayoutChanges: () => false,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  const { attributes, listeners, setNodeRef, isDragging, style } =
+    useDraggableItem(`${server.ip}:${server.port}`, isDraggable);
 
   const onDoublePress = () => {
     setServer(server);
     showPrompt(true);
+  };
+
+  const onPress = () => {
+    if (isDragging) return;
+
+    const delta = Date.now() - lastPressTime.current;
+
+    if (delta < 500) {
+      lastPressTime.current = 0;
+      onDoublePress();
+    } else {
+      lastPressTime.current = Date.now();
+      props.onSelect?.(server);
+    }
   };
 
   const getServerStatusIconColor = () => {
@@ -86,22 +79,6 @@ const ServerItem = memo((props: IProps) => {
     }
   };
 
-  const onPress = () => {
-    if (isDragging) return;
-
-    var delta = new Date().getTime() - lastPressTime.current;
-
-    if (delta < 500) {
-      lastPressTime.current = 0;
-      onDoublePress();
-    } else {
-      lastPressTime.current = new Date().getTime();
-      if (props.onSelect) {
-        props.onSelect(server);
-      }
-    }
-  };
-
   return (
     <div
       ref={setNodeRef}
@@ -127,7 +104,7 @@ const ServerItem = memo((props: IProps) => {
             styles.pressableContainer,
             {
               // @ts-ignore
-              cursor: isDragging ? "grabbing" : isDraggable ? "grab" : "default",
+              cursor: isDragging ? "grabbing" : "default",
             },
           ]}
           onPress={() => onPress()}
@@ -153,7 +130,9 @@ const ServerItem = memo((props: IProps) => {
                 svg
                 title={getServerStatusIconTitle()}
                 image={
-                  server.hasPassword ? images.icons.locked : images.icons.unlocked
+                  server.hasPassword
+                    ? images.icons.locked
+                    : images.icons.unlocked
                 }
                 size={sc(20)}
                 color={getServerStatusIconColor()}
@@ -219,14 +198,23 @@ const ServerItem = memo((props: IProps) => {
                 }}
               >
                 <View
-                  style={[styles.commonFieldContainer, styles.pingFieldContainer]}
+                  style={[
+                    styles.commonFieldContainer,
+                    styles.pingFieldContainer,
+                  ]}
                 >
-                  <Text style={{ fontSize: sc(17) }} color={theme.textSecondary}>
+                  <Text
+                    style={{ fontSize: sc(17) }}
+                    color={theme.textSecondary}
+                  >
                     {server.ping === 9999 ? "-" : server.ping}
                   </Text>
                 </View>
                 <View
-                  style={[styles.commonFieldContainer, styles.gameModeContainer]}
+                  style={[
+                    styles.commonFieldContainer,
+                    styles.gameModeContainer,
+                  ]}
                 >
                   <Text style={{ fontSize: sc(17) }} color={theme.textPrimary}>
                     {server.gameMode}
