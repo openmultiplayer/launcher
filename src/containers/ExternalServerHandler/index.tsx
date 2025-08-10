@@ -18,7 +18,10 @@ import { useTheme } from "../../states/theme";
 import { startGame } from "../../utils/game";
 import { sc } from "../../utils/sizeScaler";
 import { Server } from "../../utils/types";
-import { validateServerAddress } from "../../utils/validation";
+import {
+  isValidDomain,
+  validateServerAddressIPv4,
+} from "../../utils/validation";
 
 const ExternalServerHandler = () => {
   const [visible, showModal] = useState(false);
@@ -101,7 +104,10 @@ const ExternalServerHandler = () => {
         serverInfo.port = parseInt(data[1]);
         serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
       } else {
-        if (validateServerAddress(serverAddress)) {
+        if (
+          validateServerAddressIPv4(serverAddress) ||
+          isValidDomain(serverAddress)
+        ) {
           serverInfo.ip = serverAddress;
           serverInfo.port = 7777;
           serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
@@ -139,7 +145,10 @@ const ExternalServerHandler = () => {
         serverInfo.port = parseInt(data[1]);
         serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
       } else {
-        if (validateServerAddress(serverAddress)) {
+        if (
+          validateServerAddressIPv4(serverAddress) ||
+          isValidDomain(serverAddress)
+        ) {
           serverInfo.ip = serverAddress;
           serverInfo.port = 7777;
           serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;

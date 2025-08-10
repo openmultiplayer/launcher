@@ -38,16 +38,16 @@ const SettingsModal = () => {
     { label: t("settings_advanced_tab_title"), type: "advanced" },
   ];
 
-  if (!visible) {
-    return null;
-  }
-
   const renderTab = () => {
     if (selectedTab === "general") return <General />;
     else if (selectedTab === "languages") return <Languages />;
     else if (selectedTab === "advanced") return <Advanced />;
     else return null;
   };
+
+  if (!visible) {
+    return null;
+  }
 
   return (
     <StaticModal onDismiss={() => hide()} key={"settings-" + language}>
