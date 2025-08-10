@@ -174,15 +174,12 @@ const SearchBar = memo<SearchBarProps>(({ onChange }) => {
         />
         {showFiltersBadge ? (
           <div
-            // @ts-ignore
-            style={[
-              styles.badgeContainer,
-              {
-                filter: `drop-shadow(0 0 5px ${theme.primary}${
-                  themeType === "dark" ? "CC" : "FF"
-                })`,
-              },
-            ]}
+            style={{
+              ...styles.badgeContainer,
+              filter: `drop-shadow(0 0 5px ${theme.primary}${
+                themeType === "dark" ? "CC" : "FF"
+              })`,
+            }}
           >
             <View style={[styles.badge, { backgroundColor: theme.primary }]} />
           </div>
