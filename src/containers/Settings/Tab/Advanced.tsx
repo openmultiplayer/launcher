@@ -1,11 +1,14 @@
 import { t } from "i18next";
-import { Pressable, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 import CheckBox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
 import { useGenericPersistentState } from "../../../states/genericStates";
 import { useTheme } from "../../../states/theme";
+import {
+  exportFavoriteListFile,
+  importFavoriteListFile,
+} from "../../../utils/game";
 import { sc } from "../../../utils/sizeScaler";
-import { exportFavoriteListFile, importFavoriteListFile } from "../../../utils/game";
 
 const Advanced = () => {
   const { theme } = useTheme();
@@ -37,36 +40,39 @@ const Advanced = () => {
             toggleDiscordStatus(!shouldUpdateDiscordStatus);
           }}
         >
-          <CheckBox value={shouldUpdateDiscordStatus} style={{ marginRight: sc(7) }} />
+          <CheckBox
+            value={shouldUpdateDiscordStatus}
+            style={{ marginRight: sc(7) }}
+          />
           <Text semibold color={theme.textPrimary} size={2}>
             {`${t("settings_advanced_discord_status")} ${t(
               "settings_advanced_discord_status_requires_restart"
             )}`}
           </Text>
         </Pressable>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[
-            styles.importButton, 
-            { 
+            styles.importButton,
+            {
               backgroundColor: `${theme.primary}BB`,
-              borderColor: theme.primary
-            }
-          ]} 
+              borderColor: theme.primary,
+            },
+          ]}
           onPress={() => exportFavoriteListFile()}
         >
           <Text semibold color={"#FFFFFF"} size={2}>
             {t("settings_export_favorite_list_file")}
           </Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={[
-            styles.importButton, 
-            { 
+            styles.importButton,
+            {
               backgroundColor: `${theme.primary}BB`,
-              borderColor: theme.primary
-            }
-          ]} 
+              borderColor: theme.primary,
+            },
+          ]}
           onPress={() => importFavoriteListFile()}
         >
           <Text semibold color={"#FFFFFF"} size={2}>

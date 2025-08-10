@@ -8,8 +8,8 @@ import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { usePersistentServers, useServers } from "../../states/servers";
 import { useTheme } from "../../states/theme";
-import { validateWebUrl } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
+import { validateWebUrl } from "../../utils/validation";
 import Chart from "../PingChart";
 
 interface PropInfoProps {
@@ -23,7 +23,16 @@ interface PropInfoProps {
   buttonColor?: string;
 }
 
-const PropInfo = ({ glow, text, icon, iconSize, iconTitle, buttonText, buttonOnPress, buttonColor }: PropInfoProps) => {
+const PropInfo = ({
+  glow,
+  text,
+  icon,
+  iconSize,
+  iconTitle,
+  buttonText,
+  buttonOnPress,
+  buttonColor,
+}: PropInfoProps) => {
   const { theme } = useTheme();
 
   const iconComponent = glow ? (
@@ -31,19 +40,25 @@ const PropInfo = ({ glow, text, icon, iconSize, iconTitle, buttonText, buttonOnP
       <Icon title={iconTitle} image={icon} size={iconSize} />
     </div>
   ) : (
-    <Icon title={iconTitle} image={icon} size={iconSize} color={theme.textSecondary} />
+    <Icon
+      title={iconTitle}
+      image={icon}
+      size={iconSize}
+      color={theme.textSecondary}
+    />
   );
 
   return (
     <View style={styles.propInfoContainer}>
-      <View style={[styles.iconWrapper, { backgroundColor: theme.itemBackgroundColor }]}>
+      <View
+        style={[
+          styles.iconWrapper,
+          { backgroundColor: theme.itemBackgroundColor },
+        ]}
+      >
         {iconComponent}
       </View>
-      <Text
-        semibold
-        color={theme.textPrimary}
-        style={styles.propInfoText}
-      >
+      <Text semibold color={theme.textPrimary} style={styles.propInfoText}>
         {text}
       </Text>
       {buttonText && (
@@ -105,7 +120,9 @@ const BottomBar = () => {
               text={`${server.ip}:${server.port}`}
               buttonText={t("copy")}
               buttonColor={theme.primary}
-              buttonOnPress={() => Clipboard.setString(`${server.ip}:${server.port}`)}
+              buttonOnPress={() =>
+                Clipboard.setString(`${server.ip}:${server.port}`)
+              }
             />
           </View>
           <PropInfo
@@ -133,11 +150,7 @@ const BottomBar = () => {
                 size={sc(16)}
                 color="#FFFFFF"
               />
-              <Text
-                semibold
-                color="#FFFFFF"
-                style={styles.actionButtonText}
-              >
+              <Text semibold color="#FFFFFF" style={styles.actionButtonText}>
                 {t("join_discord")}
               </Text>
             </TouchableOpacity>
@@ -165,11 +178,7 @@ const BottomBar = () => {
               size={sc(16)}
               color="#FF0000"
             />
-            <Text
-              semibold
-              color="#FFFFFF"
-              style={styles.actionButtonText}
-            >
+            <Text semibold color="#FFFFFF" style={styles.actionButtonText}>
               {favorited ? t("remove_from_favorites") : t("add_to_favorites")}
             </Text>
           </TouchableOpacity>

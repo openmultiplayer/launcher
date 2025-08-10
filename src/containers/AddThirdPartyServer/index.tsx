@@ -1,7 +1,8 @@
 import { clipboard } from "@tauri-apps/api";
 import { t } from "i18next";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
@@ -14,9 +15,9 @@ import { images } from "../../constants/images";
 import { useAddThirdPartyServerModal } from "../../states/addThirdPartyServerModal";
 import { usePersistentServers } from "../../states/servers";
 import { useTheme } from "../../states/theme";
-import { validateServerAddress } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
 import { Server } from "../../utils/types";
+import { validateServerAddress } from "../../utils/validation";
 
 const AddThirdPartyServerModal = () => {
   const { visible, showAddThirdPartyServer } = useAddThirdPartyServerModal();
@@ -39,7 +40,7 @@ const AddThirdPartyServerModal = () => {
     return null;
   }
 
-  const addServer = () => {
+  const addServer = useCallback(() => {
     const serverInfo: Server = {
       ip: "",
       port: 0,
@@ -75,33 +76,31 @@ const AddThirdPartyServerModal = () => {
       addToFavorites(serverInfo);
       showAddThirdPartyServer(false);
     }
-  };
+  }, [serverAddress, addToFavorites, showAddThirdPartyServer]);
+
+  const dynamicStyles = useMemo(
+    () => ({
+      container: {
+        top: height / 2 - 90 - 25,
+        left: width / 2 - 160,
+        backgroundColor: theme.secondary,
+      },
+      textInput: {
+        color: theme.textPrimary,
+        backgroundColor: theme.textInputBackgroundColor,
+      },
+      addButton: {
+        backgroundColor: theme.primary,
+      },
+    }),
+    [height, width, theme]
+  );
 
   return (
     <StaticModal onDismiss={() => showAddThirdPartyServer(false)}>
-      <View
-        style={{
-          position: "absolute",
-          top: height / 2 - 90 - 25, // titlebar height is 25
-          left: width / 2 - 160,
-          height: 180,
-          width: 320,
-          borderRadius: sc(10),
-          backgroundColor: theme.secondary,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 0,
-          },
-          shadowOpacity: 0.9,
-          shadowRadius: 10,
-          alignItems: "center",
-          overflow: "hidden",
-          paddingVertical: sc(11),
-        }}
-      >
+      <View style={[styles.container, dynamicStyles.container]}>
         <Icon image={images.icons.favorite} size={30} />
-        <View style={{ width: 300, marginTop: sc(10) }}>
+        <View style={styles.descriptionContainer}>
           <Text color={theme.textPrimary} size={2}>
             {t("add_server_modal_description_1")}
           </Text>
@@ -113,46 +112,20 @@ const AddThirdPartyServerModal = () => {
           placeholder={"IP:Port"}
           placeholderTextColor={theme.textPlaceholder}
           value={serverAddress}
-          onSubmitEditing={() => addServer()}
-          onChangeText={(text) => setServerAddress(text)}
-          style={{
-            fontFamily: "Proxima Nova Regular",
-            fontSize: sc(17),
-            color: theme.textPrimary,
-            paddingHorizontal: sc(10),
-            marginTop: sc(10),
-            width: 300,
-            backgroundColor: theme.textInputBackgroundColor,
-            height: sc(38),
-            borderRadius: sc(5),
-            // @ts-ignore
-            outlineStyle: "none",
-          }}
+          onSubmitEditing={addServer}
+          onChangeText={setServerAddress}
+          style={[styles.textInput, dynamicStyles.textInput]}
         />
         <TouchableOpacity
-          style={{
-            width: 300,
-            height: sc(38),
-            marginTop: sc(10),
-            backgroundColor: theme.primary,
-            borderRadius: sc(5),
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => addServer()}
+          style={[styles.addButton, dynamicStyles.addButton]}
+          onPress={addServer}
         >
           <Text semibold color={"#FFFFFF"} size={2}>
             {t("add")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={{
-            position: "absolute",
-            top: sc(15),
-            right: sc(15),
-            height: sc(20),
-            width: sc(20),
-          }}
+          style={styles.closeButton}
           onPress={() => showAddThirdPartyServer(false)}
         >
           <Icon
@@ -166,13 +139,53 @@ const AddThirdPartyServerModal = () => {
   );
 };
 
-// const styles = StyleSheet.create({
-//   app: {
-//     // @ts-ignore
-//     height: "100vh",
-//     // @ts-ignore
-//     width: "100vw",
-//   },
-// });
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    height: 180,
+    width: 320,
+    borderRadius: sc(10),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    alignItems: "center",
+    overflow: "hidden",
+    paddingVertical: sc(11),
+  },
+  descriptionContainer: {
+    width: 300,
+    marginTop: sc(10),
+  },
+  textInput: {
+    fontFamily: "Proxima Nova Regular",
+    fontSize: sc(17),
+    paddingHorizontal: sc(10),
+    marginTop: sc(10),
+    width: 300,
+    height: sc(38),
+    borderRadius: sc(5),
+    // @ts-ignore
+    outlineStyle: "none",
+  },
+  addButton: {
+    width: 300,
+    height: sc(38),
+    marginTop: sc(10),
+    borderRadius: sc(5),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    top: sc(15),
+    right: sc(15),
+    height: sc(20),
+    width: sc(20),
+  },
+});
 
 export default AddThirdPartyServerModal;

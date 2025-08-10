@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+} from "@dnd-kit/sortable";
 
 import { useQuery } from "../../../../hooks/query";
 import { useGenericTempState } from "../../../../states/genericStates";
@@ -26,7 +26,8 @@ import ServerItem from "./../Item";
 
 const Favorites = () => {
   const { startQuery, stopQuery } = useQuery();
-  const { favorites, updateInFavoritesList, reorderFavorites } = usePersistentServers();
+  const { favorites, updateInFavoritesList, reorderFavorites } =
+    usePersistentServers();
   const { selected, setSelected } = useServers();
   const { searchData } = useGenericTempState();
 
@@ -50,17 +51,19 @@ const Favorites = () => {
   }, [favorites, searchData]);
 
   const isDraggable = useMemo(() => {
-    const hasActiveFilters = searchData.query !== "" ||
+    const hasActiveFilters =
+      searchData.query !== "" ||
       searchData.languages.length > 0 ||
       searchData.ompOnly ||
       searchData.nonEmpty ||
       searchData.unpassworded;
-      
-    const hasActiveSorting = searchData.sortPing !== "none" ||
+
+    const hasActiveSorting =
+      searchData.sortPing !== "none" ||
       searchData.sortPlayer !== "none" ||
       searchData.sortName !== "none" ||
       searchData.sortMode !== "none";
-      
+
     return !hasActiveFilters && !hasActiveSorting;
   }, [searchData]);
 
@@ -90,15 +93,20 @@ const Favorites = () => {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = list.findIndex((server) => `${server.ip}:${server.port}` === active.id);
-      const newIndex = list.findIndex((server) => `${server.ip}:${server.port}` === over?.id);
+      const oldIndex = list.findIndex(
+        (server) => `${server.ip}:${server.port}` === active.id
+      );
+      const newIndex = list.findIndex(
+        (server) => `${server.ip}:${server.port}` === over?.id
+      );
 
       if (oldIndex !== -1 && newIndex !== -1) {
         const draggedServer = list[oldIndex];
         const targetServer = list[newIndex];
 
         const originalDraggedIndex = favorites.findIndex(
-          (fav) => fav.ip === draggedServer.ip && fav.port === draggedServer.port
+          (fav) =>
+            fav.ip === draggedServer.ip && fav.port === draggedServer.port
         );
         const originalTargetIndex = favorites.findIndex(
           (fav) => fav.ip === targetServer.ip && fav.port === targetServer.port
@@ -113,7 +121,7 @@ const Favorites = () => {
     setActiveId(null);
   }
 
-  const serverIds = list.map(server => `${server.ip}:${server.port}`);
+  const serverIds = list.map((server) => `${server.ip}:${server.port}`);
 
   return (
     <DndContext
@@ -125,7 +133,7 @@ const Favorites = () => {
         (args) => ({
           ...args.transform,
           x: 0,
-        })
+        }),
       ]}
     >
       <SortableContext

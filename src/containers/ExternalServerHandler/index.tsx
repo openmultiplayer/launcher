@@ -1,8 +1,13 @@
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 import { t } from "i18next";
-import { useEffect, useState } from "react";
-import { TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import Icon from "../../components/Icon";
 import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
@@ -11,9 +16,9 @@ import { usePersistentServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
 import { startGame } from "../../utils/game";
-import { validateServerAddress } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
 import { Server } from "../../utils/types";
+import { validateServerAddress } from "../../utils/validation";
 
 const ExternalServerHandler = () => {
   const [visible, showModal] = useState(false);
@@ -70,7 +75,7 @@ const ExternalServerHandler = () => {
     return null;
   }
 
-  const addServer = () => {
+  const addServer = useCallback(() => {
     const serverInfo: Server = {
       ip: "",
       port: 0,
@@ -106,9 +111,9 @@ const ExternalServerHandler = () => {
       addToFavorites(serverInfo);
       showModal(false);
     }
-  };
+  }, [serverAddress, addToFavorites]);
 
-  const joinServer = () => {
+  const joinServer = useCallback(() => {
     const serverInfo: Server = {
       ip: "",
       port: 0,
@@ -144,32 +149,29 @@ const ExternalServerHandler = () => {
       startGame(serverInfo, nickName, gtasaPath, "");
       showModal(false);
     }
-  };
+  }, [serverAddress, nickName, gtasaPath]);
+
+  const dynamicStyles = useMemo(
+    () => ({
+      container: {
+        top: height / 2 - 90 - 25,
+        left: width / 2 - 160,
+        backgroundColor: theme.secondary,
+      },
+      serverAddressText: {
+        backgroundColor: theme.textInputBackgroundColor,
+      },
+      button: {
+        backgroundColor: theme.primary,
+      },
+    }),
+    [height, width, theme]
+  );
 
   return (
     <StaticModal onDismiss={() => showModal(false)}>
-      <View
-        style={{
-          position: "absolute",
-          top: height / 2 - 90 - 25, // titlebar height is 25
-          left: width / 2 - 160,
-          height: 135,
-          width: 320,
-          borderRadius: sc(10),
-          backgroundColor: theme.secondary,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 0,
-          },
-          shadowOpacity: 0.9,
-          shadowRadius: 10,
-          alignItems: "center",
-          overflow: "hidden",
-          paddingVertical: sc(11),
-        }}
-      >
-        <View style={{ width: 300, marginTop: sc(2) }}>
+      <View style={[styles.container, dynamicStyles.container]}>
+        <View style={styles.titleContainer}>
           <Text color={theme.textPrimary} size={4} bold>
             {t("add_or_play_external_server")}
           </Text>
@@ -178,52 +180,22 @@ const ExternalServerHandler = () => {
         <Text
           size={3}
           color={theme.textPrimary}
-          style={{
-            textAlign: "center",
-            paddingVertical: sc(10),
-            paddingHorizontal: sc(10),
-            marginTop: sc(10),
-            width: 300,
-            backgroundColor: theme.textInputBackgroundColor,
-            borderRadius: sc(5),
-          }}
+          style={[styles.serverAddressText, dynamicStyles.serverAddressText]}
         >
           {serverAddress}
         </Text>
-        <View
-          style={{
-            width: 300,
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
+        <View style={styles.buttonsContainer}>
           <TouchableOpacity
-            style={{
-              width: 147,
-              height: sc(38),
-              marginTop: sc(10),
-              backgroundColor: theme.primary,
-              borderRadius: sc(5),
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => addServer()}
+            style={[styles.button, dynamicStyles.button]}
+            onPress={addServer}
           >
             <Text semibold color={"#FFFFFF"} size={2}>
               {t("add")}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{
-              width: 147,
-              height: sc(38),
-              marginTop: sc(10),
-              backgroundColor: theme.primary,
-              borderRadius: sc(5),
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => joinServer()}
+            style={[styles.button, dynamicStyles.button]}
+            onPress={joinServer}
           >
             <Text semibold color={"#FFFFFF"} size={2}>
               {t("play")}
@@ -232,13 +204,7 @@ const ExternalServerHandler = () => {
         </View>
 
         <TouchableOpacity
-          style={{
-            position: "absolute",
-            top: sc(15),
-            right: sc(15),
-            height: sc(20),
-            width: sc(20),
-          }}
+          style={styles.closeButton}
           onPress={() => showModal(false)}
         >
           <Icon
@@ -251,5 +217,56 @@ const ExternalServerHandler = () => {
     </StaticModal>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    height: 135,
+    width: 320,
+    borderRadius: sc(10),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    alignItems: "center",
+    overflow: "hidden",
+    paddingVertical: sc(11),
+  },
+  titleContainer: {
+    width: 300,
+    marginTop: sc(2),
+  },
+  serverAddressText: {
+    textAlign: "center",
+    paddingVertical: sc(10),
+    paddingHorizontal: sc(10),
+    marginTop: sc(10),
+    width: 300,
+    borderRadius: sc(5),
+  },
+  buttonsContainer: {
+    width: 300,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    width: 147,
+    height: sc(38),
+    marginTop: sc(10),
+    borderRadius: sc(5),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    top: sc(15),
+    right: sc(15),
+    height: sc(20),
+    width: sc(20),
+  },
+});
 
 export default ExternalServerHandler;

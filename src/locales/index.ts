@@ -1,34 +1,74 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import Arabic from "./translations/ar";
-import Bosnian from "./translations/bs";
+
+// Lazy load translations to improve initial bundle size
+const loadTranslation = (lang: string) => {
+  switch (lang) {
+    case "ar":
+      return import("./translations/ar");
+    case "bs":
+      return import("./translations/bs");
+    case "en":
+      return import("./translations/en");
+    case "es":
+      return import("./translations/es");
+    case "fa":
+      return import("./translations/fa");
+    case "fil":
+      return import("./translations/fil");
+    case "fr":
+      return import("./translations/fr");
+    case "de":
+      return import("./translations/de");
+    case "hi":
+      return import("./translations/hi");
+    case "hu":
+      return import("./translations/hu");
+    case "id":
+      return import("./translations/id");
+    case "it":
+      return import("./translations/it");
+    case "lt":
+      return import("./translations/lt");
+    case "pl":
+      return import("./translations/pl");
+    case "pt":
+      return import("./translations/pt");
+    case "ro":
+      return import("./translations/ro");
+    case "ru":
+      return import("./translations/ru");
+    case "sr":
+      return import("./translations/sr");
+    case "tr":
+      return import("./translations/tr");
+    case "by":
+      return import("./translations/by");
+    case "cz":
+      return import("./translations/cz");
+    case "zh-CN":
+      return import("./translations/zh-CN");
+    case "zh-TW":
+      return import("./translations/zh-TW");
+    case "sn":
+      return import("./translations/sn");
+    case "vi":
+      return import("./translations/vi");
+    case "ta":
+      return import("./translations/ta");
+    case "ua":
+      return import("./translations/ua");
+    case "ge":
+      return import("./translations/ge");
+    case "fi":
+      return import("./translations/fi");
+    default:
+      return import("./translations/en");
+  }
+};
+
+// Load English by default (for SSR and fallback)
 import English from "./translations/en";
-import Spanish from "./translations/es";
-import Farsi from "./translations/fa";
-import Filipino from "./translations/fil";
-import French from "./translations/fr";
-import German from "./translations/de";
-import Hindi from "./translations/hi";
-import Hungarian from "./translations/hu";
-import Indonesian from "./translations/id";
-import Italian from "./translations/it";
-import Lithuanian from "./translations/lt";
-import Polish from "./translations/pl";
-import Portuguese from "./translations/pt";
-import Romanian from "./translations/ro";
-import Russian from "./translations/ru";
-import Serbian from "./translations/sr";
-import Turkish from "./translations/tr";
-import Belarussian from "./translations/by";
-import Czech from "./translations/cz";
-import SChinese from "./translations/zh-CN";
-import TChinese from "./translations/zh-TW";
-import Sindhi from "./translations/sn";
-import Vietnamese from "./translations/vi";
-import Tamil from "./translations/ta";
-import Ukrainian from "./translations/ua";
-import Georgian from "./translations/ge";
-import Finnish from "./translations/fi";
 
 export type LanguageType =
   | "en"
@@ -61,177 +101,139 @@ export type LanguageType =
   | "ge"
   | "fi";
 
-export const getLanguages = (): {
-  [x: string]: {
-    label: string;
-    type: LanguageType;
-    translations: { [x: string]: string };
-  };
-} => {
-  return {
-    en: {
-      label: "English",
-      type: "en",
-      translations: English,
-    },
-    ru: {
-      label: "Русский",
-      type: "ru",
-      translations: Russian,
-    },
-    es: {
-      label: "Español",
-      type: "es",
-      translations: Spanish,
-    },
-    ro: {
-      label: "Română",
-      type: "ro",
-      translations: Romanian,
-    },
-    id: {
-      label: "Bahasa Indonesia",
-      type: "id",
-      translations: Indonesian,
-    },
-    fil: {
-      label: "Filipino",
-      type: "fil",
-      translations: Filipino,
-    },
-    fr: {
-      label: "Français",
-      type: "fr",
-      translations: French,
-    },
-    it: {
-      label: "Italiano",
-      type: "it",
-      translations: Italian,
-    },
-    lt: {
-      label: "Lietuvių",
-      type: "lt",
-      translations: Lithuanian,
-    },
-    hu: {
-      label: "Magyar",
-      type: "hu",
-      translations: Hungarian,
-    },
-    pt: {
-      label: "Português",
-      type: "pt",
-      translations: Portuguese,
-    },
-    fa: {
-      label: "فارسی",
-      type: "fa",
-      translations: Farsi,
-    },
-    ar: {
-      label: "العربية",
-      type: "ar",
-      translations: Arabic,
-    },
-    hi: {
-      label: "हिंदी",
-      type: "hi",
-      translations: Hindi,
-    },
-    pl: {
-      label: "Polski",
-      type: "pl",
-      translations: Polish,
-    },
-    bs: {
-      label: "Bosanski",
-      type: "bs",
-      translations: Bosnian,
-    },
-    tr: {
-      label: "Türkçe",
-      type: "tr",
-      translations: Turkish,
-    },
-    de: {
-      label: "Deutsch",
-      type: "de",
-      translations: German,
-    },
-    by: {
-      label: "Беларускі",
-      type: "by",
-      translations: Belarussian,
-    },
-    cz: {
-      label: "Česky",
-      type: "cz",
-      translations: Czech,
-    },
-    "zh-CN": {
-      label: "简体中文",
-      type: "zh-CN",
-      translations: SChinese,
-    },
-    "zh-TW": {
-      label: "繁體中文",
-      type: "zh-TW",
-      translations: TChinese,
-    },
-    "sn": {
-      label: "سنڌي",
-      type: "sn",
-      translations: Sindhi,
-    },
-    "vi": {
-      label: "Tiếng Việt",
-      type: "vi",
-      translations: Vietnamese,
-    },
-    "ta": {
-      label: "தமிழ்",
-      type: "ta",
-      translations: Tamil,
-    },
-    "ua": {
-      label: "Українська",
-      type: "ua",
-      translations: Ukrainian,
-    },
-    "ge": {
-      label: "ქართული",
-      type: "ge",
-      translations: Georgian,
-    },
-    "sr": {
-      label: "Српски",
-      type: "sr",
-      translations: Serbian,
-    },
-    fi: {
-      label: "Suomi",
-      type: "fi",
-      translations: Finnish,
-    }
-  };
+interface LanguageResource {
+  label: string;
+  type: LanguageType;
+  translations: { [key: string]: string };
+}
+
+// Language metadata (always loaded for UI purposes)
+const LANGUAGE_METADATA: Record<
+  LanguageType,
+  Omit<LanguageResource, "translations">
+> = {
+  en: { label: "English", type: "en" },
+  ru: { label: "Русский", type: "ru" },
+  es: { label: "Español", type: "es" },
+  ro: { label: "Română", type: "ro" },
+  id: { label: "Bahasa Indonesia", type: "id" },
+  fil: { label: "Filipino", type: "fil" },
+  fr: { label: "Français", type: "fr" },
+  it: { label: "Italiano", type: "it" },
+  lt: { label: "Lietuvių", type: "lt" },
+  hu: { label: "Magyar", type: "hu" },
+  pt: { label: "Português", type: "pt" },
+  fa: { label: "فارسی", type: "fa" },
+  ar: { label: "العربية", type: "ar" },
+  hi: { label: "हिंदी", type: "hi" },
+  pl: { label: "Polski", type: "pl" },
+  bs: { label: "Bosanski", type: "bs" },
+  tr: { label: "Türkçe", type: "tr" },
+  de: { label: "Deutsch", type: "de" },
+  by: { label: "Беларускі", type: "by" },
+  cz: { label: "Česky", type: "cz" },
+  "zh-CN": { label: "简体中文", type: "zh-CN" },
+  "zh-TW": { label: "繁體中文", type: "zh-TW" },
+  sn: { label: "سنڌي", type: "sn" },
+  vi: { label: "Tiếng Việt", type: "vi" },
+  ta: { label: "தமிழ்", type: "ta" },
+  ua: { label: "Українська", type: "ua" },
+  ge: { label: "ქართული", type: "ge" },
+  sr: { label: "Српски", type: "sr" },
+  fi: { label: "Suomi", type: "fi" },
 };
 
-i18n.use(initReactI18next).init({
-  // we init with resources
-  resources: getLanguages(),
-  fallbackLng: "en",
-  debug: true,
+// Cache for loaded translations
+const translationCache = new Map<LanguageType, { [key: string]: string }>();
 
-  // have a common namespace used around the full app
+export const getLanguageMetadata = () => LANGUAGE_METADATA;
+
+export const getLanguages = (): Record<string, LanguageResource> => {
+  const result: Record<string, LanguageResource> = {};
+
+  // Load only English translations initially
+  result.en = {
+    ...LANGUAGE_METADATA.en,
+    translations: English,
+  };
+
+  // Other languages will be loaded on demand
+  for (const [key, meta] of Object.entries(LANGUAGE_METADATA)) {
+    if (key !== "en") {
+      result[key] = {
+        ...meta,
+        translations: {}, // Empty initially, loaded on demand
+      };
+    }
+  }
+
+  return result;
+};
+
+export const loadLanguageTranslations = async (
+  lang: LanguageType
+): Promise<{ [key: string]: string }> => {
+  // Check cache first
+  if (translationCache.has(lang)) {
+    return translationCache.get(lang)!;
+  }
+
+  // Load from file
+  const module = await loadTranslation(lang);
+  const translations = module.default;
+
+  // Cache the translations
+  translationCache.set(lang, translations);
+
+  return translations;
+};
+
+// Initialize i18n with minimal resources
+i18n.use(initReactI18next).init({
+  resources: {
+    en: {
+      translations: English,
+    },
+  },
+  fallbackLng: "en",
+  debug: false, // Disable debug in production
+
   ns: ["translations"],
   defaultNS: "translations",
 
-  keySeparator: false, // we use content as keys
+  keySeparator: false,
 
   interpolation: {
     escapeValue: false,
   },
+
+  // Add lazy loading capability
+  load: "languageOnly",
+
+  // React specific options
+  react: {
+    useSuspense: false, // Disable suspense for better control
+  },
 });
+
+// Custom language loader with caching
+export const changeLanguage = async (lang: LanguageType): Promise<void> => {
+  try {
+    // Load translations if not already loaded
+    if (!i18n.hasResourceBundle(lang, "translations")) {
+      const translations = await loadLanguageTranslations(lang);
+      i18n.addResourceBundle(lang, "translations", translations);
+    }
+
+    // Change language
+    await i18n.changeLanguage(lang);
+  } catch (error) {
+    console.warn(
+      `Failed to load language ${lang}, falling back to English:`,
+      error
+    );
+    await i18n.changeLanguage("en");
+  }
+};
 
 export default i18n;

@@ -24,9 +24,10 @@ const RecentlyJoined = () => {
     const { sortPing, sortPlayer, sortName, sortMode } = searchData;
     let list = sortAndSearchInServerList(recentlyJoined, searchData);
 
-    const noSortingApplied = sortPlayer === "none" && 
-      sortPing === "none" && 
-      sortName === "none" && 
+    const noSortingApplied =
+      sortPlayer === "none" &&
+      sortPing === "none" &&
+      sortName === "none" &&
       sortMode === "none";
 
     return noSortingApplied ? list.reverse() : list;

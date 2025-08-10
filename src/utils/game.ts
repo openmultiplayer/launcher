@@ -21,10 +21,21 @@ import { Log } from "./logger";
 import { sc } from "./sizeScaler";
 import { Server } from "./types";
 
+const showOkModal = (title: string, description: string) => {
+  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
+  showMessageBox({
+    title,
+    description,
+    buttons: [{ title: "OK", onPress: hideMessageBox }],
+  });
+};
+
+const getLocalPath = async (...segments: string[]) =>
+  path.join(await path.appLocalDataDir(), ...segments);
+
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
-  const dir = await path.appLocalDataDir();
-  const shared = await path.join(dir, "samp", "shared");
+  const shared = await getLocalPath("samp", "shared");
   await invoke_rpc("copy_files_to_gtasa", {
     src: shared,
     gtasa_dir: gtasaPath,
@@ -33,34 +44,21 @@ export const copySharedFilesIntoGameFolder = async () => {
   });
 };
 
-const isFileAvailableinGTASADir = async (file: ResourceInfo) => {
+const isFileAvailableInGTASADir = async (file: ResourceInfo) => {
   const { gtasaPath } = useSettings.getState();
   const tempPath = await path.join(
     file.path.replace("samp/shared/", ""),
     file.name
   );
-
-  const check = await fs.exists(await path.join(gtasaPath, tempPath));
-  return check;
+  return fs.exists(await path.join(gtasaPath, tempPath));
 };
 
 export const checkResourceFilesAvailability = async () => {
-  const promises: Promise<boolean>[] = [];
-  validFileChecksums.forEach((file) => {
-    if (file.requiredInGameDir) {
-      promises.push(
-        new Promise(async (resolve, reject) => {
-          try {
-            resolve(await isFileAvailableinGTASADir(file));
-          } catch (e) {
-            reject(e);
-          }
-        })
-      );
-    }
-  });
+  const checks = Array.from(validFileChecksums.values())
+    .filter((file) => file.requiredInGameDir)
+    .map((file) => isFileAvailableInGTASADir(file));
 
-  return Promise.all(promises);
+  return Promise.all(checks);
 };
 
 export const startGame = async (
@@ -69,14 +67,6 @@ export const startGame = async (
   gtasaPath: string,
   password: string
 ) => {
-  if (IN_GAME) {
-    invoke("send_message_to_game", {
-      id: IN_GAME_PROCESS_ID,
-      message: `connect:${await getIpAddress(server.ip)}:${server.port}`,
-    });
-    return;
-  }
-
   const { addToRecentlyJoined } = usePersistentServers.getState();
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
@@ -85,7 +75,15 @@ export const startGame = async (
   const { setSelected } = useServers.getState();
   const { shouldUpdateDiscordStatus } = useGenericPersistentState.getState();
 
-  if (!gtasaPath || gtasaPath.length < 1) {
+  if (IN_GAME) {
+    invoke("send_message_to_game", {
+      id: IN_GAME_PROCESS_ID,
+      message: `connect:${await getIpAddress(server.ip)}:${server.port}`,
+    });
+    return;
+  }
+
+  if (!gtasaPath) {
     showMessageBox({
       title: t("gta_path_modal_path_not_set_title"),
       description: t("gta_path_modal_path_not_set_description"),
@@ -111,50 +109,34 @@ export const startGame = async (
     return;
   }
 
-  if (!nickname || nickname.length < 1) {
-    showMessageBox({
-      title: t("nickname_modal_name_not_set_title"),
-      description: t("nickname_modal_name_not_set_description"),
-      buttons: [
-        {
-          title: "Okay",
-          onPress: () => {
-            showPrompt(true);
-            setServer(server);
-            hideMessageBox();
-          },
-        },
-      ],
-    });
+  if (!nickname) {
+    showOkModal(
+      t("nickname_modal_name_not_set_title"),
+      t("nickname_modal_name_not_set_description")
+    );
+    showPrompt(true);
+    setServer(server);
     return;
   }
 
   let foundSampInGtaFolder = true;
-  const dirValidity = await checkDirectoryValidity(
-    gtasaPath,
-    async (reason) => {
-      if (reason === "samp") {
-        foundSampInGtaFolder = false;
-      } else {
-        showPrompt(true);
-        setServer(server);
-      }
+  const dirValidity = await checkDirectoryValidity(gtasaPath, (reason) => {
+    if (reason === "samp") foundSampInGtaFolder = false;
+    else {
+      showPrompt(true);
+      setServer(server);
     }
-  );
+  });
 
   if (sampVersion !== "custom") {
-    let failExecution = false;
     try {
       const checks = await checkResourceFilesAvailability();
       if (checks.includes(false)) {
-        Log.debug(
-          "Failed file validation, let's copy files into GTASA directory"
-        );
+        Log.debug("Missing files, copying into GTASA directory...");
         await copySharedFilesIntoGameFolder();
       }
     } catch (e) {
       if (e === "need_admin") {
-        const { showMessageBox, hideMessageBox } = useMessageBox.getState();
         showMessageBox({
           title: t("admin_permissions_required_modal_title"),
           description: t("admin_permissions_required_modal_description"),
@@ -162,14 +144,10 @@ export const startGame = async (
           buttons: [
             {
               title: t("run_as_admin"),
-              onPress: async () => {
+              onPress: () =>
                 shell
                   .open("https://assets.open.mp/run_as_admin.gif")
-                  .then(() => process.exit());
-                // await invoke("rerun_as_admin").then(() => {
-                //   process.exit();
-                // });
-              },
+                  .then(() => process.exit()),
             },
             {
               title: t("cancel"),
@@ -182,10 +160,6 @@ export const startGame = async (
           ],
         });
       }
-      failExecution = true;
-    }
-
-    if (failExecution) {
       return;
     }
   }
@@ -193,12 +167,9 @@ export const startGame = async (
   if (sampVersion === "custom" && !foundSampInGtaFolder) {
     showMessageBox({
       title: t("gta_path_modal_cant_find_samp_title"),
-      description:
-        t("gta_path_modal_cant_find_samp_description", {
-          path: gtasaPath,
-        }) +
-        `\n` +
-        t("gta_path_modal_cant_find_samp_description_2"),
+      description: `${t("gta_path_modal_cant_find_samp_description", {
+        path: gtasaPath,
+      })}\n${t("gta_path_modal_cant_find_samp_description_2")}`,
       boxWidth: 360,
       buttonWidth: 150,
       buttons: [
@@ -212,70 +183,54 @@ export const startGame = async (
         },
         {
           title: t("download"),
-          onPress: () => {
+          onPress: () =>
             shell.open(
               "https://uifserver.net/download/sa-mp-0.3.7-R5-1-MP-install.exe"
-            );
-          },
+            ),
         },
       ],
     });
     return;
   }
 
-  if (!dirValidity) {
-    return;
-  }
+  if (!dirValidity) return;
 
-  const idealSAMPDllPath = await path.join(gtasaPath, "/samp.dll");
+  const idealSAMPDllPath = await path.join(gtasaPath, "samp.dll");
   const file = validFileChecksums.get(
     sampVersion !== "custom" ? sampVersion : "037R1_samp.dll"
   );
   const ourSAMPDllPath = file
-    ? await path.join(await path.appLocalDataDir(), file.path, file.name)
-    : "";
-
-  let sampDllPath =
-    sampVersion === "custom" ? idealSAMPDllPath : ourSAMPDllPath;
-
-  const dir = await path.appLocalDataDir();
-  const ompFile = await path.join(dir, "omp/omp-client.dll");
+    ? await getLocalPath(file.path, file.name)
+    : idealSAMPDllPath;
 
   invoke("inject", {
     name: nickname,
     ip: await getIpAddress(server.ip),
     port: server.port,
     exe: gtasaPath,
-    dll: sampDllPath,
-    ompFile: ompFile,
-    password: password,
+    dll: ourSAMPDllPath,
+    ompFile: await getLocalPath("omp", "omp-client.dll"),
+    password,
     discord: shouldUpdateDiscordStatus,
   })
     .then(() => {
       addToRecentlyJoined(server);
       setSelected(undefined);
     })
-    .catch(async (e) => {
-      if (e == "need_admin") {
+    .catch((e) => {
+      if (e === "need_admin") {
         showMessageBox({
           title: t("admin_permissions_required_modal_title"),
           description: t("admin_permissions_required_modal_description"),
           buttons: [
             {
               title: t("run_as_admin"),
-              onPress: async () => {
+              onPress: () =>
                 shell
                   .open("https://assets.open.mp/run_as_admin.gif")
-                  .then(() => process.exit());
-                // await invoke("rerun_as_admin").then(() => {
-                //   process.exit();
-                // });
-              },
+                  .then(() => process.exit()),
             },
-            {
-              title: t("cancel"),
-              onPress: () => hideMessageBox(),
-            },
+            { title: t("cancel"), onPress: hideMessageBox },
           ],
         });
       }
@@ -283,19 +238,18 @@ export const startGame = async (
 };
 
 export const checkDirectoryValidity = async (
-  path: string,
+  dirPath: string,
   onFail?: (reason: "samp" | "gtasa") => void
 ) => {
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
   const { showPrompt } = useJoinServerPrompt.getState();
 
-  const gtasaExists = await exists(path + "/gta_sa.exe");
-  if (!gtasaExists) {
+  if (!(await exists(`${dirPath}/gta_sa.exe`))) {
     showMessageBox({
       title: t("gta_path_modal_cant_find_game_title"),
       description: t("gta_path_modal_cant_find_game_description", {
-        path: path,
+        path: dirPath,
       }),
       boxWidth: 360,
       buttonWidth: 150,
@@ -311,9 +265,7 @@ export const checkDirectoryValidity = async (
         {
           title: t("cancel"),
           onPress: () => {
-            if (onFail) {
-              onFail("gtasa");
-            }
+            onFail?.("gtasa");
             hideMessageBox();
           },
         },
@@ -322,164 +274,98 @@ export const checkDirectoryValidity = async (
     return false;
   }
 
-  const sampExists = await exists(path + "/samp.dll");
-  if (!sampExists) {
-    if (onFail) {
-      onFail("samp");
-    }
+  if (!(await exists(`${dirPath}/samp.dll`))) {
+    onFail?.("samp");
   }
-
   return true;
 };
 
 export const exportFavoriteListFile = async () => {
   const { favorites } = usePersistentServers.getState();
-  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
-
   if (!favorites.length) {
-    showMessageBox({
-      title: t("export_failed_title"),
-      description: t("export_no_servers_description"),
-      buttons: [
-        {
-          title: "OK",
-          onPress: () => hideMessageBox(),
-        },
-      ],
-    });
+    showOkModal(t("export_failed_title"), t("export_no_servers_description"));
     return;
   }
 
   try {
     const exportData = {
       version: 1,
-      servers: favorites.map((server) => ({
-        ip: server.ip,
-        port: server.port,
-        name: server.hostname,
-        password: server.password || "",
+      servers: favorites.map(({ ip, port, hostname, password }) => ({
+        ip,
+        port,
+        name: hostname,
+        password: password || "",
       })),
     };
 
-    const jsonString = JSON.stringify(exportData, null, 2);
-
     const savePath = await save({
-      filters: [
-        {
-          name: "JSON",
-          extensions: ["json"],
-        },
-      ],
+      filters: [{ name: "JSON", extensions: ["json"] }],
       defaultPath: "omp_servers.json",
     });
 
-    if (savePath) {
-      await writeTextFile(savePath, jsonString);
+    if (!savePath) return;
+    await writeTextFile(savePath, JSON.stringify(exportData, null, 2));
 
-      const { showNotification } = useNotification.getState();
-      showNotification(
+    useNotification
+      .getState()
+      .showNotification(
         t("export_successful_title"),
         t("export_successful_description")
       );
-    }
   } catch (error) {
     Log.debug("Error exporting servers:", error);
-    showMessageBox({
-      title: t("export_failed_title"),
-      description: t("export_failed_description"),
-      buttons: [
-        {
-          title: "OK",
-          onPress: () => hideMessageBox(),
-        },
-      ],
-    });
+    showOkModal(t("export_failed_title"), t("export_failed_description"));
   }
 };
 
 export const importFavoriteListFile = async () => {
-  const { showMessageBox, hideMessageBox } = useMessageBox.getState();
-
   try {
     const selected = await open({
       multiple: false,
-      filters: [
-        {
-          name: "JSON",
-          extensions: ["json"],
-        },
-      ],
+      filters: [{ name: "JSON", extensions: ["json"] }],
     });
     if (!selected) return;
+
     const fileContent = await readTextFile(selected as string);
+    const data = JSON.parse(fileContent);
+
+    if (!Array.isArray(data.servers)) {
+      throw new Error("Invalid file format: missing servers array");
+    }
+
     const { addToFavorites } = usePersistentServers.getState();
-    const { showNotification } = useNotification.getState();
 
-    try {
-      const data = JSON.parse(fileContent);
-
-      if (!data.servers || !Array.isArray(data.servers)) {
-        throw new Error("Invalid file format: missing servers array");
+    data.servers.forEach((srv: any) => {
+      if (srv.ip && srv.port) {
+        addToFavorites({
+          ip: srv.ip,
+          port: Number(srv.port),
+          hostname: srv.name || `${srv.ip}:${srv.port}`,
+          playerCount: 0,
+          maxPlayers: 0,
+          gameMode: "-",
+          language: "-",
+          hasPassword: !!srv.password,
+          version: "-",
+          usingOmp: false,
+          partner: false,
+          ping: 9999,
+          players: [],
+          password: srv.password || "",
+          rules: {} as Server["rules"],
+        });
       }
+    });
 
-      let importCount = 0;
-
-      for (const importedServer of data.servers) {
-        if (importedServer.ip && importedServer.port) {
-          const tempHostname = `${importedServer.ip}:${importedServer.port}`;
-          const serverInfo: Server = {
-            ip: importedServer.ip,
-            port: Number(importedServer.port),
-            hostname: importedServer.name || tempHostname,
-            playerCount: 0,
-            maxPlayers: 0,
-            gameMode: "-",
-            language: "-",
-            hasPassword: !!importedServer.password,
-            version: "-",
-            usingOmp: false,
-            partner: false,
-            ping: 9999,
-            players: [],
-            password: importedServer.password || "",
-            rules: {} as Server["rules"],
-          };
-
-          addToFavorites(serverInfo);
-          importCount++;
-        }
-      }
-
-      fetchServers(true);
-
-      showNotification(
+    fetchServers(true);
+    useNotification
+      .getState()
+      .showNotification(
         t("import_successful_title"),
         t("import_successful_description")
       );
-    } catch (parseError) {
-      showMessageBox({
-        title: t("import_failed_title"),
-        description: t("import_invalid_data_description"),
-        buttons: [
-          {
-            title: "OK",
-            onPress: () => hideMessageBox(),
-          },
-        ],
-      });
-      Log.debug("Error parsing imported file:", parseError);
-    }
   } catch (error) {
-    showMessageBox({
-      title: t("import_failed_title"),
-      description: t("import_failed_description"),
-      buttons: [
-        {
-          title: "OK",
-          onPress: () => hideMessageBox(),
-        },
-      ],
-    });
     Log.debug("Error importing servers:", error);
+    showOkModal(t("import_failed_title"), t("import_failed_description"));
   }
 };

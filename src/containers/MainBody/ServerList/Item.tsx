@@ -49,32 +49,40 @@ const ServerItem = memo((props: IProps) => {
     }
   };
 
-  const getServerStatusInfo = (hasPassword: boolean, ping: number, itemBackgroundColor: string) => {
+  const getServerStatusInfo = (
+    hasPassword: boolean,
+    ping: number,
+    itemBackgroundColor: string
+  ) => {
     if (hasPassword) {
       return {
         color: "#eb4034",
         backgroundColor: "#eb40343A",
         title: t("locked"),
-        icon: images.icons.locked
+        icon: images.icons.locked,
       };
     } else if (ping < 9999) {
       return {
         color: "#7AF1AA",
         backgroundColor: "#7AF1AA1A",
         title: t("unlocked"),
-        icon: images.icons.unlocked
+        icon: images.icons.unlocked,
       };
     } else {
       return {
         color: "#36363F",
         backgroundColor: itemBackgroundColor,
         title: t("offline"),
-        icon: images.icons.unlocked
+        icon: images.icons.unlocked,
       };
     }
   };
 
-  const statusInfo = getServerStatusInfo(server.hasPassword, server.ping, theme.itemBackgroundColor);
+  const statusInfo = getServerStatusInfo(
+    server.hasPassword,
+    server.ping,
+    theme.itemBackgroundColor
+  );
 
   return (
     <div

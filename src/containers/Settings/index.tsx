@@ -17,9 +17,9 @@ import { useGenericPersistentState } from "../../states/genericStates";
 import { useSettingsModal } from "../../states/settingsModal";
 import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
+import Advanced from "./Tab/Advanced";
 import General from "./Tab/General";
 import Languages from "./Tab/Languages";
-import Advanced from "./Tab/Advanced";
 
 const MODAL_WIDTH = 500;
 const MODAL_HEIGHT = 300;

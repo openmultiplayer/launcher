@@ -6,8 +6,8 @@ import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { useServers } from "../../../states/servers";
 import { useTheme } from "../../../states/theme";
-import { validateWebUrl } from "../../../utils/helpers";
 import { sc } from "../../../utils/sizeScaler";
+import { validateWebUrl } from "../../../utils/validation";
 import AdditionalInfo from "./AdditionalInfo";
 import PlayerList from "./PlayerList";
 
@@ -26,11 +26,11 @@ const ServerInfo = () => {
 
   const bannerUrl = useMemo(() => {
     if (!selected?.omp) return "";
-    
+
     const { bannerDark, bannerLight } = selected.omp;
     const preferredBanner = themeType === "dark" ? bannerDark : bannerLight;
     const fallbackBanner = themeType === "dark" ? bannerLight : bannerDark;
-    
+
     return preferredBanner || fallbackBanner || "";
   }, [selected?.omp?.bannerDark, selected?.omp?.bannerLight, themeType]);
 
