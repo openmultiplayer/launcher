@@ -24,28 +24,13 @@ const RecentlyJoined = () => {
     const { sortPing, sortPlayer, sortName, sortMode } = searchData;
     let list = sortAndSearchInServerList(recentlyJoined, searchData);
 
-    if (
-      sortPlayer === "none" &&
-      sortPing === "none" &&
-      sortName === "none" &&
-      sortMode === "none"
-    ) {
-      list = list.reverse();
-    }
+    const noSortingApplied = sortPlayer === "none" && 
+      sortPing === "none" && 
+      sortName === "none" && 
+      sortMode === "none";
 
-    return list;
-  }, [
-    searchData.query,
-    searchData.ompOnly,
-    searchData.nonEmpty,
-    searchData.unpassworded,
-    searchData.sortPing,
-    searchData.sortPlayer,
-    searchData.sortName,
-    searchData.sortMode,
-    searchData.languages,
-    recentlyJoined,
-  ]);
+    return noSortingApplied ? list.reverse() : list;
+  }, [recentlyJoined, searchData]);
 
   const onSelect = (server: Server) => {
     stopQuery();

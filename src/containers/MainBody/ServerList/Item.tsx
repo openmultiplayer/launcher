@@ -49,35 +49,32 @@ const ServerItem = memo((props: IProps) => {
     }
   };
 
-  const getServerStatusIconColor = () => {
-    if (server.hasPassword) {
-      return "#eb4034";
-    } else if (server.ping < 9999) {
-      return "#7AF1AA";
+  const getServerStatusInfo = (hasPassword: boolean, ping: number, itemBackgroundColor: string) => {
+    if (hasPassword) {
+      return {
+        color: "#eb4034",
+        backgroundColor: "#eb40343A",
+        title: t("locked"),
+        icon: images.icons.locked
+      };
+    } else if (ping < 9999) {
+      return {
+        color: "#7AF1AA",
+        backgroundColor: "#7AF1AA1A",
+        title: t("unlocked"),
+        icon: images.icons.unlocked
+      };
     } else {
-      return "#36363F";
+      return {
+        color: "#36363F",
+        backgroundColor: itemBackgroundColor,
+        title: t("offline"),
+        icon: images.icons.unlocked
+      };
     }
   };
 
-  const getServerStatusIconViewBackgroundColor = () => {
-    if (server.hasPassword) {
-      return "#eb40343A";
-    } else if (server.ping < 9999) {
-      return "#7AF1AA1A";
-    } else {
-      return theme.itemBackgroundColor;
-    }
-  };
-
-  const getServerStatusIconTitle = () => {
-    if (server.hasPassword) {
-      return t("locked");
-    } else if (server.ping < 9999) {
-      return t("unlocked");
-    } else {
-      return t("offline");
-    }
-  };
+  const statusInfo = getServerStatusInfo(server.hasPassword, server.ping, theme.itemBackgroundColor);
 
   return (
     <div
@@ -120,7 +117,7 @@ const ServerItem = memo((props: IProps) => {
               style={[
                 styles.iconContainer,
                 {
-                  backgroundColor: getServerStatusIconViewBackgroundColor(),
+                  backgroundColor: statusInfo.backgroundColor,
                   // @ts-ignore
                   userSelect: "none",
                 },
@@ -128,14 +125,10 @@ const ServerItem = memo((props: IProps) => {
             >
               <Icon
                 svg
-                title={getServerStatusIconTitle()}
-                image={
-                  server.hasPassword
-                    ? images.icons.locked
-                    : images.icons.unlocked
-                }
+                title={statusInfo.title}
+                image={statusInfo.icon}
                 size={sc(20)}
-                color={getServerStatusIconColor()}
+                color={statusInfo.color}
               />
             </View>
             <View

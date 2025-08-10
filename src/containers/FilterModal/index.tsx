@@ -124,20 +124,11 @@ const FiltersModal = () => {
                         index === languageFilters.length - 1 ? 8 : 0,
                     }}
                     onPress={() => {
-                      const cpy = [...languages];
-                      if (selected) {
-                        const findIndex = cpy.findIndex((l) => l === lang.name);
-                        if (findIndex != -1) {
-                          cpy.splice(findIndex, 1);
-                        }
-                      } else {
-                        const findIndex = cpy.findIndex((l) => l === lang.name);
-                        if (findIndex == -1) {
-                          cpy.push(lang.name);
-                        }
-                      }
-
-                      setSearchData("languages", cpy);
+                      const updatedLanguages = selected
+                        ? languages.filter((l) => l !== lang.name)
+                        : [...languages, lang.name];
+                      
+                      setSearchData("languages", updatedLanguages);
                     }}
                   >
                     <CheckBox

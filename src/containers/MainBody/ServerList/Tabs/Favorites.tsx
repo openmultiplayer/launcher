@@ -47,29 +47,21 @@ const Favorites = () => {
 
   const list = useMemo(() => {
     return sortAndSearchInServerList(favorites, searchData);
-  }, [
-    searchData.query,
-    searchData.ompOnly,
-    searchData.nonEmpty,
-    searchData.unpassworded,
-    searchData.sortPing,
-    searchData.sortPlayer,
-    searchData.sortName,
-    searchData.sortMode,
-    searchData.languages,
-    favorites,
-  ]);
+  }, [favorites, searchData]);
 
   const isDraggable = useMemo(() => {
-    return searchData.query === "" &&
-      searchData.languages.length === 0 &&
-      !searchData.ompOnly &&
-      !searchData.nonEmpty &&
-      !searchData.unpassworded &&
-      searchData.sortPing === "none" &&
-      searchData.sortPlayer === "none" &&
-      searchData.sortName === "none" &&
-      searchData.sortMode === "none";
+    const hasActiveFilters = searchData.query !== "" ||
+      searchData.languages.length > 0 ||
+      searchData.ompOnly ||
+      searchData.nonEmpty ||
+      searchData.unpassworded;
+      
+    const hasActiveSorting = searchData.sortPing !== "none" ||
+      searchData.sortPlayer !== "none" ||
+      searchData.sortName !== "none" ||
+      searchData.sortMode !== "none";
+      
+    return !hasActiveFilters && !hasActiveSorting;
   }, [searchData]);
 
   const sensors = useSensors(
