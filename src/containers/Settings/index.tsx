@@ -20,6 +20,7 @@ import { sc } from "../../utils/sizeScaler";
 import Advanced from "./Tab/Advanced";
 import General from "./Tab/General";
 import Languages from "./Tab/Languages";
+import i18n from "../../locales";
 
 const MODAL_WIDTH = 500;
 const MODAL_HEIGHT = 300;
@@ -41,7 +42,7 @@ const SettingsModal = () => {
       { label: t("settings_lang_tab_title"), type: "languages" },
       { label: t("settings_advanced_tab_title"), type: "advanced" },
     ],
-    []
+    [t, i18n.language]
   );
 
   const tabComponents = useMemo(
