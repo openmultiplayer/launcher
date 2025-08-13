@@ -90,4 +90,17 @@ export default {
   run_as_admin: "Run as Admin",
   settings_general_tab_title: "Umum",
   settings_lang_tab_title: "Bahasa",
+  settings_advanced_tab_title: "Opsi Lanjutan",
+  settings_advanced_discord_status: "Tampilkan status di Discord",
+  join_discord: "Gabung Server Discord",
+  samp_version: "Versi SA-MP",
+  change_version: "Ganti Versi",
+  offline: "Offline",
+  from_gtasa_folder: "Dari Folder GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "Silakan pilih versi lain atau unduh dan instal SA-MP secara manual.",
+  add_or_play_external_server: "Tambahkan ke favorit atau mainkan",
+  reconnect: "Reconnect",
+  settings_advanced_discord_status_requires_restart:
+    "(Perlu restart game untuk menerapkan perubahan)",
 };

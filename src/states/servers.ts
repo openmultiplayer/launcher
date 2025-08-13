@@ -1,15 +1,17 @@
+import { emit, listen } from "@tauri-apps/api/event";
+import { appWindow } from "@tauri-apps/api/window";
 import { t } from "i18next";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { stateStorage } from "../utils/stateStorage";
 import { queryServer } from "../utils/query";
+import { stateStorage } from "../utils/stateStorage";
 import { PerServerSettings, SAMPDLLVersions, Server } from "../utils/types";
 import { useNotification } from "./notification";
 
 interface ServersState {
   servers: Server[];
-  selected: undefined | Server;
-  setSelected: (server: undefined | Server) => void;
+  selected?: Server;
+  setSelected: (server?: Server) => void;
   setServers: (list: Server[]) => void;
   updateServer: (server: Server) => void;
 }
@@ -22,34 +24,51 @@ interface ServersPersistentState {
   updateInFavoritesList: (server: Server) => void;
   addToFavorites: (server: Server) => void;
   removeFromFavorites: (server: Server) => void;
-  addToRecentlyJoined: (address: Server) => void;
+  addToRecentlyJoined: (server: Server) => void;
   clearRecentlyJoined: () => void;
   updateInRecentlyJoinedList: (server: Server) => void;
   setServerSettings: (
     server: Server,
-    nickname: string | undefined,
-    version: SAMPDLLVersions | undefined
+    nickname?: string,
+    version?: SAMPDLLVersions
   ) => void;
   getServerSettings: (server: Server) => PerServerSettings | undefined;
+  reorderFavorites: (fromIndex: number, toIndex: number) => void;
 }
+
+const isSameServer = (a: Server, b: Server) =>
+  a.ip === b.ip && a.port === b.port;
+
+const updateListItem = <T extends Server>(
+  list: T[],
+  server: Server,
+  replace: (oldItem: T) => T
+) => {
+  const index = list.findIndex((s) => isSameServer(s, server));
+  if (index !== -1) list[index] = replace(list[index]);
+  return list;
+};
+
+const upsertServer = (list: Server[], server: Server) => {
+  const index = list.findIndex((s) => isSameServer(s, server));
+  if (index !== -1) list.splice(index, 1);
+  list.push(server);
+  return list;
+};
+
+const emitWithDelay = (event: string, payload: any) =>
+  setTimeout(() => emit(event, payload), 200);
 
 const useServers = create<ServersState>()((set, get) => ({
   servers: [],
   selected: undefined,
-  setSelected: (server) => set(() => ({ selected: server })),
-  setServers: (list) => set(() => ({ servers: list })),
+  setSelected: (server) => set({ selected: server }),
+  setServers: (list) => set({ servers: list }),
   updateServer: (server) =>
-    set(() => {
-      const list = [...get().servers];
-
-      const index = list.findIndex(
-        (srv) => srv.ip === server.ip && srv.port === server.port
-      );
-      if (index !== -1) {
-        list[index] = { ...server };
-      }
-
-      return { servers: list };
+    set({
+      servers: updateListItem([...get().servers], server, () => ({
+        ...server,
+      })),
     }),
 }));
 
@@ -59,47 +78,32 @@ const usePersistentServers = create<ServersPersistentState>()(
       favorites: [],
       recentlyJoined: [],
       perServerSettings: [],
+
       setFavoritesList: (list) => set({ favorites: list }),
+
       updateInFavoritesList: (server) =>
         set(() => {
-          const list = [...get().favorites];
-
-          const index = list.findIndex(
-            (srv) => srv.ip === server.ip && srv.port === server.port
-          );
-          if (index !== -1) {
-            list[index] = { ...server };
-          }
-
-          return { favorites: list };
+          const updated = updateListItem([...get().favorites], server, () => ({
+            ...server,
+          }));
+          emitWithDelay("updateInFavoritesList", server);
+          return { favorites: updated };
         }),
+
       addToFavorites: (server) =>
         set(() => {
-          // Validate server before adding
           if (
-            (typeof server.ip !== "string" && isNaN(server.ip)) ||
-            server.ip === "NaN" ||
-            // @ts-ignore
-            server.port === "NaN" ||
+            typeof server.ip !== "string" ||
             isNaN(Number(server.port)) ||
             server.ip.length < 6 ||
             server.port < 1
           ) {
             return { favorites: get().favorites };
           }
-          const cpy = [...get().favorites];
-          const findIndex = cpy.findIndex(
-            (srv) => srv.ip === server.ip && srv.port === server.port
-          );
-          if (findIndex !== -1) {
-            cpy.splice(findIndex, 1);
-            cpy.push(server);
-          } else {
-            cpy.push(server);
-          }
 
-          const { showNotification } = useNotification.getState();
-          showNotification(
+          const updated = upsertServer([...get().favorites], server);
+
+          useNotification.getState().showNotification(
             t("notification_add_to_favorites_title"),
             t("notification_add_to_favorites_description", {
               server: `${server.ip}:${server.port}`,
@@ -107,90 +111,88 @@ const usePersistentServers = create<ServersPersistentState>()(
           );
 
           queryServer(server, "favorites", "basic");
+          emitWithDelay("addToFavorites", server);
 
-          return { favorites: cpy };
+          return { favorites: updated };
         }),
+
       removeFromFavorites: (server) =>
         set(() => {
-          const cpy = [...get().favorites];
-          const findIndex = cpy.findIndex(
-            (srv) => srv.ip === server.ip && srv.port === server.port
+          const updated = get().favorites.filter(
+            (s) => !isSameServer(s, server)
           );
-          if (findIndex !== -1) {
-            cpy.splice(findIndex, 1);
-          }
-          return { favorites: cpy };
+          emitWithDelay("removeFromFavorites", server);
+          return { favorites: updated };
         }),
+
       addToRecentlyJoined: (server) =>
         set(() => {
-          const cpy = [...get().recentlyJoined];
-          const findIndex = cpy.findIndex(
-            (srv) => srv.ip === server.ip && srv.port === server.port
-          );
-          if (findIndex !== -1) {
-            cpy.splice(findIndex, 1);
-            cpy.push(server);
-          } else {
-            cpy.push(server);
-          }
-
-          return { recentlyJoined: cpy };
+          const updated = upsertServer([...get().recentlyJoined], server);
+          emitWithDelay("addToRecentlyJoined", server);
+          return { recentlyJoined: updated };
         }),
-      clearRecentlyJoined: () => set(() => ({ recentlyJoined: [] })),
+
+      clearRecentlyJoined: () => set({ recentlyJoined: [] }),
+
       updateInRecentlyJoinedList: (server) =>
         set(() => {
-          const list = [...get().recentlyJoined];
-
-          const index = list.findIndex(
-            (srv) => srv.ip === server.ip && srv.port === server.port
+          const updated = updateListItem(
+            [...get().recentlyJoined],
+            server,
+            () => ({ ...server })
           );
-          if (index !== -1) {
-            list[index] = { ...server };
-          }
-
-          return { recentlyJoined: list };
+          emitWithDelay("updateInRecentlyJoinedList", server);
+          return { recentlyJoined: updated };
         }),
+
       setServerSettings: (server, nickname, version) =>
         set(() => {
-          const list = [...get().perServerSettings];
+          const ipPort = `${server.ip}:${server.port}`;
+          const updated = [...get().perServerSettings];
+          const index = updated.findIndex((s) => s.ipPort === ipPort);
 
-          const index = list.findIndex(
-            (srv) => srv.ipPort === `${server.ip}:${server.port}`
-          );
-          if (index !== -1) {
-            list[index] = {
-              ipPort: `${server.ip}:${server.port}`,
-              nickname,
-              sampVersion: version,
-            };
-          } else {
-            list.push({
-              ipPort: `${server.ip}:${server.port}`,
-              nickname,
-              sampVersion: version,
-            });
-          }
+          const newSetting = { ipPort, nickname, sampVersion: version };
 
-          return { perServerSettings: list };
+          if (index !== -1) updated[index] = newSetting;
+          else updated.push(newSetting);
+
+          return { perServerSettings: updated };
         }),
-      getServerSettings: (server) => {
-        const list = [...get().perServerSettings];
 
-        const index = list.findIndex(
-          (srv) => srv.ipPort === `${server.ip}:${server.port}`
-        );
-        if (index !== -1) {
-          return { ...list[index] };
-        } else {
-          return undefined;
-        }
-      },
+      getServerSettings: (server) =>
+        get().perServerSettings.find(
+          (s) => s.ipPort === `${server.ip}:${server.port}`
+        ),
+
+      reorderFavorites: (fromIndex, toIndex) =>
+        set(() => {
+          const updated = [...get().favorites];
+          const [moved] = updated.splice(fromIndex, 1);
+          updated.splice(toIndex, 0, moved);
+          emitWithDelay("reorderFavorites", { fromIndex, toIndex });
+          return { favorites: updated };
+        }),
     }),
     {
       name: "favorites-and-recentlyjoined-storage",
       storage: createJSONStorage(() => stateStorage),
     }
   )
+);
+
+[
+  "updateInFavoritesList",
+  "addToFavorites",
+  "addToRecentlyJoined",
+  "removeFromFavorites",
+  "updateInRecentlyJoinedList",
+  "reorderFavorites",
+].forEach((event) =>
+  listen(event, (ev) => {
+    if (ev.windowLabel !== appWindow.label) {
+      usePersistentServers.persist.rehydrate();
+    }
+  })
 );
 
 export { usePersistentServers, useServers };

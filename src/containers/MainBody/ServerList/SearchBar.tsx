@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -17,15 +17,14 @@ import {
 } from "../../../states/genericStates";
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../../states/servers";
-// import { fetchServers } from "../../../utils/helpers";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 
-interface IProps {
+interface SearchBarProps {
   onChange: (query: string) => void;
 }
 
-interface IActionIconProps {
+interface ActionIconProps {
   icon: string;
   onPress: () => void;
   buttonColor?: string;
@@ -35,43 +34,39 @@ interface IActionIconProps {
   svg?: boolean;
 }
 
-// const AnimatedTouchableOpacity =
-//   Animated.createAnimatedComponent(TouchableOpacity);
-
-const ActionIcon = ({
-  icon,
-  onPress,
-  buttonColor,
-  iconColor,
-  iconSize,
-  title,
-  svg,
-}: IActionIconProps) => {
-  return (
-    <div
-      style={{
+const ActionIcon = memo<ActionIconProps>(
+  ({ icon, onPress, buttonColor, iconColor, iconSize, title, svg }) => {
+    const containerStyle = useMemo(
+      () => ({
         filter: buttonColor
           ? `drop-shadow(0 0 20px ${buttonColor}44)`
           : undefined,
-      }}
-    >
-      <TouchableOpacity
-        style={[styles.rightSideIcons, { backgroundColor: buttonColor }]}
-        onPress={() => onPress()}
-      >
-        <Icon
-          svg={svg}
-          title={title}
-          image={icon}
-          size={iconSize}
-          color={iconColor}
-        />
-      </TouchableOpacity>
-    </div>
-  );
-};
+      }),
+      [buttonColor]
+    );
 
-const SearchBar = (props: IProps) => {
+    const buttonStyle = useMemo(
+      () => [styles.rightSideIcons, { backgroundColor: buttonColor }],
+      [buttonColor]
+    );
+
+    return (
+      <div style={containerStyle}>
+        <TouchableOpacity style={buttonStyle} onPress={onPress}>
+          <Icon
+            svg={svg}
+            title={title}
+            image={icon}
+            size={iconSize}
+            color={iconColor}
+          />
+        </TouchableOpacity>
+      </div>
+    );
+  }
+);
+
+const SearchBar = memo<SearchBarProps>(({ onChange }) => {
   const { theme, themeType } = useTheme();
   const { listType } = useGenericTempState();
   const [searchQuery, setSearchQuery] = useState("");
@@ -89,76 +84,86 @@ const SearchBar = (props: IProps) => {
   // const refreshIconSpinAnim = useRef(new Animated.Value(0)).current;
 
   const showFiltersBadge = useMemo(() => {
-    if (
-      searchData.languages.length < 1 &&
-      !searchData.nonEmpty &&
-      !searchData.ompOnly &&
-      !searchData.unpassworded &&
-      searchData.sortMode === "none" &&
-      searchData.sortName === "none" &&
-      searchData.sortPing === "none" &&
-      searchData.sortPlayer === "none"
-    ) {
-      return false;
-    } else {
-      return true;
-    }
+    return (
+      searchData.languages.length > 0 ||
+      searchData.nonEmpty ||
+      searchData.ompOnly ||
+      searchData.unpassworded ||
+      searchData.sortMode !== "none" ||
+      searchData.sortName !== "none" ||
+      searchData.sortPing !== "none" ||
+      searchData.sortPlayer !== "none"
+    );
   }, [searchData]);
 
   const favorited = useMemo(() => {
-    const find = favorites.find(
-      (fav) => selected && fav.ip === selected.ip && fav.port == selected.port
+    if (!selected) return false;
+    return favorites.some(
+      (fav) => fav.ip === selected.ip && fav.port === selected.port
     );
-    return find !== undefined;
   }, [selected, favorites]);
 
   useEffect(() => {
-    props.onChange(searchQuery);
-  }, [searchQuery]);
+    onChange(searchQuery);
+  }, [onChange, searchQuery]);
 
-  const playSelectedServer = () => {
-    if (selected) {
+  const playSelectedServer = useCallback(() => {
+    if (!selected) return;
+
+    try {
       setServer(selected);
       showPrompt(true);
+    } catch (error) {
+      console.error("Error playing selected server:", error);
     }
-  };
+  }, [selected, setServer, showPrompt]);
 
-  // const refreshServers = async () => {
-  //   const animation = Animated.timing(refreshIconSpinAnim, {
-  //     toValue: 1,
-  //     duration: 5000,
-  //     useNativeDriver: false,
-  //   });
+  const toggleFavorite = useCallback(() => {
+    if (!selected) return;
 
-  //   animation.start(() => {
-  //     refreshIconSpinAnim.setValue(0);
-  //   });
+    try {
+      if (favorited) {
+        removeFromFavorites(selected);
+      } else {
+        addToFavorites(selected);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  }, [selected, favorited, removeFromFavorites, addToFavorites]);
 
-  //   fetchServers().finally(() => {
-  //     setTimeout(() => {
-  //       animation.stop();
-  //       refreshIconSpinAnim.setValue(0);
-  //     }, 1000);
-  //   });
-  // };
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery("");
+  }, []);
 
-  // const interpolateRotating = refreshIconSpinAnim.interpolate({
-  //   inputRange: [0, 1],
-  //   outputRange: ["3600deg", "0deg"],
-  // });
+  const handleFilterToggle = useCallback(() => {
+    showFilterMenu(!filterMenu);
+  }, [filterMenu, showFilterMenu]);
+
+  const handleSideListsToggle = useCallback(() => {
+    showSideLists(!sideLists);
+  }, [sideLists, showSideLists]);
+
+  const handleAddServer = useCallback(() => {
+    showAddThirdPartyServer(true);
+  }, [showAddThirdPartyServer]);
+
+  const handleClearRecentlyJoined = useCallback(() => {
+    try {
+      clearRecentlyJoined();
+    } catch (error) {
+      console.error("Error clearing recently joined:", error);
+    }
+  }, [clearRecentlyJoined]);
 
   return (
     <View style={styles.searchContainer}>
       <TouchableOpacity
-        style={{
-          height: sc(35),
-          width: sc(35),
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: theme.itemBackgroundColor,
-          borderRadius: sc(5),
-        }}
-        onPress={() => showFilterMenu(!filterMenu)}
+        style={[
+          styles.filterButton,
+          { backgroundColor: theme.itemBackgroundColor },
+        ]}
+        onPress={handleFilterToggle}
       >
         <Icon
           svg
@@ -170,22 +175,13 @@ const SearchBar = (props: IProps) => {
         {showFiltersBadge ? (
           <div
             style={{
+              ...styles.badgeContainer,
               filter: `drop-shadow(0 0 5px ${theme.primary}${
                 themeType === "dark" ? "CC" : "FF"
               })`,
-              position: "absolute",
-              bottom: -sc(2),
-              right: -sc(3),
             }}
           >
-            <View
-              style={{
-                backgroundColor: theme.primary,
-                borderRadius: sc(30),
-                height: sc(12),
-                width: sc(12),
-              }}
-            />
+            <View style={[styles.badge, { backgroundColor: theme.primary }]} />
           </div>
         ) : null}
       </TouchableOpacity>
@@ -195,13 +191,7 @@ const SearchBar = (props: IProps) => {
           { backgroundColor: theme.textInputBackgroundColor },
         ]}
       >
-        <View
-          style={{
-            height: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <View style={styles.searchIconContainer}>
           <Icon
             svg
             image={images.icons.search}
@@ -213,33 +203,16 @@ const SearchBar = (props: IProps) => {
           placeholder={t("search_for_server_hostname_mode")}
           placeholderTextColor={theme.textSecondary}
           value={searchQuery}
-          style={{
-            height: "100%",
-            backgroundColor: "transparent",
-            flex: 1,
-            fontFamily: "Proxima Nova Regular",
-            fontSize: sc(17),
-            paddingHorizontal: 5,
-            color: theme.textPrimary,
-            // @ts-ignore
-            outlineStyle: "none",
-          }}
-          onChangeText={(text) => {
-            setSearchQuery(text);
-          }}
+          style={[styles.textInput, { color: theme.textPrimary }]}
+          onChangeText={setSearchQuery}
         />
         {searchQuery.length > 0 && (
           <Pressable
-            onPress={() => {
-              setSearchQuery("");
-            }}
-            style={{
-              height: "100%",
-              aspectRatio: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: theme.itemBackgroundColor,
-            }}
+            onPress={handleClearSearch}
+            style={[
+              styles.clearButton,
+              { backgroundColor: theme.itemBackgroundColor },
+            ]}
           >
             <Text size={2} color={theme.textPlaceholder}>
               ✖
@@ -247,33 +220,7 @@ const SearchBar = (props: IProps) => {
           </Pressable>
         )}
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          width: 200,
-          justifyContent: "flex-end",
-        }}
-      >
-        {/* <AnimatedTouchableOpacity
-          style={[
-            styles.rightSideIcons,
-            {
-              transform: [
-                {
-                  rotate: interpolateRotating,
-                },
-              ],
-            },
-          ]}
-          onPress={() => refreshServers()}
-        >
-          <Icon
-            title={t("refresh_servers")}
-            image={images.icons.refresh}
-            size={20}
-          />
-        </AnimatedTouchableOpacity> */}
+      <View style={styles.actionButtonsContainer}>
         {selected && (
           <>
             <ActionIcon
@@ -282,7 +229,7 @@ const SearchBar = (props: IProps) => {
               iconSize={sc(22)}
               iconColor={"#FFFFFF"}
               buttonColor={theme.primary}
-              onPress={() => playSelectedServer()}
+              onPress={playSelectedServer}
             />
             <ActionIcon
               title={
@@ -294,15 +241,7 @@ const SearchBar = (props: IProps) => {
               iconSize={sc(20)}
               iconColor={"#FFFFFFDD"}
               buttonColor={"#C8302F"}
-              onPress={() => {
-                if (selected) {
-                  if (favorited) {
-                    removeFromFavorites(selected);
-                  } else {
-                    addToFavorites(selected);
-                  }
-                }
-              }}
+              onPress={toggleFavorite}
             />
           </>
         )}
@@ -313,7 +252,7 @@ const SearchBar = (props: IProps) => {
             iconSize={sc(20)}
             iconColor={"#78613F"}
             buttonColor={"#F1C17A"}
-            onPress={() => clearRecentlyJoined()}
+            onPress={handleClearRecentlyJoined}
           />
         )}
         <ActionIcon
@@ -323,7 +262,7 @@ const SearchBar = (props: IProps) => {
           iconSize={sc(18)}
           iconColor={"#3B833D"}
           buttonColor={"#7AF1AA"}
-          onPress={() => showAddThirdPartyServer(true)}
+          onPress={handleAddServer}
         />
         <ActionIcon
           svg
@@ -338,18 +277,35 @@ const SearchBar = (props: IProps) => {
           iconSize={sc(18)}
           iconColor={theme.textSecondary}
           buttonColor={theme.itemBackgroundColor}
-          onPress={() => showSideLists(!sideLists)}
+          onPress={handleSideListsToggle}
         />
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   searchContainer: {
     height: sc(60),
     flexDirection: "row",
     alignItems: "center",
+  },
+  filterButton: {
+    height: sc(35),
+    width: sc(35),
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: sc(5),
+  },
+  badgeContainer: {
+    position: "absolute",
+    bottom: -sc(2),
+    right: -sc(3),
+  },
+  badge: {
+    borderRadius: sc(30),
+    height: sc(12),
+    width: sc(12),
   },
   inputContainer: {
     height: sc(36),
@@ -360,6 +316,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: sc(5),
     overflow: "hidden",
+  },
+  searchIconContainer: {
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  textInput: {
+    height: "100%",
+    backgroundColor: "transparent",
+    flex: 1,
+    fontFamily: "Proxima Nova Regular",
+    fontSize: sc(17),
+    paddingHorizontal: 5,
+    // @ts-ignore
+    outlineStyle: "none",
+  },
+  clearButton: {
+    height: "100%",
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  actionButtonsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: 200,
+    justifyContent: "flex-end",
   },
   rightSideIcons: {
     marginLeft: sc(10),

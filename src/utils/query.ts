@@ -1,34 +1,24 @@
-import { invoke_rpc } from "../api/rpc";
+import { invoke } from "@tauri-apps/api";
 import { usePersistentServers, useServers } from "../states/servers";
 import { Log } from "./logger";
 import { ListType, Server } from "./types";
 
-const OMP_EXTRA_INFO_CHECK_DELAY = 5000; // 10 seconds;
-const ompExtraInfoLastCheck: { [x: string]: number } = {};
-
 export const queryServer = (
   server: Server,
   listType: ListType = "internet",
-  queryType: "all" | "basic" = "all"
+  queryType: "all" | "basic" = "all",
+  pingOnly = false
 ) => {
   try {
     const { ip, port } = server;
 
-    getServerInfo(ip, port, listType);
-    getServerPing(ip, port, listType);
-    getServerRules(ip, port, listType);
-
-    if (queryType === "all") {
-      getServerPlayers(ip, port, listType);
-      if (ompExtraInfoLastCheck[`${ip}:${port}`]) {
-        if (
-          Date.now() - ompExtraInfoLastCheck[`${ip}:${port}`] >
-          OMP_EXTRA_INFO_CHECK_DELAY
-        ) {
-          getServerOmpExtraInfo(ip, port, listType);
-        }
+    if (pingOnly) {
+      queryServerImpl(ip, port, false, false, false, false, true, listType);
+    } else {
+      if (queryType === "basic") {
+        queryServerImpl(ip, port, true, false, false, false, true, listType);
       } else {
-        getServerOmpExtraInfo(ip, port, listType);
+        queryServerImpl(ip, port, true, true, true, true, true, listType);
       }
     }
   } catch (error) {
@@ -36,28 +26,79 @@ export const queryServer = (
   }
 };
 
-const getServerInfo = async (ip: string, port: number, listType: ListType) => {
+const queryServerImpl = async (
+  ip: string,
+  port: number,
+  info: boolean,
+  extraInfo: boolean,
+  players: boolean,
+  rules: boolean,
+  ping: boolean,
+  listType: ListType
+) => {
   try {
-    const serverInfo: any = await invoke_rpc("request_server_info", {
-      ip: ip,
-      port: port,
-    });
+    const result: any = JSON.parse(
+      await invoke("query_server", {
+        ip: ip,
+        port: port,
+        info,
+        extraInfo,
+        players,
+        rules,
+        ping,
+      })
+    );
 
-    if (serverInfo === "no_data" || serverInfo == "timed out") {
-      return Log.debug(
-        "[query.ts: getServerInfo]",
-        "There was a problem getting server main info"
-      );
+    if (result.info) {
+      result.info = JSON.parse(result.info);
+      if (result.info.error !== true) {
+        setServerInfo(ip, port, result.info, listType);
+      }
     }
 
-    let queryObj = JSON.parse(serverInfo);
+    if (result.players) {
+      result.players = JSON.parse(result.players);
+      if (result.players.error !== true) {
+        setServerPlayers(ip, port, result.players, listType);
+      }
+    }
+
+    if (result.rules) {
+      result.rules = JSON.parse(result.rules);
+      if (result.rules.error !== true) {
+        setServerRules(ip, port, result.rules, listType);
+      }
+    }
+
+    if (result.extra_info) {
+      result.extra_info = JSON.parse(result.extra_info);
+      if (result.extra_info.error !== true) {
+        setServerOmpExtraInfo(ip, port, result.extra_info, listType);
+      }
+    }
+
+    if (result.ping != null && typeof result.ping === "number") {
+      setServerPing(ip, port, result.ping, listType);
+    }
+  } catch (e) {
+    Log.debug("[query.ts: queryServerImpl]", e);
+  }
+};
+
+const setServerInfo = async (
+  ip: string,
+  port: number,
+  res: any,
+  listType: ListType
+) => {
+  try {
     const data = {
-      hasPassword: queryObj.password,
-      playerCount: queryObj.players,
-      maxPlayers: queryObj.max_players,
-      hostname: queryObj.hostname,
-      gameMode: queryObj.gamemode,
-      language: queryObj.language,
+      hasPassword: res.password,
+      playerCount: res.players,
+      maxPlayers: res.max_players,
+      hostname: res.hostname,
+      gameMode: res.gamemode,
+      language: res.language,
     };
 
     let server = getServerFromList(ip, port, listType);
@@ -70,34 +111,17 @@ const getServerInfo = async (ip: string, port: number, listType: ListType) => {
   }
 };
 
-const getServerPlayers = async (
+const setServerPlayers = async (
   ip: string,
   port: number,
+  res: any,
   listType: ListType
 ) => {
   try {
-    const serverPlayers = await invoke_rpc("request_server_players", {
-      ip: ip,
-      port: port,
-    });
-
-    if (serverPlayers === "no_data" || serverPlayers == "timed out") {
-      return Log.debug(
-        "[query.ts: getServerPlayers]",
-        "There was a problem getting server player list"
-      );
-    }
-
     let server = getServerFromList(ip, port, listType);
-
     if (server) {
-      let queryObj = JSON.parse(serverPlayers);
-
-      if (queryObj.error) {
-        server = { ...server };
-        updateServerEveryWhere(server);
-      } else if (Array.isArray(queryObj)) {
-        server = { ...server, players: [...queryObj] };
+      if (Array.isArray(res)) {
+        server = { ...server, players: [...res] };
         updateServerEveryWhere(server);
       }
     }
@@ -106,31 +130,18 @@ const getServerPlayers = async (
   }
 };
 
-const getServerRules = async (ip: string, port: number, listType: ListType) => {
+const setServerRules = async (
+  ip: string,
+  port: number,
+  res: any,
+  listType: ListType
+) => {
   try {
-    const serverRules = await invoke_rpc("request_server_rules", {
-      ip: ip,
-      port: port,
-    });
-
-    if (
-      serverRules === "no_data" ||
-      serverRules == "timed out" ||
-      !Array.isArray(JSON.parse(serverRules))
-    ) {
-      return Log.debug(
-        "[query.ts: getServerRules]",
-        "There was a problem getting server rule list"
-      );
-    }
-
     let server = getServerFromList(ip, port, listType);
-
     if (server) {
-      let queryObj = JSON.parse(serverRules);
       const rules: Server["rules"] = {} as Server["rules"];
 
-      queryObj.forEach((rule: [string, string]) => {
+      res.forEach((rule: [string, string]) => {
         rules[rule[0]] = rule[1];
       });
 
@@ -152,50 +163,33 @@ const getServerRules = async (ip: string, port: number, listType: ListType) => {
   }
 };
 
-const getServerOmpExtraInfo = async (
+const setServerOmpExtraInfo = async (
   ip: string,
   port: number,
+  res: any,
   listType: ListType
 ) => {
-  ompExtraInfoLastCheck[`${ip}:${port}`] = Date.now();
-
   try {
-    const serverOmpExtraInfo = await invoke_rpc(
-      "request_server_omp_extra_info",
-      {
-        ip: ip,
-        port: port,
-      }
-    );
-
     let server = getServerFromList(ip, port, listType);
     if (server) {
-      if (
-        serverOmpExtraInfo === "no_data" ||
-        serverOmpExtraInfo == "timed out"
-      ) {
-        return;
-      }
-
-      const data = JSON.parse(serverOmpExtraInfo);
-      if (data) {
+      if (res) {
         server = {
           ...server,
           omp: {
             bannerLight:
-              data.light_banner_url && data.light_banner_url.length
-                ? data.light_banner_url
+              res.light_banner_url && res.light_banner_url.length
+                ? res.light_banner_url
                 : undefined,
             bannerDark:
-              data.dark_banner_url && data.dark_banner_url.length
-                ? data.dark_banner_url
+              res.dark_banner_url && res.dark_banner_url.length
+                ? res.dark_banner_url
                 : undefined,
             discordInvite:
-              data.discord_link && data.discord_link.length
-                ? data.discord_link
+              res.discord_link && res.discord_link.length
+                ? res.discord_link
                 : undefined,
             logo:
-              data.logo_url && data.logo_url.length ? data.logo_url : undefined,
+              res.logo_url && res.logo_url.length ? res.logo_url : undefined,
           },
         };
         updateServerEveryWhere(server);
@@ -204,25 +198,23 @@ const getServerOmpExtraInfo = async (
   } catch (e) {}
 };
 
-const getServerPing = async (ip: string, port: number, listType: ListType) => {
+const setServerPing = async (
+  ip: string,
+  port: number,
+  res: any,
+  listType: ListType
+) => {
   try {
-    const serverPing = parseInt(
-      await invoke_rpc("ping_server", {
-        ip: ip,
-        port: port,
-      })
-    );
-
     let server = getServerFromList(ip, port, listType);
     if (server) {
       let ping = server.ping;
 
-      if (!isNaN(serverPing)) {
-        if (serverPing !== 9999) {
-          ping = serverPing;
+      if (!isNaN(res)) {
+        if (res !== 9999) {
+          ping = res;
         } else {
           if (server.ping === 0) {
-            ping = serverPing;
+            ping = res;
           }
         }
       } else {

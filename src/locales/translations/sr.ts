@@ -101,4 +101,16 @@ export default {
     reconnect: "Повежи се поново",
     settings_advanced_discord_status_requires_restart:
     "(Захтева поновно покретање игре да би акција ступила на снагу)", 
+    settings_export_favorite_list_file: "Извези листу омиљених у фајл",
+    settings_import_favorite_list_file: "Увези листу омиљених из фајла",
+    export_no_servers_description: "Немате омиљене сервере за извоз.",
+    export_successful_title: "Извоз завршен",
+    export_successful_description: "Листа сервера је успешно извезена.",
+    export_failed_title: "Извоз неуспешан",
+    export_failed_description: "Дошло је до грешке приликом извоза омиљених сервера.",
+    import_successful_title: "Увоз завршен",
+    import_successful_description: "Листа сервера је успешно увезена.",
+    import_failed_title: "Увоз неуспешан",
+    import_failed_description: "Дошло је до грешке приликом увоза омиљених сервера.",
+    import_invalid_data_description: "Изабрани фајл садржи неважеће податке. Молимо изаберите важећи фајл листе омиљених.",
 };

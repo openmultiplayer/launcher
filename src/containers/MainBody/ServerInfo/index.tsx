@@ -6,8 +6,8 @@ import Text from "../../../components/Text";
 import { images } from "../../../constants/images";
 import { useServers } from "../../../states/servers";
 import { useTheme } from "../../../states/theme";
-import { validateWebUrl } from "../../../utils/helpers";
 import { sc } from "../../../utils/sizeScaler";
+import { validateWebUrl } from "../../../utils/validation";
 import AdditionalInfo from "./AdditionalInfo";
 import PlayerList from "./PlayerList";
 
@@ -25,35 +25,14 @@ const ServerInfo = () => {
   }, [selected]);
 
   const bannerUrl = useMemo(() => {
-    if (selected) {
-      if (selected.omp) {
-        const dark = selected.omp.bannerDark;
-        const light = selected.omp.bannerLight;
-        if (themeType === "dark") {
-          if (dark) {
-            return dark;
-          } else {
-            if (light) {
-              return light;
-            } else {
-              return "";
-            }
-          }
-        } else {
-          if (light) {
-            return light;
-          } else {
-            if (dark) {
-              return dark;
-            } else {
-              return "";
-            }
-          }
-        }
-      }
-    }
-    return "";
-  }, [selected?.omp, themeType]);
+    if (!selected?.omp) return "";
+
+    const { bannerDark, bannerLight } = selected.omp;
+    const preferredBanner = themeType === "dark" ? bannerDark : bannerLight;
+    const fallbackBanner = themeType === "dark" ? bannerLight : bannerDark;
+
+    return preferredBanner || fallbackBanner || "";
+  }, [selected?.omp?.bannerDark, selected?.omp?.bannerLight, themeType]);
 
   return (
     <View style={styles.serverInfoView}>

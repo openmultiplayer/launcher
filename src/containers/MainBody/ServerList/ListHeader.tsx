@@ -43,7 +43,7 @@ const ListHeader = () => {
               color={theme.primary}
               style={{ marginRight: 2, top: -1 }}
             >
-              {searchData.sortName === "descending" ? "↓" : "↑"}
+              {searchData.sortName === "descending" ? "↑" : "↓"}
             </Text>
           )}
           <Text
@@ -84,7 +84,7 @@ const ListHeader = () => {
               color={theme.primary}
               style={{ marginRight: 2, top: -1 }}
             >
-              {searchData.sortPing === "descending" ? "↓" : "↑"}
+              {searchData.sortPing === "descending" ? "↑" : "↓"}
             </Text>
           )}
           <Text
@@ -118,7 +118,7 @@ const ListHeader = () => {
               color={theme.primary}
               style={{ marginRight: 2, top: -1 }}
             >
-              {searchData.sortMode === "descending" ? "↓" : "↑"}
+              {searchData.sortMode === "descending" ? "↑" : "↓"}
             </Text>
           )}
           <Text
@@ -151,7 +151,7 @@ const ListHeader = () => {
               color={theme.primary}
               style={{ marginRight: 2, top: -1 }}
             >
-              {searchData.sortPlayer === "descending" ? "↓" : "↑"}
+              {searchData.sortPlayer === "descending" ? "↑" : "↓"}
             </Text>
           )}
           <Text

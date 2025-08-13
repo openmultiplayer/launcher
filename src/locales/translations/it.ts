@@ -106,5 +106,17 @@ export default {
   add_or_play_external_server: "Aggiungi ai favoriti o gioca",
   reconnect: "Ricollegati",
   settings_advanced_discord_status_requires_restart:
-    "(Richiede riavvio del gioco per avere effetto)",  
+    "(Richiede riavvio del gioco per avere effetto)",
+  settings_export_favorite_list_file: "Esporta lista preferiti su file",
+  settings_import_favorite_list_file: "Importa lista preferiti da file",
+  export_no_servers_description: "Non hai alcun server preferito da esportare.",
+  export_successful_title: "Esportazione Completata",
+  export_successful_description: "Lista preferiti esportata con successo.",
+  export_failed_title: "Esportazione Fallita",
+  export_failed_description: "Si è verificato un errore mentre esportavi i tuoi server preferiti.",
+  import_successful_title: "Importazione Completata",
+  import_successful_description: "Lista preferiti importata con successo.",
+  import_failed_title: "Importazione Fallita",
+  import_failed_description: "Si è verificato un errore mentre importavi i tuoi server preferiti.",
+  import_invalid_data_description: "Il file selezionato contiene dati non validi. Seleziona una lista preferiti valida.",	
 };

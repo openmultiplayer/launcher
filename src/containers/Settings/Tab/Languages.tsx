@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import CheckBox from "../../../components/CheckBox";
+import RadioButton from "../../../components/RadioButton";
 import Text from "../../../components/Text";
 import { getLanguages } from "../../../locales";
 import { useGenericPersistentState } from "../../../states/genericStates";
@@ -49,7 +49,7 @@ const Appearance = () => {
                   hideSettings();
                 }}
               >
-                <CheckBox
+                <RadioButton
                   value={language === lang.type}
                   style={{ marginRight: sc(10) }}
                 />

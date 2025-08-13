@@ -9,8 +9,8 @@ import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
 import { checkDirectoryValidity } from "../../../utils/game";
 import { Log } from "../../../utils/logger";
-import { stateStorage } from "../../../utils/stateStorage";
 import { sc } from "../../../utils/sizeScaler";
+import { stateStorage } from "../../../utils/stateStorage";
 import { Server } from "../../../utils/types";
 
 const General = () => {

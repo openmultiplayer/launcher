@@ -11,7 +11,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
-import { useMemo, useRef } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { useServers } from "../states/servers";
@@ -30,7 +30,7 @@ ChartJS.register(
 
 const MAX_PING_ELEMENTS = 25;
 
-export const options: ChartOptions<"line"> = {
+const chartOptions: ChartOptions<"line"> = {
   responsive: true,
   maintainAspectRatio: false,
   showLine: true,
@@ -65,73 +65,83 @@ export const options: ChartOptions<"line"> = {
   },
 };
 
-const chartStyle = (theme: any) => {
-  return {
-    borderWidth: 2,
-    borderColor: theme.primary,
-    hoverBackgroundColor: theme.primary,
-    hoverBorderColor: theme.primary,
-    backgroundColor: theme.primary,
-    pointBackgroundColor: "white",
-    pointBorderColor: theme.primary,
-    pointBorderWidth: 2,
-    pointRadius: 3,
-    pointHoverRadius: 3,
-    pointHoverBorderWidth: 2,
-    pointHoverBackgroundColor: "white",
-    pointHoverBorderColor: theme.primary,
-  };
-};
-
 const labels = Array(MAX_PING_ELEMENTS).fill("");
 
-interface IProps {
+interface ChartProps {
   containerStyle?: StyleProp<ViewStyle>;
 }
 
-const Chart = (props: IProps) => {
+const Chart = memo<ChartProps>(({ containerStyle }) => {
   const { selected } = useServers();
   const { theme } = useTheme();
   const selectedServerAddr = useRef<string>("");
   const pingList = useRef<number[]>(Array(MAX_PING_ELEMENTS).fill(0));
 
+  const chartStyle = useMemo(
+    () => ({
+      borderWidth: 2,
+      borderColor: theme.primary,
+      hoverBackgroundColor: theme.primary,
+      hoverBorderColor: theme.primary,
+      backgroundColor: theme.primary,
+      pointBackgroundColor: "white",
+      pointBorderColor: theme.primary,
+      pointBorderWidth: 2,
+      pointRadius: 3,
+      pointHoverRadius: 3,
+      pointHoverBorderWidth: 2,
+      pointHoverBackgroundColor: "white",
+      pointHoverBorderColor: theme.primary,
+    }),
+    [theme.primary]
+  );
+
+  const resetPingData = useCallback(() => {
+    pingList.current.fill(0);
+  }, []);
+
   const data = useMemo(() => {
     if (selected) {
-      if (selectedServerAddr.current !== `${selected.ip}:${selected.port}`) {
-        selectedServerAddr.current = `${selected.ip}:${selected.port}`;
-        pingList.current.fill(0);
+      const currentServerAddr = `${selected.ip}:${selected.port}`;
+
+      if (selectedServerAddr.current !== currentServerAddr) {
+        selectedServerAddr.current = currentServerAddr;
+        resetPingData();
       }
 
       pingList.current.shift();
       pingList.current.push(selected.ping);
 
       return {
-        labels: labels,
+        labels,
         datasets: [
           {
-            data: pingList.current,
-            ...chartStyle(theme),
+            data: [...pingList.current],
+            ...chartStyle,
           },
         ],
       } as ChartData<"line", number[], string>;
     }
 
     return {
-      labels: labels,
+      labels,
       datasets: [
         {
           data: Array(MAX_PING_ELEMENTS).fill(0),
-          ...chartStyle(theme),
+          ...chartStyle,
         },
       ],
     } as ChartData<"line", number[], string>;
-  }, [selected?.ping]);
+  }, [selected?.ping, chartStyle, resetPingData]);
 
   return (
-    <View style={props.containerStyle}>
-      <Line options={options} data={data} updateMode="active" />
+    <View style={containerStyle}>
+      <Line options={chartOptions} data={data} updateMode="active" />
     </View>
   );
-};
+});
+
+Chart.displayName = "Chart";
 
 export default Chart;
+export { chartOptions as options };

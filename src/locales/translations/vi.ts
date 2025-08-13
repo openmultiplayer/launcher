@@ -99,4 +99,6 @@ export default {
     "Vui lòng chọn phiên bản khác hoặc tải xuống và cài đặt SA-MP theo cách thủ công.",
   add_or_play_external_server: "Thêm vào yêu thích hoặc chơi",
   reconnect: "Kết nối lại",
+  settings_advanced_discord_status_requires_restart:
+    "(Cần phải khởi động lại trò chơi để thực hiện hành động)",
 };

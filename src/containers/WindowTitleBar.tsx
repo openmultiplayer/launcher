@@ -1,64 +1,64 @@
+import { invoke } from "@tauri-apps/api";
 import { appWindow } from "@tauri-apps/api/window";
 import { t } from "i18next";
+import { memo, useCallback, useMemo } from "react";
 import { ColorValue, Pressable, StyleSheet, View } from "react-native";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
+import { IN_GAME, IN_GAME_PROCESS_ID } from "../constants/app";
 import { images } from "../constants/images";
 import { useSettingsModal } from "../states/settingsModal";
 import { useTheme } from "../states/theme";
 import { sc } from "../utils/sizeScaler";
-import { IN_GAME } from "../constants/app";
 
-const NativeWindowTitleBarButtons = ({
-  size = sc(30),
-  image,
-  onPress,
-  iconSize = 15,
-  title = "",
-}: {
+interface NativeButtonProps {
   size?: number;
   iconSize?: number;
   image: string;
   title?: string;
   onPress: () => void;
-}) => {
-  const { theme } = useTheme();
-  return (
-    <div
-      className="titlebar-button"
-      style={{ height: size, width: size, borderRadius: sc(3) }}
-    >
-      <Pressable
-        style={{
-          height: "100%",
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={onPress}
-      >
-        <Icon
-          title={title}
-          image={image}
-          size={iconSize}
-          color={theme.textPrimary}
-        />
-      </Pressable>
-    </div>
-  );
-};
+}
 
-const CustomWindowTitleBarButtons = ({
-  size = sc(30),
-  image,
-  onPress,
-  iconSize = sc(20),
-  title = "",
-  className,
-  marginRight = 0,
-  color,
-  backgroundColor,
-}: {
+const NativeWindowTitleBarButtons = memo<NativeButtonProps>(
+  ({ size = sc(30), image, onPress, iconSize = 15, title = "" }) => {
+    const { theme } = useTheme();
+
+    const buttonStyle = useMemo(
+      () => ({
+        height: size,
+        width: size,
+        borderRadius: sc(3),
+      }),
+      [size]
+    );
+
+    const pressableStyle = useMemo(
+      () => ({
+        height: "100%",
+        width: "100%",
+        justifyContent: "center" as const,
+        alignItems: "center" as const,
+      }),
+      []
+    );
+
+    return (
+      <div className="titlebar-button" style={buttonStyle}>
+        {/* @ts-ignore */}
+        <Pressable style={pressableStyle} onPress={onPress}>
+          <Icon
+            title={title}
+            image={image}
+            size={iconSize}
+            color={theme.textPrimary}
+          />
+        </Pressable>
+      </div>
+    );
+  }
+);
+
+interface CustomButtonProps {
   size?: number;
   iconSize?: number;
   image: string;
@@ -68,115 +68,171 @@ const CustomWindowTitleBarButtons = ({
   className?: string;
   color?: ColorValue;
   backgroundColor?: string;
-}) => {
-  const isSvg = image.includes(".svg");
-  return (
-    <div
-      className={className}
-      style={{
+}
+
+const CustomWindowTitleBarButtons = memo<CustomButtonProps>(
+  ({
+    size = sc(30),
+    image,
+    onPress,
+    iconSize = sc(20),
+    title = "",
+    className,
+    marginRight = 0,
+    color,
+    backgroundColor,
+  }) => {
+    const isSvg = useMemo(() => image.includes(".svg"), [image]);
+
+    const containerStyle = useMemo(
+      () => ({
         height: size,
         width: size,
         borderRadius: sc(3),
-        marginRight: marginRight,
-        backgroundColor: backgroundColor,
-      }}
-    >
-      <Pressable
-        style={{
-          height: "100%",
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={onPress}
-      >
-        <Icon
-          svg={isSvg}
-          title={title}
-          image={image}
-          size={iconSize}
-          color={color}
-        />
-      </Pressable>
-    </div>
-  );
-};
+        marginRight,
+        backgroundColor,
+      }),
+      [size, marginRight, backgroundColor]
+    );
 
-const WindowTitleBar = () => {
+    const pressableStyle = useMemo(
+      () => ({
+        height: "100%",
+        width: "100%",
+        justifyContent: "center" as const,
+        alignItems: "center" as const,
+      }),
+      []
+    );
+
+    return (
+      <div className={className} style={containerStyle}>
+        {/* @ts-ignore */}
+        <Pressable style={pressableStyle} onPress={onPress}>
+          <Icon
+            svg={isSvg}
+            title={title}
+            image={image}
+            size={iconSize}
+            color={color}
+          />
+        </Pressable>
+      </div>
+    );
+  }
+);
+
+const WindowTitleBar = memo(() => {
   const { theme, themeType, setTheme } = useTheme();
   const { show: showSettings } = useSettingsModal();
 
-  return (
-    <View
-      style={{
+  const containerStyles = useMemo(
+    () => ({
+      main: {
         width: "100%",
         display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
+        flexDirection: "row" as const,
+        justifyContent: "space-between" as const,
+        alignItems: "center" as const,
         paddingTop: sc(15),
         paddingHorizontal: sc(15),
         paddingBottom: sc(8),
-      }}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          flex: 1,
-        }}
-      >
-        <View
-          style={[
-            styles.logoContainer,
-            { backgroundColor: theme.itemBackgroundColor },
-          ]}
-        >
+      },
+      leftSection: {
+        flexDirection: "row" as const,
+        alignItems: "center" as const,
+        flex: 1,
+      },
+      logoContainer: [
+        styles.logoContainer,
+        { backgroundColor: theme.itemBackgroundColor },
+      ],
+      titleText: {
+        marginLeft: sc(12),
+      },
+      dragRegion: {
+        position: "absolute" as const,
+        top: 0,
+        left: 0,
+        height: sc(32),
+        width: "100%",
+        display: "flex",
+        flexDirection: "row" as const,
+        justifyContent: "space-between" as const,
+        alignItems: "center" as const,
+        padding: sc(15),
+      },
+      rightSection: {
+        flexDirection: "row" as const,
+        alignItems: "center" as const,
+        height: "100%",
+      },
+    }),
+    [theme.itemBackgroundColor]
+  );
+
+  const handleThemeToggle = useCallback(() => {
+    setTheme(themeType === "dark" ? "light" : "dark");
+  }, [themeType, setTheme]);
+
+  const handleMinimize = useCallback(() => {
+    appWindow.minimize();
+  }, []);
+
+  const handleMaximize = useCallback(() => {
+    appWindow.toggleMaximize();
+  }, []);
+
+  const handleClose = useCallback(() => {
+    if (IN_GAME) {
+      invoke("send_message_to_game", {
+        id: IN_GAME_PROCESS_ID,
+        message: "close_overlay",
+      });
+    }
+
+    setTimeout(
+      () => {
+        appWindow.close();
+      },
+      IN_GAME ? 300 : 0
+    );
+  }, []);
+
+  const themeIcon = useMemo(
+    () =>
+      themeType === "dark" ? images.icons.lightTheme : images.icons.darkTheme,
+    [themeType]
+  );
+
+  return (
+    // @ts-ignore
+    <View style={containerStyles.main}>
+      <View style={containerStyles.leftSection}>
+        <View style={containerStyles.logoContainer}>
           <Icon image={images.icons.omp} size={sc(22)} />
         </View>
         <Text
           semibold
           size={3}
           color={theme.textPrimary}
-          style={{ marginLeft: sc(12) }}
+          style={containerStyles.titleText}
         >
           Open Multiplayer
         </Text>
       </View>
       <div
-        data-tauri-drag-region
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          height: sc(32),
-          width: "100%",
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: sc(15),
-        }}
+        data-tauri-drag-region={!IN_GAME}
+        style={containerStyles.dragRegion}
       />
-      <View
-        style={{ flexDirection: "row", alignItems: "center", height: "100%" }}
-      >
+      {/* @ts-ignore */}
+      <View style={containerStyles.rightSection}>
         <CustomWindowTitleBarButtons
-          title={""}
+          title=""
           iconSize={sc(30)}
-          image={
-            themeType === "dark"
-              ? images.icons.lightTheme
-              : images.icons.darkTheme
-          }
+          image={themeIcon}
           marginRight={sc(10)}
-          onPress={() => {
-            if (themeType === "dark") {
-              setTheme("light");
-            } else {
-              setTheme("dark");
-            }
-          }}
+          onPress={handleThemeToggle}
         />
         {!IN_GAME && (
           <>
@@ -186,29 +242,29 @@ const WindowTitleBar = () => {
               marginRight={sc(16)}
               color={theme.textSecondary}
               backgroundColor={theme.itemBackgroundColor}
-              onPress={() => showSettings()}
+              onPress={showSettings}
             />
             <NativeWindowTitleBarButtons
               title={t("minimize")}
               image={images.icons.windowMinimize}
-              onPress={() => appWindow.minimize()}
+              onPress={handleMinimize}
             />
             <NativeWindowTitleBarButtons
               title={t("maximize")}
               image={images.icons.windowMaximize}
-              onPress={() => appWindow.toggleMaximize()}
+              onPress={handleMaximize}
             />
           </>
         )}
         <NativeWindowTitleBarButtons
           title={t("close")}
           image={images.icons.windowClose}
-          onPress={() => appWindow.close()}
+          onPress={handleClose}
         />
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   logoContainer: {
@@ -219,5 +275,9 @@ const styles = StyleSheet.create({
     borderRadius: sc(5),
   },
 });
+
+NativeWindowTitleBarButtons.displayName = "NativeWindowTitleBarButtons";
+CustomWindowTitleBarButtons.displayName = "CustomWindowTitleBarButtons";
+WindowTitleBar.displayName = "WindowTitleBar";
 
 export default WindowTitleBar;

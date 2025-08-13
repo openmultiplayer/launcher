@@ -1,316 +1,474 @@
 import { fs, path } from "@tauri-apps/api";
 import { FileEntry } from "@tauri-apps/api/fs";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { download } from "tauri-plugin-upload-api";
+import { getUpdateInfo } from "../../api/apis";
 import { invoke_rpc } from "../../api/rpc";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { validFileChecksums } from "../../constants/app";
 import { images } from "../../constants/images";
 import i18n from "../../locales";
+import { UpdateInfo, useAppState } from "../../states/app";
 import { useGenericPersistentState } from "../../states/genericStates";
 import { useTheme } from "../../states/theme";
 import { formatBytes } from "../../utils/helpers";
 import { sc } from "../../utils/sizeScaler";
-import { getUpdateInfo } from "../../api/apis";
-import { UpdateInfo, useAppState } from "../../states/app";
 
-const LoadingScreen = (props: { onEnd: () => void }) => {
+interface LoadingScreenProps {
+  onEnd: () => void;
+}
+
+interface DownloadProgress {
+  size: number;
+  total: number;
+  percent: number;
+}
+
+enum LoadingStage {
+  INITIALIZING = "INITIALIZING",
+  VALIDATING_FILES = "VALIDATING_FILES",
+  DOWNLOADING_SAMP = "DOWNLOADING_SAMP",
+  DOWNLOADING_OMP = "DOWNLOADING_OMP",
+  EXTRACTING = "EXTRACTING",
+  COMPLETE = "COMPLETE",
+}
+
+const INITIAL_DOWNLOAD_STATE: DownloadProgress = {
+  size: 0,
+  total: 0,
+  percent: 0,
+};
+
+const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
   const { theme, themeType } = useTheme();
   const { language } = useGenericPersistentState();
-  const [downloading, setDownloading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState<LoadingStage>(
+    LoadingStage.INITIALIZING
+  );
+  const [downloadInfo, setDownloadInfo] = useState<DownloadProgress>(
+    INITIAL_DOWNLOAD_STATE
+  );
+  const [currentTask, setCurrentTask] = useState("Getting ready to launch...");
   const downloadedSize = useRef(0);
-  const [downloadInfo, setDownloadInfo] = useState<{
-    size: number;
-    total: number;
-    percent: number;
-  }>({ size: 0, total: 0, percent: 0 });
+  const abortController = useRef<AbortController | null>(null);
 
   useEffect(() => {
     i18n.changeLanguage(language);
   }, [language]);
 
   useEffect(() => {
-    validateResources();
+    const initializeApp = async () => {
+      try {
+        setLoadingStage(LoadingStage.VALIDATING_FILES);
+        setCurrentTask("Validating resources...");
+        await validateResources();
+      } catch (error) {
+        console.error("Failed to initialize app:", error);
+        setCurrentTask("Failed to initialize. Please restart the application.");
+      }
+    };
+
+    initializeApp();
+
+    return () => {
+      abortController.current?.abort();
+    };
   }, []);
 
-  const finishLoading = (delay: number) => {
-    setTimeout(() => {
-      props.onEnd();
-    }, delay);
-  };
+  const finishLoading = useCallback(
+    (delay: number = 1000) => {
+      setLoadingStage(LoadingStage.COMPLETE);
+      setCurrentTask("Ready to launch!");
+      setTimeout(() => {
+        onEnd();
+      }, delay);
+    },
+    [onEnd]
+  );
 
-  const downloadSAMPFiles = async (samp: string) => {
-    console.log("start", "downloadSAMPFiles");
-    const archive = await path.join(samp, "samp_clients.7z");
-    setDownloading(true);
-    setDownloadInfo({ size: 0, total: 0, percent: 0 });
-    try {
-      download(
-        "https://assets.open.mp/samp_clients.7z",
-        archive,
-        async (progress, total) => {
-          downloadedSize.current += progress;
-          setDownloadInfo({
-            size: downloadedSize.current,
-            total: total,
-            percent: (downloadedSize.current * 100) / total,
-          });
-          if (downloadedSize.current >= total) {
-            await invoke_rpc("extract_7z", {
-              path: archive,
-              output_path: samp,
-            });
-            downloadedSize.current = 0;
-            setDownloading(false);
-            processFileChecksums(false);
-          }
-          // console.log(`Downloaded ${downloadedSize.current} of ${total} bytes`);
-        }
-      );
-    } catch (e) {
-      console.log("download error", e);
-    }
-  };
+  const resetDownloadState = useCallback(() => {
+    downloadedSize.current = 0;
+    setDownloadInfo(INITIAL_DOWNLOAD_STATE);
+  }, []);
 
-  const downloadOmpFile = async (ompFile: string, link: string) => {
-    setDownloading(true);
-    setDownloadInfo({ size: 0, total: 0, percent: 0 });
-    download(link, ompFile, async (progress, total) => {
+  const updateDownloadProgress = useCallback(
+    (progress: number, total: number) => {
       downloadedSize.current += progress;
+      const percent = total > 0 ? (downloadedSize.current * 100) / total : 0;
       setDownloadInfo({
         size: downloadedSize.current,
-        total: total,
-        percent: (downloadedSize.current * 100) / total,
+        total,
+        percent: Math.min(percent, 100),
       });
-      if (downloadedSize.current >= total) {
-        downloadedSize.current = 0;
-        setDownloading(false);
-        setTimeout(() => processFileChecksums(false), 500);
-      }
-      // console.log(`Downloaded ${downloadedSize.current} of ${total} bytes`);
-    });
-  };
+    },
+    []
+  );
 
-  const collectFiles = async (parent: FileEntry, list: any[]) => {
-    if (parent.children && parent.children.length) {
-      parent.children.forEach((file: any) => collectFiles(file, list));
-    } else {
-      list.push(parent.path);
-    }
-  };
+  const downloadSAMPFiles = useCallback(
+    async (sampPath: string) => {
+      const archive = await path.join(sampPath, "samp_clients.7z");
 
-  const validateFileChecksums = (checksums: string[]) => {
-    const promises: Promise<boolean>[] = [];
+      try {
+        setLoadingStage(LoadingStage.DOWNLOADING_SAMP);
+        setCurrentTask("Downloading SAMP files...");
+        resetDownloadState();
 
-    validFileChecksums.forEach(async (info, _) => {
-      promises.push(
-        new Promise(async (resolve, _) => {
-          let userFile: string | undefined;
-          const path1 = await path.join(info.path, info.name);
-          let found = false;
-          checksums.forEach((checksum) => {
-            const check = checksum.includes(path1);
-            if (check) {
-              userFile = checksum;
-              found = true;
-            }
-          });
+        abortController.current = new AbortController();
 
-          if (!found) {
-            resolve(false);
-          } else {
-            if (userFile && userFile.length) {
-              const parts = userFile.split("|");
-              if (parts[1].length) {
-                const hash = parts[1];
-                if (hash === info.checksum) {
-                  resolve(true);
-                  console.log("validation accepted", info.name);
-                } else {
-                  resolve(false);
+        await new Promise<void>((resolve, reject) => {
+          download(
+            "https://assets.open.mp/samp_clients.7z",
+            archive,
+            async (progress, total) => {
+              if (abortController.current?.signal.aborted) {
+                reject(new Error("Download aborted"));
+                return;
+              }
+
+              updateDownloadProgress(progress, total);
+
+              if (downloadedSize.current >= total) {
+                try {
+                  setLoadingStage(LoadingStage.EXTRACTING);
+                  setCurrentTask("Extracting files...");
+
+                  await invoke_rpc("extract_7z", {
+                    path: archive,
+                    output_path: sampPath,
+                  });
+
+                  resetDownloadState();
+                  resolve();
+                } catch (extractError) {
+                  console.error("Extraction failed:", extractError);
+                  reject(extractError);
                 }
               }
             }
+          );
+        });
+
+        await processFileChecksums(false);
+      } catch (error) {
+        console.error("SAMP files download failed:", error);
+        setCurrentTask(
+          "Failed to download SAMP files. Please check your connection."
+        );
+        throw error;
+      }
+    },
+    [resetDownloadState, updateDownloadProgress]
+  );
+
+  const downloadOmpFile = useCallback(
+    async (ompFile: string, link: string) => {
+      try {
+        setLoadingStage(LoadingStage.DOWNLOADING_OMP);
+        setCurrentTask("Downloading OMP plugin...");
+        resetDownloadState();
+
+        abortController.current = new AbortController();
+
+        await new Promise<void>((resolve, reject) => {
+          download(link, ompFile, async (progress, total) => {
+            if (abortController.current?.signal.aborted) {
+              reject(new Error("Download aborted"));
+              return;
+            }
+
+            updateDownloadProgress(progress, total);
+
+            if (downloadedSize.current >= total) {
+              resetDownloadState();
+              resolve();
+            }
+          });
+        });
+
+        // Small delay to ensure file is fully written
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await processFileChecksums(false);
+      } catch (error) {
+        console.error("OMP file download failed:", error);
+        setCurrentTask(
+          "Failed to download OMP plugin. Please check your connection."
+        );
+        throw error;
+      }
+    },
+    [resetDownloadState, updateDownloadProgress]
+  );
+
+  const collectFiles = useCallback(
+    (parent: FileEntry, list: string[]): void => {
+      if (parent.children?.length) {
+        parent.children.forEach((file) => collectFiles(file, list));
+      } else {
+        list.push(parent.path);
+      }
+    },
+    []
+  );
+
+  const validateFileChecksums = useCallback(
+    async (checksums: string[]): Promise<boolean[]> => {
+      const validationPromises: Promise<boolean>[] = [];
+
+      // Iterate through the Map entries
+      for (const [_, resourceInfo] of validFileChecksums.entries()) {
+        const validationPromise = (async () => {
+          try {
+            const expectedPath = await path.join(
+              resourceInfo.path,
+              resourceInfo.name
+            );
+            const userFile = checksums.find((checksum) =>
+              checksum.includes(expectedPath)
+            );
+
+            if (!userFile) {
+              console.warn(`File not found: ${resourceInfo.name}`);
+              return false;
+            }
+
+            const [, hash] = userFile.split("|");
+            if (!hash || hash !== resourceInfo.checksum) {
+              console.warn(
+                `Checksum mismatch for ${resourceInfo.name}. Expected: ${resourceInfo.checksum}, Got: ${hash}`
+              );
+              return false;
+            }
+
+            console.log(`Validation successful: ${resourceInfo.name}`);
+            return true;
+          } catch (error) {
+            console.error(`Error validating ${resourceInfo.name}:`, error);
+            return false;
           }
-        })
-      );
-    });
+        })();
 
-    return Promise.all(promises);
-  };
-
-  const processOmpPluginVerification = async () => {
-    const updateInfo = useAppState.getState().updateInfo;
-    let response: { success: boolean; info: UpdateInfo | undefined } = {
-      success: false,
-      info: undefined,
-    };
-
-    if (updateInfo === undefined) {
-      response = await getUpdateInfo();
-    } else {
-      response = { success: true, info: updateInfo };
-    }
-
-    if (response.success && response.info) {
-      useAppState.getState().setUpdateInfo(response.info);
-
-      const dir = await path.appLocalDataDir();
-      const ompFolder = await path.join(dir, "omp");
-      const ompFile = await path.join(ompFolder, "omp-client.dll");
-      if (!(await fs.exists(ompFolder))) {
-        fs.createDir(ompFolder);
-        downloadOmpFile(ompFile, response.info.ompPluginDownload);
-        return false;
+        validationPromises.push(validationPromise);
       }
 
-      if (!(await fs.exists(ompFile))) {
-        downloadOmpFile(ompFile, response.info.ompPluginDownload);
-        return false;
-      }
+      return Promise.all(validationPromises);
+    },
+    []
+  );
 
-      const checksums: string[] = JSON.parse(
-        await invoke_rpc("get_checksum_of_files", {
-          list: [ompFile],
-        })
-      );
+  const processOmpPluginVerification =
+    useCallback(async (): Promise<boolean> => {
+      try {
+        setCurrentTask("Verifying OMP plugin...");
 
-      if (checksums.length) {
-        if (response.info.ompPluginChecksum == checksums[0].split("|")[1]) {
-          return true;
+        const currentUpdateInfo = useAppState.getState().updateInfo;
+        let updateInfo: UpdateInfo;
+
+        if (!currentUpdateInfo) {
+          const response = await getUpdateInfo();
+          if (!response.success || !response.data) {
+            console.error("Failed to get update info");
+            return true; // Continue without OMP plugin
+          }
+          updateInfo = response.data;
+          useAppState.getState().setUpdateInfo(updateInfo);
+        } else {
+          updateInfo = currentUpdateInfo;
         }
+
+        const dir = await path.appLocalDataDir();
+        const ompFolder = await path.join(dir, "omp");
+        const ompFile = await path.join(ompFolder, "omp-client.dll");
+
+        // Ensure OMP folder exists
+        if (!(await fs.exists(ompFolder))) {
+          await fs.createDir(ompFolder, { recursive: true });
+        }
+
+        // Check if OMP file exists and is valid
+        if (await fs.exists(ompFile)) {
+          const checksums: string[] = JSON.parse(
+            await invoke_rpc("get_checksum_of_files", { list: [ompFile] })
+          );
+
+          if (checksums.length > 0) {
+            const [, fileHash] = checksums[0].split("|");
+            if (fileHash === updateInfo.ompPluginChecksum) {
+              console.log("OMP plugin is up to date");
+              return true;
+            }
+          }
+        }
+
+        // Download OMP file if missing or outdated
+        console.log("Downloading OMP plugin...");
+        await downloadOmpFile(ompFile, updateInfo.ompPluginDownload);
+        return false; // Indicates we downloaded, need to continue processing
+      } catch (error) {
+        console.error("OMP plugin verification failed:", error);
+        return true; // Continue without OMP plugin
       }
+    }, [downloadOmpFile]);
 
-      downloadOmpFile(ompFile, response.info.ompPluginDownload);
-      return false;
-    }
-    return true;
-  };
+  const processFileChecksums = useCallback(
+    async (isInitialLoad = true) => {
+      try {
+        setCurrentTask("Validating file checksums...");
 
-  const processFileChecksums = async (late = true) => {
-    console.log("start", "processFileChecksums");
-    const dir = await path.appLocalDataDir();
-    const samp = await path.join(dir, "samp");
-    const files = await fs.readDir(samp, { recursive: true });
+        const dir = await path.appLocalDataDir();
+        const sampPath = await path.join(dir, "samp");
 
-    const list: any[] = [];
-    files.forEach((file: any) => collectFiles(file, list));
+        if (!(await fs.exists(sampPath))) {
+          console.log("SAMP directory does not exist");
+          await downloadSAMPFiles(sampPath);
+          return;
+        }
 
-    const checksums: string[] = JSON.parse(
-      await invoke_rpc("get_checksum_of_files", {
-        list: list,
-      })
-    );
+        const files = await fs.readDir(sampPath, { recursive: true });
+        const fileList: string[] = [];
+        files.forEach((file) => collectFiles(file, fileList));
 
-    const results = await validateFileChecksums(checksums);
-    if (results.includes(false)) {
-      await fs.removeDir(samp, { recursive: true });
-      await fs.createDir(samp);
-      downloadSAMPFiles(samp);
-    } else {
-      if (await processOmpPluginVerification()) {
-        finishLoading(late ? 1000 : 1);
-      }
-    }
-    console.log("end", "processFileChecksums");
-  };
+        if (fileList.length === 0) {
+          console.log("No files found in SAMP directory");
+          await downloadSAMPFiles(sampPath);
+          return;
+        }
 
-  const validateResources = async () => {
-    console.log("start", "validateResources");
-    const dir = await path.appLocalDataDir();
-    const samp = await path.join(dir, "samp");
-    console.log("whaaaaqt?")
-    if (await fs.exists(samp)) {
-      const archive = await path.join(samp, "samp_clients.7z");
-      if (await fs.exists(archive)) {
         const checksums: string[] = JSON.parse(
-          await invoke_rpc("get_checksum_of_files", {
-            list: [archive],
-          })
+          await invoke_rpc("get_checksum_of_files", { list: fileList })
         );
 
-        if (checksums.length) {
-          const resource = validFileChecksums.get("samp_clients.7z");
-          if (resource && resource.checksum === checksums[0].split("|")[1]) {
-            processFileChecksums();
-            return;
-          }
+        const validationResults = await validateFileChecksums(checksums);
+
+        if (validationResults.includes(false)) {
+          console.log("File validation failed, re-downloading SAMP files");
+          await fs.removeDir(sampPath, { recursive: true });
+          await fs.createDir(sampPath, { recursive: true });
+          await downloadSAMPFiles(sampPath);
+          return;
         }
-        downloadSAMPFiles(samp);
-      } else {
-        downloadSAMPFiles(samp);
+
+        console.log("File validation successful");
+        const ompVerificationComplete = await processOmpPluginVerification();
+
+        if (ompVerificationComplete) {
+          finishLoading(isInitialLoad ? 1000 : 1);
+        }
+      } catch (error) {
+        console.error("File checksum processing failed:", error);
+        setCurrentTask(
+          "File validation failed. Please restart the application."
+        );
       }
-    } else {
-      fs.createDir(samp);
-      downloadSAMPFiles(samp);
+    },
+    [
+      collectFiles,
+      validateFileChecksums,
+      downloadSAMPFiles,
+      processOmpPluginVerification,
+      finishLoading,
+    ]
+  );
+
+  const validateResources = useCallback(async () => {
+    try {
+      const dir = await path.appLocalDataDir();
+      const sampPath = await path.join(dir, "samp");
+
+      // Check if SAMP directory exists
+      if (!(await fs.exists(sampPath))) {
+        console.log("Creating SAMP directory");
+        await fs.createDir(sampPath, { recursive: true });
+        await downloadSAMPFiles(sampPath);
+        return;
+      }
+
+      // Check if archive exists and is valid
+      const archive = await path.join(sampPath, "samp_clients.7z");
+      if (await fs.exists(archive)) {
+        try {
+          const checksums: string[] = JSON.parse(
+            await invoke_rpc("get_checksum_of_files", { list: [archive] })
+          );
+
+          if (checksums.length > 0) {
+            const resource = validFileChecksums.get("samp_clients.7z");
+            const [, fileHash] = checksums[0].split("|");
+
+            if (resource && resource.checksum === fileHash) {
+              console.log("Archive checksum valid, processing files");
+              await processFileChecksums();
+              return;
+            }
+          }
+        } catch (error) {
+          console.error("Error checking archive:", error);
+        }
+      }
+
+      // Archive doesn't exist or is invalid, download it
+      console.log("Archive missing or invalid, downloading");
+      await downloadSAMPFiles(sampPath);
+    } catch (error) {
+      console.error("Resource validation failed:", error);
+      setCurrentTask(
+        "Resource validation failed. Please restart the application."
+      );
     }
-    console.log("end", "validateResources");
-  };
+  }, [downloadSAMPFiles, processFileChecksums]);
+
+  const dynamicStyles = useMemo(
+    () => ({
+      appView: {
+        backgroundColor: theme.secondary,
+      },
+      progressBarContainer: {
+        backgroundColor: theme.serverListItemBackgroundColor,
+      },
+      progressBarFill: {
+        width: `${downloadInfo.percent}%`,
+        backgroundColor: theme.primary,
+      },
+    }),
+    [theme, downloadInfo.percent]
+  );
 
   const progressBar = useMemo(() => {
     return (
       <>
         <View
-          style={{
-            width: "100%",
-            height: sc(20),
-            borderRadius: 100,
-            backgroundColor: theme.serverListItemBackgroundColor,
-            overflow: "hidden",
-            shadowColor: "#000",
-            shadowOffset: {
-              width: 0,
-              height: 0,
-            },
-            shadowOpacity: 0.85,
-            shadowRadius: 1.84,
-          }}
+          style={[
+            styles.progressBarContainer,
+            dynamicStyles.progressBarContainer,
+          ]}
         >
           <View
-            style={{
-              width: `${downloadInfo.percent}%`,
-              height: "100%",
-              backgroundColor: theme.primary,
-            }}
+            // @ts-ignore
+            style={[styles.progressBarFill, dynamicStyles.progressBarFill]}
           />
         </View>
-        <Text
-          semibold
-          color={theme.textPrimary}
-          style={{
-            textAlign: "left",
-            width: "100%",
-            fontSize: sc(12),
-          }}
-        >
+        <Text semibold color={theme.textPrimary} style={styles.progressText}>
           {formatBytes(downloadInfo.size, 2)}/
           {formatBytes(downloadInfo.total, 2)}
         </Text>
       </>
     );
-  }, [downloadInfo]);
+  }, [
+    downloadInfo,
+    theme.textPrimary,
+    dynamicStyles.progressBarContainer,
+    dynamicStyles.progressBarFill,
+  ]);
 
   return (
     <View style={[styles.app, { padding: 4 }]}>
-      <View
-        style={[
-          styles.appView,
-          {
-            borderRadius: sc(10),
-            backgroundColor: theme.secondary,
-            paddingTop: sc(40),
-            paddingBottom: sc(30),
-            paddingHorizontal: sc(30),
-            alignItems: "center",
-          },
-        ]}
-      >
-        <View style={{ marginBottom: sc(30) }}>
+      <View style={[styles.appView, dynamicStyles.appView]}>
+        <View style={styles.loaderContainer}>
           <div
             className={themeType === "dark" ? "loader-dark" : "loader-light"}
-            style={{ width: sc(120), height: sc(120) }}
+            // @ts-ignore
+            style={styles.loader}
           >
             <span></span>
             <span></span>
@@ -321,45 +479,32 @@ const LoadingScreen = (props: { onEnd: () => void }) => {
             svg
             image={images.logoDark}
             size={sc(120)}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-            }}
+            // @ts-ignore
+            style={styles.logo}
           />
         </View>
         <Text semibold size={3} color={theme.textPrimary}>
-          Getting ready to launch...
+          {currentTask}
         </Text>
-        <View style={{ flex: 1 }} />
-        {downloading ? (
+        <View style={styles.spacer} />
+        {(loadingStage === LoadingStage.DOWNLOADING_SAMP ||
+          loadingStage === LoadingStage.DOWNLOADING_OMP) && (
           <>
             <Text
               semibold
               color={theme.textPrimary}
-              style={{
-                textAlign: "left",
-                width: "100%",
-                fontSize: sc(15),
-                marginBottom: sc(2),
-              }}
+              style={styles.downloadingText}
             >
-              Downloading resources:
+              {loadingStage === LoadingStage.DOWNLOADING_SAMP
+                ? "Downloading SAMP files:"
+                : "Downloading OMP plugin:"}
             </Text>
             {progressBar}
           </>
-        ) : null}
+        )}
       </View>
-      <div
-        data-tauri-drag-region
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          height: "100%",
-          width: "100%",
-        }}
-      />
+      {/*  @ts-ignore */}
+      <div data-tauri-drag-region style={styles.dragRegion} />
     </View>
   );
 };
@@ -382,6 +527,60 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.6,
     shadowRadius: 4.65,
+    borderRadius: sc(10),
+    paddingTop: sc(40),
+    paddingBottom: sc(30),
+    paddingHorizontal: sc(30),
+    alignItems: "center",
+  },
+  loaderContainer: {
+    marginBottom: sc(30),
+  },
+  loader: {
+    width: sc(120),
+    height: sc(120),
+  },
+  logo: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
+  spacer: {
+    flex: 1,
+  },
+  downloadingText: {
+    textAlign: "left",
+    width: "100%",
+    fontSize: sc(15),
+    marginBottom: sc(2),
+  },
+  progressBarContainer: {
+    width: "100%",
+    height: sc(20),
+    borderRadius: 100,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.85,
+    shadowRadius: 1.84,
+  },
+  progressBarFill: {
+    height: "100%",
+  },
+  progressText: {
+    textAlign: "left",
+    width: "100%",
+    fontSize: sc(12),
+  },
+  dragRegion: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: "100%",
+    width: "100%",
   },
 });
 

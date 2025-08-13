@@ -100,4 +100,5 @@ export default {
   gta_path_modal_cant_find_samp_description_2: "Wybierz inną wersję lub pobierz i zainstaluj SA-MP ręcznie.",
   add_or_play_external_server: "Dodaj do ulubionych lub graj",
   reconnect: "Połącz ponownie",
+  settings_advanced_discord_status_requires_restart: "(Wymaga ponownego uruchomienia gry)",
 };

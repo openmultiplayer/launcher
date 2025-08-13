@@ -4,36 +4,52 @@ import { mapAPIResponseServerListToAppStructure } from "../utils/helpers";
 import { Log } from "../utils/logger";
 import { APIResponseServer, Server } from "../utils/types";
 
-export const getCachedList = async () => {
-  return new Promise<{ success: boolean; servers: Server[] }>((resolve, _) => {
-    api
-      .get("/servers/full")
-      .then((response) => {
-        const list: APIResponseServer[] = response.data;
-        if (Array.isArray(list)) {
-          const restructuredList = mapAPIResponseServerListToAppStructure(list);
-          resolve({ success: true, servers: restructuredList });
-        }
-      })
-      .catch((e) => {
-        Log.debug(e);
-        resolve({ success: false, servers: [] });
-      });
-  });
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  error?: string;
+}
+
+export const getCachedList = async (): Promise<ApiResponse<Server[]>> => {
+  try {
+    const response = await api.get<APIResponseServer[]>("/servers/full");
+
+    if (!Array.isArray(response.data)) {
+      Log.debug("Invalid API response: expected array");
+      return { success: false, data: [], error: "Invalid response format" };
+    }
+
+    const restructuredList = mapAPIResponseServerListToAppStructure(
+      response.data
+    );
+
+    // Update server store with the fetched data
+    const { useServers } = await import("../states/servers");
+    useServers.getState().setServers(restructuredList);
+
+    return { success: true, data: restructuredList };
+  } catch (error) {
+    Log.debug("Failed to fetch server list:", error);
+    return {
+      success: false,
+      data: [],
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 };
 
-export const getUpdateInfo = async () => {
-  return new Promise<{ success: boolean; info: UpdateInfo | undefined }>(
-    (resolve, _) => {
-      api
-        .get("/launcher")
-        .then((response) => {
-          resolve({ success: true, info: response.data });
-        })
-        .catch((e) => {
-          Log.debug(e);
-          resolve({ success: false, info: undefined });
-        });
-    }
-  );
+export const getUpdateInfo = async (): Promise<
+  ApiResponse<UpdateInfo | undefined>
+> => {
+  try {
+    const response = await api.get<UpdateInfo>("/launcher");
+    return { success: true, data: response.data };
+  } catch (error) {
+    Log.debug("Failed to fetch update info:", error);
+    return {
+      success: false,
+      data: undefined,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 };

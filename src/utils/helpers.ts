@@ -1,102 +1,111 @@
-import { shell } from "@tauri-apps/api";
+import { invoke, shell } from "@tauri-apps/api";
 import { getVersion } from "@tauri-apps/api/app";
 import { type } from "@tauri-apps/api/os";
 import { t } from "i18next";
-import { getCachedList, getUpdateInfo } from "../api/apis";
+import { getUpdateInfo } from "../api/apis";
 import { useAppState } from "../states/app";
 import { useMessageBox } from "../states/messageModal";
-import { usePersistentServers, useServers } from "../states/servers";
+import { usePersistentServers } from "../states/servers";
+import { chunk } from "./array";
 import { Log } from "./logger";
 import { queryServer } from "./query";
 import {
   APIResponseServer,
-  Player,
   SAMPDLLVersions,
+  SAMP_DLL_VERSIONS,
   SearchData,
   Server,
+  SortType,
 } from "./types";
+import { validateServerAddressIPv4 } from "./validation";
 
-const PARALLEL_SERVERS_TO_UPDATE_COUNT = 2;
-const PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL = 2000;
+// Server update configuration
+const SERVER_UPDATE_CONFIG = {
+  BATCH_SIZE: 2,
+  BATCH_DELAY: 2000,
+  INITIAL_DELAY: 500,
+} as const;
 
-export const languageFilters: {
-  name: string;
-  keywords: string[];
-}[] = [];
+// Language filter configuration
+interface LanguageFilter {
+  readonly name: string;
+  readonly keywords: readonly string[];
+}
+
+export const languageFilters: LanguageFilter[] = [];
 
 export const mapAPIResponseServerListToAppStructure = (
-  list: APIResponseServer[]
-) => {
-  const restructuredList: Server[] = list.map((server) => {
+  list: readonly APIResponseServer[]
+): Server[] => {
+  return list.map((server): Server => {
+    const [ip, portStr] = server.core.ip.split(":");
+    const port = parseInt(portStr, 10);
+
     return {
       hostname: server.core.hn,
       gameMode: server.core.gm,
-      ip: server.core.ip.split(":")[0],
-      port: parseInt(server.core.ip.split(":")[1]),
+      ip,
+      port: isNaN(port) ? 7777 : port,
       language: server.core.la,
       hasPassword: server.core.pa,
       playerCount: server.core.pc,
       maxPlayers: server.core.pm,
       version: server.core.vn,
       rules: server.ru,
-      players: [] as Player[],
+      players: [],
       ping: 9999,
       password: "",
       usingOmp: server.core.omp,
       partner: server.core.pr,
-    } as Server;
+    };
   });
-
-  return restructuredList;
 };
 
-export const fetchServers = async (cached: boolean = true) => {
-  if (cached) {
+const updateServersInBatches = (
+  servers: Server[],
+  listType: "favorites" | "internet"
+): void => {
+  if (!servers.length) return;
+
+  const batches = chunk(servers, SERVER_UPDATE_CONFIG.BATCH_SIZE);
+
+  batches.forEach((batch, batchIndex) => {
+    setTimeout(() => {
+      batch.forEach((server) => {
+        if (server) {
+          queryServer(server, listType, "basic");
+        }
+      });
+    }, SERVER_UPDATE_CONFIG.INITIAL_DELAY + batchIndex * SERVER_UPDATE_CONFIG.BATCH_DELAY);
+  });
+};
+
+export const fetchServers = async (cached: boolean = true): Promise<void> => {
+  if (!cached) return;
+
+  try {
+    // Import getCachedList from the API layer
+    const { getCachedList } = await import("../api/apis");
+
+    // Update favorites in batches
     const { favorites } = usePersistentServers.getState();
-    if (Array.isArray(favorites)) {
-      // let's query servers from server list so players have updated data
-      for (
-        let i = 0;
-        i < favorites.length;
-        i += PARALLEL_SERVERS_TO_UPDATE_COUNT
-      ) {
-        setTimeout(() => {
-          for (
-            let offset = 0;
-            offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
-            offset++
-          ) {
-            if (favorites[i + offset]) {
-              queryServer(favorites[i + offset], "favorites", "basic");
-            }
-          }
-        }, 500 + (i % PARALLEL_SERVERS_TO_UPDATE_COUNT) * PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL);
-      }
+    if (Array.isArray(favorites) && favorites.length > 0) {
+      updateServersInBatches(favorites, "favorites");
     }
 
+    // Fetch and set servers through the API
     const response = await getCachedList();
-    useServers.getState().setServers(response.servers);
-
-    Log.debug(response);
-    if (Array.isArray(response.servers)) {
-      // let's query servers from server list so players have updated data
-      for (
-        let i = 0;
-        i < response.servers.length;
-        i += PARALLEL_SERVERS_TO_UPDATE_COUNT
-      ) {
-        setTimeout(() => {
-          for (
-            let offset = 0;
-            offset < PARALLEL_SERVERS_TO_UPDATE_COUNT;
-            offset++
-          ) {
-            if (response.servers[i + offset])
-              queryServer(response.servers[i + offset], "internet", "basic");
-          }
-        }, 500 + (i / PARALLEL_SERVERS_TO_UPDATE_COUNT) * PARALLEL_SERVERS_TO_UPDATE_TIMER_INTERVAL);
-      }
+    if (response.success && response.data.length > 0) {
+      updateServersInBatches(response.data, "internet");
+      Log.debug(`Fetched ${response.data.length} servers`);
+    } else {
+      Log.warn(
+        "Failed to fetch servers or received empty list",
+        response.error
+      );
     }
+  } catch (error) {
+    Log.error("Failed to fetch servers:", error);
   }
 };
 
@@ -104,8 +113,8 @@ export const fetchUpdateInfo = async () => {
   const nativeVer = await getVersion();
   const hostOS = await type();
   const response = await getUpdateInfo();
-  if (response.info) {
-    useAppState.getState().setUpdateInfo(response.info);
+  if (response.data) {
+    useAppState.getState().setUpdateInfo(response.data);
     useAppState.getState().setNativeAppVersionValue(nativeVer);
     useAppState.getState().setHostOSValue(hostOS);
   }
@@ -156,166 +165,136 @@ export const fetchUpdateInfo = async () => {
   Log.debug(response);
 };
 
-export const validateServerAddress = (address: string) => {
-  if (
-    /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
-      address
-    )
-  ) {
-    return true;
-  } else {
-    // Check if it's localhost
-    if (address === "localhost") {
-      return true;
-    }
+// Validation functions are now imported from ./validation.ts
+// This provides better separation of concerns and reusability
 
-    // Check if it's a valid domain
-    let regex = new RegExp(
-      /^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,6}$/
-    );
+export const getIpAddress = async (
+  hostname: string
+): Promise<string | null> => {
+  if (!hostname || typeof hostname !== "string") {
+    Log.warn("Invalid hostname provided to getIpAddress:", hostname);
+    return null;
+  }
 
-    // if str
-    // is empty return false
-    if (address == null) {
-      return false;
-    }
+  // Use validation function from validation.ts
+  if (validateServerAddressIPv4(hostname)) {
+    return hostname;
+  }
 
-    // Return true if the str
-    // matched the ReGex
-    if (regex.test(address) == true) {
-      return true;
-    } else {
-      return false;
-    }
+  try {
+    const ip = await invoke<string>("resolve_hostname", { hostname });
+    Log.debug(`Resolved ${hostname} to ${ip}`);
+    return ip;
+  } catch (error) {
+    Log.error("Failed to resolve hostname:", error);
+    return null;
   }
 };
 
-export const validateWebUrl = (url: string) => {
-  if (
-    /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
-      url
-    )
-  ) {
-    return true;
-  }
-  return false;
+const filterServers = (
+  servers: readonly Server[],
+  searchData: SearchData,
+  checkForPartnership: boolean
+): Server[] => {
+  const { ompOnly, nonEmpty, unpassworded, query, languages } = searchData;
+
+  const loweredQuery = query.toLowerCase();
+
+  return servers.filter((server) => {
+    // Basic validation
+    if (!server.ip || !server.hostname) return false;
+
+    // Filter checks
+    const ompCheck = !ompOnly || server.usingOmp;
+    const partnershipCheck = !checkForPartnership || server.partner;
+    const nonEmptyCheck = !nonEmpty || server.playerCount > 0;
+    const unpasswordedCheck = !unpassworded || !server.hasPassword;
+
+    // Language check - optimized
+    const languageCheck =
+      !languages.length ||
+      languages.some((lang) => checkLanguage(server.language, lang));
+
+    // Query check - search in hostname and gameMode
+    const queryCheck =
+      !query ||
+      server.hostname.toLowerCase().includes(loweredQuery) ||
+      server.gameMode.toLowerCase().includes(loweredQuery);
+
+    return (
+      ompCheck &&
+      partnershipCheck &&
+      nonEmptyCheck &&
+      unpasswordedCheck &&
+      languageCheck &&
+      queryCheck
+    );
+  });
+};
+
+const applySorting = (
+  servers: Server[],
+  sortType: SortType,
+  field: keyof Server
+): Server[] => {
+  if (sortType === "none") return servers;
+
+  const direction = sortType === "descending" ? 1 : -1;
+
+  return [...servers].sort((a, b) => {
+    const aValue = a[field];
+    const bValue = b[field];
+
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return aValue.localeCompare(bValue) * direction;
+    }
+
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return (aValue - bValue) * direction;
+    }
+
+    return 0;
+  });
 };
 
 export const sortAndSearchInServerList = (
-  servers: Server[],
+  servers: readonly Server[],
   searchData: SearchData,
   checkForPartnership = false
-) => {
-  const {
-    ompOnly,
-    nonEmpty,
-    unpassworded,
-    query,
-    sortPing,
-    sortPlayer,
-    sortName,
-    sortMode,
-    languages,
-  } = searchData;
-  let list = servers.filter((server) => {
-    const ompCheck = ompOnly ? server.usingOmp === true : true;
-    const partnershipCheck = checkForPartnership
-      ? server.partner === true
-      : true;
-    const nonEmptyCheck = nonEmpty ? server.playerCount > 0 : true;
-    const unpasswordedCheck = unpassworded
-      ? server.hasPassword === false
-      : true;
+): Server[] => {
+  // Filter first
+  let filteredServers = filterServers(servers, searchData, checkForPartnership);
 
-    let languageResult = false;
+  // Apply sorting - order matters for performance
+  const { sortPing, sortPlayer, sortName, sortMode } = searchData;
 
-    if (!languages.length) {
-      languageResult = true;
-    } else {
-      languages.forEach((lang) => {
-        const result = checkLanguage(server.language, lang);
-        if (!languageResult) {
-          languageResult = result;
-        }
-      });
-    }
-
-    return (
-      server.ip &&
-      partnershipCheck &&
-      ompCheck &&
-      unpasswordedCheck &&
-      nonEmptyCheck &&
-      languageResult &&
-      server.hostname &&
-      server.hostname.toLowerCase().includes(query.toLowerCase())
-    );
-  });
-
+  // Sort by ping (most common/important sort)
   if (sortPing !== "none") {
-    list = list.sort((a, b) => {
-      if (sortPing === "descending") {
-        return a.ping - b.ping;
-      } else {
-        return b.ping - a.ping;
-      }
-    });
+    filteredServers = applySorting(filteredServers, sortPing, "ping");
   }
 
+  // Sort by player count
   if (sortPlayer !== "none") {
-    list = list.sort((a, b) => {
-      if (sortPlayer === "descending") {
-        return a.playerCount - b.playerCount;
-      } else {
-        return b.playerCount - a.playerCount;
-      }
-    });
+    filteredServers = applySorting(filteredServers, sortPlayer, "playerCount");
   }
 
+  // Sort by hostname
   if (sortName !== "none") {
-    list = list.sort((a, b) => {
-      const nameA = a.hostname.toUpperCase();
-      const nameB = b.hostname.toUpperCase();
-      let aFirst = false;
-      if (nameA < nameB) {
-        aFirst = true;
-      }
-
-      if (sortName === "descending") {
-        return aFirst ? -1 : 1;
-      } else {
-        return aFirst ? 1 : -1;
-      }
-    });
+    filteredServers = applySorting(filteredServers, sortName, "hostname");
   }
 
+  // Sort by game mode
   if (sortMode !== "none") {
-    list = list.sort((a, b) => {
-      const nameA = a.gameMode.toUpperCase();
-      const nameB = b.gameMode.toUpperCase();
-      let aFirst = false;
-      if (nameA < nameB) {
-        aFirst = true;
-      }
-
-      if (sortMode === "descending") {
-        return aFirst ? -1 : 1;
-      } else {
-        return aFirst ? 1 : -1;
-      }
-    });
+    filteredServers = applySorting(filteredServers, sortMode, "gameMode");
   }
 
-  return list;
+  return filteredServers;
 };
 
-const addLanguageFilter = (name: string, keywords: string[]) => {
-  const findIndex = languageFilters.findIndex((l) => l.name === name);
-  if (findIndex == -1) {
-    languageFilters.push({
-      name,
-      keywords: [...keywords],
-    });
+const addLanguageFilter = (name: string, keywords: readonly string[]): void => {
+  const exists = languageFilters.some((filter) => filter.name === name);
+  if (!exists) {
+    languageFilters.push({ name, keywords });
   }
 };
 
@@ -350,70 +329,92 @@ export const generateLanguageFilters = () => {
   ]);
 };
 
-export const checkLanguage = (lang: string | undefined, filter: string) => {
-  if (!lang) {
-    return false;
-  }
+export const checkLanguage = (
+  lang: string | undefined,
+  filter: string
+): boolean => {
+  if (!lang || !filter) return false;
 
-  const find = languageFilters.find((l) => l.name === filter);
-  if (!find) {
-    return false;
-  }
+  const languageFilter = languageFilters.find((l) => l.name === filter);
+  if (!languageFilter) return false;
 
-  return find.keywords.some((keyword) =>
-    lang?.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
+  const normalizedLang = lang.toLowerCase();
+  return languageFilter.keywords.some((keyword) =>
+    normalizedLang.includes(keyword.toLowerCase())
   );
 };
 
-export const formatBytes = (bytes: number, decimals: number) => {
-  if (bytes == 0) return "0 Bytes";
-  var k = 1024,
-    dm = decimals || 2,
-    sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
-    i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+export const formatBytes = (bytes: number, decimals = 2): string => {
+  if (bytes === 0) return "0 Bytes";
+  if (bytes < 0) return "Invalid";
+
+  const k = 1024;
+  const sizes = [
+    "Bytes",
+    "KB",
+    "MB",
+    "GB",
+    "TB",
+    "PB",
+    "EB",
+    "ZB",
+    "YB",
+  ] as const;
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  if (i >= sizes.length) return "Too Large";
+
+  const value = bytes / Math.pow(k, i);
+  return `${parseFloat(value.toFixed(decimals))} ${sizes[i]}`;
 };
 
-export const getSampVersions = (): SAMPDLLVersions[] => {
-  return [
-    "custom",
-    "037R1_samp.dll",
-    "037R2_samp.dll",
-    "037R3_samp.dll",
-    "037R31_samp.dll",
-    "037R4_samp.dll",
-    "037R5_samp.dll",
-    "03DL_samp.dll",
-  ];
+export const getSampVersions = (): readonly SAMPDLLVersions[] => {
+  return [...SAMP_DLL_VERSIONS];
 };
 
-export const getSampVersionName = (version: SAMPDLLVersions) => {
-  switch (version) {
-    case "037R1_samp.dll":
-      return "0.3.7-R1";
-    case "037R2_samp.dll":
-      return "0.3.7-R2";
-    case "037R3_samp.dll":
-      return "0.3.7-R3";
-    case "037R31_samp.dll":
-      return "0.3.7-R3-1";
-    case "037R4_samp.dll":
-      return "0.3.7-R4";
-    case "037R5_samp.dll":
-      return "0.3.7-R5";
-    case "03DL_samp.dll":
-      return "0.3.DL";
-    case "custom":
-      return t("from_gtasa_folder");
-  }
+const VERSION_NAME_MAP: Record<SAMPDLLVersions, string | (() => string)> = {
+  "037R1_samp.dll": "0.3.7-R1",
+  "037R2_samp.dll": "0.3.7-R2",
+  "037R3_samp.dll": "0.3.7-R3",
+  "037R31_samp.dll": "0.3.7-R3-1",
+  "037R4_samp.dll": "0.3.7-R4",
+  "037R5_samp.dll": "0.3.7-R5",
+  "03DL_samp.dll": "0.3.DL",
+  custom: () => t("from_gtasa_folder"),
+};
+
+export const getSampVersionName = (version: SAMPDLLVersions): string => {
+  const nameOrFunction = VERSION_NAME_MAP[version];
+  return typeof nameOrFunction === "function"
+    ? nameOrFunction()
+    : nameOrFunction;
 };
 
 export const getSampVersionFromName = (name: string): SAMPDLLVersions => {
-  let ret: SAMPDLLVersions = "custom";
-  getSampVersions().forEach((ver) => {
-    if (getSampVersionName(ver) === name) {
-      ret = ver;
+  if (!name) return "custom";
+
+  const versions = getSampVersions();
+  for (const version of versions) {
+    if (getSampVersionName(version) === name) {
+      return version;
     }
-  });
-  return ret;
+  }
+
+  return "custom";
+};
+
+export const checkIfProcessAlive = async (pid: number): Promise<boolean> => {
+  if (!pid || pid <= 0) {
+    Log.warn("Invalid PID provided to checkIfProcessAlive:", pid);
+    return false;
+  }
+
+  try {
+    const alive = await invoke<boolean>("is_process_alive", { pid });
+    Log.debug(`PID ${pid} alive: ${alive}`);
+    return alive;
+  } catch (error) {
+    Log.error("Failed to check process:", error);
+    return false;
+  }
 };

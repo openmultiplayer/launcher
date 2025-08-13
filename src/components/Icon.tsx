@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import {
   ColorValue,
   Image,
@@ -8,7 +9,7 @@ import {
 } from "react-native";
 import { convertRgbToFilter } from "../utils/filter";
 
-interface IProps {
+interface IconProps {
   image: string;
   title?: string;
   size: number;
@@ -18,54 +19,67 @@ interface IProps {
   svg?: boolean;
 }
 
-const Icon = (props: IProps) => {
-  const Icon = props.svg ? (
-    <img
-      src={props.image}
-      height={props.size}
-      width={props.size}
-      style={{
-        // @ts-ignore
-        ...(props.style ? props.style : {}),
-        ...styles.icon,
-        filter: props.color
-          ? convertRgbToFilter(props.color as string).filter
-          : undefined,
-      }}
-    />
-  ) : (
-    <Image
-      source={{ uri: props.image }}
-      style={[
-        styles.icon,
-        { tintColor: props.color },
-        { height: props.size, width: props.size },
-        props.style,
-      ]}
-    />
-  );
-
-  const Titled = props.title ? (
-    <div title={props.title} style={{ height: props.size, width: props.size }}>
-      {Icon}
-    </div>
-  ) : (
-    Icon
-  );
-
-  if (props.onPress) {
-    return (
-      <TouchableOpacity
-        onPress={props.onPress}
-        style={{ height: props.size, width: props.size }}
-      >
-        {Titled}
-      </TouchableOpacity>
+const Icon = memo<IconProps>(
+  ({ image, title, size, color, onPress, style, svg = false }) => {
+    const iconStyle = useMemo(
+      () => ({
+        height: size,
+        width: size,
+      }),
+      [size]
     );
-  } else {
-    return Titled;
+
+    const iconComponent = useMemo(() => {
+      if (svg) {
+        return (
+          <img
+            src={image}
+            height={size}
+            width={size}
+            alt={title || ""}
+            style={{
+              ...styles.icon,
+              ...(style as any),
+              filter: color
+                ? convertRgbToFilter(color as string).filter
+                : undefined,
+            }}
+          />
+        );
+      }
+
+      return (
+        <Image
+          source={{ uri: image }}
+          style={[styles.icon, iconStyle, { tintColor: color }, style]}
+        />
+      );
+    }, [svg, image, size, title, color, style]);
+
+    const wrappedIcon = useMemo(() => {
+      if (title) {
+        return (
+          <div title={title} style={iconStyle}>
+            {iconComponent}
+          </div>
+        );
+      }
+      return iconComponent;
+    }, [title, iconStyle, iconComponent]);
+
+    if (onPress) {
+      return (
+        <TouchableOpacity onPress={onPress} style={iconStyle}>
+          {wrappedIcon}
+        </TouchableOpacity>
+      );
+    }
+
+    return wrappedIcon;
   }
-};
+);
+
+Icon.displayName = "Icon";
 
 const styles = StyleSheet.create({
   icon: {
