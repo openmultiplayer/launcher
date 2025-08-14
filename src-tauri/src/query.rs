@@ -417,10 +417,17 @@ pub async fn query_server(
     rules: bool,
     ping: bool,
 ) -> Result<String> {
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|e| LauncherError::Other(format!("System time error: {}", e)))?
-        .as_millis() as u64;
+    let now = match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(duration) => duration.as_millis() as u64,
+        Err(e) => {
+            let error_details = ErrorResponse {
+                error: true,
+                info: format!("System time error: {}", e),
+            };
+            return Ok(serde_json::to_string(&error_details)
+                .unwrap_or_else(|_| r#"{"error":true,"info":"System time error"}"#.to_string()));
+        }
+    };
 
     let key = format!("{}:{}", ip, port);
 
@@ -451,7 +458,7 @@ pub async fn query_server(
         let mut cache = CACHED_QUERY.lock().await;
 
         let should_reuse = match cache.as_ref() {
-            Some((_, cached_key)) => cached_key == key,
+            Some((_, cached_key)) => *cached_key == key,
             None => false,
         };
 
@@ -477,11 +484,13 @@ pub async fn query_server(
             result.info = Some(match q.recv().await {
                 Ok(p) => format!("{}", p),
                 Err(e) => {
-                    let mut error_details = ErrorResponse::default();
-                    error_details.error = true;
-                    error_details.info = e.to_string();
+                    let error_details = ErrorResponse {
+                        error: true,
+                        info: e.to_string(),
+                    };
+
                     serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                        r#"{"error":true,"info":"Serialization failed"}"#.to_string()
+                        r#"{"error":true,"info":"Server information query failed"}""#.to_string()
                     })
                 }
             });
@@ -492,11 +501,13 @@ pub async fn query_server(
             result.players = Some(match q.recv().await {
                 Ok(p) => format!("{}", p),
                 Err(e) => {
-                    let mut error_details = ErrorResponse::default();
-                    error_details.error = true;
-                    error_details.info = e.to_string();
+                    let error_details = ErrorResponse {
+                        error: true,
+                        info: e.to_string(),
+                    };
+
                     serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                        r#"{"error":true,"info":"Serialization failed"}"#.to_string()
+                        r#"{"error":true,"info":"Server players query failed"}""#.to_string()
                     })
                 }
             });
@@ -507,21 +518,31 @@ pub async fn query_server(
             result.rules = Some(match q.recv().await {
                 Ok(p) => format!("{}", p),
                 Err(e) => {
-                    let mut error_details = ErrorResponse::default();
-                    error_details.error = true;
-                    error_details.info = e.to_string();
+                    let error_details = ErrorResponse {
+                        error: true,
+                        info: e.to_string(),
+                    };
+
                     serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                        r#"{"error":true,"info":"Serialization failed"}"#.to_string()
+                        r#"{"error":true,"info":"Server rules query failed"}""#.to_string()
                     })
                 }
             });
         }
 
         if extra_info {
-            let now_secs = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .map_err(|e| LauncherError::Other(format!("System time error: {}", e)))?
-                .as_secs();
+            let now_secs = match SystemTime::now().duration_since(UNIX_EPOCH) {
+                Ok(duration) => duration.as_secs(),
+                Err(e) => {
+                    let error_details = ErrorResponse {
+                        error: true,
+                        info: format!("System time error: {}", e),
+                    };
+                    return Ok(serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                        r#"{"error":true,"info":"System time error"}"#.to_string()
+                    }));
+                }
+            };
 
             let key = format!("{}:{}", ip, port);
 
@@ -552,11 +573,13 @@ pub async fn query_server(
                 result.extra_info = Some(match q.recv().await {
                     Ok(p) => format!("{}", p),
                     Err(e) => {
-                        let mut error_details = ErrorResponse::default();
-                        error_details.error = true;
-                        error_details.info = e.to_string();
+                        let error_details = ErrorResponse {
+                            error: true,
+                            info: e.to_string(),
+                        };
+
                         serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                            r#"{"error":true,"info":"Serialization failed"}"#.to_string()
+                            r#"{"error":true,"info":"Server open.mp information query failed"}""#.to_string()
                         })
                     }
                 });
@@ -583,5 +606,7 @@ pub async fn query_server(
         *cache = Some((q, key));
     }
 
-    serde_json::to_string(&result).map_err(|e| LauncherError::SerdeJson(e))
+    Ok(serde_json::to_string(&result).unwrap_or_else(|_| {
+        r#"{"error":true,"info":"Information serialization failed"}""#.to_string()
+    }))
 }
