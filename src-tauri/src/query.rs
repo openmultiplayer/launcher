@@ -5,7 +5,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::{Cursor, Read};
-use std::sync::{Arc, Mutex};
+use std::sync::{Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{net::Ipv4Addr, time::Duration};
 use tokio::net::{lookup_host, UdpSocket};
