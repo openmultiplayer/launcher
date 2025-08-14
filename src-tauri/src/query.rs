@@ -14,10 +14,24 @@ use tokio::time::Instant;
 
 use crate::{constants::*, errors::*, helpers};
 
+#[derive(Clone, PartialEq)]
+struct QueryParams {
+    info: bool,
+    extra_info: bool,
+    players: bool,
+    rules: bool,
+    ping: bool,
+}
+
+struct RateLimitEntry {
+    timestamp: u64,
+    params: QueryParams,
+}
+
 static OMP_EXTRA_INFO_LAST_UPDATE_LIST: Lazy<Mutex<HashMap<String, u64>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
 
-static QUERY_RATE_LIMIT_LIST: Lazy<Mutex<HashMap<String, u64>>> =
+static QUERY_RATE_LIMIT_LIST: Lazy<Mutex<HashMap<String, RateLimitEntry>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
 
 static CACHED_QUERY: Lazy<tokio::sync::Mutex<Option<(Query, String)>>> =
@@ -430,6 +444,13 @@ pub async fn query_server(
     };
 
     let key = format!("{}:{}", ip, port);
+    let current_params = QueryParams {
+        info,
+        extra_info,
+        players,
+        rules,
+        ping,
+    };
 
     let should_allow = {
         let mut map = match QUERY_RATE_LIMIT_LIST.lock() {
@@ -437,9 +458,20 @@ pub async fn query_server(
             Err(poisoned) => poisoned.into_inner(),
         };
         match map.get(&key) {
-            Some(&last_time) if now - last_time < QUERY_RATE_LIMIT_MS => false,
+            Some(entry)
+                if now - entry.timestamp < QUERY_RATE_LIMIT_MS
+                    && entry.params == current_params =>
+            {
+                false
+            }
             _ => {
-                map.insert(key.clone(), now);
+                map.insert(
+                    key.clone(),
+                    RateLimitEntry {
+                        timestamp: now,
+                        params: current_params,
+                    },
+                );
                 true
             }
         }
@@ -470,135 +502,132 @@ pub async fn query_server(
         }
     };
 
-    let result = {
-        let mut result = ServerQueryResponse {
-            info: None,
-            extra_info: None,
-            players: None,
-            rules: None,
-            ping: None,
-        };
+    let mut result = ServerQueryResponse {
+        info: None,
+        extra_info: None,
+        players: None,
+        rules: None,
+        ping: None,
+    };
 
-        if info {
-            let _ = q.send('i').await;
-            result.info = Some(match q.recv().await {
-                Ok(p) => format!("{}", p),
-                Err(e) => {
-                    let error_details = ErrorResponse {
-                        error: true,
-                        info: e.to_string(),
-                    };
-
-                    serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                        r#"{"error":true,"info":"Server information query failed"}""#.to_string()
-                    })
-                }
-            });
-        }
-
-        if players {
-            let _ = q.send('c').await;
-            result.players = Some(match q.recv().await {
-                Ok(p) => format!("{}", p),
-                Err(e) => {
-                    let error_details = ErrorResponse {
-                        error: true,
-                        info: e.to_string(),
-                    };
-
-                    serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                        r#"{"error":true,"info":"Server players query failed"}""#.to_string()
-                    })
-                }
-            });
-        }
-
-        if rules {
-            let _ = q.send('r').await;
-            result.rules = Some(match q.recv().await {
-                Ok(p) => format!("{}", p),
-                Err(e) => {
-                    let error_details = ErrorResponse {
-                        error: true,
-                        info: e.to_string(),
-                    };
-
-                    serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                        r#"{"error":true,"info":"Server rules query failed"}""#.to_string()
-                    })
-                }
-            });
-        }
-
-        if extra_info {
-            let now_secs = match SystemTime::now().duration_since(UNIX_EPOCH) {
-                Ok(duration) => duration.as_secs(),
-                Err(e) => {
-                    let error_details = ErrorResponse {
-                        error: true,
-                        info: format!("System time error: {}", e),
-                    };
-                    return Ok(serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                        r#"{"error":true,"info":"System time error"}"#.to_string()
-                    }));
-                }
-            };
-
-            let key = format!("{}:{}", ip, port);
-
-            let should_request = {
-                let mut map = match OMP_EXTRA_INFO_LAST_UPDATE_LIST.lock() {
-                    Ok(guard) => guard,
-                    Err(poisoned) => {
-                        // Recover from poisoned mutex by getting the data anyway
-                        poisoned.into_inner()
-                    }
+    if info {
+        let _ = q.send('i').await;
+        result.info = Some(match q.recv().await {
+            Ok(p) => format!("{}", p),
+            Err(e) => {
+                let error_details = ErrorResponse {
+                    error: true,
+                    info: e.to_string(),
                 };
 
-                match map.get(&key) {
-                    Some(&last_time)
-                        if now_secs - last_time < OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS =>
-                    {
-                        false
-                    }
-                    _ => {
-                        map.insert(key.clone(), now_secs);
-                        true
-                    }
+                serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                    r#"{"error":true,"info":"Server information query failed"}""#.to_string()
+                })
+            }
+        });
+    }
+
+    if players {
+        let _ = q.send('c').await;
+        result.players = Some(match q.recv().await {
+            Ok(p) => format!("{}", p),
+            Err(e) => {
+                let error_details = ErrorResponse {
+                    error: true,
+                    info: e.to_string(),
+                };
+
+                serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                    r#"{"error":true,"info":"Server players query failed"}""#.to_string()
+                })
+            }
+        });
+    }
+
+    if rules {
+        let _ = q.send('r').await;
+        result.rules = Some(match q.recv().await {
+            Ok(p) => format!("{}", p),
+            Err(e) => {
+                let error_details = ErrorResponse {
+                    error: true,
+                    info: e.to_string(),
+                };
+
+                serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                    r#"{"error":true,"info":"Server rules query failed"}""#.to_string()
+                })
+            }
+        });
+    }
+
+    if extra_info {
+        let now_secs = match SystemTime::now().duration_since(UNIX_EPOCH) {
+            Ok(duration) => duration.as_secs(),
+            Err(e) => {
+                let error_details = ErrorResponse {
+                    error: true,
+                    info: format!("System time error: {}", e),
+                };
+                return Ok(serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                    r#"{"error":true,"info":"System time error"}"#.to_string()
+                }));
+            }
+        };
+
+        let key = format!("{}:{}", ip, port);
+
+        let should_request = {
+            let mut map = match OMP_EXTRA_INFO_LAST_UPDATE_LIST.lock() {
+                Ok(guard) => guard,
+                Err(poisoned) => {
+                    // Recover from poisoned mutex by getting the data anyway
+                    poisoned.into_inner()
                 }
             };
 
-            if should_request {
-                let _ = q.send('o').await;
-                result.extra_info = Some(match q.recv().await {
-                    Ok(p) => format!("{}", p),
-                    Err(e) => {
-                        let error_details = ErrorResponse {
-                            error: true,
-                            info: e.to_string(),
-                        };
-
-                        serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                            r#"{"error":true,"info":"Server open.mp information query failed"}""#.to_string()
-                        })
-                    }
-                });
-            }
-        }
-
-        if ping {
-            let _ = q.send('p').await;
-            let before = Instant::now();
-            match q.recv().await {
-                Ok(_p) => {
-                    result.ping = Some(before.elapsed().as_millis() as u32);
+            match map.get(&key) {
+                Some(&last_time) if now_secs - last_time < OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS => {
+                    false
                 }
-                Err(_) => {
-                    result.ping = Some(PING_TIMEOUT);
+                _ => {
+                    map.insert(key.clone(), now_secs);
+                    true
                 }
             }
+        };
+
+        if should_request {
+            let _ = q.send('o').await;
+            result.extra_info = Some(match q.recv().await {
+                Ok(p) => format!("{}", p),
+                Err(e) => {
+                    let error_details = ErrorResponse {
+                        error: true,
+                        info: e.to_string(),
+                    };
+
+                    serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                        r#"{"error":true,"info":"Server open.mp information query failed"}""#
+                            .to_string()
+                    })
+                }
+            });
         }
-    };
+    }
+
+    if ping {
+        let _ = q.send('p').await;
+        let before = Instant::now();
+        match q.recv().await {
+            Ok(_p) => {
+                result.ping = Some(before.elapsed().as_millis() as u32);
+            }
+            Err(_) => {
+                result.ping = Some(PING_TIMEOUT);
+            }
+        }
+    }
 
     // Store the query back in cache for next use
     {
@@ -606,7 +635,9 @@ pub async fn query_server(
         *cache = Some((q, key));
     }
 
-    Ok(serde_json::to_string(&result).unwrap_or_else(|_| {
+    let ret = serde_json::to_string(&result).unwrap_or_else(|_| {
         r#"{"error":true,"info":"Information serialization failed"}""#.to_string()
-    }))
+    });
+
+    Ok(ret)
 }
