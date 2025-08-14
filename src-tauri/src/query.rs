@@ -456,7 +456,7 @@ pub async fn query_server(
         };
 
         if should_reuse {
-            let (cached_query, _, _) = cache.take().unwrap();
+            let (cached_query, _) = cache.take().unwrap();
             cached_query
         } else {
             Query::new(ip, port).await?
