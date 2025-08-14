@@ -5,7 +5,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::{Cursor, Read};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{net::Ipv4Addr, time::Duration};
 use tokio::net::{lookup_host, UdpSocket};
@@ -19,6 +19,9 @@ static OMP_EXTRA_INFO_LAST_UPDATE_LIST: Lazy<Mutex<HashMap<String, u64>>> =
 
 static QUERY_RATE_LIMIT_LIST: Lazy<Mutex<HashMap<String, u64>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
+
+static CACHED_QUERY: Lazy<tokio::sync::Mutex<Option<(Query, String)>>> =
+    Lazy::new(|| tokio::sync::Mutex::new(None));
 
 pub struct Query {
     address: Ipv4Addr,
@@ -444,121 +447,141 @@ pub async fn query_server(
             .unwrap_or_else(|_| r#"{"error":true,"info":"Rate limit exceeded"}""#.to_string()));
     }
 
-    match Query::new(ip, port).await {
-        Ok(q) => {
-            let mut result = ServerQueryResponse {
-                info: None,
-                extra_info: None,
-                players: None,
-                rules: None,
-                ping: None,
-            };
+    let q = {
+        let mut cache = CACHED_QUERY.lock().await;
 
-            if info {
-                let _ = q.send('i').await;
-                result.info = Some(match q.recv().await {
-                    Ok(p) => format!("{}", p),
-                    Err(e) => {
-                        let mut error_details = ErrorResponse::default();
-                        error_details.error = true;
-                        error_details.info = e.to_string();
-                        serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                            r#"{"error":true,"info":"Serialization failed"}"#.to_string()
-                        })
-                    }
-                });
-            }
+        let should_reuse = match cache.as_ref() {
+            Some((_, cached_key)) => cached_key == key,
+            None => false,
+        };
 
-            if players {
-                let _ = q.send('c').await;
-                result.players = Some(match q.recv().await {
-                    Ok(p) => format!("{}", p),
-                    Err(e) => {
-                        let mut error_details = ErrorResponse::default();
-                        error_details.error = true;
-                        error_details.info = e.to_string();
-                        serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                            r#"{"error":true,"info":"Serialization failed"}"#.to_string()
-                        })
-                    }
-                });
-            }
+        if should_reuse {
+            let (cached_query, _, _) = cache.take().unwrap();
+            cached_query
+        } else {
+            Query::new(ip, port).await?
+        }
+    };
 
-            if rules {
-                let _ = q.send('r').await;
-                result.rules = Some(match q.recv().await {
-                    Ok(p) => format!("{}", p),
-                    Err(e) => {
-                        let mut error_details = ErrorResponse::default();
-                        error_details.error = true;
-                        error_details.info = e.to_string();
-                        serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                            r#"{"error":true,"info":"Serialization failed"}"#.to_string()
-                        })
-                    }
-                });
-            }
+    let result = {
+        let mut result = ServerQueryResponse {
+            info: None,
+            extra_info: None,
+            players: None,
+            rules: None,
+            ping: None,
+        };
 
-            if extra_info {
-                let now_secs = SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .map_err(|e| LauncherError::Other(format!("System time error: {}", e)))?
-                    .as_secs();
+        if info {
+            let _ = q.send('i').await;
+            result.info = Some(match q.recv().await {
+                Ok(p) => format!("{}", p),
+                Err(e) => {
+                    let mut error_details = ErrorResponse::default();
+                    error_details.error = true;
+                    error_details.info = e.to_string();
+                    serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                        r#"{"error":true,"info":"Serialization failed"}"#.to_string()
+                    })
+                }
+            });
+        }
 
-                let key = format!("{}:{}", ip, port);
+        if players {
+            let _ = q.send('c').await;
+            result.players = Some(match q.recv().await {
+                Ok(p) => format!("{}", p),
+                Err(e) => {
+                    let mut error_details = ErrorResponse::default();
+                    error_details.error = true;
+                    error_details.info = e.to_string();
+                    serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                        r#"{"error":true,"info":"Serialization failed"}"#.to_string()
+                    })
+                }
+            });
+        }
 
-                let should_request = {
-                    let mut map = match OMP_EXTRA_INFO_LAST_UPDATE_LIST.lock() {
-                        Ok(guard) => guard,
-                        Err(poisoned) => {
-                            // Recover from poisoned mutex by getting the data anyway
-                            poisoned.into_inner()
-                        }
-                    };
-                    match map.get(&key) {
-                        Some(&last_time)
-                            if now_secs - last_time < OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS =>
-                        {
-                            false
-                        }
-                        _ => {
-                            map.insert(key.clone(), now_secs);
-                            true
-                        }
+        if rules {
+            let _ = q.send('r').await;
+            result.rules = Some(match q.recv().await {
+                Ok(p) => format!("{}", p),
+                Err(e) => {
+                    let mut error_details = ErrorResponse::default();
+                    error_details.error = true;
+                    error_details.info = e.to_string();
+                    serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                        r#"{"error":true,"info":"Serialization failed"}"#.to_string()
+                    })
+                }
+            });
+        }
+
+        if extra_info {
+            let now_secs = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(|e| LauncherError::Other(format!("System time error: {}", e)))?
+                .as_secs();
+
+            let key = format!("{}:{}", ip, port);
+
+            let should_request = {
+                let mut map = match OMP_EXTRA_INFO_LAST_UPDATE_LIST.lock() {
+                    Ok(guard) => guard,
+                    Err(poisoned) => {
+                        // Recover from poisoned mutex by getting the data anyway
+                        poisoned.into_inner()
                     }
                 };
 
-                if should_request {
-                    let _ = q.send('o').await;
-                    result.extra_info = Some(match q.recv().await {
-                        Ok(p) => format!("{}", p),
-                        Err(e) => {
-                            let mut error_details = ErrorResponse::default();
-                            error_details.error = true;
-                            error_details.info = e.to_string();
-                            serde_json::to_string(&error_details).unwrap_or_else(|_| {
-                                r#"{"error":true,"info":"Serialization failed"}"#.to_string()
-                            })
-                        }
-                    });
-                }
-            }
-
-            if ping {
-                let _ = q.send('p').await;
-                let before = Instant::now();
-                match q.recv().await {
-                    Ok(_p) => {
-                        result.ping = Some(before.elapsed().as_millis() as u32);
+                match map.get(&key) {
+                    Some(&last_time)
+                        if now_secs - last_time < OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS =>
+                    {
+                        false
                     }
-                    Err(_) => {
-                        result.ping = Some(PING_TIMEOUT);
+                    _ => {
+                        map.insert(key.clone(), now_secs);
+                        true
                     }
                 }
-            }
+            };
 
-            serde_json::to_string(&result).map_err(|e| LauncherError::SerdeJson(e))
+            if should_request {
+                let _ = q.send('o').await;
+                result.extra_info = Some(match q.recv().await {
+                    Ok(p) => format!("{}", p),
+                    Err(e) => {
+                        let mut error_details = ErrorResponse::default();
+                        error_details.error = true;
+                        error_details.info = e.to_string();
+                        serde_json::to_string(&error_details).unwrap_or_else(|_| {
+                            r#"{"error":true,"info":"Serialization failed"}"#.to_string()
+                        })
+                    }
+                });
+            }
         }
-        Err(e) => Err(e),
+
+        if ping {
+            let _ = q.send('p').await;
+            let before = Instant::now();
+            match q.recv().await {
+                Ok(_p) => {
+                    result.ping = Some(before.elapsed().as_millis() as u32);
+                }
+                Err(_) => {
+                    result.ping = Some(PING_TIMEOUT);
+                }
+            }
+        }
+    };
+
+    // Store the query back in cache for next use
+    {
+        let mut cache = CACHED_QUERY.lock().await;
+        *cache = Some((q, key));
     }
+
+    serde_json::to_string(&result).map_err(|e| LauncherError::SerdeJson(e))
 }
