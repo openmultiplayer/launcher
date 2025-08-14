@@ -306,7 +306,7 @@ export const generateLanguageFilters = () => {
   addLanguageFilter("Bulgarian", ["Bulgarian", "BG", "Български"]);
   addLanguageFilter("Dutch", ["Dutch", "NL"]);
   addLanguageFilter("French", ["French", "FR", "Français"]);
-  addLanguageFilter("Georgian", ["Georgian", "KA", "ქართული"]);
+  addLanguageFilter("Georgian", ["Georgian", "KA", "GEO" "ქართული"]);
   addLanguageFilter("German", ["German", "DE", "GER", "Deutsch"]);
   addLanguageFilter("Greek", ["Greek", "EL", "Ελληνικά"]);
   addLanguageFilter("Hungarian", ["Hungarian", "HU", "Magyar"]);
