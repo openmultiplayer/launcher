@@ -9,9 +9,10 @@ pub const MAX_BANNER_URL_LENGTH: u32 = 160;
 pub const MAX_LOGO_URL_LENGTH: u32 = 160;
 
 pub const MAX_PLAYER_COUNT: u16 = 1000;
-pub const MAX_RULE_COUNT: u16 = 1000;
+pub const MAX_RULE_COUNT: u16 = 20;
 
 pub const QUERY_TIMEOUT_SECS: u64 = 2;
+pub const QUERY_RATE_LIMIT_MS: u64 = 1000;
 pub const OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS: u64 = 3;
 
 pub const INJECTION_MAX_RETRIES: u32 = 5;
