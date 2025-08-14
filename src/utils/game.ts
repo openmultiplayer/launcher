@@ -199,9 +199,9 @@ export const startGame = async (
   const file = validFileChecksums.get(
     sampVersion !== "custom" ? sampVersion : "037R1_samp.dll"
   );
-  const ourSAMPDllPath = file
+  const ourSAMPDllPath = sampVersion === "custom" ? idealSAMPDllPath : (file
     ? await getLocalPath(file.path, file.name)
-    : idealSAMPDllPath;
+    : idealSAMPDllPath);
 
   invoke("inject", {
     name: nickname,
