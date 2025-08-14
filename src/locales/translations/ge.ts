@@ -101,4 +101,16 @@ export default {
   reconnect: "რექონექთი",
   settings_advanced_discord_status_requires_restart:
   "(მოქმედებისთვის საჭიროა თამაშის რესტარტი)",
+    settings_export_favorite_list_file: "ფავორიტების სიის ექსპორტი ფაილში",
+  settings_import_favorite_list_file: "ფავორიტების სიის იმპორტი ფაილიდან",
+  export_no_servers_description: "თქვენ არ გაქვთ ფავორიტი სერვერები ექსპორტისთვის.",
+  export_successful_title: "ექსპორტი დასრულდა",
+  export_successful_description: "სერვერების სია დაექსპორტდა.",
+  export_failed_title: "ექსპორტი ვერ მოხერხდა",
+  export_failed_description: "დაფიქსირდა შეცდომა ფავორიტი სერვერების ექსპორტის დროს.",
+  import_successful_title: "იმპორტი დასრულდა",
+  import_successful_description: "სერვერების სია ჩაიმპორტდა.",
+  import_failed_title: "იმპორტი ვერ მოხერხდა",
+  import_failed_description: "დაფიქსირდა შეცდომა ფავორიტი სერვერების იმპორტის დროს.",
+  import_invalid_data_description: "არჩეული ფაილი შეიცავს არასწორ შიგთავსს. გთხოვთ აირჩიეთ ფავორიტი სერვერების ფაილი.",
 };
