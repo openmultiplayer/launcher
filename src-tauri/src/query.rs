@@ -17,6 +17,9 @@ use crate::{constants::*, errors::*, helpers};
 static OMP_EXTRA_INFO_LAST_UPDATE_LIST: Lazy<Mutex<HashMap<String, u64>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
 
+static QUERY_RATE_LIMIT_LIST: Lazy<Mutex<HashMap<String, u64>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
+
 pub struct Query {
     address: Ipv4Addr,
     port: i32,
@@ -411,6 +414,36 @@ pub async fn query_server(
     rules: bool,
     ping: bool,
 ) -> Result<String> {
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|e| LauncherError::Other(format!("System time error: {}", e)))?
+        .as_millis() as u64;
+
+    let key = format!("{}:{}", ip, port);
+
+    let should_allow = {
+        let mut map = match QUERY_RATE_LIMIT_LIST.lock() {
+            Ok(guard) => guard,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+        match map.get(&key) {
+            Some(&last_time) if now - last_time < QUERY_RATE_LIMIT_MS => false,
+            _ => {
+                map.insert(key.clone(), now);
+                true
+            }
+        }
+    };
+
+    if !should_allow {
+        let error_details = ErrorResponse {
+            error: true,
+            info: "Rate limit exceeded. Please wait before querying this server again.".to_string(),
+        };
+        return Ok(serde_json::to_string(&error_details)
+            .unwrap_or_else(|_| r#"{"error":true,"info":"Rate limit exceeded"}""#.to_string()));
+    }
+
     match Query::new(ip, port).await {
         Ok(q) => {
             let mut result = ServerQueryResponse {
@@ -467,9 +500,9 @@ pub async fn query_server(
             }
 
             if extra_info {
-                let now = SystemTime::now()
+                let now_secs = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
-                    .map_err(|e| format!("System time error: {}", e))?
+                    .map_err(|e| LauncherError::Other(format!("System time error: {}", e)))?
                     .as_secs();
 
                 let key = format!("{}:{}", ip, port);
@@ -484,12 +517,12 @@ pub async fn query_server(
                     };
                     match map.get(&key) {
                         Some(&last_time)
-                            if now - last_time < OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS =>
+                            if now_secs - last_time < OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS =>
                         {
                             false
                         }
                         _ => {
-                            map.insert(key.clone(), now);
+                            map.insert(key.clone(), now_secs);
                             true
                         }
                     }
