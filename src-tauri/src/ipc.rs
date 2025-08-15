@@ -42,90 +42,90 @@ fn create_overlay_window(
     Ok(())
 }
 
-pub fn listen_for_ipc(app_handle: AppHandle) {
-    thread::spawn(move || {
-        let listener = TcpListener::bind(format!("127.0.0.1:{}", IPC_PORT))
-            .expect("Failed to bind to IPC port");
+pub fn listen_for_ipc(_app_handle: AppHandle) {
+    // thread::spawn(move || {
+    //     let listener = TcpListener::bind(format!("127.0.0.1:{}", IPC_PORT))
+    //         .expect("Failed to bind to IPC port");
 
-        for stream in listener.incoming() {
-            if let Ok(stream) = stream {
-                let handle = app_handle.clone();
+    //     for stream in listener.incoming() {
+    //         if let Ok(stream) = stream {
+    //             let handle = app_handle.clone();
 
-                thread::spawn(move || {
-                    let Ok(stream_clone) = stream.try_clone() else {
-                        log::error!("Failed to clone IPC stream");
-                        return;
-                    };
-                    let mut reader = std::io::BufReader::new(stream_clone);
-                    let mut line = String::new();
-                    while let Ok(bytes) = reader.read_line(&mut line) {
-                        if bytes == 0 {
-                            break;
-                        }
+    //             thread::spawn(move || {
+    //                 let Ok(stream_clone) = stream.try_clone() else {
+    //                     log::error!("Failed to clone IPC stream");
+    //                     return;
+    //                 };
+    //                 let mut reader = std::io::BufReader::new(stream_clone);
+    //                 let mut line = String::new();
+    //                 while let Ok(bytes) = reader.read_line(&mut line) {
+    //                     if bytes == 0 {
+    //                         break;
+    //                     }
 
-                        if line.starts_with("init:") {
-                            if let Some(pid_str) = line.strip_prefix("init:") {
-                                if let Ok(pid) = pid_str.trim().parse::<i32>() {
-                                    if let Ok(stream_clone) = stream.try_clone() {
-                                        if let Ok(mut streams) = GAME_STREAMS.lock() {
-                                            streams.insert(pid, stream_clone);
-                                        }
-                                    }
-                                }
-                            }
-                        } else if line.starts_with("pos:") {
-                            if let Some(coords) = line.strip_prefix("pos:") {
-                                let parts: Vec<_> = coords.trim().split(',').collect();
-                                if parts.len() == 5 {
-                                    if let (Ok(_x), Ok(_y), Ok(w), Ok(h), Ok(pid)) = (
-                                        parts[0].parse::<i32>(),
-                                        parts[1].parse::<i32>(),
-                                        parts[2].parse::<i32>(),
-                                        parts[3].parse::<i32>(),
-                                        parts[4].parse::<i32>(),
-                                    ) {
-                                        let window_label = format!("omp_overlay_window:{}", pid);
-                                        if let Some(win) = handle.get_window(&window_label) {
-                                            let _ = win.set_position(tauri::PhysicalPosition {
-                                                x: -1 * w - 1000,
-                                                y: -1 * h - 1000,
-                                            });
+    //                     if line.starts_with("init:") {
+    //                         if let Some(pid_str) = line.strip_prefix("init:") {
+    //                             if let Ok(pid) = pid_str.trim().parse::<i32>() {
+    //                                 if let Ok(stream_clone) = stream.try_clone() {
+    //                                     if let Ok(mut streams) = GAME_STREAMS.lock() {
+    //                                         streams.insert(pid, stream_clone);
+    //                                     }
+    //                                 }
+    //                             }
+    //                         }
+    //                     } else if line.starts_with("pos:") {
+    //                         if let Some(coords) = line.strip_prefix("pos:") {
+    //                             let parts: Vec<_> = coords.trim().split(',').collect();
+    //                             if parts.len() == 5 {
+    //                                 if let (Ok(_x), Ok(_y), Ok(w), Ok(h), Ok(pid)) = (
+    //                                     parts[0].parse::<i32>(),
+    //                                     parts[1].parse::<i32>(),
+    //                                     parts[2].parse::<i32>(),
+    //                                     parts[3].parse::<i32>(),
+    //                                     parts[4].parse::<i32>(),
+    //                                 ) {
+    //                                     let window_label = format!("omp_overlay_window:{}", pid);
+    //                                     if let Some(win) = handle.get_window(&window_label) {
+    //                                         let _ = win.set_position(tauri::PhysicalPosition {
+    //                                             x: -1 * w - 1000,
+    //                                             y: -1 * h - 1000,
+    //                                         });
 
-                                            let _ = win.set_size(tauri::PhysicalSize {
-                                                width: w as u32,
-                                                height: h as u32,
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                        } else if line.starts_with("show_overlay:") {
-                            let parts: Vec<_> = line.trim().split(':').collect();
-                            if parts.len() >= 2 {
-                                if let Ok(pid) = parts[1].parse::<i32>() {
-                                    let window_label = format!("omp_overlay_window:{}", pid);
-                                    let _ = create_overlay_window(&handle, &window_label, pid);
-                                }
-                            }
-                        } else if line.starts_with("hide_overlay:") {
-                            let parts: Vec<_> = line.trim().split(':').collect();
-                            if parts.len() >= 2 {
-                                let window_label = format!("omp_overlay_window:{}", parts[1]);
-                                if let Some(window) = handle.get_window(&window_label) {
-                                    let _ = window.close();
-                                } else {
-                                    log::warn!("IPC overlay window not found: {}", window_label);
-                                }
-                            }
-                        } else {
-                            log::warn!("Unknown IPC command received: {}", line.trim());
-                        }
-                        line.clear();
-                    }
-                });
-            }
-        }
-    });
+    //                                         let _ = win.set_size(tauri::PhysicalSize {
+    //                                             width: w as u32,
+    //                                             height: h as u32,
+    //                                         });
+    //                                     }
+    //                                 }
+    //                             }
+    //                         }
+    //                     } else if line.starts_with("show_overlay:") {
+    //                         let parts: Vec<_> = line.trim().split(':').collect();
+    //                         if parts.len() >= 2 {
+    //                             if let Ok(pid) = parts[1].parse::<i32>() {
+    //                                 let window_label = format!("omp_overlay_window:{}", pid);
+    //                                 let _ = create_overlay_window(&handle, &window_label, pid);
+    //                             }
+    //                         }
+    //                     } else if line.starts_with("hide_overlay:") {
+    //                         let parts: Vec<_> = line.trim().split(':').collect();
+    //                         if parts.len() >= 2 {
+    //                             let window_label = format!("omp_overlay_window:{}", parts[1]);
+    //                             if let Some(window) = handle.get_window(&window_label) {
+    //                                 let _ = window.close();
+    //                             } else {
+    //                                 log::warn!("IPC overlay window not found: {}", window_label);
+    //                             }
+    //                         }
+    //                     } else {
+    //                         log::warn!("Unknown IPC command received: {}", line.trim());
+    //                     }
+    //                     line.clear();
+    //                 }
+    //             });
+    //         }
+    //     }
+    // });
 }
 
 #[tauri::command]
