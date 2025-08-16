@@ -1,4 +1,4 @@
-pub const IPC_PORT: u16 = 45791;
+// pub const IPC_PORT: u16 = 45791;
 pub const RPC_PORT: u16 = 46290;
 
 pub const MAX_HOSTNAME_LENGTH: u32 = 63;

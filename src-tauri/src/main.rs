@@ -208,7 +208,7 @@ fn setup_tauri_app(app: &mut tauri::App) -> std::result::Result<(), Box<dyn std:
     #[cfg(windows)]
     setup_deeplinks(handle.clone())?;
 
-    ipc::listen_for_ipc(handle);
+    // ipc::listen_for_ipc(handle);
     Ok(())
 }
 
