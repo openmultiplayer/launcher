@@ -175,7 +175,9 @@ async fn run_tauri_app() -> Result<()> {
             commands::rerun_as_admin,
             commands::resolve_hostname,
             commands::is_process_alive,
-            commands::log,
+            commands::log_info,
+            commands::log_warn,
+            commands::log_error,
             query::query_server,
             ipc::send_message_to_game
         ])

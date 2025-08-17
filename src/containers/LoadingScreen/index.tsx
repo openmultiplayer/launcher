@@ -1,4 +1,4 @@
-import { fs, path } from "@tauri-apps/api";
+import { fs, invoke, path } from "@tauri-apps/api";
 import { FileEntry } from "@tauri-apps/api/fs";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -355,8 +355,11 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
         if (ompVerificationComplete) {
           finishLoading(isInitialLoad ? 1000 : 1);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("File checksum processing failed:", error);
+        invoke("log", {
+          msg: "File checksum processing failed: " + error.toString(),
+        });
         setCurrentTask(
           "File validation failed. Please restart the application."
         );

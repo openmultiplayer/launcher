@@ -96,6 +96,18 @@ pub fn is_process_alive(pid: u32) -> bool {
 }
 
 #[tauri::command]
-pub fn log(msg: &str) -> () {
-    info!("Frontend log: {}", msg);
+
+#[tauri::command]
+pub fn log_info(msg: &str) -> () {
+    info!("Frontend info: {}", msg);
+}
+
+#[tauri::command]
+pub fn log_warn(msg: &str) -> () {
+    warn!("Frontend warning: {}", msg);
+}
+
+#[tauri::command]
+pub fn log_error(msg: &str) -> () {
+    error!("Frontend error: {}", msg);
 }

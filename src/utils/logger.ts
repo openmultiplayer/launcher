@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api";
 import { DEBUG_MODE } from "../constants/app";
 
 export enum LogLevel {
@@ -36,6 +37,14 @@ class Logger {
 
   static info(message?: any, ...optionalParams: any[]) {
     console.log(message, ...optionalParams);
+
+    const formattedMessage =
+      optionalParams.length > 0
+        ? `${message} ${optionalParams.join(" ")}`
+        : String(message);
+
+    invoke("log_info", { msg: formattedMessage });
+
     this.addLog(LogLevel.INFO, message, optionalParams);
   }
 
@@ -48,11 +57,26 @@ class Logger {
 
   static warn(message?: any, ...optionalParams: any[]) {
     console.warn(message, ...optionalParams);
+
+    const formattedMessage =
+      optionalParams.length > 0
+        ? `${message} ${optionalParams.join(" ")}`
+        : String(message);
+
+    invoke("log_warn", { msg: formattedMessage });
+
     this.addLog(LogLevel.WARN, message, optionalParams);
   }
 
   static error(message?: any, ...optionalParams: any[]) {
     console.error(message, ...optionalParams);
+
+    const formattedMessage =
+      optionalParams.length > 0
+        ? `${message} ${optionalParams.join(" ")}`
+        : String(message);
+
+    invoke("log_error", { msg: formattedMessage });
     this.addLog(LogLevel.ERROR, message, optionalParams);
   }
 
