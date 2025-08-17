@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { download } from "tauri-plugin-upload-api";
 import { getUpdateInfo } from "../../api/apis";
-import { invoke_rpc } from "../../api/rpc";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { validFileChecksums } from "../../constants/app";
@@ -14,6 +13,7 @@ import { UpdateInfo, useAppState } from "../../states/app";
 import { useGenericPersistentState } from "../../states/genericStates";
 import { useTheme } from "../../states/theme";
 import { formatBytes } from "../../utils/helpers";
+import { Log } from "../../utils/logger";
 import { sc } from "../../utils/sizeScaler";
 
 interface LoadingScreenProps {
@@ -134,15 +134,15 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
                   setLoadingStage(LoadingStage.EXTRACTING);
                   setCurrentTask("Extracting files...");
 
-                  await invoke_rpc("extract_7z", {
+                  await invoke("extract_7z", {
                     path: archive,
-                    output_path: sampPath,
+                    outputPath: sampPath,
                   });
 
                   resetDownloadState();
                   resolve();
                 } catch (extractError) {
-                  console.error("Extraction failed:", extractError);
+                  Log.error("Extraction failed:", extractError);
                   reject(extractError);
                 }
               }
@@ -152,7 +152,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
 
         await processFileChecksums(false);
       } catch (error) {
-        console.error("SAMP files download failed:", error);
+        Log.error("SAMP files download failed:", error);
         setCurrentTask(
           "Failed to download SAMP files. Please check your connection."
         );
@@ -229,22 +229,22 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
             );
 
             if (!userFile) {
-              console.warn(`File not found: ${resourceInfo.name}`);
+              Log.warn(`File not found: ${resourceInfo.name}`);
               return false;
             }
 
             const [, hash] = userFile.split("|");
             if (!hash || hash !== resourceInfo.checksum) {
-              console.warn(
+              Log.warn(
                 `Checksum mismatch for ${resourceInfo.name}. Expected: ${resourceInfo.checksum}, Got: ${hash}`
               );
               return false;
             }
 
-            console.log(`Validation successful: ${resourceInfo.name}`);
+            Log.info(`Validation successful: ${resourceInfo.name}`);
             return true;
           } catch (error) {
-            console.error(`Error validating ${resourceInfo.name}:`, error);
+            Log.error(`Error validating ${resourceInfo.name}:`, error);
             return false;
           }
         })();
@@ -288,25 +288,25 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
 
         // Check if OMP file exists and is valid
         if (await fs.exists(ompFile)) {
-          const checksums: string[] = JSON.parse(
-            await invoke_rpc("get_checksum_of_files", { list: [ompFile] })
-          );
+          const checksums: string[] = await invoke("get_checksum_of_files", {
+            list: [ompFile],
+          });
 
           if (checksums.length > 0) {
             const [, fileHash] = checksums[0].split("|");
             if (fileHash === updateInfo.ompPluginChecksum) {
-              console.log("OMP plugin is up to date");
+              Log.info("OMP plugin is up to date");
               return true;
             }
           }
         }
 
         // Download OMP file if missing or outdated
-        console.log("Downloading OMP plugin...");
+        Log.info("Downloading OMP plugin...");
         await downloadOmpFile(ompFile, updateInfo.ompPluginDownload);
         return false; // Indicates we downloaded, need to continue processing
       } catch (error) {
-        console.error("OMP plugin verification failed:", error);
+        Log.error("OMP plugin verification failed:", error);
         return true; // Continue without OMP plugin
       }
     }, [downloadOmpFile]);
@@ -320,7 +320,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
         const sampPath = await path.join(dir, "samp");
 
         if (!(await fs.exists(sampPath))) {
-          console.log("SAMP directory does not exist");
+          Log.info("SAMP directory does not exist");
           await downloadSAMPFiles(sampPath);
           return;
         }
@@ -330,26 +330,28 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
         files.forEach((file) => collectFiles(file, fileList));
 
         if (fileList.length === 0) {
-          console.log("No files found in SAMP directory");
+          Log.info("No files found in SAMP directory");
           await downloadSAMPFiles(sampPath);
           return;
         }
 
-        const checksums: string[] = JSON.parse(
-          await invoke_rpc("get_checksum_of_files", { list: fileList })
-        );
+        const fileChecksums: any = await invoke("get_checksum_of_files", {
+          list: fileList,
+        });
+
+        const checksums: string[] = fileChecksums;
 
         const validationResults = await validateFileChecksums(checksums);
 
         if (validationResults.includes(false)) {
-          console.log("File validation failed, re-downloading SAMP files");
+          Log.info("File validation failed, re-downloading SAMP files");
           await fs.removeDir(sampPath, { recursive: true });
           await fs.createDir(sampPath, { recursive: true });
           await downloadSAMPFiles(sampPath);
           return;
         }
 
-        console.log("File validation successful");
+        Log.info("File validation successful");
         const ompVerificationComplete = await processOmpPluginVerification();
 
         if (ompVerificationComplete) {
@@ -381,7 +383,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
 
       // Check if SAMP directory exists
       if (!(await fs.exists(sampPath))) {
-        console.log("Creating SAMP directory");
+        Log.info("Creating SAMP directory");
         await fs.createDir(sampPath, { recursive: true });
         await downloadSAMPFiles(sampPath);
         return;
@@ -391,30 +393,30 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
       const archive = await path.join(sampPath, "samp_clients.7z");
       if (await fs.exists(archive)) {
         try {
-          const checksums: string[] = JSON.parse(
-            await invoke_rpc("get_checksum_of_files", { list: [archive] })
-          );
+          const checksums: string[] = await invoke("get_checksum_of_files", {
+            list: [archive],
+          });
 
           if (checksums.length > 0) {
             const resource = validFileChecksums.get("samp_clients.7z");
             const [, fileHash] = checksums[0].split("|");
 
             if (resource && resource.checksum === fileHash) {
-              console.log("Archive checksum valid, processing files");
+              Log.info("Archive checksum valid, processing files");
               await processFileChecksums();
               return;
             }
           }
         } catch (error) {
-          console.error("Error checking archive:", error);
+          Log.error("Error checking archive:", error);
         }
       }
 
       // Archive doesn't exist or is invalid, download it
-      console.log("Archive missing or invalid, downloading");
+      Log.info("Archive missing or invalid, downloading");
       await downloadSAMPFiles(sampPath);
     } catch (error) {
-      console.error("Resource validation failed:", error);
+      Log.error("Resource validation failed:", error);
       setCurrentTask(
         "Resource validation failed. Please restart the application."
       );

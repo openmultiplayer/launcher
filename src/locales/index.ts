@@ -69,6 +69,7 @@ const loadTranslation = (lang: string) => {
 
 // Load English by default (for SSR and fallback)
 import English from "./translations/en";
+import { Log } from "../utils/logger";
 
 export type LanguageType =
   | "en"
@@ -228,7 +229,7 @@ export const changeLanguage = async (lang: LanguageType): Promise<void> => {
     // Change language
     await i18n.changeLanguage(lang);
   } catch (error) {
-    console.warn(
+    Log.warn(
       `Failed to load language ${lang}, falling back to English:`,
       error
     );

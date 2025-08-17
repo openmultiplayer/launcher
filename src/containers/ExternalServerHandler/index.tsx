@@ -16,6 +16,7 @@ import { usePersistentServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
 import { startGame } from "../../utils/game";
+import { Log } from "../../utils/logger";
 import { sc } from "../../utils/sizeScaler";
 import { Server } from "../../utils/types";
 import {
@@ -49,7 +50,7 @@ const ExternalServerHandler = () => {
         }
       })();
     } catch (e) {
-      console.log(e);
+      Log.error(e);
     }
 
     const unlisten = listen<string>("scheme-request-received", (event) => {

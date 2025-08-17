@@ -2,7 +2,6 @@ import { fs, invoke, path, process, shell } from "@tauri-apps/api";
 import { open, save } from "@tauri-apps/api/dialog";
 import { exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { t } from "i18next";
-import { invoke_rpc } from "../api/rpc";
 import {
   IN_GAME,
   IN_GAME_PROCESS_ID,
@@ -36,9 +35,9 @@ const getLocalPath = async (...segments: string[]) =>
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
   const shared = await getLocalPath("samp", "shared");
-  await invoke_rpc("copy_files_to_gtasa", {
+  await invoke("copy_files_to_gtasa", {
     src: shared,
-    gtasa_dir: gtasaPath,
+    gtasaDir: gtasaPath,
   }).then((e) => {
     throw e;
   });
@@ -199,9 +198,12 @@ export const startGame = async (
   const file = validFileChecksums.get(
     sampVersion !== "custom" ? sampVersion : "037R1_samp.dll"
   );
-  const ourSAMPDllPath = sampVersion === "custom" ? idealSAMPDllPath : (file
-    ? await getLocalPath(file.path, file.name)
-    : idealSAMPDllPath);
+  const ourSAMPDllPath =
+    sampVersion === "custom"
+      ? idealSAMPDllPath
+      : file
+      ? await getLocalPath(file.path, file.name)
+      : idealSAMPDllPath;
 
   invoke("inject", {
     name: nickname,

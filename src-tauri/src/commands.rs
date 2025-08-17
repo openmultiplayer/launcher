@@ -1,5 +1,9 @@
-use crate::{errors::LauncherError, injector, samp};
-use log::info;
+use crate::{errors::LauncherError, helpers, injector, samp};
+use log::{error, info, warn};
+use md5::compute;
+use sevenz_rust::decompress_file;
+use std::fs::File;
+use std::io::Read;
 
 #[tauri::command]
 pub async fn inject(
@@ -96,6 +100,46 @@ pub fn is_process_alive(pid: u32) -> bool {
 }
 
 #[tauri::command]
+pub fn get_checksum_of_files(list: Vec<String>) -> std::result::Result<Vec<String>, String> {
+    let mut result = Vec::new();
+
+    for file in list {
+        let mut f =
+            File::open(&file).map_err(|e| format!("Failed to open file '{}': {}", file, e))?;
+
+        let mut contents = Vec::new();
+        f.read_to_end(&mut contents)
+            .map_err(|e| format!("Failed to read file '{}': {}", file, e))?;
+
+        let digest = compute(&contents);
+        let checksum_entry = format!("{}|{:x}", file, digest);
+        result.push(checksum_entry);
+    }
+
+    Ok(result)
+}
+
+#[tauri::command]
+pub fn extract_7z(path: String, output_path: String) -> std::result::Result<(), String> {
+    decompress_file(&path, &output_path)
+        .map_err(|e| format!("Failed to extract archive '{}': {}", path, e))
+}
+
+#[tauri::command]
+pub fn copy_files_to_gtasa(src: String, gtasa_dir: String) -> std::result::Result<(), String> {
+    match helpers::copy_files(&src, &gtasa_dir) {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            log::warn!("{}", e);
+            match e {
+                LauncherError::AccessDenied(_) => {
+                    return Err("need_admin".to_string());
+                }
+                _ => return Err(e.to_string()),
+            }
+        }
+    }
+}
 
 #[tauri::command]
 pub fn log_info(msg: &str) -> () {

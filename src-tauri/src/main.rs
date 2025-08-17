@@ -9,7 +9,6 @@ mod helpers;
 mod injector;
 mod ipc;
 mod query;
-mod rpcs;
 mod samp;
 mod validation;
 
@@ -81,17 +80,6 @@ async fn main() {
             let _ = unsafe { FreeConsole() };
         }
     }
-
-    std::thread::spawn(move || match actix_rt::Runtime::new() {
-        Ok(rt) => {
-            if let Err(e) = rt.block_on(rpcs::initialize_rpc()) {
-                error!("Failed to initialize RPC server: {}", e);
-            }
-        }
-        Err(e) => {
-            error!("Failed to create async runtime: {}", e);
-        }
-    });
 
     if let Err(e) = run_tauri_app().await {
         error!("Failed to run Tauri app: {}", e);
@@ -178,6 +166,9 @@ async fn run_tauri_app() -> Result<()> {
             commands::log_info,
             commands::log_warn,
             commands::log_error,
+            commands::get_checksum_of_files,
+            commands::extract_7z,
+            commands::copy_files_to_gtasa,
             query::query_server,
             ipc::send_message_to_game
         ])
