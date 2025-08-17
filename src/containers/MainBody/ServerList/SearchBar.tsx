@@ -19,6 +19,7 @@ import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../../states/servers";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
+import { Log } from "../../../utils/logger";
 
 interface SearchBarProps {
   onChange: (query: string) => void;
@@ -114,7 +115,7 @@ const SearchBar = memo<SearchBarProps>(({ onChange }) => {
       setServer(selected);
       showPrompt(true);
     } catch (error) {
-      console.error("Error playing selected server:", error);
+      Log.error("Error playing selected server:", error);
     }
   }, [selected, setServer, showPrompt]);
 
@@ -128,7 +129,7 @@ const SearchBar = memo<SearchBarProps>(({ onChange }) => {
         addToFavorites(selected);
       }
     } catch (error) {
-      console.error("Error toggling favorite:", error);
+      Log.error("Error toggling favorite:", error);
     }
   }, [selected, favorited, removeFromFavorites, addToFavorites]);
 
@@ -152,7 +153,7 @@ const SearchBar = memo<SearchBarProps>(({ onChange }) => {
     try {
       clearRecentlyJoined();
     } catch (error) {
-      console.error("Error clearing recently joined:", error);
+      Log.error("Error clearing recently joined:", error);
     }
   }, [clearRecentlyJoined]);
 

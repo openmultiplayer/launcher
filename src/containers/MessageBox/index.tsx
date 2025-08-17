@@ -13,6 +13,7 @@ import { images } from "../../constants/images";
 import { useMessageBox } from "../../states/messageModal";
 import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
+import { Log } from "../../utils/logger";
 
 const MessageBox = memo(() => {
   const { args, visible, hideMessageBox } = useMessageBox();
@@ -45,7 +46,7 @@ const MessageBox = memo(() => {
       try {
         button.onPress?.();
       } catch (error) {
-        console.error("Error in MessageBox button handler:", error);
+        Log.error("Error in MessageBox button handler:", error);
       } finally {
         handleClose();
       }

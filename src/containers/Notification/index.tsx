@@ -4,6 +4,7 @@ import * as Animatable from "react-native-animatable";
 import Text from "../../components/Text";
 import { useNotification } from "../../states/notification";
 import { useTheme } from "../../states/theme";
+import { Log } from "../../utils/logger";
 
 interface NotificationTimer {
   autoHide: NodeJS.Timeout | null;
@@ -72,7 +73,7 @@ const Notification = memo(() => {
       try {
         onPress();
       } catch (error) {
-        console.error("Error in notification press handler:", error);
+        Log.error("Error in notification press handler:", error);
       }
     }
     handleClose();

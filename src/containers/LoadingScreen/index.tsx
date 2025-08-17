@@ -65,7 +65,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
         setCurrentTask("Validating resources...");
         await validateResources();
       } catch (error) {
-        console.error("Failed to initialize app:", error);
+        Log.error("Failed to initialize app:", error);
         setCurrentTask("Failed to initialize. Please restart the application.");
       }
     };
@@ -191,7 +191,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
         await new Promise((resolve) => setTimeout(resolve, 500));
         await processFileChecksums(false);
       } catch (error) {
-        console.error("OMP file download failed:", error);
+        Log.error("OMP file download failed:", error);
         setCurrentTask(
           "Failed to download OMP plugin. Please check your connection."
         );
@@ -268,7 +268,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
         if (!currentUpdateInfo) {
           const response = await getUpdateInfo();
           if (!response.success || !response.data) {
-            console.error("Failed to get update info");
+            Log.error("Failed to get update info");
             return true; // Continue without OMP plugin
           }
           updateInfo = response.data;
@@ -358,7 +358,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
           finishLoading(isInitialLoad ? 1000 : 1);
         }
       } catch (error: any) {
-        console.error("File checksum processing failed:", error);
+        Log.error("File checksum processing failed:", error);
         invoke("log", {
           msg: "File checksum processing failed: " + error.toString(),
         });
