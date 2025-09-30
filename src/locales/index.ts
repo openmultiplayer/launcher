@@ -30,6 +30,8 @@ const loadTranslation = (lang: string) => {
       return import("./translations/it");
     case "lt":
       return import("./translations/lt");
+    case "nl":
+      return import("./translations/nl");
     case "pl":
       return import("./translations/pl");
     case "pt":
@@ -79,6 +81,7 @@ export type LanguageType =
   | "fr"
   | "de"
   | "hi"
+  | "nl"
   | "it"
   | "lt"
   | "ro"
@@ -114,6 +117,7 @@ const LANGUAGE_METADATA: Record<
   Omit<LanguageResource, "translations">
 > = {
   en: { label: "English", type: "en" },
+  nl: { label: "Nederlands", type: "nl" },
   ru: { label: "Русский", type: "ru" },
   es: { label: "Español", type: "es" },
   ro: { label: "Română", type: "ro" },
