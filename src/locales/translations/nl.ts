@@ -2,7 +2,7 @@ export default {
     favorites: "Favorieten",
     internet: "Internet",
     partners: "Partners",
-    recently_joined: "Recent gespeelt",
+    recently_joined: "Recent gespeeld",
     nickname: "Bijnaam",
     settings: "Instellingen",
     minimize: "Minimiseren",
