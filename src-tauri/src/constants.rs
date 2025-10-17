@@ -53,3 +53,4 @@ pub const SAMP_USERDATA_PATH: &str = r"\GTA San Andreas User Files\SAMP\USERDATA
 pub const ERROR_DIRECTORY_EXISTS: i32 = 183;
 pub const ERROR_ACCESS_DENIED: i32 = 5;
 pub const ERROR_ELEVATION_REQUIRED: i32 = 740;
+pub const ERROR_FILE_BEING_USED: i32 = 32;

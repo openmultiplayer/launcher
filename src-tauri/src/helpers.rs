@@ -96,7 +96,6 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> crate::error
                 match e.raw_os_error() {
                     Some(ERROR_DIRECTORY_EXISTS) => {
                         info!("Directory {} already exists", dir_path.display());
-                        return Ok(());
                     }
                     Some(ERROR_ACCESS_DENIED) => {
                         return Err(crate::errors::LauncherError::AccessDenied(format!(
@@ -119,6 +118,13 @@ pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> crate::error
                             entry.path().display(),
                             dest_path.display()
                         )))
+                    }
+                    Some(ERROR_FILE_BEING_USED) => {
+                        if let Some(ext) = entry.path().extension() {
+                            if ext == "ttf" {
+                                info!("Unable to copy \"{}\"", entry.path().display());
+                            }
+                        }
                     }
                     _ => return Err(crate::errors::LauncherError::from(e)),
                 }
