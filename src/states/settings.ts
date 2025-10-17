@@ -1,3 +1,5 @@
+import { emit, listen } from "@tauri-apps/api/event";
+import { appWindow } from "@tauri-apps/api/window";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { stateStorage } from "../utils/stateStorage";
@@ -13,6 +15,9 @@ interface SettingsPersistentState {
   setSampVersion: (version: SAMPDLLVersions) => void;
 }
 
+const emitWithDelay = (event: string, payload: any) =>
+  setTimeout(() => emit(event, payload), 200);
+
 const useSettings = create<SettingsPersistentState>()(
   persist(
     (set) => ({
@@ -20,7 +25,11 @@ const useSettings = create<SettingsPersistentState>()(
       gtasaPath: "",
       sampVersion: "custom",
       dataMerged: false,
-      setNickName: (name) => set({ nickName: name }),
+      setNickName: (name) =>
+        set(() => {
+          emitWithDelay("setNickName", name);
+          return { nickName: name };
+        }),
       setGTASAPath: (path) => set({ gtasaPath: path }),
       setSampVersion: (version) => set({ sampVersion: version }),
     }),
@@ -29,6 +38,14 @@ const useSettings = create<SettingsPersistentState>()(
       storage: createJSONStorage(() => stateStorage),
     }
   )
+);
+
+["setNickName"].forEach((event) =>
+  listen(event, (ev) => {
+    if (ev.windowLabel !== appWindow.label) {
+      useSettings.persist.rehydrate();
+    }
+  })
 );
 
 export { useSettings };
