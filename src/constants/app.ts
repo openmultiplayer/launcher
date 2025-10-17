@@ -100,12 +100,12 @@ const fillvalidFileChecksumsMap = () => {
     checksum: "337ddcbe53be7dd8032fb8f6fe1b607b",
     requiredInGameDir: true,
   });
-  validFileChecksums.set("rcon.exe", {
-    path: "samp/shared/",
-    name: "rcon.exe",
-    checksum: "3f4821cda1de6d7d10654e5537b4df6e",
-    requiredInGameDir: true,
-  });
+  // validFileChecksums.set("rcon.exe", {
+  //   path: "samp/shared/",
+  //   name: "rcon.exe",
+  //   checksum: "3f4821cda1de6d7d10654e5537b4df6e",
+  //   requiredInGameDir: true,
+  // });
   validFileChecksums.set("blanktex.txd", {
     path: "samp/shared/SAMP/",
     name: "blanktex.txd",
@@ -172,12 +172,12 @@ const fillvalidFileChecksumsMap = () => {
     checksum: "1423c18dfa2064d967b397227960b93d",
     requiredInGameDir: true,
   });
-  validFileChecksums.set("samp_debug.exe", {
-    path: "samp/shared/",
-    name: "samp_debug.exe",
-    checksum: "2c00c60a5511c3a41a70296fd1879067",
-    requiredInGameDir: true,
-  });
+  // validFileChecksums.set("samp_debug.exe", {
+  //   path: "samp/shared/",
+  //   name: "samp_debug.exe",
+  //   checksum: "2c00c60a5511c3a41a70296fd1879067",
+  //   requiredInGameDir: true,
+  // });
 };
 
 fillvalidFileChecksumsMap();
