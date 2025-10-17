@@ -158,8 +158,9 @@ export const startGame = async (
             },
           ],
         });
+
+        return;
       }
-      return;
     }
   }
 
