@@ -110,6 +110,21 @@ const App = memo(() => {
   }, [language]);
 
   useEffect(() => {
+    if (!loading) {
+      const targetSize = mainWindowSize.current || new LogicalSize(1000, 700);
+
+      Promise.all([
+        appWindow.setResizable(true),
+        appWindow.setSize(targetSize),
+      ]);
+
+      if (!IN_GAME) {
+        appWindow.center();
+      }
+    }
+  }, [loading]);
+
+  useEffect(() => {
     let killResizeListener: (() => void) | null = null;
 
     const setupListeners = async () => {
