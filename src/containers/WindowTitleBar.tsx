@@ -2,7 +2,13 @@ import { invoke } from "@tauri-apps/api";
 import { appWindow } from "@tauri-apps/api/window";
 import { t } from "i18next";
 import { memo, useCallback, useMemo } from "react";
-import { ColorValue, Pressable, StyleSheet, View } from "react-native";
+import {
+  ColorValue,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { IN_GAME, IN_GAME_PROCESS_ID } from "../constants/app";
@@ -167,9 +173,34 @@ const WindowTitleBar = memo(() => {
         alignItems: "center" as const,
         height: "100%",
       },
+      inputs: {
+        height: "100%",
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        marginRight: sc(10),
+      },
+      reconnectButton: {
+        height: sc(35),
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: sc(20),
+        borderRadius: sc(5),
+        backgroundColor: theme.primary,
+        // @ts-ignore
+        filter: `drop-shadow(0 0 20px ${theme.primary}44)`,
+      },
     }),
     [theme.itemBackgroundColor]
   );
+
+  const handleReconnect = useCallback(() => {
+    invoke("send_message_to_game", {
+      id: IN_GAME_PROCESS_ID,
+      message: "reconnect",
+    });
+  }, []);
 
   const handleThemeToggle = useCallback(() => {
     setTheme(themeType === "dark" ? "light" : "dark");
@@ -221,12 +252,25 @@ const WindowTitleBar = memo(() => {
           Open Multiplayer
         </Text>
       </View>
-      <div
-        data-tauri-drag-region={!IN_GAME}
-        style={containerStyles.dragRegion}
-      />
+      {!IN_GAME && (
+        <div data-tauri-drag-region style={containerStyles.dragRegion} />
+      )}
       {/* @ts-ignore */}
       <View style={containerStyles.rightSection}>
+        {IN_GAME && (
+          // @ts-ignore
+          <View style={containerStyles.inputs}>
+            <TouchableOpacity
+              onPress={handleReconnect}
+              // @ts-ignore
+              style={containerStyles.reconnectButton}
+            >
+              <Text style={{ fontSize: sc(18) }} color="white" semibold>
+                {t("reconnect")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <CustomWindowTitleBarButtons
           title=""
           iconSize={sc(30)}

@@ -1,11 +1,8 @@
-import { invoke } from "@tauri-apps/api";
 import { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next"; // ✅ use this instead
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import Icon from "../components/Icon";
 import TabBar from "../components/TabBar";
-import Text from "../components/Text";
-import { IN_GAME, IN_GAME_PROCESS_ID } from "../constants/app";
 import { images } from "../constants/images";
 import { useGenericTempState } from "../states/genericStates";
 import { useSettings } from "../states/settings";
@@ -47,14 +44,6 @@ const NavBar = memo(() => {
 
   const dynamicStyles = useMemo(
     () => ({
-      reconnectButton: [
-        styles.reconnectContainer,
-        {
-          backgroundColor: theme.primary,
-          // @ts-ignore
-          filter: `drop-shadow(0 0 20px ${theme.primary}44)`,
-        },
-      ],
       nicknameIcon: [
         styles.nicknameIconContainer,
         { backgroundColor: theme.itemBackgroundColor },
@@ -81,13 +70,6 @@ const NavBar = memo(() => {
     [setListType]
   );
 
-  const handleReconnect = useCallback(() => {
-    invoke("send_message_to_game", {
-      id: IN_GAME_PROCESS_ID,
-      message: "reconnect",
-    });
-  }, []);
-
   const handleNicknameChange = useCallback(
     (text: string) => setNickName(text),
     [setNickName]
@@ -96,38 +78,25 @@ const NavBar = memo(() => {
   return (
     <View style={styles.container}>
       <TabBar onChange={handleTabChange} list={tabList} selected={listType} />
-      {IN_GAME ? (
-        <View style={styles.inputs}>
-          <TouchableOpacity
-            onPress={handleReconnect}
-            style={dynamicStyles.reconnectButton}
-          >
-            <Text style={{ fontSize: sc(18) }} color="white" semibold>
-              {t("reconnect")}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.inputs}>
-          <View style={styles.nicknameContainer}>
-            <View style={dynamicStyles.nicknameIcon}>
-              <Icon
-                title={t("nickname")}
-                image={images.icons.nickname}
-                size={sc(16)}
-                color={theme.textSecondary}
-              />
-            </View>
-            <TextInput
-              value={nickName}
-              onChangeText={handleNicknameChange}
-              placeholder={`${t("nickname")}...`}
-              placeholderTextColor={theme.textSecondary}
-              style={dynamicStyles.nicknameInput}
+      <View style={styles.inputs}>
+        <View style={styles.nicknameContainer}>
+          <View style={dynamicStyles.nicknameIcon}>
+            <Icon
+              title={t("nickname")}
+              image={images.icons.nickname}
+              size={sc(16)}
+              color={theme.textSecondary}
             />
           </View>
+          <TextInput
+            value={nickName}
+            onChangeText={handleNicknameChange}
+            placeholder={`${t("nickname")}...`}
+            placeholderTextColor={theme.textSecondary}
+            style={dynamicStyles.nicknameInput}
+          />
         </View>
-      )}
+      </View>
     </View>
   );
 });
@@ -164,13 +133,6 @@ const styles = StyleSheet.create({
     width: sc(35),
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: sc(5),
-  },
-  reconnectContainer: {
-    height: sc(35),
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: sc(20),
     borderRadius: sc(5),
   },
 });

@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   overlay: {
-    top: sc(5),
+    top: sc(80),
     bottom: sc(20),
   },
   closeButtonBigView: {

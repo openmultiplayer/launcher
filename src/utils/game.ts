@@ -77,7 +77,11 @@ export const startGame = async (
   if (IN_GAME) {
     invoke("send_message_to_game", {
       id: IN_GAME_PROCESS_ID,
-      message: `connect:${await getIpAddress(server.ip)}:${server.port}`,
+      message: password.length
+        ? `connect:${await getIpAddress(server.ip)}:${
+            server.port
+          }:${nickname}:${password}`
+        : `connect:${await getIpAddress(server.ip)}:${server.port}:${nickname}`,
     });
     return;
   }

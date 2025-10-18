@@ -30,7 +30,7 @@ const FeatureDisabledOverlay = (props: IProps) => {
     >
       <Text
         semibold
-        size={3}
+        size={2}
         numberOfLines={2}
         style={{ textAlign: "center" }}
         color={theme.textPrimary}
