@@ -283,8 +283,8 @@ const JoinServerPrompt = () => {
             </Text>
             <TextInput
               placeholderTextColor={theme.textPlaceholder}
-              placeholder={t("server_join_prompt_nickname_input_placeholder")}
-              value={perServerNickname.length ? perServerNickname : nickName}
+              placeholder={nickName}
+              value={perServerNickname}
               onChangeText={handleNicknameChange}
               // @ts-ignore
               style={[styles.textInput, dynamicStyles.nicknameInput]}
