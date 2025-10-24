@@ -6,6 +6,7 @@ import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { images } from "../../constants/images";
 import { useContextMenu } from "../../states/contextMenu";
+import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { usePersistentServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
@@ -82,7 +83,13 @@ const ContextMenu = memo(() => {
 
   const handleConnect = useCallback(() => {
     if (server) {
-      startGame(server, nickName, gtasaPath, "");
+      if (server.hasPassword) {
+        const { showPrompt, setServer } = useJoinServerPrompt();
+        setServer(server);
+        showPrompt(true);
+      } else {
+        startGame(server, nickName, gtasaPath, "");
+      }
       hide();
     }
   }, [server, nickName, gtasaPath, hide]);
