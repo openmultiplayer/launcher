@@ -17,7 +17,6 @@ pub async fn run_samp(
     _dll_path: &str,
     _omp_file: &str,
     _password: &str,
-    _discord: bool,
 ) -> Result<()> {
     Ok(())
 }
@@ -31,7 +30,6 @@ pub async fn run_samp(
     dll_path: &str,
     omp_file: &str,
     password: &str,
-    discord: bool,
 ) -> Result<()> {
     // Prepare the command to spawn the executable
     let mut cmd = Command::new(format!("{}/{}", executable_dir, GTA_SA_EXECUTABLE));
@@ -47,10 +45,6 @@ pub async fn run_samp(
 
     if !password.is_empty() {
         ready_for_exec = ready_for_exec.arg("-z").arg(password);
-    }
-
-    if discord {
-        ready_for_exec = ready_for_exec.arg("--discord");
     }
 
     let process = ready_for_exec.current_dir(executable_dir).spawn();

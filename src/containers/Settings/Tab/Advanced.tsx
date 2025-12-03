@@ -1,8 +1,6 @@
 import { t } from "i18next";
-import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
-import CheckBox from "../../../components/CheckBox";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Text from "../../../components/Text";
-import { useGenericPersistentState } from "../../../states/genericStates";
 import { useTheme } from "../../../states/theme";
 import {
   exportFavoriteListFile,
@@ -12,8 +10,6 @@ import { sc } from "../../../utils/sizeScaler";
 
 const Advanced = () => {
   const { theme } = useTheme();
-  const { shouldUpdateDiscordStatus, toggleDiscordStatus } =
-    useGenericPersistentState();
   return (
     <View
       style={{
@@ -31,25 +27,6 @@ const Advanced = () => {
           marginTop: sc(10),
         }}
       >
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-          onPress={async () => {
-            toggleDiscordStatus(!shouldUpdateDiscordStatus);
-          }}
-        >
-          <CheckBox
-            value={shouldUpdateDiscordStatus}
-            style={{ marginRight: sc(7) }}
-          />
-          <Text semibold color={theme.textPrimary} size={2}>
-            {`${t("settings_advanced_discord_status")} ${t(
-              "settings_advanced_discord_status_requires_restart"
-            )}`}
-          </Text>
-        </Pressable>
         <TouchableOpacity
           style={[
             styles.importButton,

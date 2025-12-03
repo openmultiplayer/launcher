@@ -8,7 +8,6 @@ import {
   ResourceInfo,
   validFileChecksums,
 } from "../constants/app";
-import { useGenericPersistentState } from "../states/genericStates";
 import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
 import { useNotification } from "../states/notification";
@@ -72,7 +71,6 @@ export const startGame = async (
   const { sampVersion } = useSettings.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
   const { setSelected } = useServers.getState();
-  const { shouldUpdateDiscordStatus } = useGenericPersistentState.getState();
 
   if (IN_GAME) {
     invoke("send_message_to_game", {
@@ -218,7 +216,6 @@ export const startGame = async (
     dll: ourSAMPDllPath,
     ompFile: await getLocalPath("omp", "omp-client.dll"),
     password,
-    discord: shouldUpdateDiscordStatus,
   })
     .then(() => {
       addToRecentlyJoined(server);
