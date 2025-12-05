@@ -53,23 +53,19 @@ const General = () => {
   };
 
   const importFavListFromSAMP = async () => {
-    await invoke("get_samp_favorite_list").then((a) => {
-      const userData: {
-        file_id: string;
-        file_version: number;
-        server_count: number;
-        favorite_servers: {
-          ip: string;
-          port: number;
-          name: string;
-          password: string;
-          rcon: string;
-        }[];
-      } = JSON.parse(a as string);
+    try {
+      const a = await invoke("get_samp_favorite_list");
+      let userData: any = null;
+      try {
+        userData = JSON.parse(a as string);
+      } catch (err) {
+        Log.debug("Failed to parse samp favorite list:", err);
+        return;
+      }
 
-      if (userData.file_id === "SAMP") {
+      if (userData?.file_id === "SAMP") {
         const { addToFavorites } = usePersistentServers.getState();
-        userData.favorite_servers.forEach((server) => {
+        userData.favorite_servers?.forEach((server: any) => {
           const serverInfo: Server = {
             ip: "",
             port: 0,
@@ -88,16 +84,16 @@ const General = () => {
             rules: {} as Server["rules"],
           };
 
-          if (server.ip.length) {
+          if (server?.ip?.length) {
             serverInfo.ip = server.ip;
             serverInfo.port = server.port;
-            if (server.name.includes("(Retrieving info...)")) {
+            if (server.name?.includes("(Retrieving info...)")) {
               serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
             } else {
               serverInfo.hostname = server.name;
             }
 
-            if (server.password.length) {
+            if (server.password?.length) {
               serverInfo.password = server.password;
             }
 
@@ -105,7 +101,9 @@ const General = () => {
           }
         });
       }
-    });
+    } catch (err) {
+      Log.debug(err);
+    }
   };
 
   return (

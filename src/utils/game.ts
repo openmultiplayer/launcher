@@ -34,11 +34,12 @@ const getLocalPath = async (...segments: string[]) =>
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
   const shared = await getLocalPath("samp", "shared");
+  // invoke resolves on success and rejects on failure — don't turn a
+  // successful resolution into an exception. Await and let callers
+  // handle rejections via try/catch.
   await invoke("copy_files_to_gtasa", {
     src: shared,
     gtasaDir: gtasaPath,
-  }).then((e) => {
-    throw e;
   });
 };
 

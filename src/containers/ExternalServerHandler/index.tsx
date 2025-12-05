@@ -33,10 +33,11 @@ const ExternalServerHandler = () => {
   const { addToFavorites } = usePersistentServers();
 
   useEffect(() => {
-    try {
-      (async () => {
+    (async () => {
+      try {
         const value = await invoke<string>("get_uri_scheme_value");
         if (
+          typeof value === "string" &&
           value.length &&
           (value.includes("omp://") || value.includes("samp://"))
         ) {
@@ -48,10 +49,10 @@ const ExternalServerHandler = () => {
           showModal(true);
           setServerAddress(serverAddress);
         }
-      })();
-    } catch (e) {
-      Log.error(e);
-    }
+      } catch (e) {
+        Log.error(e);
+      }
+    })();
 
     const unlisten = listen<string>("scheme-request-received", (event) => {
       if (typeof event.payload === "string") {
@@ -71,7 +72,7 @@ const ExternalServerHandler = () => {
     });
 
     return () => {
-      unlisten.then((f) => f());
+      unlisten.then((f) => f()).catch((e) => Log.error(e));
     };
   }, []);
 
