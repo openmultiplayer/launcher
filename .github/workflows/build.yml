@@ -39,10 +39,19 @@ jobs:
         run: |
           artifact_name="open.mp-launcher-win-${GITHUB_RUN_ID}"
           echo "artifact_name=${artifact_name}" >> $GITHUB_OUTPUT
+          setup_artifact_name="open.mp-launcher-win-setup-${GITHUB_RUN_ID}"
+          echo "setup_artifact_name=${setup_artifact_name}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.vars.outputs.artifact_name }}
           path: src-tauri/target/i686-pc-windows-msvc/release/omp-launcher.exe
+          if-no-files-found: error
+
+      - name: Upload setup artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.setup_artifact_name }}
+          path: src-tauri/target/i686-pc-windows-msvc/release/bundle/nsis/omp-launcher_1.5.2_x86-setup.exe
           if-no-files-found: error
