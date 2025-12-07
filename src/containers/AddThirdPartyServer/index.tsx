@@ -21,6 +21,7 @@ import {
   isValidDomain,
   validateServerAddressIPv4,
 } from "../../utils/validation";
+import { Log } from "../../utils/logger";
 
 const AddThirdPartyServerModal = () => {
   const { visible, showAddThirdPartyServer } = useAddThirdPartyServerModal();
@@ -31,11 +32,14 @@ const AddThirdPartyServerModal = () => {
 
   useEffect(() => {
     if (visible) {
-      clipboard.readText().then((text) => {
-        if (text) {
-          setServerAddress(text);
+      (async () => {
+        try {
+          const text = await clipboard.readText();
+          if (text) setServerAddress(text);
+        } catch (e) {
+          Log.error(e);
         }
-      });
+      })();
     }
   }, [visible]);
 

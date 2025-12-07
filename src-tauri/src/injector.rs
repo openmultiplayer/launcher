@@ -51,8 +51,8 @@ pub async fn run_samp(
 
     match process {
         Ok(p) => {
-            inject_dll(p.id(), dll_path, 0, false)?;
-            inject_dll(p.id(), omp_file, 0, false)
+            inject_dll(p.id(), dll_path, 0, false)
+            // inject_dll(p.id(), omp_file, 0, false)
         }
         Err(e) => {
             info!("[injector.rs] Process creation failed: {}", e);
