@@ -100,4 +100,18 @@ export default {
     "Пожалуйста, выберите другую версию или загрузите и установите SA-MP вручную.",
   add_or_play_external_server: "Добавить в избранные или играть",
   reconnect: "Переподключиться",
+  settings_advanced_discord_status_requires_restart:
+    "(Для вступления в силу требуется перезапуск игры)",
+  settings_export_favorite_list_file: "Экспортировать список избранного в файл",
+  settings_import_favorite_list_file: "Импортировать список избранного из файла",
+  export_no_servers_description: "У вас нет избранных серверов для экспорта.",
+  export_successful_title: "Экспорт завершен",
+  export_successful_description: "Список серверов успешно экспортирован.",
+  export_failed_title: "Экспорт не выполнен",
+  export_failed_description: "Произошла ошибка при экспорте ваших избранных серверов.",
+  import_successful_title: "Импорт завершен",
+  import_successful_description: "Список серверов успешно импортирован.",
+  import_failed_title: "Импорт не выполнен",
+  import_failed_description: "Произошла ошибка при импорте ваших избранных серверов.",
+  import_invalid_data_description: "Выбранный файл содержит недействительные данные. Выберите корректный файл со списком избранного.",
 };
