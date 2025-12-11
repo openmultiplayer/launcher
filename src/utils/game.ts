@@ -68,7 +68,7 @@ export const startGame = async (
   const { addToRecentlyJoined } = usePersistentServers.getState();
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
-  const { sampVersion } = useSettings.getState();
+  const { sampVersion, customGameExe } = useSettings.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
   const { setSelected } = useServers.getState();
 
@@ -216,6 +216,7 @@ export const startGame = async (
     dll: ourSAMPDllPath,
     ompFile: await getLocalPath("omp", "omp-client.dll"),
     password,
+    customGameExe,
   })
     .then(() => {
       addToRecentlyJoined(server);

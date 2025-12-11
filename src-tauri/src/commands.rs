@@ -14,8 +14,20 @@ pub async fn inject(
     dll: &str,
     omp_file: &str,
     password: &str,
+    custom_game_exe: &str,
 ) -> std::result::Result<(), String> {
-    match injector::run_samp(name, ip, port, exe, dll, omp_file, password).await {
+    match injector::run_samp(
+        name,
+        ip,
+        port,
+        exe,
+        dll,
+        omp_file,
+        password,
+        custom_game_exe,
+    )
+    .await
+    {
         Ok(_) => Ok(()),
         Err(e) => {
             log::warn!("{}", e);

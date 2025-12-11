@@ -125,6 +125,7 @@ async fn handle_cli_args() -> Result<()> {
                     &format!("{}/{}", gamepath, SAMP_DLL),
                     &omp_client_path,
                     &password,
+                    "",
                 )
                 .await
                 .map_err(|e| LauncherError::InternalError(e.to_string()))?;

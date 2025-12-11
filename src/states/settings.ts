@@ -8,10 +8,12 @@ import { SAMPDLLVersions } from "../utils/types";
 interface SettingsPersistentState {
   nickName: string;
   gtasaPath: string;
+  customGameExe: string;
   sampVersion: SAMPDLLVersions;
   dataMerged: boolean;
   setNickName: (name: string) => void;
   setGTASAPath: (path: string) => void;
+  setCustomGameExe: (fileName: string) => void;
   setSampVersion: (version: SAMPDLLVersions) => void;
 }
 
@@ -23,6 +25,7 @@ const useSettings = create<SettingsPersistentState>()(
     (set) => ({
       nickName: "",
       gtasaPath: "",
+      customGameExe: "",
       sampVersion: "custom",
       dataMerged: false,
       setNickName: (name) =>
@@ -31,6 +34,7 @@ const useSettings = create<SettingsPersistentState>()(
           return { nickName: name };
         }),
       setGTASAPath: (path) => set({ gtasaPath: path }),
+      setCustomGameExe: (fileName) => set({ customGameExe: fileName }),
       setSampVersion: (version) => set({ sampVersion: version }),
     }),
     {
@@ -49,4 +53,3 @@ const useSettings = create<SettingsPersistentState>()(
 );
 
 export { useSettings };
-

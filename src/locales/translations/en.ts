@@ -116,4 +116,5 @@ export default {
     "An error occurred while importing your favorite servers.",
   import_invalid_data_description:
     "The selected file contains invalid data. Please select a valid favorites list file.",
+  settigs_custom_game_exe_label: "Custom game executable name",
 };

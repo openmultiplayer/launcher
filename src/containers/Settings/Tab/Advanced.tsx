@@ -1,6 +1,7 @@
 import { t } from "i18next";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Text from "../../../components/Text";
+import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
 import {
   exportFavoriteListFile,
@@ -10,19 +11,37 @@ import { sc } from "../../../utils/sizeScaler";
 
 const Advanced = () => {
   const { theme } = useTheme();
+  const { customGameExe, setCustomGameExe } = useSettings();
   return (
     <View
       style={{
         paddingHorizontal: 12,
         overflow: "hidden",
-        paddingTop: sc(6),
-        paddingBottom: sc(12),
+        paddingVertical: 10,
         flex: 1,
       }}
     >
+      <View>
+        <Text semibold color={theme.textPrimary} size={2}>
+          {t("settigs_custom_game_exe_label")}:
+        </Text>
+        <View style={styles.pathInputContainer}>
+          <TextInput
+            value={customGameExe}
+            onChangeText={(text) => setCustomGameExe(text)}
+            style={[
+              styles.pathInput,
+              {
+                color: theme.textPrimary,
+                backgroundColor: theme.textInputBackgroundColor,
+              },
+            ]}
+          />
+        </View>
+      </View>
+      <View style={{ flex: 1 }} />
       <View
         style={{
-          height: "100%",
           width: "100%",
           marginTop: sc(10),
         }}
@@ -69,14 +88,14 @@ const styles = StyleSheet.create({
     marginTop: 7,
   },
   pathInput: {
-    paddingHorizontal: 5,
+    paddingHorizontal: sc(10),
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    height: 29,
-    borderRadius: 8,
-    borderWidth: 2,
+    height: sc(38),
+    borderRadius: sc(5),
     // @ts-ignore
     outlineStyle: "none",
+    fontFamily: "Proxima Nova Regular",
+    fontSize: sc(17),
   },
   browseButton: {
     height: 30,

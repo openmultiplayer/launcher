@@ -17,6 +17,7 @@ pub async fn run_samp(
     _dll_path: &str,
     _omp_file: &str,
     _password: &str,
+    _custom_game_exe: &str,
 ) -> Result<()> {
     Ok(())
 }
@@ -30,9 +31,14 @@ pub async fn run_samp(
     dll_path: &str,
     omp_file: &str,
     password: &str,
+    custom_game_exe: &str,
 ) -> Result<()> {
     // Prepare the command to spawn the executable
-    let mut cmd = Command::new(format!("{}/{}", executable_dir, GTA_SA_EXECUTABLE));
+    let mut target_game_exe = GTA_SA_EXECUTABLE.to_string();
+    if custom_game_exe.len() > 0 {
+        target_game_exe = custom_game_exe.to_string();
+    }
+    let mut cmd = Command::new(format!("{}/{}", executable_dir, target_game_exe));
 
     let mut ready_for_exec = cmd
         .arg("-c")
