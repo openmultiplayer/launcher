@@ -6,6 +6,9 @@ pub const MAX_LANGUAGE_LENGTH: u32 = 39;
 pub const MAX_DISCORD_LINK_LENGTH: u32 = 50;
 pub const MAX_BANNER_URL_LENGTH: u32 = 160;
 pub const MAX_LOGO_URL_LENGTH: u32 = 160;
+pub const MAX_PLAYER_NAME_LENGTH: u8 = 32;
+pub const MAX_RULE_NAME_LENGTH: u8 = 32;
+pub const MAX_RULE_VALUE_LENGTH: u8 = 70;
 
 pub const MAX_PLAYER_COUNT: u16 = 1000;
 pub const MAX_RULE_COUNT: u16 = 20;

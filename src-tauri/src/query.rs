@@ -5,7 +5,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::{Cursor, Read};
-use std::sync::{Mutex};
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{net::Ipv4Addr, time::Duration};
 use tokio::net::{lookup_host, UdpSocket};
@@ -354,6 +354,11 @@ impl Query {
                     i, e
                 ))
             })?;
+            if player_name_len > MAX_PLAYER_NAME_LENGTH {
+                return Err(LauncherError::InvalidInput(
+                    "Player name length exceeds maximum".to_string(),
+                ));
+            }
 
             let mut player_name_buf = vec![0u8; player_name_len as usize];
             packet.read_exact(&mut player_name_buf).map_err(|e| {
@@ -394,6 +399,11 @@ impl Query {
                     i, e
                 ))
             })?;
+            if rule_name_len > MAX_RULE_NAME_LENGTH {
+                return Err(LauncherError::InvalidInput(
+                    "Rule name length exceeds maximum".to_string(),
+                ));
+            }
 
             let mut rule_name_buf = vec![0u8; rule_name_len as usize];
             packet.read_exact(&mut rule_name_buf).map_err(|e| {
@@ -407,6 +417,11 @@ impl Query {
                     i, e
                 ))
             })?;
+            if rule_value_len > MAX_RULE_VALUE_LENGTH {
+                return Err(LauncherError::InvalidInput(
+                    "Rule value length exceeds maximum".to_string(),
+                ));
+            }
 
             let mut rule_value_buf = vec![0u8; rule_value_len as usize];
             packet.read_exact(&mut rule_value_buf).map_err(|e| {
