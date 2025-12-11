@@ -46,8 +46,7 @@ export default {
   hide_player_and_rule_list: "Ukryj listę graczy i reguł",
   show_player_and_rule_list: "Pokaż listę graczy i reguł",
   copy_server_info: "Kopiuj Informacje o Serwerze",
-  settings_gta_path_input_label:
-    "Ścieżka GTA: San Andreas (gdzie zainstalowany jest SA-MP)",
+  settings_gta_path_input_label: "Ścieżka GTA: San Andreas",
   browse: "Przeglądaj",
   settings_import_nickname_gta_path_from_samp:
     "Importuj pseudonim i ścieżkę gtasa z ustawień SA-MP",
@@ -97,8 +96,10 @@ export default {
   change_version: "Zmień wersję",
   offline: "Niedostępny",
   from_gtasa_folder: "Z folderu GTASA",
-  gta_path_modal_cant_find_samp_description_2: "Wybierz inną wersję lub pobierz i zainstaluj SA-MP ręcznie.",
+  gta_path_modal_cant_find_samp_description_2:
+    "Wybierz inną wersję lub pobierz i zainstaluj SA-MP ręcznie.",
   add_or_play_external_server: "Dodaj do ulubionych lub graj",
   reconnect: "Połącz ponownie",
-  settings_advanced_discord_status_requires_restart: "(Wymaga ponownego uruchomienia gry)",
+  settings_advanced_discord_status_requires_restart:
+    "(Wymaga ponownego uruchomienia gry)",
 };

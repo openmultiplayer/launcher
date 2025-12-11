@@ -49,14 +49,14 @@ export default {
   hide_player_and_rule_list: "Játékosok és szerver információk elrejtése",
   show_player_and_rule_list: "Játékosok és szerver információk megjelenítése",
   copy_server_info: "Szerver információk másolása",
-  settings_gta_path_input_label:
-    "GTA: San Andreas útvonal (ahol a SA-MP is telepítve van)",
+  settings_gta_path_input_label: "GTA: San Andreas útvonal",
   browse: "Keresés",
   settings_import_nickname_gta_path_from_samp:
     "Becenév és gtasa útvonalának importálása SA-MP-ból",
   settings_import_samp_favorite_list:
     "Kedvenc szerverek importálása a SA-MP kliensből",
-  settings_reset_application_data: "Adatok törlése (beállítások és szerverlisták)",
+  settings_reset_application_data:
+    "Adatok törlése (beállítások és szerverlisták)",
   settings_new_update_available:
     "⚠ Új frissítés elérhető. A letöltéshez kattints ide! ⚠",
   settings_credits_made_by: "Készítette ❤️-el:",
@@ -81,7 +81,8 @@ export default {
   nickname_modal_name_not_set_title: "Nincs felhasználónév megadva!",
   nickname_modal_name_not_set_description:
     "Mielőtt csatlakoznál egy szerverhez be kell állítanod a felhasználóneved!",
-  gta_path_modal_path_not_set_title: "GTA: San Andreas útvonal nincs beállítva!",
+  gta_path_modal_path_not_set_title:
+    "GTA: San Andreas útvonal nincs beállítva!",
   gta_path_modal_path_not_set_description:
     "Nem adtál meg GTA: San Andreas útvonalat! Add meg a beállításokban.",
   admin_permissions_required_modal_title: "Adminisztrátori jogok szükségesek!",
@@ -90,15 +91,17 @@ export default {
   run_as_admin: "Futtatás adminisztrátorként",
   settings_general_tab_title: "Általános",
   settings_lang_tab_title: "Nyelv",
- settings_advanced_tab_title: "Haladó",
- settings_advanced_discord_status: "Discord státusz engedélyezése",
- join_discord: "Csatlakozás a Discord szerverhez",
- samp_version: "SA-MP verzió",
- change_version: "Verzió váltása",
- offline: "Offline",
- from_gtasa_folder: "A GTASA mappából",
- gta_path_modal_cant_find_samp_description_2: "Kérlek válassz másik verziót, vagy töltsd le és telepítsd a SA-MP-ot manuálisan.",
- add_or_play_external_server: "Hozzáadás a kedvencekhez vagy játék indítása",
- reconnect: "Újracsatlakozás",
- settings_advanced_discord_status_requires_restart: "(A módosítás érvénybe lépéséhez újra kell indítani a játékot)",
+  settings_advanced_tab_title: "Haladó",
+  settings_advanced_discord_status: "Discord státusz engedélyezése",
+  join_discord: "Csatlakozás a Discord szerverhez",
+  samp_version: "SA-MP verzió",
+  change_version: "Verzió váltása",
+  offline: "Offline",
+  from_gtasa_folder: "A GTASA mappából",
+  gta_path_modal_cant_find_samp_description_2:
+    "Kérlek válassz másik verziót, vagy töltsd le és telepítsd a SA-MP-ot manuálisan.",
+  add_or_play_external_server: "Hozzáadás a kedvencekhez vagy játék indítása",
+  reconnect: "Újracsatlakozás",
+  settings_advanced_discord_status_requires_restart:
+    "(A módosítás érvénybe lépéséhez újra kell indítani a játékot)",
 };

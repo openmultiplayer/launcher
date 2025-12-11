@@ -48,8 +48,7 @@ export default {
   hide_player_and_rule_list: "Skrýt seznam hráčů a nastavení",
   show_player_and_rule_list: "Zobrazit seznam hráčů a nastavení",
   copy_server_info: "Zkopírovat informace o serveru",
-  settings_gta_path_input_label:
-    "Cesta k GTA: San Andreas (kde je také nainstalováno SA-MP)",
+  settings_gta_path_input_label: "Cesta k GTA: San Andreas",
   browse: "PROCHÁZET",
   settings_import_nickname_gta_path_from_samp:
     "Importovat přezdívku a cestu k GTA: San Andreas z nastavení SA-MP",

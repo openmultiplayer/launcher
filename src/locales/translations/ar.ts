@@ -47,8 +47,7 @@ export default {
   hide_player_and_rule_list: "إخفاء قائمة اللاعبين والقواعد",
   show_player_and_rule_list: "عرض قائمة اللاعبين والقواعد",
   copy_server_info: "نسخ معلومات السيرفر",
-  settings_gta_path_input_label:
-    "͏مسار GTA: San Andreas (حيث تم تثبيت SA-MP أيضًا)",
+  settings_gta_path_input_label: "͏مسار GTA: San Andreas",
   browse: "تصفح",
   settings_import_nickname_gta_path_from_samp:
     "قم باستيراد الاسم المستعار ومسار gtasa من إعدادات SA-MP",

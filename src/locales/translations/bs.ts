@@ -47,8 +47,7 @@ export default {
   hide_player_and_rule_list: "Sakrij listu igrača i pravila",
   show_player_and_rule_list: "Prikaži listu igrača i pravila",
   copy_server_info: "Kopiraj Server Info",
-  settings_gta_path_input_label:
-    "Lokacija GTA: San Andreas-a (gdje je SA-MP također instaliran)",
+  settings_gta_path_input_label: "Lokacija GTA: San Andreas-a",
   browse: "Pretraži",
   settings_import_nickname_gta_path_from_samp:
     "Prenesi nadimak i GTA SA lokaciju iz SA-MP postavki",

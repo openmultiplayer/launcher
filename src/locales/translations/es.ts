@@ -50,8 +50,7 @@ export default {
   hide_player_and_rule_list: "Ocultar lista de jugadores y reglas",
   show_player_and_rule_list: "Mostrar lista de jugadores y reglas",
   copy_server_info: "Copiar información del servidor",
-  settings_gta_path_input_label:
-    "Ruta de GTA: San Andreas (donde también está instalado SA-MP)",
+  settings_gta_path_input_label: "Ruta de GTA: San Andreas",
   browse: "Explorar",
   settings_import_nickname_gta_path_from_samp:
     "Importar usuario y ruta de gtasa desde la configuración de SA-MP",

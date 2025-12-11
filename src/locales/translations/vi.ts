@@ -8,7 +8,8 @@ export default {
   minimize: "Thu nhỏ",
   maximize: "Phóng đại",
   close: "Đóng",
-  add_server_modal_description_1: "Thêm máy chủ theo cách thủ công vào danh sách yêu thích.",
+  add_server_modal_description_1:
+    "Thêm máy chủ theo cách thủ công vào danh sách yêu thích.",
   add_server_modal_description_2: "Ví dụ: 127.0.0.1:7777",
   add: "Thêm",
   server: "Máy chủ",
@@ -48,15 +49,16 @@ export default {
   hide_player_and_rule_list: "Ẩn danh sách người chơi và quy tắc",
   show_player_and_rule_list: "Hiển thị danh sách người chơi và quy tắc",
   copy_server_info: "Sao chép thông tin máy chủ",
-  settings_gta_path_input_label:
-    "Đường dẫn GTA: San Andreas (nơi SA-MP cũng được cài đặt)",
+  settings_gta_path_input_label: "Đường dẫn GTA: San Andreas",
   browse: "DUYỆT",
   settings_import_nickname_gta_path_from_samp:
     "Nhập tên và đường dẫn gtasa từ cài đặt SA-MP",
-  settings_import_samp_favorite_list: "Nhập danh sách yêu thích từ dữ liệu SA-MP",
+  settings_import_samp_favorite_list:
+    "Nhập danh sách yêu thích từ dữ liệu SA-MP",
   settings_reset_application_data:
     "Đặt lại dữ liệu ứng dụng (xóa cài đặt và danh sách)",
-  settings_new_update_available: "⚠ Cập nhật mới có sẵn. Bấm chuột để tải xuống! ⚠",
+  settings_new_update_available:
+    "⚠ Cập nhật mới có sẵn. Bấm chuột để tải xuống! ⚠",
   settings_credits_made_by: "Made with ❤️ by",
   settings_credits_view_source_on_github: "Xem mã nguồn trên GitHub",
   update_modal_update_available_title: "Cập nhật có sẵn!",
@@ -79,7 +81,8 @@ export default {
   nickname_modal_name_not_set_title: "Không có tên!",
   nickname_modal_name_not_set_description:
     "Bạn phải chọn một cái tên cho mình trước khi tham gia máy chủ.",
-  gta_path_modal_path_not_set_title: "Đường dẫn GTA: San Andreas chưa được đặt!",
+  gta_path_modal_path_not_set_title:
+    "Đường dẫn GTA: San Andreas chưa được đặt!",
   gta_path_modal_path_not_set_description:
     "Bạn chưa đặt đường dẫn GTA: San Andreas, vào cài đặt và tìm kiếm thư mục game.",
   admin_permissions_required_modal_title: "Cần có quyền quản trị viên!",

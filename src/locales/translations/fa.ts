@@ -48,8 +48,7 @@ export default {
   hide_player_and_rule_list: "مخفی کردن لیست بازیکنان و قواعد",
   show_player_and_rule_list: "نمایش لیست بازیکنان و قواعد",
   copy_server_info: "کپی کردن اطلاعات سرور",
-  settings_gta_path_input_label:
-    "͏ ͏ ͏ ͏ ͏ ͏ ͏ مسیر بازی GTA: San Andreas و جایی که SA-MP هم نصب شده است",
+  settings_gta_path_input_label: "مسیر بازی GTA: San Andreas",
   browse: "جستجو",
   settings_import_nickname_gta_path_from_samp:
     "وارد کردن نام مستعار و مسیر نصب GTA SA از تنظیمات SA-MP",

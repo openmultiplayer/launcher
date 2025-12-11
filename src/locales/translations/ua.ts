@@ -47,8 +47,7 @@ export default {
   hide_player_and_rule_list: "Приховати список гравців і правил",
   show_player_and_rule_list: "Показати список гравців і правил",
   copy_server_info: "Скопіювати інформацію",
-  settings_gta_path_input_label:
-    "Шлях до GTA: San Andreas (де також встановлено SA-MP)",
+  settings_gta_path_input_label: "Шлях до GTA: San Andreas",
   browse: "Огляд",
   settings_import_nickname_gta_path_from_samp:
     "Імпортувати нікнейм і шлях до гри з налаштувань SA-MP",

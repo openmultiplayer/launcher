@@ -49,8 +49,7 @@ export default {
   hide_player_and_rule_list: "Sembunyikan pemain dan aturan list",
   show_player_and_rule_list: "Menampilkan pemain and aturan list",
   copy_server_info: "Menyalin Server Info",
-  settings_gta_path_input_label:
-    "Direktori GTA: San Andreas (di mana SA-MP juga diinstal)",
+  settings_gta_path_input_label: "Direktori GTA: San Andreas",
   browse: "Jelajahi",
   settings_import_nickname_gta_path_from_samp:
     "Impor nickname dan direktori GTA:SA dari pengaturan SA-MP",
@@ -67,7 +66,8 @@ export default {
   download: "Download",
   update_modal_remind_me_next_time: "Ingatkan Saya Lain Kali",
   update_modal_skip_this_update: "Lewati Update Ini!",
-  gta_path_modal_cant_find_game_title: "Tidak dapat menemukan GTA: San Andreas!",
+  gta_path_modal_cant_find_game_title:
+    "Tidak dapat menemukan GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
     'Tidak dapat menemukan GTA: San Andreas di direktori ini:\n  - "{{ path }}"\n"gta_sa.exe" tidak dapat ditemukan di direktori yang anda berikan.',
   open_settings: "Buka Pengaturan",

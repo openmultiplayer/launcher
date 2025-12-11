@@ -51,8 +51,7 @@ export default {
   hide_player_and_rule_list: "Nascondi lista giocatori e regole",
   show_player_and_rule_list: "Mostra lista giocatori e regole",
   copy_server_info: "Copia Informazioni Server",
-  settings_gta_path_input_label:
-    "Percorso di GTA: San Andreas (dov'è installato anche SA-MP)",
+  settings_gta_path_input_label: "Percorso di GTA: San Andreas",
   browse: "Cerca",
   settings_import_nickname_gta_path_from_samp:
     "Importa nickname e percorso di gtasa dalle impostazioni di SA-MP",
@@ -113,10 +112,13 @@ export default {
   export_successful_title: "Esportazione Completata",
   export_successful_description: "Lista preferiti esportata con successo.",
   export_failed_title: "Esportazione Fallita",
-  export_failed_description: "Si è verificato un errore mentre esportavi i tuoi server preferiti.",
+  export_failed_description:
+    "Si è verificato un errore mentre esportavi i tuoi server preferiti.",
   import_successful_title: "Importazione Completata",
   import_successful_description: "Lista preferiti importata con successo.",
   import_failed_title: "Importazione Fallita",
-  import_failed_description: "Si è verificato un errore mentre importavi i tuoi server preferiti.",
-  import_invalid_data_description: "Il file selezionato contiene dati non validi. Seleziona una lista preferiti valida.",	
+  import_failed_description:
+    "Si è verificato un errore mentre importavi i tuoi server preferiti.",
+  import_invalid_data_description:
+    "Il file selezionato contiene dati non validi. Seleziona una lista preferiti valida.",
 };

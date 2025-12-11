@@ -41,27 +41,26 @@ export default {
   clear_recently_joined_list: "ويجھڙائ ۾ کيڏيل جي فھرست ڍايو",
   refresh_servers: "سروَر جي فھرست تازي ڪريو",
   play: "کيڏو",
-  remove_selected_server_from_favorites:
-    "چونڊيل سروَر کي پسنديدہ مان ڪڍو",
+  remove_selected_server_from_favorites: "چونڊيل سروَر کي پسنديدہ مان ڪڍو",
   add_selected_server_to_favorites: "چونڊيل سروَر کي پسنديدہ ۾ شامل ڪريو",
   add_server: "سروَر شامل ڪريو",
   hide_player_and_rule_list: "رانديگرن ۽ قاءدن جي فھرست لڪايو",
   show_player_and_rule_list: "رانديگرن ۽ قاءدن جي فھرست ڏيکاريو",
   copy_server_info: "سروَر معلومات ڪاپي",
-  settings_gta_path_input_label:
-"جي ٽي اي سان اين ڊرياس جي جاء. (جٿي سا.مپ پڻ انسٽال ٿيل آھي) ",
+  settings_gta_path_input_label: "جي ٽي اي سان اين ڊرياس جي جاء.",
   browse: "براءوز",
   settings_import_nickname_gta_path_from_samp:
     "سا.مپ سيٽنگ مان راند جي جاء ۽ نالو برآمد ڪريو",
   settings_import_samp_favorite_list: "پسنديدہ فھرست سا.مپ مان برآمد ڪريو",
   settings_reset_application_data:
     "ايپ جي ديٽا نءي سر ڪريو (سيٽنگ ۽ فھرست ڊاھيو) ",
-  settings_new_update_available: "⚠ نءون اپڊيٽ موجود آھي ڪلڪ ڪري ڊاءنلوڊ ڪريو ⚠",
+  settings_new_update_available:
+    "⚠ نءون اپڊيٽ موجود آھي ڪلڪ ڪري ڊاءنلوڊ ڪريو ⚠",
   settings_credits_made_by: "❤️ ٺاھيل آھي",
   settings_credits_view_source_on_github: "تي بنيادي ڪوڊ ڏسو GitHub",
   update_modal_update_available_title: "!اپڊيٽ موجود آھي",
   update_modal_update_available_description:
-'ڊاءنلوڊ کي دٻاءي نيو ورين ڊاءنلوڊ ڪريو\n{{ newversion }} ھاڻوڪو لانڇر ورين\nننءون لانچر موجود آھي\n توھان جو لانچر بِلڊ ورين {{ version }}',
+    "ڊاءنلوڊ کي دٻاءي نيو ورين ڊاءنلوڊ ڪريو\n{{ newversion }} ھاڻوڪو لانڇر ورين\nننءون لانچر موجود آھي\n توھان جو لانچر بِلڊ ورين {{ version }}",
   download: "ڊاءنلوڊ",
   update_modal_remind_me_next_time: "ٻيھر ياد ڏيار جو",
   update_modal_skip_this_update: "ھن اپڊيٽ کي ڇڏي ڏيو",
@@ -79,7 +78,8 @@ export default {
   nickname_modal_name_not_set_title: "نالو ناھي",
   nickname_modal_name_not_set_description:
     "سروَر ۾ شامل ٿيڻ کان پھرين نالو لازم اھي",
-  gta_path_modal_path_not_set_title: "جي. ٽي. اي. سان اين ڊرياس جي جاڳاھ سيٽ ناھي",
+  gta_path_modal_path_not_set_title:
+    "جي. ٽي. اي. سان اين ڊرياس جي جاڳاھ سيٽ ناھي",
   gta_path_modal_path_not_set_description:
     "توھان جي ٽي اي سان اين ڊرياس جي جاء نہ لڳاءي آھي. سيٽنگ ۾ وڃي فولڊر چونڊيو",
   admin_permissions_required_modal_title: "اڊمن اجازت جي ضرورت اھي",

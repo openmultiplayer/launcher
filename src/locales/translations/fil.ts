@@ -49,8 +49,7 @@ export default {
   hide_player_and_rule_list: "Itago ang Listahan ng Manlalaro at Patakaran",
   show_player_and_rule_list: "Ipakita ang Listahan ng Manlalaro at Patakaran",
   copy_server_info: "Kopyahin ang Impormasyon ng Server",
-  settings_gta_path_input_label:
-    "Landas ng GTA: San Andreas (kung saan naka-install ang SA-MP)",
+  settings_gta_path_input_label: "Landas ng GTA: San Andreas",
   browse: "Mag-browse",
   settings_import_nickname_gta_path_from_samp:
     "I-import ang palayaw at landas ng gtasa mula sa SA-MP settings",

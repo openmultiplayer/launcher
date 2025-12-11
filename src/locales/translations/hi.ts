@@ -48,8 +48,7 @@ export default {
   hide_player_and_rule_list: "खिलाड़ी और नियम सूची छिपाएँ",
   show_player_and_rule_list: "खिलाड़ी और नियम सूची दिखाएँ",
   copy_server_info: "सर्वर की जानकारी कॉपी करें",
-  settings_gta_path_input_label:
-    "GTA: San Andreas पथ (जहां SA-MP भी स्थापित है)",
+  settings_gta_path_input_label: "GTA: San Andreas पथ",
   browse: "ब्राउज़",
   settings_import_nickname_gta_path_from_samp:
     "SA-MP सेटिंग्स से उपनाम और gtasa पथ आयात करें",

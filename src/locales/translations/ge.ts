@@ -48,15 +48,15 @@ export default {
   hide_player_and_rule_list: "წესების სიის დახურვა",
   show_player_and_rule_list: "წესების სიის ჩვენება",
   copy_server_info: "სერვერის ინფორმაციის კოპირება",
-  settings_gta_path_input_label:
-    "GTA: San Andreas path (სადაც გიწერიათ სამპი)",
+  settings_gta_path_input_label: "GTA: San Andreas path",
   browse: "ძიება",
   settings_import_nickname_gta_path_from_samp:
     "ჩაწერე სახელი სამპის პარამეტრებიდან",
   settings_import_samp_favorite_list: "ჩაწერე ფავორიტები პარამეტრებიდან",
   settings_reset_application_data:
     "აპლიკაციის ინფორმაციის დარესეტება (ასუფთავებს ყველა პატარამერს/სიას)",
-  settings_new_update_available: "⚠ განახლება ხელმისაწვდომია. დაკლიკეთ გადმოსაწერად! ⚠",
+  settings_new_update_available:
+    "⚠ განახლება ხელმისაწვდომია. დაკლიკეთ გადმოსაწერად! ⚠",
   settings_credits_made_by: "გაკეთებულია ❤️ ით",
   settings_credits_view_source_on_github: "ნახე სორს კოდი გითჰაბზე",
   update_modal_update_available_title: "განახლება ხელმისაწვდომია!",
@@ -100,17 +100,21 @@ export default {
   add_or_play_external_server: "ფავორიტებში დამატება ან თამაში",
   reconnect: "რექონექთი",
   settings_advanced_discord_status_requires_restart:
-  "(მოქმედებისთვის საჭიროა თამაშის რესტარტი)",
-    settings_export_favorite_list_file: "ფავორიტების სიის ექსპორტი ფაილში",
+    "(მოქმედებისთვის საჭიროა თამაშის რესტარტი)",
+  settings_export_favorite_list_file: "ფავორიტების სიის ექსპორტი ფაილში",
   settings_import_favorite_list_file: "ფავორიტების სიის იმპორტი ფაილიდან",
-  export_no_servers_description: "თქვენ არ გაქვთ ფავორიტი სერვერები ექსპორტისთვის.",
+  export_no_servers_description:
+    "თქვენ არ გაქვთ ფავორიტი სერვერები ექსპორტისთვის.",
   export_successful_title: "ექსპორტი დასრულდა",
   export_successful_description: "სერვერების სია დაექსპორტდა.",
   export_failed_title: "ექსპორტი ვერ მოხერხდა",
-  export_failed_description: "დაფიქსირდა შეცდომა ფავორიტი სერვერების ექსპორტის დროს.",
+  export_failed_description:
+    "დაფიქსირდა შეცდომა ფავორიტი სერვერების ექსპორტის დროს.",
   import_successful_title: "იმპორტი დასრულდა",
   import_successful_description: "სერვერების სია ჩაიმპორტდა.",
   import_failed_title: "იმპორტი ვერ მოხერხდა",
-  import_failed_description: "დაფიქსირდა შეცდომა ფავორიტი სერვერების იმპორტის დროს.",
-  import_invalid_data_description: "არჩეული ფაილი შეიცავს არასწორ შიგთავსს. გთხოვთ აირჩიეთ ფავორიტი სერვერების ფაილი.",
+  import_failed_description:
+    "დაფიქსირდა შეცდომა ფავორიტი სერვერების იმპორტის დროს.",
+  import_invalid_data_description:
+    "არჩეული ფაილი შეიცავს არასწორ შიგთავსს. გთხოვთ აირჩიეთ ფავორიტი სერვერების ფაილი.",
 };

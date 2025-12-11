@@ -48,8 +48,7 @@ export default {
   hide_player_and_rule_list: "Oyuncu ve sunucu kuralları sekmesini gizle",
   show_player_and_rule_list: "Oyuncu ve sunucu kuralları sekmesini göster",
   copy_server_info: "Sunucu Bilgilerini Kopyala",
-  settings_gta_path_input_label:
-    "GTA: San Andreas ana dizini (SA-MP'ın da kurulu olduğu yer)",
+  settings_gta_path_input_label: "GTA: San Andreas ana dizini",
   browse: "Gözat",
   settings_import_nickname_gta_path_from_samp:
     "SA-MP istemci ayarlarından oyuncu adı ve GTA: SA dizinini içe aktar",
@@ -97,8 +96,10 @@ export default {
   change_version: "Sürümü Değiştir",
   offline: "Çevrimdışı",
   from_gtasa_folder: "GTASA Klasöründen",
-  gta_path_modal_cant_find_samp_description_2: "Lütfen başka bir sürüm seçin veya SA-MP'yi manuel olarak indirip kurun.",
+  gta_path_modal_cant_find_samp_description_2:
+    "Lütfen başka bir sürüm seçin veya SA-MP'yi manuel olarak indirip kurun.",
   add_or_play_external_server: "Favorilere ekle veya oyna",
   reconnect: "Yeniden Bağlan",
-  settings_advanced_discord_status_requires_restart: "(Etkinleştirmek için oyunun yeniden başlatılması gerekir)",
+  settings_advanced_discord_status_requires_restart:
+    "(Etkinleştirmek için oyunun yeniden başlatılması gerekir)",
 };

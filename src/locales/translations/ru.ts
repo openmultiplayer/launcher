@@ -47,8 +47,7 @@ export default {
   hide_player_and_rule_list: "Скрыть список игроков и правил",
   show_player_and_rule_list: "Показать список игроков и правил",
   copy_server_info: "Скопировать информацию",
-  settings_gta_path_input_label:
-    "Путь к GTA: San Andreas (где также установлен SA-MP)",
+  settings_gta_path_input_label: "Путь к GTA: San Andreas",
   browse: "Обзор",
   settings_import_nickname_gta_path_from_samp:
     "Импортировать никнейм и путь к игре из SA-MP настроек",
@@ -103,15 +102,19 @@ export default {
   settings_advanced_discord_status_requires_restart:
     "(Для вступления в силу требуется перезапуск игры)",
   settings_export_favorite_list_file: "Экспортировать список избранного в файл",
-  settings_import_favorite_list_file: "Импортировать список избранного из файла",
+  settings_import_favorite_list_file:
+    "Импортировать список избранного из файла",
   export_no_servers_description: "У вас нет избранных серверов для экспорта.",
   export_successful_title: "Экспорт завершен",
   export_successful_description: "Список серверов успешно экспортирован.",
   export_failed_title: "Экспорт не выполнен",
-  export_failed_description: "Произошла ошибка при экспорте ваших избранных серверов.",
+  export_failed_description:
+    "Произошла ошибка при экспорте ваших избранных серверов.",
   import_successful_title: "Импорт завершен",
   import_successful_description: "Список серверов успешно импортирован.",
   import_failed_title: "Импорт не выполнен",
-  import_failed_description: "Произошла ошибка при импорте ваших избранных серверов.",
-  import_invalid_data_description: "Выбранный файл содержит недействительные данные. Выберите корректный файл со списком избранного.",
+  import_failed_description:
+    "Произошла ошибка при импорте ваших избранных серверов.",
+  import_invalid_data_description:
+    "Выбранный файл содержит недействительные данные. Выберите корректный файл со списком избранного.",
 };

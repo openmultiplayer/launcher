@@ -43,20 +43,22 @@ export default {
   play: "Žaisti",
   remove_selected_server_from_favorites:
     "Pašalinkite pasirinktą serverį iš mėgstamiausių",
-  add_selected_server_to_favorites: "Pridėti pasirinktą serverį prie mėgstamiausių",
+  add_selected_server_to_favorites:
+    "Pridėti pasirinktą serverį prie mėgstamiausių",
   add_server: "Pridėti serverį",
   hide_player_and_rule_list: "Slėpti žaidėjų ir taisyklių sąrašą",
   show_player_and_rule_list: "Rodyti žaidėjų ir taisyklių sąrašą",
   copy_server_info: "Kopijuoti serverio informaciją",
-  settings_gta_path_input_label:
-    "GTA: San Andreas aplankas (kur taip pat įdiegtas SA-MP)",
+  settings_gta_path_input_label: "GTA: San Andreas aplankas",
   browse: "NARŠYTI",
   settings_import_nickname_gta_path_from_samp:
     "Importuokite slapyvardį ir gtasa aplanką iš SA-MP nustatymų",
-  settings_import_samp_favorite_list: "Importuokite mėgstamiausių sąrašą iš SA-MP",
+  settings_import_samp_favorite_list:
+    "Importuokite mėgstamiausių sąrašą iš SA-MP",
   settings_reset_application_data:
     "Iš naujo nustatyti programos duomenis (išvalo nustatymus ir sąrašus)",
-  settings_new_update_available: "⚠ Galimas atnaujinimas. Spustelėkite norėdami atsisiųsti! ⚠",
+  settings_new_update_available:
+    "⚠ Galimas atnaujinimas. Spustelėkite norėdami atsisiųsti! ⚠",
   settings_credits_made_by: "Sukurta su ❤️",
   settings_credits_view_source_on_github: "Peržiūrėkite kodą GitHub",
   update_modal_update_available_title: "Galimas atnaujinimas!",
@@ -82,9 +84,10 @@ export default {
   gta_path_modal_path_not_set_title: "GTA: San Andreas aplankas nenustatytas!",
   gta_path_modal_path_not_set_description:
     "Jūs nenustatėte GTA: San Andreas aplanko, eikite į nustatymus ir nurodykite žaidimo aplanką.",
-  admin_permissions_required_modal_title: "Reikalingos administratoriaus teisės!",
+  admin_permissions_required_modal_title:
+    "Reikalingos administratoriaus teisės!",
   admin_permissions_required_modal_description:
-    'Atrodo, kad jūsų GTA: San Andreas žaidimui reikalingos administravimo teisės. Taip gali būti dėl daugelio priežasčių, pvz., žaidimo įdiegimo „C“ diske. Iš naujo atidarykite open.mp kaip administratorius naudodami mygtuką „Paleisti kaip administratoriui“ arba nustatykite patys rankiniu būdu',
+    "Atrodo, kad jūsų GTA: San Andreas žaidimui reikalingos administravimo teisės. Taip gali būti dėl daugelio priežasčių, pvz., žaidimo įdiegimo „C“ diske. Iš naujo atidarykite open.mp kaip administratorius naudodami mygtuką „Paleisti kaip administratoriui“ arba nustatykite patys rankiniu būdu",
   run_as_admin: "Paleisti kaip administratoriui",
   settings_general_tab_title: "Pagrindiniai",
   settings_lang_tab_title: "Kalbos",

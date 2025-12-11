@@ -49,8 +49,7 @@ export default {
   hide_player_and_rule_list: "Ascunde lista de jucători și reguli",
   show_player_and_rule_list: "Arată lista de jucători și reguli",
   copy_server_info: "Copiază Informații Server",
-  settings_gta_path_input_label:
-    "Calea GTA: San Andreas (unde este instalat și SA-MP)",
+  settings_gta_path_input_label: "Calea GTA: San Andreas",
   browse: "Răsfoiește",
   settings_import_nickname_gta_path_from_samp:
     "Importă porecla și calea GTASA din setările SA-MP",

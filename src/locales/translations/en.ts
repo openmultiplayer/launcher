@@ -48,8 +48,7 @@ export default {
   hide_player_and_rule_list: "Hide player and rule list",
   show_player_and_rule_list: "Show player and rule list",
   copy_server_info: "Copy Server Info",
-  settings_gta_path_input_label:
-    "GTA: San Andreas path (where SA-MP is also installed)",
+  settings_gta_path_input_label: "GTA: San Andreas path",
   browse: "BROWSE",
   settings_import_nickname_gta_path_from_samp:
     "Import nickname and gtasa path from SA-MP settings",
@@ -103,14 +102,18 @@ export default {
     "(Requires restarting the game to take action)",
   settings_export_favorite_list_file: "Export favorites list to file",
   settings_import_favorite_list_file: "Import favorites list from file",
-  export_no_servers_description: "You don't have any favourite servers to export.",
+  export_no_servers_description:
+    "You don't have any favourite servers to export.",
   export_successful_title: "Export Complete",
   export_successful_description: "Server list exported successfully.",
   export_failed_title: "Export Failed",
-  export_failed_description: "An error occurred while exporting your favorite servers.",
+  export_failed_description:
+    "An error occurred while exporting your favorite servers.",
   import_successful_title: "Import Complete",
   import_successful_description: "Server list imported successfully.",
   import_failed_title: "Import Failed",
-  import_failed_description: "An error occurred while importing your favorite servers.",
-  import_invalid_data_description: "The selected file contains invalid data. Please select a valid favorites list file.",
+  import_failed_description:
+    "An error occurred while importing your favorite servers.",
+  import_invalid_data_description:
+    "The selected file contains invalid data. Please select a valid favorites list file.",
 };
