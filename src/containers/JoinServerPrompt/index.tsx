@@ -1,3 +1,4 @@
+import { fs } from "@tauri-apps/api";
 import { t } from "i18next";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -45,7 +46,7 @@ const JoinServerPrompt = () => {
     SAMPDLLVersions | undefined
   >();
   const [perServerNickname, setPerServerNickname] = useState("");
-  const { nickName, gtasaPath, sampVersion, setSampVersion } = useSettings();
+  const { nickName, gtasaPath, sampVersion } = useSettings();
 
   const settings = useMemo(() => {
     if (server) {
@@ -53,6 +54,12 @@ const JoinServerPrompt = () => {
     }
     return undefined;
   }, [server, perServerSettings]);
+
+  useEffect(() => {
+    if (!settings?.sampVersion && visible) {
+      setInitialSampVersion();
+    }
+  }, [visible, settings?.sampVersion]);
 
   useEffect(() => {
     if (settings) {
@@ -141,6 +148,31 @@ const JoinServerPrompt = () => {
     [height, width, HEIGHT, WIDTH, theme, bigView, perServerNickname.length]
   );
 
+  const setInitialSampVersion = useCallback(async () => {
+    if (await fs.exists(`${gtasaPath}/samp.dll`)) {
+      setPerServerVersion("custom");
+    } else if (
+      (server && server.version.includes("0.3.7")) ||
+      (server && server.rules["artwork"] == undefined)
+    ) {
+      setPerServerVersion("037R5_samp.dll");
+    } else if (
+      server &&
+      server.rules["artwork"] &&
+      server.rules["artwork"] === "Yes"
+    ) {
+      setPerServerVersion("03DL_samp.dll");
+    } else if (
+      server &&
+      server.rules["allowed_clients"] &&
+      server.rules["allowed_clients"].includes("0.3.DL")
+    ) {
+      setPerServerVersion("03DL_samp.dll");
+    } else {
+      setPerServerVersion("037R5_samp.dll");
+    }
+  }, [gtasaPath, server]);
+
   const handleNicknameChange = useCallback(
     (text: string) => {
       if (server) {
@@ -188,9 +220,15 @@ const JoinServerPrompt = () => {
   const handleVersionChange = useCallback(
     async (value: string) => {
       const version = getSampVersionFromName(value);
-      setSampVersion(version);
+      if (server) {
+        if (settings) {
+          setServerSettings(server, settings.nickname, version);
+        } else {
+          setServerSettings(server, undefined, version);
+        }
+      }
     },
-    [setSampVersion]
+    [server, settings, setServerSettings]
   );
 
   if (!visible) {
