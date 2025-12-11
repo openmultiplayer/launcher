@@ -20,6 +20,7 @@ import LoadingScreen from "./containers/LoadingScreen";
 import WindowTitleBar from "./containers/WindowTitleBar";
 import { changeLanguage } from "./locales";
 import { useGenericPersistentState } from "./states/genericStates";
+import { usePersistentServers } from "./states/servers";
 import { useTheme } from "./states/theme";
 import { throttle } from "./utils/debounce";
 import {
@@ -29,6 +30,7 @@ import {
   generateLanguageFilters,
 } from "./utils/helpers";
 import PerformanceMonitor from "./utils/performance";
+import { PING_TIMEOUT_VALUE } from "./utils/query";
 import { sc } from "./utils/sizeScaler";
 
 // Lazy load heavy components for better initial load time
@@ -93,6 +95,20 @@ const App = memo(() => {
         appWindow.setResizable(false),
         appWindow.center(),
       ]);
+
+      // Reset favorite server list outdated cached data
+      const { favorites, updateInFavoritesList } =
+        usePersistentServers.getState();
+      if (Array.isArray(favorites) && favorites.length > 0) {
+        favorites.forEach((server) => {
+          server.ping = PING_TIMEOUT_VALUE;
+          server.playerCount = 0;
+          server.players = [];
+          server.rules = {} as typeof server.rules;
+          server.hasPassword = false;
+          updateInFavoritesList(server);
+        });
+      }
 
       // Run independent operations in parallel
       await Promise.all([

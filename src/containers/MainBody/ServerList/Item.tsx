@@ -8,6 +8,7 @@ import { useDraggableItem } from "../../../hooks/draggable";
 import { useContextMenu } from "../../../states/contextMenu";
 import { useJoinServerPrompt } from "../../../states/joinServerPrompt";
 import { useTheme } from "../../../states/theme";
+import { PING_TIMEOUT_VALUE } from "../../../utils/query";
 import { sc } from "../../../utils/sizeScaler";
 import { Server } from "../../../utils/types";
 
@@ -61,7 +62,7 @@ const ServerItem = memo((props: IProps) => {
         title: t("locked"),
         icon: images.icons.locked,
       };
-    } else if (ping < 9999) {
+    } else if (ping < PING_TIMEOUT_VALUE) {
       return {
         color: "#7AF1AA",
         backgroundColor: "#7AF1AA1A",
@@ -208,7 +209,7 @@ const ServerItem = memo((props: IProps) => {
                     style={{ fontSize: sc(17) }}
                     color={theme.textSecondary}
                   >
-                    {server.ping === 9999 ? "-" : server.ping}
+                    {server.ping === PING_TIMEOUT_VALUE ? "-" : server.ping}
                   </Text>
                 </View>
                 <View

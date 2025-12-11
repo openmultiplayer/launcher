@@ -8,7 +8,7 @@ import { useMessageBox } from "../states/messageModal";
 import { usePersistentServers } from "../states/servers";
 import { chunk } from "./array";
 import { Log } from "./logger";
-import { queryServer } from "./query";
+import { PING_TIMEOUT_VALUE, queryServer } from "./query";
 import {
   APIResponseServer,
   SAMPDLLVersions,
@@ -53,7 +53,7 @@ export const mapAPIResponseServerListToAppStructure = (
       version: server.core.vn,
       rules: server.ru,
       players: [],
-      ping: 9999,
+      ping: PING_TIMEOUT_VALUE,
       password: "",
       usingOmp: server.core.omp,
       partner: server.core.pr,

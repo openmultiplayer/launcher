@@ -16,6 +16,7 @@ import { useSettings } from "../states/settings";
 import { useSettingsModal } from "../states/settingsModal";
 import { fetchServers, getIpAddress } from "../utils/helpers";
 import { Log } from "./logger";
+import { PING_TIMEOUT_VALUE } from "./query";
 import { sc } from "./sizeScaler";
 import { Server } from "./types";
 
@@ -354,7 +355,7 @@ export const importFavoriteListFile = async () => {
           version: "-",
           usingOmp: false,
           partner: false,
-          ping: 9999,
+          ping: PING_TIMEOUT_VALUE,
           players: [],
           password: srv.password || "",
           rules: {} as Server["rules"],

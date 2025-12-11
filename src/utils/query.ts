@@ -3,7 +3,7 @@ import { usePersistentServers, useServers } from "../states/servers";
 import { Log } from "./logger";
 import { ListType, Server } from "./types";
 
-const PING_TIMEOUT_VALUE = 9999;
+export const PING_TIMEOUT_VALUE = 9999;
 const DEFAULT_PING_VALUE = 0;
 
 interface QueryResult {
