@@ -46,7 +46,7 @@ const JoinServerPrompt = () => {
     SAMPDLLVersions | undefined
   >();
   const [perServerNickname, setPerServerNickname] = useState("");
-  const { nickName, gtasaPath, sampVersion } = useSettings();
+  const { nickName, gtasaPath, sampVersion, setSampVersion } = useSettings();
 
   const settings = useMemo(() => {
     if (server) {
@@ -56,8 +56,12 @@ const JoinServerPrompt = () => {
   }, [server, perServerSettings]);
 
   useEffect(() => {
-    if (!settings?.sampVersion && visible) {
-      setInitialSampVersion();
+    if (!settings?.sampVersion) {
+      if (visible) {
+        setInitialSampVersion();
+      }
+    } else {
+      setSampVersion(settings.sampVersion);
     }
   }, [visible, settings?.sampVersion]);
 
