@@ -61,9 +61,11 @@ const JoinServerPrompt = () => {
         setInitialSampVersion();
       }
     } else {
-      setSampVersion(settings.sampVersion);
+      if (perServerVersion) {
+        setSampVersion(perServerVersion);
+      }
     }
-  }, [visible, settings?.sampVersion]);
+  }, [visible, perServerVersion, settings?.sampVersion]);
 
   useEffect(() => {
     if (settings) {
@@ -230,6 +232,7 @@ const JoinServerPrompt = () => {
         } else {
           setServerSettings(server, undefined, version);
         }
+        setPerServerVersion(version);
       }
     },
     [server, settings, setServerSettings]
