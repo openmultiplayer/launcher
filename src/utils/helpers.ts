@@ -129,6 +129,13 @@ export const fetchUpdateInfo = async () => {
       updateInfo.version != version &&
       skippedUpdateVersion != updateInfo.version
     ) {
+      const versionInfo = updateInfo.versions[updateInfo.version];
+      if (versionInfo) {
+        updateInfo.download = versionInfo.download;
+        updateInfo.ompPluginChecksum = versionInfo.ompPluginChecksum;
+        updateInfo.ompPluginDownload = versionInfo.ompPluginDownload;
+      }
+
       showMessageBox({
         title: t("update_modal_update_available_title"),
         description: t("update_modal_update_available_description", {

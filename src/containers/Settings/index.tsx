@@ -105,7 +105,7 @@ const SettingsModal = () => {
             <Text size={2} onPress={handleGithubPress} color={theme.primary}>
               {t("settings_credits_view_source_on_github")}
             </Text>{" "}
-            | v{nativeAppVersion} Build {version}
+            | v{nativeAppVersion} (Build {version})
           </Text>
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={handleDismiss}>
