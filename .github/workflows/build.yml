@@ -22,11 +22,7 @@ jobs:
 
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly-2024-01-01  # Specific nightly version that works with dll-syringe, remove when it gets fixed so we can use latest
-
-      - uses: repolevedavaj/install-nsis@v1.0.1
-        with:
-          nsis-version: '3.10'
+          toolchain: nightly-2024-01-01 # Specific nightly version that works with dll-syringe, remove when it gets fixed so we can use latest
 
       - name: Install frontend dependencies
         run: yarn install
@@ -36,9 +32,6 @@ jobs:
 
       - name: Build project
         run: yarn release
-
-      - name: Build installer
-        run: yarn installer
 
       - name: Generate artifact name
         id: vars
@@ -60,5 +53,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.vars.outputs.setup_artifact_name }}
-          path: src-tauri/nsis/omp-launcher-setup.exe
+          path: src-tauri/target/i686-pc-windows-msvc/release/bundle/nsis/omp-launcher_1.6.1_x86-setup.exe
           if-no-files-found: error
