@@ -198,6 +198,16 @@ export const startGame = async (
 
   if (!dirValidity) return;
 
+  // Custom exe doesn't exist
+  if ((await fs.exists(await path.join(gtasaPath, customGameExe))) === false) {
+    showMessageBox({
+      title: t("unable_to_find_custom_game_exe_title"),
+      description: t("unable_to_find_custom_game_exe_description"),
+      buttons: [{ title: t("close"), onPress: hideMessageBox }],
+    });
+    return;
+  }
+
   const idealSAMPDllPath = await path.join(gtasaPath, "samp.dll");
   const file = validFileChecksums.get(
     sampVersion !== "custom" ? sampVersion : "037R1_samp.dll"

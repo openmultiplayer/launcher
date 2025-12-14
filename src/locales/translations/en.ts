@@ -117,4 +117,8 @@ export default {
   import_invalid_data_description:
     "The selected file contains invalid data. Please select a valid favorites list file.",
   settigs_custom_game_exe_label: "Custom game executable name",
+  unable_to_find_custom_game_exe_title:
+    "Unable to find custom game executable!",
+  unable_to_find_custom_game_exe_description:
+    "The specified custom game executable file could not be found in the GTA: San Andreas directory. Please check it in Settings -> Advance tab.",
 };
