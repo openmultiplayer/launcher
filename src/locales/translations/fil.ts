@@ -120,7 +120,7 @@ export default {
     "May nangyaring error habang ini-import ang iyong favorite servers.",
   import_invalid_data_description:
     "Naglalaman ng invalid data ang napiling file. Pumili ng valid na favorites list file.",
-  settigs_custom_game_exe_label: "Pangalan ng custom game executable",
+  settings_custom_game_exe_label: "Pangalan ng custom game executable",
   unable_to_find_custom_game_exe_title:
     "Hindi mahanap ang custom game executable!",
   unable_to_find_custom_game_exe_description:

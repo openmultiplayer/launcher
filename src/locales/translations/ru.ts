@@ -117,7 +117,7 @@ export default {
     "Произошла ошибка при импорте ваших избранных серверов.",
   import_invalid_data_description:
     "Выбранный файл содержит недействительные данные. Выберите корректный файл со списком избранного.",
-  settigs_custom_game_exe_label:
+  settings_custom_game_exe_label:
     "Пользовательское название исполняемого файла игры",
   unable_to_find_custom_game_exe_title:
     "Не удается найти исполняемый файл игры!",

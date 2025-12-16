@@ -23,7 +23,7 @@ const Advanced = () => {
     >
       <View>
         <Text semibold color={theme.textPrimary} size={2}>
-          {t("settigs_custom_game_exe_label")}:
+          {t("settings_custom_game_exe_label")}:
         </Text>
         <View style={styles.pathInputContainer}>
           <TextInput

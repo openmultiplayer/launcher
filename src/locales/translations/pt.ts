@@ -124,7 +124,7 @@ export default {
     "Ocorreu um erro ao importar seus servidores favoritos.",
   import_invalid_data_description:
     "O arquivo selecionado contém dados inválidos. Selecione um arquivo de lista de favoritos válido.",
-  settigs_custom_game_exe_label: "Nome do executável custom",
+  settings_custom_game_exe_label: "Nome do executável custom",
   unable_to_find_custom_game_exe_title:
     "Não foi possível encontrar o executável custom do jogo!",
   unable_to_find_custom_game_exe_description:
