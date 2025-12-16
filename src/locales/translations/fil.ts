@@ -79,4 +79,50 @@ export default {
   notification_add_to_favorites_title: "Idinagdag sa Paborito!",
   notification_add_to_favorites_description:
     "Ang {{ server }} ay idinagdag sa iyong listahan ng paborito.",
+  nickname_modal_name_not_set_title: "Walang Palayaw!",
+  nickname_modal_name_not_set_description:
+    "Kailangan mong pumili ng palayaw para sa iyong sarili bago sumali sa isang server.",
+  gta_path_modal_path_not_set_title: "Hindi naka-set ang lokasyon ng GTA: San Andreas!",
+  gta_path_modal_path_not_set_description:
+    "Hindi mo inilagay ang lokasyon ng GTA: San Andreas, pumunta sa settings at hanapin ang game folder.",
+  admin_permissions_required_modal_title: "Kailangan ng admin permissions!",
+  admin_permissions_required_modal_description:
+    'Mukhang kailangan ng iyong GTA: San Andreas ng administration permissions para gumana. Maaaring dahil ito sa maraming dahilan, tulad ng pagkakainstall ng laro sa "C" drive. Paki-bukas ulit ang open.mp launcher bilang administrator gamit ang "Run as Admin" button o gawin ito nang manu-mano.',
+  run_as_admin: "Patakbuhin bilang Admin",
+  settings_general_tab_title: "Pangkalahatan",
+  settings_lang_tab_title: "Wika",
+  settings_advanced_tab_title: "Advanced",
+  settings_advanced_discord_status: "I-enable ang Discord status",
+  join_discord: "Sumali sa Discord Server",
+  samp_version: "Bersyon ng SA-MP",
+  change_version: "Palitan ang Bersyon",
+  offline: "Offline",
+  from_gtasa_folder: "Mula sa GTASA Folder",
+  gta_path_modal_cant_find_samp_description_2:
+    "Pumili ng ibang bersyon o i-download at i-install ang SA-MP nang manu-mano.",
+  add_or_play_external_server: "Idagdag sa favorites o laruin",
+  reconnect: "Kumonekta muli",
+  settings_advanced_discord_status_requires_restart:
+    "(Kailangan i-restart ang laro para gumana)",
+  settings_export_favorite_list_file: "I-export ang favorites list sa file",
+  settings_import_favorite_list_file: "I-import ang favorites list mula sa file",
+  export_no_servers_description:
+    "Wala kang anumang favorite servers na pupwedeng ma-export.",
+  export_successful_title: "Kumpleto na ang Export",
+  export_successful_description: "Matagumpay na na-export ang server list.",
+  export_failed_title: "Nabigo ang Export",
+  export_failed_description:
+    "May nangyaring error habang ine-export ang iyong favorite servers.",
+  import_successful_title: "Kumpleto na ang Import",
+  import_successful_description: "Matagumpay na na-import ang server list.",
+  import_failed_title: "Nabigo ang Import",
+  import_failed_description:
+    "May nangyaring error habang ini-import ang iyong favorite servers.",
+  import_invalid_data_description:
+    "Naglalaman ng invalid data ang napiling file. Pumili ng valid na favorites list file.",
+  settigs_custom_game_exe_label: "Pangalan ng custom game executable",
+  unable_to_find_custom_game_exe_title:
+    "Hindi mahanap ang custom game executable!",
+  unable_to_find_custom_game_exe_description:
+    "Hindi mahanap ang tinukoy na custom game executable file sa directory ng GTA: San Andreas. Paki-check ito sa Settings -> Advanced tab.",
 };
