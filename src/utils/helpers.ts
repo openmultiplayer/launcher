@@ -120,53 +120,67 @@ export const fetchUpdateInfo = async () => {
   }
 
   setTimeout(async () => {
-    const { updateInfo, version, skipUpdate, skippedUpdateVersion } =
-      useAppState.getState();
+    const {
+      updateInfo,
+      version,
+      skipUpdate,
+      skippedUpdateVersion,
+      setUpdateInfo,
+    } = useAppState.getState();
     const { showMessageBox, hideMessageBox } = useMessageBox.getState();
 
-    if (
-      updateInfo &&
-      updateInfo.version != version &&
-      skippedUpdateVersion != updateInfo.version
-    ) {
-      const versionInfo = updateInfo.versions[updateInfo.version];
-      if (versionInfo) {
-        updateInfo.download = versionInfo.download;
-        updateInfo.ompPluginChecksum = versionInfo.ompPluginChecksum;
-        updateInfo.ompPluginDownload = versionInfo.ompPluginDownload;
-      }
+    if (updateInfo) {
+      if (
+        updateInfo.version != version &&
+        skippedUpdateVersion != updateInfo.version
+      ) {
+        const versionInfo = updateInfo.versions[updateInfo.version];
+        if (versionInfo) {
+          updateInfo.download = versionInfo.download;
+          updateInfo.ompPluginChecksum = versionInfo.ompPluginChecksum;
+          updateInfo.ompPluginDownload = versionInfo.ompPluginDownload;
+        }
 
-      showMessageBox({
-        title: t("update_modal_update_available_title"),
-        description: t("update_modal_update_available_description", {
-          version,
-          newVersion: updateInfo.version,
-        }),
-        boxWidth: 640,
-        buttonWidth: 200,
-        buttons: [
-          {
-            title: t("download"),
-            onPress: () => {
-              shell.open(updateInfo.download);
-              hideMessageBox();
+        showMessageBox({
+          title: t("update_modal_update_available_title"),
+          description: t("update_modal_update_available_description", {
+            version,
+            newVersion: updateInfo.version,
+          }),
+          boxWidth: 640,
+          buttonWidth: 200,
+          buttons: [
+            {
+              title: t("download"),
+              onPress: () => {
+                shell.open(updateInfo.download);
+                hideMessageBox();
+              },
             },
-          },
-          {
-            title: t("update_modal_remind_me_next_time"),
-            onPress: () => {
-              hideMessageBox();
+            {
+              title: t("update_modal_remind_me_next_time"),
+              onPress: () => {
+                hideMessageBox();
+              },
             },
-          },
-          {
-            title: t("update_modal_skip_this_update"),
-            onPress: () => {
-              skipUpdate(updateInfo.version);
-              hideMessageBox();
+            {
+              title: t("update_modal_skip_this_update"),
+              onPress: () => {
+                skipUpdate(updateInfo.version);
+                hideMessageBox();
+              },
             },
-          },
-        ],
-      });
+          ],
+        });
+      } else {
+        const versionInfo = updateInfo.versions[updateInfo.version];
+        if (versionInfo) {
+          updateInfo.download = versionInfo.download;
+          updateInfo.ompPluginChecksum = versionInfo.ompPluginChecksum;
+          updateInfo.ompPluginDownload = versionInfo.ompPluginDownload;
+        }
+        setUpdateInfo(updateInfo);
+      }
     }
   }, 1000);
   Log.debug(response);
