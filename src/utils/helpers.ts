@@ -110,23 +110,28 @@ export const fetchServers = async (cached: boolean = true): Promise<void> => {
 };
 
 export const fetchUpdateInfo = async () => {
+  const { version } = useAppState.getState();
+
   const nativeVer = await getVersion();
   const hostOS = await type();
   const response = await getUpdateInfo();
   if (response.data) {
+    const versionInfo = response.data.versions[version];
+
+    if (versionInfo) {
+      response.data.download = versionInfo.download;
+      response.data.ompPluginChecksum = versionInfo.ompPluginChecksum;
+      response.data.ompPluginDownload = versionInfo.ompPluginDownload;
+    }
+
     useAppState.getState().setUpdateInfo(response.data);
     useAppState.getState().setNativeAppVersionValue(nativeVer);
     useAppState.getState().setHostOSValue(hostOS);
   }
 
   setTimeout(async () => {
-    const {
-      updateInfo,
-      version,
-      skipUpdate,
-      skippedUpdateVersion,
-      setUpdateInfo,
-    } = useAppState.getState();
+    const { updateInfo, skipUpdate, skippedUpdateVersion } =
+      useAppState.getState();
     const { showMessageBox, hideMessageBox } = useMessageBox.getState();
 
     if (updateInfo) {
@@ -134,13 +139,6 @@ export const fetchUpdateInfo = async () => {
         updateInfo.version != version &&
         skippedUpdateVersion != updateInfo.version
       ) {
-        const versionInfo = updateInfo.versions[updateInfo.version];
-        if (versionInfo) {
-          updateInfo.download = versionInfo.download;
-          updateInfo.ompPluginChecksum = versionInfo.ompPluginChecksum;
-          updateInfo.ompPluginDownload = versionInfo.ompPluginDownload;
-        }
-
         showMessageBox({
           title: t("update_modal_update_available_title"),
           description: t("update_modal_update_available_description", {
@@ -173,13 +171,7 @@ export const fetchUpdateInfo = async () => {
           ],
         });
       } else {
-        const versionInfo = updateInfo.versions[updateInfo.version];
-        if (versionInfo) {
-          updateInfo.download = versionInfo.download;
-          updateInfo.ompPluginChecksum = versionInfo.ompPluginChecksum;
-          updateInfo.ompPluginDownload = versionInfo.ompPluginDownload;
-        }
-        setUpdateInfo(updateInfo);
+        Log.info("No new update available");
       }
     }
   }, 1000);
