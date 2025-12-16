@@ -54,7 +54,12 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     {
         // Use windows-1252 for various combinations
         Encoding::for_label("windows-1252".as_bytes()).unwrap_or(UTF_8)
-    } else if chardetng_encoding == "gbk" || chardet_encoding == "gb2312" {
+    } else if chardetng_encoding == "gbk"
+        || chardet_encoding == "gb2312"
+        || (chardetng_encoding == "euc-kr"
+            && chardet_encoding == "tis-620"
+            && charset_normalizer_encoding == "iso-8859-2")
+    {
         // Use GB18030 when chardetng detects GBK or chardet detects GB2312
         Encoding::for_label("GB18030".as_bytes()).unwrap_or(UTF_8)
     } else {
