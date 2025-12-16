@@ -213,7 +213,7 @@ i18n.use(initReactI18next).init({
   },
 
   // Add lazy loading capability
-  load: "languageOnly",
+  load: "currentOnly",
 
   // React specific options
   react: {

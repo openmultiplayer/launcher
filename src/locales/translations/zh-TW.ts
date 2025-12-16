@@ -108,4 +108,8 @@ export default {
   import_failed_description: "導入收藏伺服器時發生錯誤",
   import_invalid_data_description:
     "所選檔案含無效資料，請選擇有效的收藏列表檔案",
+  settigs_custom_game_exe_label: "自訂遊戲可執行檔案名稱",
+  unable_to_find_custom_game_exe_title: "無法找到自訂遊戲可執行檔案！",
+  unable_to_find_custom_game_exe_description:
+    "在 GTA: San Andreas 目錄中找不到指定的自訂遊戲可執行檔案。請在 設置 -> 高級設置 選項卡中檢查。",
 };
