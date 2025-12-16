@@ -1,6 +1,7 @@
 import { t } from "i18next";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Text from "../../../components/Text";
+import { IN_GAME } from "../../../constants/app";
 import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
 import {
@@ -21,24 +22,26 @@ const Advanced = () => {
         flex: 1,
       }}
     >
-      <View>
-        <Text semibold color={theme.textPrimary} size={2}>
-          {t("settings_custom_game_exe_label")}:
-        </Text>
-        <View style={styles.pathInputContainer}>
-          <TextInput
-            value={customGameExe}
-            onChangeText={(text) => setCustomGameExe(text)}
-            style={[
-              styles.pathInput,
-              {
-                color: theme.textPrimary,
-                backgroundColor: theme.textInputBackgroundColor,
-              },
-            ]}
-          />
+      {!IN_GAME && (
+        <View>
+          <Text semibold color={theme.textPrimary} size={2}>
+            {t("settings_custom_game_exe_label")}:
+          </Text>
+          <View style={styles.pathInputContainer}>
+            <TextInput
+              value={customGameExe}
+              onChangeText={(text) => setCustomGameExe(text)}
+              style={[
+                styles.pathInput,
+                {
+                  color: theme.textPrimary,
+                  backgroundColor: theme.textInputBackgroundColor,
+                },
+              ]}
+            />
+          </View>
         </View>
-      </View>
+      )}
       <View style={{ flex: 1 }} />
       <View
         style={{
