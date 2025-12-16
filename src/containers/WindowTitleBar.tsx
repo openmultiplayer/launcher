@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { appWindow } from "@tauri-apps/api/window";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { memo, useCallback, useMemo } from "react";
 import {
   ColorValue,
@@ -129,6 +129,7 @@ const CustomWindowTitleBarButtons = memo<CustomButtonProps>(
 );
 
 const WindowTitleBar = memo(() => {
+  const { t, i18n } = useTranslation();
   const { theme, themeType, setTheme } = useTheme();
   const { show: showSettings } = useSettingsModal();
 
@@ -236,6 +237,16 @@ const WindowTitleBar = memo(() => {
     [themeType]
   );
 
+  const buttonTitles = useMemo(() => {
+    return {
+      reconnect: t("reconnect"),
+      settings: t("settings"),
+      minimize: t("minimize"),
+      maximize: t("maximize"),
+      close: t("close"),
+    };
+  }, [t, i18n.language]);
+
   return (
     // @ts-ignore
     <View style={containerStyles.main}>
@@ -266,7 +277,7 @@ const WindowTitleBar = memo(() => {
               style={containerStyles.reconnectButton}
             >
               <Text style={{ fontSize: sc(18) }} color="white" semibold>
-                {t("reconnect")}
+                {buttonTitles.reconnect}
               </Text>
             </TouchableOpacity>
           </View>
@@ -281,7 +292,7 @@ const WindowTitleBar = memo(() => {
         {!IN_GAME && (
           <>
             <CustomWindowTitleBarButtons
-              title={t("settings")}
+              title={buttonTitles.settings}
               image={images.icons.settings}
               marginRight={sc(16)}
               color={theme.textSecondary}
@@ -289,19 +300,19 @@ const WindowTitleBar = memo(() => {
               onPress={showSettings}
             />
             <NativeWindowTitleBarButtons
-              title={t("minimize")}
+              title={buttonTitles.minimize}
               image={images.icons.windowMinimize}
               onPress={handleMinimize}
             />
             <NativeWindowTitleBarButtons
-              title={t("maximize")}
+              title={buttonTitles.maximize}
               image={images.icons.windowMaximize}
               onPress={handleMaximize}
             />
           </>
         )}
         <NativeWindowTitleBarButtons
-          title={t("close")}
+          title={buttonTitles.close}
           image={images.icons.windowClose}
           onPress={handleClose}
         />
