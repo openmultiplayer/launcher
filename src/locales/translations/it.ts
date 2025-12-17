@@ -121,4 +121,9 @@ export default {
     "Si è verificato un errore mentre importavi i tuoi server preferiti.",
   import_invalid_data_description:
     "Il file selezionato contiene dati non validi. Seleziona una lista preferiti valida.",
+  settings_custom_game_exe_label: "Nome eseguibile custom del gioco",
+  unable_to_find_custom_game_exe_title:
+    "Impossibile trovare l'eseguibile custom del gioco!",
+  unable_to_find_custom_game_exe_description:
+    "Il file eseguibile custom del gioco non è stato trovato nella cartella di GTA: San Andreas. Controlla nella scheda Impostazioni -> Avanzate.",	
 };
