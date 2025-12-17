@@ -271,6 +271,15 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
             Log.error("Failed to get update info");
             return true; // Continue without OMP plugin
           }
+
+          const versionInfo = response.data.versions[useAppState.getState().version];
+
+          if (versionInfo) {
+            response.data.download = versionInfo.download;
+            response.data.ompPluginChecksum = versionInfo.ompPluginChecksum;
+            response.data.ompPluginDownload = versionInfo.ompPluginDownload;
+          }
+
           updateInfo = response.data;
           useAppState.getState().setUpdateInfo(updateInfo);
         } else {
