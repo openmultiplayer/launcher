@@ -125,5 +125,6 @@ export default {
   unable_to_find_custom_game_exe_title:
     "Impossibile trovare l'eseguibile custom del gioco!",
   unable_to_find_custom_game_exe_description:
-    "Il file eseguibile custom del gioco non è stato trovato nella cartella di GTA: San Andreas. Controlla nella scheda Impostazioni -> Avanzate.",	
+    "Il file eseguibile custom del gioco non è stato trovato nella cartella di GTA: San Andreas. Controlla la scheda Impostazioni -> Avanzate.",	
 };
+
