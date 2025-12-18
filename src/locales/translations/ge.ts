@@ -117,4 +117,9 @@ export default {
     "დაფიქსირდა შეცდომა ფავორიტი სერვერების იმპორტის დროს.",
   import_invalid_data_description:
     "არჩეული ფაილი შეიცავს არასწორ შიგთავსს. გთხოვთ აირჩიეთ ფავორიტი სერვერების ფაილი.",
+  settings_custom_game_exe_label: "მორგებული თამაშის executable სახელი",
+  unable_to_find_custom_game_exe_title:
+    "ვერ მოხერხდა მოძებნა მორგებული თამაშის executable!",
+  unable_to_find_custom_game_exe_description:
+    "სპეციფიური თამაშის executable ფაილის პოვნა ვერ მოხერხდა ჯეტიაში: San Andreas directory ფოლდერი. გთხოვთ შეამოწმოთ პარამეტრებში -> მეტი.",
 };
