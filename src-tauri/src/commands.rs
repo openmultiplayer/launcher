@@ -16,13 +16,19 @@ pub async fn inject(
     password: &str,
     custom_game_exe: &str,
 ) -> std::result::Result<(), String> {
+    let actual_omp_file = if *crate::NO_OMP_FLAG.lock().unwrap() {
+        ""
+    } else {
+        omp_file
+    };
+
     match injector::run_samp(
         name,
         ip,
         port,
         exe,
         dll,
-        omp_file,
+        actual_omp_file,
         password,
         custom_game_exe,
     )

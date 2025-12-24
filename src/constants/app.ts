@@ -1,4 +1,4 @@
-export const BUILD_VERSION = "6";
+export const BUILD_VERSION = "7";
 
 const params = new URLSearchParams(window.location.search);
 const attachedId = params.get("attached_id");

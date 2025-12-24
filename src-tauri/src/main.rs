@@ -32,6 +32,7 @@ use tauri::Manager;
 use tauri::PhysicalSize;
 
 static URI_SCHEME_VALUE: Mutex<String> = Mutex::new(String::new());
+static NO_OMP_FLAG: Mutex<bool> = Mutex::new(false);
 
 #[tauri::command]
 async fn get_uri_scheme_value() -> String {
@@ -95,6 +96,12 @@ async fn handle_cli_args() -> Result<()> {
         Ok(args) => {
             args.validate()?;
 
+            if args.no_omp {
+                if let Ok(mut flag) = NO_OMP_FLAG.lock() {
+                    *flag = true;
+                }
+            }
+
             if args.help {
                 CliArgs::print_help_and_exit(&raw_args[0]);
             }
@@ -117,13 +124,19 @@ async fn handle_cli_args() -> Result<()> {
                     OMP_CLIENT_DLL
                 );
 
+                let omp_path = if args.no_omp {
+                    ""
+                } else {
+                    &omp_client_path
+                };
+
                 run_samp(
                     args.name.as_ref().unwrap(),
                     args.host.as_ref().unwrap(),
                     args.port.unwrap(),
                     gamepath,
                     &format!("{}/{}", gamepath, SAMP_DLL),
-                    &omp_client_path,
+                    omp_path,
                     &password,
                     "",
                 )

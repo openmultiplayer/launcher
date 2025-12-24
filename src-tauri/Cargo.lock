@@ -3113,7 +3113,7 @@ dependencies = [
 
 [[package]]
 name = "omp-launcher"
-version = "1.6.1"
+version = "1.6.3"
 dependencies = [
  "actix-cors",
  "actix-rt",

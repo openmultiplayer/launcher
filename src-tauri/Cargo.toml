@@ -1,6 +1,6 @@
 [package]
 name = "omp-launcher"
-version = "1.6.1"
+version = "1.6.3"
 description = "Open Multiplayer Launcher"
 authors = ["Amyr Ahmady (iAmir)"]
 license = ""
@@ -48,6 +48,7 @@ windows-sys = { version = "0.52.0", features = [
     "Win32_UI_Input_KeyboardAndMouse",
     "Win32_UI_Shell",
     "Win32_UI_WindowsAndMessaging",
+    "Win32_System_JobObjects"
 ] }
 winreg = "0.52.0"
 dll-syringe = "0.15.2"

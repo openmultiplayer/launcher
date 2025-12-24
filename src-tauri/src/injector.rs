@@ -3,7 +3,9 @@ use dll_syringe::{process::OwnedProcess, Syringe};
 #[cfg(target_os = "windows")]
 use log::info;
 #[cfg(target_os = "windows")]
-use std::process::Command;
+use std::path::PathBuf;
+#[cfg(target_os = "windows")]
+use std::process::{Command, Stdio};
 
 #[cfg(target_os = "windows")]
 use crate::{constants::*, errors::*};
@@ -34,13 +36,25 @@ pub async fn run_samp(
     custom_game_exe: &str,
 ) -> Result<()> {
     // Prepare the command to spawn the executable
-    let mut target_game_exe = GTA_SA_EXECUTABLE.to_string();
-    if custom_game_exe.len() > 0 {
-        target_game_exe = custom_game_exe.to_string();
-    }
-    let mut cmd = Command::new(format!("{}/{}", executable_dir, target_game_exe));
+    let target_game_exe = if custom_game_exe.len() > 0 {
+        custom_game_exe.to_string()
+    } else {
+        GTA_SA_EXECUTABLE.to_string()
+    };
+
+    let exe_path = PathBuf::from(executable_dir).join(&target_game_exe);
+
+    let exe_path = exe_path.canonicalize().map_err(|e| {
+        LauncherError::Process(format!("Invalid executable path {:?}: {}", exe_path, e))
+    })?;
+
+    let mut cmd = Command::new(&exe_path);
 
     let mut ready_for_exec = cmd
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .current_dir(executable_dir)
         .arg("-c")
         .arg("-n")
         .arg(name)
@@ -58,7 +72,12 @@ pub async fn run_samp(
     match process {
         Ok(p) => {
             inject_dll(p.id(), dll_path, 0, false)?;
-            inject_dll(p.id(), omp_file, 0, false)
+            info!("[run_samp] omp_file.is_empty(): {}", omp_file.is_empty());
+            if !omp_file.is_empty() {
+                inject_dll(p.id(), omp_file, 0, false)
+            } else {
+                Ok(())
+            }
         }
         Err(e) => {
             info!("[injector.rs] Process creation failed: {}", e);

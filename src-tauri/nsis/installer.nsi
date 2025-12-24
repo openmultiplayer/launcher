@@ -18,8 +18,8 @@ ${StrLoc}
 
 !define MANUFACTURER "open"
 !define PRODUCTNAME "Open Multiplayer Launcher"
-!define VERSION "1.6.1"
-!define VERSIONWITHBUILD "1.6.1.0"
+!define VERSION "1.6.3"
+!define VERSIONWITHBUILD "1.6.3.0"
 !define SHORTDESCRIPTION "Open Multiplayer Launcher"
 !define INSTALLMODE "perMachine"
 !define LICENSE ""

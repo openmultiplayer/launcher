@@ -21,6 +21,9 @@ pub struct CliArgs {
 
     #[options(help = "game path to use for both game executable and samp.dll")]
     pub gamepath: Option<String>,
+
+    #[options(help = "disable omp-client injection")]
+    pub no_omp: bool,
 }
 
 impl CliArgs {
@@ -66,6 +69,7 @@ Options:
   -P, --password <PASSWORD>  Server password
   -n, --name <NAME>          Nickname
   -g, --gamepath <GAMEPATH>  Game path
+      --no-omp               Disable omp-client injection
             ",
             program_name
         );
