@@ -116,12 +116,19 @@ export const fetchUpdateInfo = async () => {
   const hostOS = await type();
   const response = await getUpdateInfo();
   if (response.data) {
-    const versionInfo = response.data.versions[version];
+    const versionInfo = response.data.versions[useAppState.getState().version];
 
     if (versionInfo) {
       response.data.download = versionInfo.download;
       response.data.ompPluginChecksum = versionInfo.ompPluginChecksum;
       response.data.ompPluginDownload = versionInfo.ompPluginDownload;
+    } else {
+      const info = response.data.versions[response.data.version];
+      if (info) {
+        response.data.download = info.download;
+        response.data.ompPluginChecksum = info.ompPluginChecksum;
+        response.data.ompPluginDownload = info.ompPluginDownload;
+      }
     }
 
     useAppState.getState().setUpdateInfo(response.data);
