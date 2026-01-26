@@ -6,6 +6,8 @@ const loadTranslation = (lang: string) => {
   switch (lang) {
     case "ar":
       return import("./translations/ar");
+    case "arm":
+      return import("./translations/arm");
     case "bs":
       return import("./translations/bs");
     case "en":
