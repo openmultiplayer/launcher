@@ -90,6 +90,7 @@ export type LanguageType =
   | "hu"
   | "pt"
   | "ar"
+  | "arm"
   | "id"
   | "pl"
   | "bs"
@@ -132,6 +133,7 @@ const LANGUAGE_METADATA: Record<
   pt: { label: "Português", type: "pt" },
   fa: { label: "فارسی", type: "fa" },
   ar: { label: "العربية", type: "ar" },
+  arm: { label: "Հայերեն", type: "arm" },
   hi: { label: "हिंदी", type: "hi" },
   pl: { label: "Polski", type: "pl" },
   bs: { label: "Bosanski", type: "bs" },
