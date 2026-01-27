@@ -6,8 +6,8 @@ const loadTranslation = (lang: string) => {
   switch (lang) {
     case "ar":
       return import("./translations/ar");
-    case "arm":
-      return import("./translations/arm");
+    case "hy":
+      return import("./translations/hy");
     case "bs":
       return import("./translations/bs");
     case "en":
@@ -90,7 +90,7 @@ export type LanguageType =
   | "hu"
   | "pt"
   | "ar"
-  | "arm"
+  | "hy"
   | "id"
   | "pl"
   | "bs"
@@ -133,7 +133,7 @@ const LANGUAGE_METADATA: Record<
   pt: { label: "Português", type: "pt" },
   fa: { label: "فارسی", type: "fa" },
   ar: { label: "العربية", type: "ar" },
-  arm: { label: "Հայերեն", type: "arm" },
+  hy: { label: "Հայերեն", type: "hy" },
   hi: { label: "हिंदी", type: "hi" },
   pl: { label: "Polski", type: "pl" },
   bs: { label: "Bosanski", type: "bs" },
@@ -246,3 +246,4 @@ export const changeLanguage = async (lang: LanguageType): Promise<void> => {
 };
 
 export default i18n;
+
