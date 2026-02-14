@@ -66,6 +66,8 @@ const loadTranslation = (lang: string) => {
       return import("./translations/ge");
     case "fi":
       return import("./translations/fi");
+    case "kr":
+      return import("./translations/kr");
     default:
       return import("./translations/en");
   }
@@ -106,7 +108,8 @@ export type LanguageType =
   | "ta"
   | "ua"
   | "ge"
-  | "fi";
+  | "fi"
+  | "kr";
 
 interface LanguageResource {
   label: string;
@@ -150,6 +153,7 @@ const LANGUAGE_METADATA: Record<
   ge: { label: "ქართული", type: "ge" },
   sr: { label: "Српски", type: "sr" },
   fi: { label: "Suomi", type: "fi" },
+  kr: { label: "한국어", type: "kr" },
 };
 
 // Cache for loaded translations
@@ -246,4 +250,5 @@ export const changeLanguage = async (lang: LanguageType): Promise<void> => {
 };
 
 export default i18n;
+
 
