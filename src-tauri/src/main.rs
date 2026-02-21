@@ -223,13 +223,13 @@ fn setup_tauri_app(app: &mut tauri::App) -> std::result::Result<(), Box<dyn std:
 
 #[tauri::command]
 fn get_system_language() -> String {
-    // Obtiene el locale principal del sistema (ej: "es-AR", "en-US")
+    
     if let Some(locale) = sys_locale::get_locale() {
-        // Tomamos solo el código de idioma (las primeras 2 letras, en minúsculas)
+        
         let lang = locale.split(['-', '_']).next().unwrap_or("en").to_lowercase();
         lang
     } else {
-        "en".to_string()  // fallback si no se detecta nada
+        "en".to_string() 
     }
 }
 
