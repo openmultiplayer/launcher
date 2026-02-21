@@ -30,6 +30,8 @@ use std::fs;
 use tauri::api::path::app_data_dir;
 use tauri::Manager;
 use tauri::PhysicalSize;
+use tauri::command;
+use sys_locale;
 
 static URI_SCHEME_VALUE: Mutex<String> = Mutex::new(String::new());
 static NO_OMP_FLAG: Mutex<bool> = Mutex::new(false);
@@ -183,7 +185,8 @@ async fn run_tauri_app() -> Result<()> {
             commands::extract_7z,
             commands::copy_files_to_gtasa,
             query::query_server,
-            ipc::send_message_to_game
+            ipc::send_message_to_game,
+            get_system_language
         ])
         .run(tauri::generate_context!());
 
@@ -216,6 +219,18 @@ fn setup_tauri_app(app: &mut tauri::App) -> std::result::Result<(), Box<dyn std:
 
     ipc::listen_for_ipc(handle);
     Ok(())
+}
+
+#[tauri::command]
+fn get_system_language() -> String {
+    // Obtiene el locale principal del sistema (ej: "es-AR", "en-US")
+    if let Some(locale) = sys_locale::get_locale() {
+        // Tomamos solo el código de idioma (las primeras 2 letras, en minúsculas)
+        let lang = locale.split(['-', '_']).next().unwrap_or("en").to_lowercase();
+        lang
+    } else {
+        "en".to_string()  // fallback si no se detecta nada
+    }
 }
 
 #[cfg(windows)]

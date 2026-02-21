@@ -15,6 +15,7 @@ import { useTheme } from "../../states/theme";
 import { formatBytes } from "../../utils/helpers";
 import { Log } from "../../utils/logger";
 import { sc } from "../../utils/sizeScaler";
+import { useTranslation } from 'react-i18next';
 
 interface LoadingScreenProps {
   onEnd: () => void;
@@ -44,6 +45,7 @@ const INITIAL_DOWNLOAD_STATE: DownloadProgress = {
 const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
   const { theme, themeType } = useTheme();
   const { language } = useGenericPersistentState();
+  const { t } = useTranslation();
   const [loadingStage, setLoadingStage] = useState<LoadingStage>(
     LoadingStage.INITIALIZING
   );
@@ -58,24 +60,73 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
     i18n.changeLanguage(language);
   }, [language]);
 
-  useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        setLoadingStage(LoadingStage.VALIDATING_FILES);
-        setCurrentTask("Validating resources...");
-        await validateResources();
-      } catch (error) {
-        Log.error("Failed to initialize app:", error);
-        setCurrentTask("Failed to initialize. Please restart the application.");
+ useEffect(() => {
+  const initializeApp = async () => {
+    try {
+      // ────────────────────────────────────────────────────────────────
+      // AUTOMATIC SYSTEM LANGUAGE DETECTION
+      // ────────────────────────────────────────────────────────────────
+      const supportedLanguages = ["en", "es", "fr", "ar", "ru", "hy", "fil", "ro", "de", "nl",] as const; // add more 
+      type LanguageType = typeof supportedLanguages[number];
+
+      let targetLang: LanguageType = "en"; // default fallback
+
+      // Use saved (persistent) language if it exists and is supported
+      if (language && supportedLanguages.includes(language as LanguageType)) {
+        targetLang = language as LanguageType;
+        console.log(
+          `Saved language detected and valid → using: "${targetLang}" ` +
+          `(stored value: "${language}")`
+        );
+      } 
+      // detect from OS
+      else {
+        try {
+          const systemLangRaw: string = await invoke("get_system_language");
+          console.log("Detected system language:", systemLangRaw);
+
+          // extract only the language code
+          const systemLang = systemLangRaw.split(/[-_]/)[0].toLowerCase();
+
+          if (supportedLanguages.includes(systemLang as LanguageType)) {
+            targetLang = systemLang as LanguageType;
+            console.log(
+              `OS language supported → switching to: "${targetLang}" ` +
+              `(original from OS: "${systemLangRaw}")`
+            );
+            // Save
+            useGenericPersistentState.getState().setLanguage(targetLang);
+          } else {
+            console.log(
+              `OS language not supported (${systemLangRaw}) → fallback to "en"`
+            );
+          }
+        } catch (err) {
+          console.error("Error detecting OS language:", err);
+          console.log("Fallback to 'en' due to detection error");
+        }
       }
-    };
 
-    initializeApp();
+      // Apply the selected language
+      await i18n.changeLanguage(targetLang);
+      console.log(`Final language applied to i18n: "${i18n.language}"`);
 
-    return () => {
-      abortController.current?.abort();
-    };
-  }, []);
+      
+      setLoadingStage(LoadingStage.VALIDATING_FILES);
+      setCurrentTask(t("validating_resources"));
+      await validateResources();
+    } catch (error) {
+      Log.error("Failed to initialize app:", error);
+      setCurrentTask(t("initialization_failed")); 
+    }
+  };
+
+  initializeApp();
+
+  return () => {
+    abortController.current?.abort();
+  };
+}, []); 
 
   const finishLoading = useCallback(
     (delay: number = 1000) => {
