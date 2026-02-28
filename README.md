@@ -1,6 +1,7 @@
 # open.mp launcher
 
 Made with Tauri + React-Native ❤️
+<img width="988" height="690" alt="omp-launcher" src="https://github.com/user-attachments/assets/de28347d-aed0-40a7-b06d-f18b0db79b3c" />
 
 # Usage:
 
