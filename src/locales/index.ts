@@ -60,8 +60,8 @@ const loadTranslation = (lang: string) => {
       return import("./translations/vi");
     case "ta":
       return import("./translations/ta");
-    case "ua":
-      return import("./translations/ua");
+    case "uk":
+      return import("./translations/uk");
     case "ge":
       return import("./translations/ge");
     case "fi":
@@ -106,7 +106,7 @@ export type LanguageType =
   | "sn"
   | "vi"
   | "ta"
-  | "ua"
+  | "uk"
   | "ge"
   | "fi"
   | "kr";
@@ -149,7 +149,7 @@ const LANGUAGE_METADATA: Record<
   sn: { label: "سنڌي", type: "sn" },
   vi: { label: "Tiếng Việt", type: "vi" },
   ta: { label: "தமிழ்", type: "ta" },
-  ua: { label: "Українська", type: "ua" },
+  uk: { label: "Українська", type: "uk" },
   ge: { label: "ქართული", type: "ge" },
   sr: { label: "Српски", type: "sr" },
   fi: { label: "Suomi", type: "fi" },
