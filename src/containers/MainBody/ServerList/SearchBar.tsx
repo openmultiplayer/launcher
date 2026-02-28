@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -20,6 +20,7 @@ import { usePersistentServers, useServers } from "../../../states/servers";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 import { Log } from "../../../utils/logger";
+import { fetchServers } from "../../../utils/helpers";
 
 interface SearchBarProps {
   onChange: (query: string) => void;
@@ -69,6 +70,7 @@ const ActionIcon = memo<ActionIconProps>(
 
 const SearchBar = memo<SearchBarProps>(({ onChange }) => {
   const { theme, themeType } = useTheme();
+  const refreshLockRef = useRef(false);
   const { listType } = useGenericTempState();
   const [searchQuery, setSearchQuery] = useState("");
   const { filterMenu, showFilterMenu, searchData } = useGenericTempState();
@@ -156,6 +158,23 @@ const SearchBar = memo<SearchBarProps>(({ onChange }) => {
       Log.error("Error clearing recently joined:", error);
     }
   }, [clearRecentlyJoined]);
+
+  const handleRefreshServers = useCallback(async () => {
+    if (refreshLockRef.current) return;
+    refreshLockRef.current = true;
+
+    try {
+      const targetListType =
+        listType === "favorites" ? "favorites" : "internet";
+      await fetchServers(true, targetListType);
+    } catch (error) {
+      Log.error("Error refreshing servers:", error);
+    } finally {
+      setTimeout(() => {
+        refreshLockRef.current = false;
+      }, 500);
+    }
+  }, [listType]);
 
   return (
     <View style={styles.searchContainer}>
@@ -264,6 +283,15 @@ const SearchBar = memo<SearchBarProps>(({ onChange }) => {
           iconColor={"#3B833D"}
           buttonColor={"#7AF1AA"}
           onPress={handleAddServer}
+        />
+        <ActionIcon
+          svg
+          title={t("refresh_servers")}
+          icon={images.icons.refresh}
+          iconSize={sc(18)}
+          iconColor={theme.textSecondary}
+          buttonColor={theme.itemBackgroundColor}
+          onPress={handleRefreshServers}
         />
         <ActionIcon
           svg
