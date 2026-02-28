@@ -1,6 +1,6 @@
 import { fs } from "@tauri-apps/api";
 import { t } from "i18next";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, FocusEvent } from "react";
 import {
   Image,
   StyleSheet,
@@ -180,16 +180,16 @@ const JoinServerPrompt = () => {
   }, [gtasaPath, server]);
 
   const handleNicknameChange = useCallback(
-    (text: string) => {
-      if (server) {
+    ({ nativeEvent }: FocusEvent) => {
+      if (server && nativeEvent) {
         if (settings) {
-          setServerSettings(server, text, settings.sampVersion);
+          setServerSettings(server, perServerNickname, settings.sampVersion);
         } else {
-          setServerSettings(server, text, undefined);
+          setServerSettings(server, perServerNickname, undefined);
         }
       }
     },
-    [server, settings, setServerSettings]
+    [server, settings, perServerNickname, setServerSettings]
   );
 
   const handleConnect = useCallback(() => {
@@ -330,7 +330,8 @@ const JoinServerPrompt = () => {
               placeholderTextColor={theme.textPlaceholder}
               placeholder={nickName}
               value={perServerNickname}
-              onChangeText={handleNicknameChange}
+              onChangeText={setPerServerNickname}
+              onBlur={handleNicknameChange}
               // @ts-ignore
               style={[styles.textInput, dynamicStyles.nicknameInput]}
             />
