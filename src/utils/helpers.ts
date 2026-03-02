@@ -17,7 +17,7 @@ import {
   Server,
   SortType,
 } from "./types";
-import { validateServerAddressIPv4 } from "./validation";
+import { parseServerAddress, validateServerAddressIPv4 } from "./validation";
 
 // Server update configuration
 const SERVER_UPDATE_CONFIG = {
@@ -38,8 +38,9 @@ export const mapAPIResponseServerListToAppStructure = (
   list: readonly APIResponseServer[]
 ): Server[] => {
   return list.map((server): Server => {
-    const [ip, portStr] = server.core.ip.split(":");
-    const port = parseInt(portStr, 10);
+    const parsed = parseServerAddress(server.core.ip);
+    const ip = parsed?.ip ?? server.core.ip;
+    const port = parsed?.port ?? 7777;
 
     return {
       hostname: server.core.hn,
