@@ -79,7 +79,7 @@ fn main() {
     socket.set_read_timeout(Some(Duration::from_secs(2))).ok();
 
     let mut response = [0_u8; 128];
-    let mut send_request = |cookie_xor: u16| {
+    let send_request = |cookie_xor: u16| {
         let request = [
             ID_OPEN_CONNECTION_REQUEST,
             (cookie_xor & 0xFF) as u8,
