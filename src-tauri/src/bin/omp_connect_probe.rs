@@ -4,8 +4,10 @@ use std::time::Duration;
 
 const ID_OPEN_CONNECTION_REQUEST: u8 = 24;
 const ID_OPEN_CONNECTION_REPLY: u8 = 25;
+const ID_OPEN_CONNECTION_COOKIE: u8 = 26;
 const ID_CONNECTION_ATTEMPT_FAILED: u8 = 29;
 const ID_NO_FREE_INCOMING_CONNECTIONS: u8 = 31;
+const SAMP_PETARDED: u16 = 0x6969;
 
 fn print_usage() {
     eprintln!("Usage: omp_connect_probe <family> <host> <port>");
@@ -76,14 +78,22 @@ fn main() {
     };
     socket.set_read_timeout(Some(Duration::from_secs(2))).ok();
 
-    let request = [ID_OPEN_CONNECTION_REQUEST, 0, 0];
-    if let Err(e) = socket.send_to(&request, target) {
+    let mut response = [0_u8; 128];
+    let mut send_request = |cookie_xor: u16| {
+        let request = [
+            ID_OPEN_CONNECTION_REQUEST,
+            (cookie_xor & 0xFF) as u8,
+            ((cookie_xor >> 8) & 0xFF) as u8,
+        ];
+        socket.send_to(&request, target)
+    };
+
+    if let Err(e) = send_request(0) {
         eprintln!("send_to failed: {e}");
         std::process::exit(1);
     }
 
-    let mut response = [0_u8; 128];
-    let received = match socket.recv(&mut response) {
+    let mut received = match socket.recv(&mut response) {
         Ok(n) => n,
         Err(e) => {
             eprintln!("recv failed: {e}");
@@ -91,7 +101,29 @@ fn main() {
         }
     };
 
-    let packet_id = response[0];
+    let mut packet_id = response[0];
+    if packet_id == ID_OPEN_CONNECTION_COOKIE && received >= 3 {
+        let cookie = u16::from_le_bytes([response[1], response[2]]);
+        let cookie_xor = cookie ^ SAMP_PETARDED;
+        println!("received {} bytes", received);
+        println!("packet_id={}", packet_id);
+        println!("result=open_connection_cookie");
+
+        if let Err(e) = send_request(cookie_xor) {
+            eprintln!("send_to failed: {e}");
+            std::process::exit(1);
+        }
+
+        received = match socket.recv(&mut response) {
+            Ok(n) => n,
+            Err(e) => {
+                eprintln!("recv failed after cookie exchange: {e}");
+                std::process::exit(1);
+            }
+        };
+        packet_id = response[0];
+    }
+
     println!("received {} bytes", received);
     println!("packet_id={}", packet_id);
 
