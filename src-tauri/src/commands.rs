@@ -80,7 +80,7 @@ pub fn get_samp_favorite_list() -> String {
 
 #[tauri::command]
 pub fn resolve_hostname(hostname: String) -> std::result::Result<String, String> {
-    use std::net::{IpAddr, ToSocketAddrs};
+    use std::net::ToSocketAddrs;
 
     if hostname.is_empty() {
         return Err("Hostname cannot be empty".to_string());
@@ -91,13 +91,10 @@ pub fn resolve_hostname(hostname: String) -> std::result::Result<String, String>
         .to_socket_addrs()
         .map_err(|e| format!("Failed to resolve hostname '{}': {}", hostname, e))?;
 
-    for ip in addrs {
-        if let IpAddr::V4(ipv4) = ip.ip() {
-            return Ok(ipv4.to_string());
-        }
-    }
-
-    Err(format!("No IPv4 address found for hostname '{}'", hostname))
+    addrs
+        .map(|socket_addr| socket_addr.ip().to_string())
+        .next()
+        .ok_or_else(|| format!("No address found for hostname '{}'", hostname))
 }
 
 #[tauri::command]

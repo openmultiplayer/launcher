@@ -1,13 +1,13 @@
 use actix_web::web::Buf;
 use byteorder::{LittleEndian, ReadBytesExt};
 use once_cell::sync::Lazy;
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::{Cursor, Read};
+use std::net::{IpAddr, SocketAddr};
 use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
-use std::{net::Ipv4Addr, time::Duration};
+use std::time::Duration;
 use tokio::net::{lookup_host, UdpSocket};
 use tokio::time::timeout_at;
 use tokio::time::Instant;
@@ -38,8 +38,7 @@ static CACHED_QUERY: Lazy<tokio::sync::Mutex<Option<(Query, String)>>> =
     Lazy::new(|| tokio::sync::Mutex::new(None));
 
 pub struct Query {
-    address: Ipv4Addr,
-    port: i32,
+    target: SocketAddr,
     socket: UdpSocket,
 }
 
@@ -84,78 +83,60 @@ pub struct ErrorResponse {
 
 impl Query {
     pub async fn new(addr: &str, port: i32) -> Result<Self> {
-        let regex = Regex::new(r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
-            .map_err(|e| LauncherError::Parse(format!("Invalid regex pattern: {}", e)))?;
+        let normalized_addr = addr.trim_start_matches('[').trim_end_matches(']');
 
-        let address = match regex.captures(addr) {
-            Some(_) => {
-                // it's valid ipv4, move on
-                addr.to_string()
-            }
-            None => {
-                let socket_addresses = lookup_host(format!("{}:{}", addr, port)).await;
-                match socket_addresses {
-                    Ok(s) => {
-                        let mut ipv4 = "".to_string();
-                        for socket_address in s {
-                            if socket_address.is_ipv4() {
-                                // hostname is resolved to ipv4:port, lets split it by ":" and get ipv4 only
-                                let ip_port = socket_address.to_string();
-                                let vec: Vec<&str> = ip_port.split(':').collect();
-                                if !vec.is_empty() {
-                                    ipv4 = vec[0].to_string();
-                                    break;
-                                }
-                            }
-                        }
-                        if ipv4.is_empty() {
-                            return Err(LauncherError::NotFound(
-                                "No IPv4 address found for hostname".to_string(),
-                            ));
-                        }
-                        ipv4
-                    }
-                    Err(e) => {
-                        return Err(LauncherError::Network(format!(
-                            "Failed to resolve hostname: {}",
-                            e
-                        )));
-                    }
-                }
-            }
+        let target = if normalized_addr.parse::<IpAddr>().is_ok() {
+            SocketAddr::new(
+                normalized_addr
+                    .parse::<IpAddr>()
+                    .map_err(|e| LauncherError::InvalidInput(format!("Invalid IP address: {}", e)))?,
+                port as u16,
+            )
+        } else {
+            let socket_addresses = lookup_host(format!("{}:{}", addr, port))
+                .await
+                .map_err(|e| LauncherError::Network(format!("Failed to resolve hostname: {}", e)))?;
+            socket_addresses
+                .into_iter()
+                .next()
+                .ok_or_else(|| LauncherError::NotFound("No address found for hostname".to_string()))?
         };
 
-        let parsed_address = address
-            .parse::<Ipv4Addr>()
-            .map_err(|e| LauncherError::InvalidInput(format!("Invalid IP address: {}", e)))?;
+        let bind_addr = match target {
+            SocketAddr::V4(_) => "0.0.0.0:0",
+            SocketAddr::V6(_) => "[::]:0",
+        };
 
-        let socket = UdpSocket::bind("0.0.0.0:0")
+        let socket = UdpSocket::bind(bind_addr)
             .await
             .map_err(|e| LauncherError::Network(format!("Failed to bind socket: {}", e)))?;
 
         socket
-            .connect(format!("{}:{}", addr, port))
+            .connect(target)
             .await
             .map_err(|e| LauncherError::Network(format!("Failed to connect to server: {}", e)))?;
 
-        let data = Self {
-            address: parsed_address,
-            port,
-            socket,
-        };
-
-        Ok(data)
+        Ok(Self { target, socket })
     }
 
     pub async fn send(&self, query_type: char) -> Result<usize> {
         let mut packet: Vec<u8> = Vec::new();
-        packet.extend_from_slice(SAMP_PACKET_HEADER);
-        for i in 0..4 {
-            packet.push(self.address.octets()[i]);
+        match self.target.ip() {
+            IpAddr::V4(address) => {
+                packet.extend_from_slice(SAMP_PACKET_HEADER);
+                packet.extend_from_slice(&address.octets());
+                packet.push((self.target.port() & 0xFF) as u8);
+                packet.push((self.target.port() >> 8 & 0xFF) as u8);
+                packet.push(query_type as u8);
+            }
+            IpAddr::V6(address) => {
+                packet.extend_from_slice(SAMP6_PACKET_HEADER);
+                packet.extend_from_slice(&address.octets());
+                packet.push((self.target.port() & 0xFF) as u8);
+                packet.push((self.target.port() >> 8 & 0xFF) as u8);
+                packet.push(query_type as u8);
+            }
         }
-        packet.push((self.port & 0xFF) as u8);
-        packet.push((self.port >> 8 & 0xFF) as u8);
-        packet.push(query_type as u8);
 
         if query_type == 'p' {
             packet.push(0);
@@ -189,8 +170,15 @@ impl Query {
             return Err(LauncherError::Network("No data received".to_string()));
         }
 
-        let query_type = buf[10] as char;
-        let packet = Cursor::new(buf[11..amt].to_vec());
+        let (query_type, payload_offset) = if amt >= 24 && &buf[..5] == SAMP6_PACKET_HEADER {
+            (buf[23] as char, 24)
+        } else if amt >= 11 && &buf[..4] == SAMP_PACKET_HEADER {
+            (buf[10] as char, 11)
+        } else {
+            return Err(LauncherError::Network("Unknown query response format".to_string()));
+        };
+
+        let packet = Cursor::new(buf[payload_offset..amt].to_vec());
         match query_type {
             QUERY_TYPE_INFO => self.build_info_packet(packet),
             QUERY_TYPE_PLAYERS => self.build_players_packet(packet),
