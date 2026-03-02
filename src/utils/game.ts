@@ -19,6 +19,7 @@ import { Log } from "./logger";
 import { PING_TIMEOUT_VALUE } from "./query";
 import { sc } from "./sizeScaler";
 import { Server } from "./types";
+import { isIPv6, normalizeIPv6 } from "./validation";
 
 const showOkModal = (title: string, description: string) => {
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
@@ -72,15 +73,18 @@ export const startGame = async (
   const { sampVersion, customGameExe } = useSettings.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
   const { setSelected } = useServers.getState();
+  const resolvedAddress = (await getIpAddress(server.ip)) ?? server.ip;
+  const connectAddress =
+    resolvedAddress && isIPv6(resolvedAddress)
+      ? `[${normalizeIPv6(resolvedAddress)}]`
+      : resolvedAddress;
 
   if (IN_GAME) {
     invoke("send_message_to_game", {
       id: IN_GAME_PROCESS_ID,
       message: password.length
-        ? `connect:${await getIpAddress(server.ip)}:${
-            server.port
-          }:${nickname}:${password}`
-        : `connect:${await getIpAddress(server.ip)}:${server.port}:${nickname}`,
+        ? `connect:${connectAddress}:${server.port}:${nickname}:${password}`
+        : `connect:${connectAddress}:${server.port}:${nickname}`,
     });
     return;
   }
@@ -221,7 +225,7 @@ export const startGame = async (
 
   invoke("inject", {
     name: nickname,
-    ip: await getIpAddress(server.ip),
+    ip: resolvedAddress,
     port: server.port,
     exe: gtasaPath,
     dll: ourSAMPDllPath,

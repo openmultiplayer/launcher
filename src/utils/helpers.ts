@@ -17,7 +17,7 @@ import {
   Server,
   SortType,
 } from "./types";
-import { parseServerAddress, validateServerAddressIPv4 } from "./validation";
+import { parseServerAddress, validateServerAddress } from "./validation";
 
 // Server update configuration
 const SERVER_UPDATE_CONFIG = {
@@ -198,7 +198,7 @@ export const getIpAddress = async (
   }
 
   // Use validation function from validation.ts
-  if (validateServerAddressIPv4(hostname)) {
+  if (validateServerAddress(hostname)) {
     return hostname;
   }
 
