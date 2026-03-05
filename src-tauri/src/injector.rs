@@ -10,6 +10,11 @@ use std::process::{Command, Stdio};
 #[cfg(target_os = "windows")]
 use crate::{constants::*, errors::*};
 
+#[cfg(target_os = "windows")]
+fn inject_optional_dll(child: u32, dll_path: &str) -> Result<()> {
+    inject_dll(child, dll_path, INJECTION_MAX_RETRIES, true)
+}
+
 #[cfg(not(target_os = "windows"))]
 pub async fn run_samp(
     _name: &str,
@@ -96,7 +101,7 @@ pub async fn run_samp(
     match process {
         Ok(p) => {
             if !trace_file.is_empty() {
-                if let Err(e) = inject_dll(p.id(), trace_file, 0, false) {
+                if let Err(e) = inject_optional_dll(p.id(), trace_file) {
                     info!(
                         "[run_samp] optional trace DLL injection failed for {}: {}",
                         trace_file, e

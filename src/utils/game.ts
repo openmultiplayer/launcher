@@ -1,6 +1,6 @@
 import { fs, invoke, path, process, shell } from "@tauri-apps/api";
 import { open, save } from "@tauri-apps/api/dialog";
-import { exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
+import { copyFile, exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { t } from "i18next";
 import {
   IN_GAME,
@@ -32,6 +32,27 @@ const showOkModal = (title: string, description: string) => {
 
 const getLocalPath = async (...segments: string[]) =>
   path.join(await path.appLocalDataDir(), ...segments);
+
+const stageTraceRuntimeIntoGameDir = async (
+  gtasaPath: string,
+  traceSource: string
+): Promise<string | null> => {
+  const traceTarget = await path.join(gtasaPath, "omp-socket-trace.dll");
+  if (traceSource !== traceTarget) {
+    await copyFile(traceSource, traceTarget);
+  }
+
+  const traceSourceDir = await path.dirname(traceSource);
+  const runtimeSource = await path.join(traceSourceDir, "libwinpthread-1.dll");
+  if (await fs.exists(runtimeSource)) {
+    const runtimeTarget = await path.join(gtasaPath, "libwinpthread-1.dll");
+    if (runtimeSource !== runtimeTarget) {
+      await copyFile(runtimeSource, runtimeTarget);
+    }
+  }
+
+  return traceTarget;
+};
 
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
@@ -263,21 +284,30 @@ export const startGame = async (
     await path.join(gtasaPath, "omp-socket-trace.dll"),
   ];
 
-  try {
-    const launcherDir = await path.executableDir();
-    traceCandidates.push(await path.join(launcherDir, "omp-socket-trace.dll"));
-  } catch (error) {
-    Log.warn(
-      "[startGame] Failed to resolve launcher directory for trace DLL lookup:",
-      error
-    );
-  }
-
   let traceFile = "";
   for (const candidate of traceCandidates) {
     if (await fs.exists(candidate)) {
       traceFile = candidate;
       break;
+    }
+  }
+
+  if (traceFile.length) {
+    try {
+      const stagedTraceFile = await stageTraceRuntimeIntoGameDir(
+        gtasaPath,
+        traceFile
+      );
+      if (stagedTraceFile) {
+        traceFile = stagedTraceFile;
+      }
+    } catch (error) {
+      Log.warn(
+        "[startGame] Failed to stage optional trace runtime into GTA directory:",
+        error
+      );
+      traceFile = "";
+      traceDualstack = false;
     }
   }
 
