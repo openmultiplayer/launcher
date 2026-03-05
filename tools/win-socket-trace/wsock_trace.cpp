@@ -38,9 +38,6 @@ using getsockname_fn_t = int(WSAAPI*)(SOCKET, sockaddr*, int*);
 using getpeername_fn_t = int(WSAAPI*)(SOCKET, sockaddr*, int*);
 using getprocaddress_fn_t = FARPROC(WINAPI*)(HMODULE, LPCSTR);
 using loadlibrarya_fn_t = HMODULE(WINAPI*)(LPCSTR);
-using loadlibraryw_fn_t = HMODULE(WINAPI*)(LPCWSTR);
-using loadlibraryexa_fn_t = HMODULE(WINAPI*)(LPCSTR, HANDLE, DWORD);
-using loadlibraryexw_fn_t = HMODULE(WINAPI*)(LPCWSTR, HANDLE, DWORD);
 
 static socket_fn_t g_real_socket = nullptr;
 static wsasocketa_fn_t g_real_wsasocketa = nullptr;
@@ -55,9 +52,6 @@ static getsockname_fn_t g_real_getsockname = nullptr;
 static getpeername_fn_t g_real_getpeername = nullptr;
 static getprocaddress_fn_t g_real_getprocaddress = nullptr;
 static loadlibrarya_fn_t g_real_loadlibrarya = nullptr;
-static loadlibraryw_fn_t g_real_loadlibraryw = nullptr;
-static loadlibraryexa_fn_t g_real_loadlibraryexa = nullptr;
-static loadlibraryexw_fn_t g_real_loadlibraryexw = nullptr;
 
 static std::mutex g_log_mutex;
 static std::once_flag g_log_once;
@@ -277,35 +271,6 @@ static bool is_ordinal_proc_name(LPCSTR name) {
     return reinterpret_cast<ULONG_PTR>(name) <= 0xFFFF;
 }
 
-static std::string narrow_wide_string(LPCWSTR value) {
-    if (!value) {
-        return "(null)";
-    }
-
-    int needed = WideCharToMultiByte(CP_UTF8, 0, value, -1, nullptr, 0, nullptr, nullptr);
-    if (needed <= 0) {
-        return "(wide-conversion-failed)";
-    }
-
-    std::string out;
-    out.resize((size_t)needed);
-    if (WideCharToMultiByte(
-            CP_UTF8,
-            0,
-            value,
-            -1,
-            out.empty() ? nullptr : &out[0],
-            needed,
-            nullptr,
-            nullptr) <= 0) {
-        return "(wide-conversion-failed)";
-    }
-    if (!out.empty() && out.back() == '\0') {
-        out.pop_back();
-    }
-    return out;
-}
-
 static const char* module_basename(const char* path) {
     if (!path) {
         return "";
@@ -452,23 +417,9 @@ static void resolve_kernel_functions() {
     FARPROC(WINAPI *resolve_proc)(HMODULE, LPCSTR) = g_real_getprocaddress ? g_real_getprocaddress : ::GetProcAddress;
 
     resolve_real(g_real_loadlibrarya, kernel, "LoadLibraryA");
-    resolve_real(g_real_loadlibraryw, kernel, "LoadLibraryW");
-    resolve_real(g_real_loadlibraryexa, kernel, "LoadLibraryExA");
-    resolve_real(g_real_loadlibraryexw, kernel, "LoadLibraryExW");
 
     if (!g_real_loadlibrarya) {
         g_real_loadlibrarya = reinterpret_cast<loadlibrarya_fn_t>(resolve_proc(kernel, "LoadLibraryA"));
-    }
-    if (!g_real_loadlibraryw) {
-        g_real_loadlibraryw = reinterpret_cast<loadlibraryw_fn_t>(resolve_proc(kernel, "LoadLibraryW"));
-    }
-    if (!g_real_loadlibraryexa) {
-        g_real_loadlibraryexa =
-            reinterpret_cast<loadlibraryexa_fn_t>(resolve_proc(kernel, "LoadLibraryExA"));
-    }
-    if (!g_real_loadlibraryexw) {
-        g_real_loadlibraryexw =
-            reinterpret_cast<loadlibraryexw_fn_t>(resolve_proc(kernel, "LoadLibraryExW"));
     }
 }
 
@@ -629,10 +580,6 @@ static int WSAAPI hook_recvfrom(
 static int WSAAPI hook_getsockname(SOCKET s, sockaddr* name, int* namelen);
 static int WSAAPI hook_getpeername(SOCKET s, sockaddr* name, int* namelen);
 static FARPROC WINAPI hook_getprocaddress(HMODULE mod, LPCSTR proc_name);
-static HMODULE WINAPI hook_loadlibrarya(LPCSTR name);
-static HMODULE WINAPI hook_loadlibraryw(LPCWSTR name);
-static HMODULE WINAPI hook_loadlibraryexa(LPCSTR name, HANDLE file, DWORD flags);
-static HMODULE WINAPI hook_loadlibraryexw(LPCWSTR name, HANDLE file, DWORD flags);
 
 static HookDef kSocketHooks[] = {
     {"socket", (void*)&hook_socket, (void**)&g_real_socket},
@@ -650,10 +597,6 @@ static HookDef kSocketHooks[] = {
 
 static HookDef kKernelHooks[] = {
     {"GetProcAddress", (void*)&hook_getprocaddress, (void**)&g_real_getprocaddress},
-    {"LoadLibraryA", (void*)&hook_loadlibrarya, (void**)&g_real_loadlibrarya},
-    {"LoadLibraryW", (void*)&hook_loadlibraryw, (void**)&g_real_loadlibraryw},
-    {"LoadLibraryExA", (void*)&hook_loadlibraryexa, (void**)&g_real_loadlibraryexa},
-    {"LoadLibraryExW", (void*)&hook_loadlibraryexw, (void**)&g_real_loadlibraryexw},
 };
 
 static const HookDef* find_socket_hook(const char* proc_name) {
@@ -741,45 +684,6 @@ static FARPROC WINAPI hook_getprocaddress(HMODULE mod, LPCSTR proc_name) {
     }
 
     return g_real_getprocaddress ? g_real_getprocaddress(mod, proc_name) : nullptr;
-}
-
-static HMODULE finish_loadlibrary(HMODULE mod, const char* api_name, const char* target_name) {
-    if (mod) {
-        apply_hooks_for_module(mod);
-    }
-
-    log_line(
-        "%s(name=%s) => module=%p",
-        api_name,
-        target_name ? target_name : "(null)",
-        mod);
-    return mod;
-}
-
-static HMODULE WINAPI hook_loadlibrarya(LPCSTR name) {
-    resolve_kernel_functions();
-    HMODULE mod = g_real_loadlibrarya ? g_real_loadlibrarya(name) : nullptr;
-    return finish_loadlibrary(mod, "LoadLibraryA", name);
-}
-
-static HMODULE WINAPI hook_loadlibraryw(LPCWSTR name) {
-    resolve_kernel_functions();
-    HMODULE mod = g_real_loadlibraryw ? g_real_loadlibraryw(name) : nullptr;
-    std::string narrow = narrow_wide_string(name);
-    return finish_loadlibrary(mod, "LoadLibraryW", narrow.c_str());
-}
-
-static HMODULE WINAPI hook_loadlibraryexa(LPCSTR name, HANDLE file, DWORD flags) {
-    resolve_kernel_functions();
-    HMODULE mod = g_real_loadlibraryexa ? g_real_loadlibraryexa(name, file, flags) : nullptr;
-    return finish_loadlibrary(mod, "LoadLibraryExA", name);
-}
-
-static HMODULE WINAPI hook_loadlibraryexw(LPCWSTR name, HANDLE file, DWORD flags) {
-    resolve_kernel_functions();
-    HMODULE mod = g_real_loadlibraryexw ? g_real_loadlibraryexw(name, file, flags) : nullptr;
-    std::string narrow = narrow_wide_string(name);
-    return finish_loadlibrary(mod, "LoadLibraryExW", narrow.c_str());
 }
 
 static SOCKET WSAAPI hook_socket(int af, int type, int protocol) {
