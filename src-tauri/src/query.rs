@@ -6,8 +6,8 @@ use std::collections::HashMap;
 use std::io::{Cursor, Read};
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Mutex;
-use std::time::{SystemTime, UNIX_EPOCH};
 use std::time::Duration;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::net::{lookup_host, UdpSocket};
 use tokio::time::timeout_at;
 use tokio::time::Instant;
@@ -87,19 +87,21 @@ impl Query {
 
         let target = if normalized_addr.parse::<IpAddr>().is_ok() {
             SocketAddr::new(
-                normalized_addr
-                    .parse::<IpAddr>()
-                    .map_err(|e| LauncherError::InvalidInput(format!("Invalid IP address: {}", e)))?,
+                normalized_addr.parse::<IpAddr>().map_err(|e| {
+                    LauncherError::InvalidInput(format!("Invalid IP address: {}", e))
+                })?,
                 port as u16,
             )
         } else {
-            let socket_addresses = lookup_host(format!("{}:{}", addr, port))
-                .await
-                .map_err(|e| LauncherError::Network(format!("Failed to resolve hostname: {}", e)))?;
-            socket_addresses
-                .into_iter()
-                .next()
-                .ok_or_else(|| LauncherError::NotFound("No address found for hostname".to_string()))?
+            let socket_addresses =
+                lookup_host(format!("{}:{}", addr, port))
+                    .await
+                    .map_err(|e| {
+                        LauncherError::Network(format!("Failed to resolve hostname: {}", e))
+                    })?;
+            socket_addresses.into_iter().next().ok_or_else(|| {
+                LauncherError::NotFound("No address found for hostname".to_string())
+            })?
         };
 
         let bind_addr = match target {
@@ -175,7 +177,9 @@ impl Query {
         } else if amt >= 11 && &buf[..4] == SAMP_PACKET_HEADER {
             (buf[10] as char, 11)
         } else {
-            return Err(LauncherError::Network("Unknown query response format".to_string()));
+            return Err(LauncherError::Network(
+                "Unknown query response format".to_string(),
+            ));
         };
 
         let packet = Cursor::new(buf[payload_offset..amt].to_vec());

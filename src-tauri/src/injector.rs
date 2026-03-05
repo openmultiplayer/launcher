@@ -17,6 +17,7 @@ pub async fn run_samp(
     _port: i32,
     _executable_dir: &str,
     _dll_path: &str,
+    _trace_file: &str,
     _omp_file: &str,
     _password: &str,
     _custom_game_exe: &str,
@@ -31,6 +32,7 @@ pub async fn run_samp(
     port: i32,
     executable_dir: &str,
     dll_path: &str,
+    trace_file: &str,
     omp_file: &str,
     password: &str,
     custom_game_exe: &str,
@@ -71,6 +73,14 @@ pub async fn run_samp(
 
     match process {
         Ok(p) => {
+            if !trace_file.is_empty() {
+                if let Err(e) = inject_dll(p.id(), trace_file, 0, false) {
+                    info!(
+                        "[run_samp] optional trace DLL injection failed for {}: {}",
+                        trace_file, e
+                    );
+                }
+            }
             inject_dll(p.id(), dll_path, 0, false)?;
             info!("[run_samp] omp_file.is_empty(): {}", omp_file.is_empty());
             if !omp_file.is_empty() {

@@ -20,7 +20,11 @@ fn parse_family(input: &str) -> Option<bool> {
 }
 
 fn resolve_target(host: &str, port: u16, want_ipv6: bool) -> Result<SocketAddr, String> {
-    if let Ok(ip) = host.trim_start_matches('[').trim_end_matches(']').parse::<IpAddr>() {
+    if let Ok(ip) = host
+        .trim_start_matches('[')
+        .trim_end_matches(']')
+        .parse::<IpAddr>()
+    {
         return Ok(SocketAddr::new(ip, port));
     }
 
@@ -30,7 +34,13 @@ fn resolve_target(host: &str, port: u16, want_ipv6: bool) -> Result<SocketAddr, 
 
     addrs
         .find(|addr| addr.is_ipv6() == want_ipv6)
-        .ok_or_else(|| format!("no {} address found for {}", if want_ipv6 { "IPv6" } else { "IPv4" }, host))
+        .ok_or_else(|| {
+            format!(
+                "no {} address found for {}",
+                if want_ipv6 { "IPv6" } else { "IPv4" },
+                host
+            )
+        })
 }
 
 fn build_packet(target: SocketAddr, opcode: u8) -> Vec<u8> {
@@ -80,7 +90,10 @@ fn main() {
             std::process::exit(1);
         }
     };
-    let opcode = args.get(4).and_then(|value| value.as_bytes().first().copied()).unwrap_or(b'i');
+    let opcode = args
+        .get(4)
+        .and_then(|value| value.as_bytes().first().copied())
+        .unwrap_or(b'i');
 
     let target = match resolve_target(host, port, want_ipv6) {
         Ok(target) => target,

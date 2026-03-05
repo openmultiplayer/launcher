@@ -23,7 +23,11 @@ fn parse_family(input: &str) -> Option<bool> {
 }
 
 fn resolve_target(host: &str, port: u16, want_ipv6: bool) -> Result<SocketAddr, String> {
-    if let Ok(ip) = host.trim_start_matches('[').trim_end_matches(']').parse::<IpAddr>() {
+    if let Ok(ip) = host
+        .trim_start_matches('[')
+        .trim_end_matches(']')
+        .parse::<IpAddr>()
+    {
         return Ok(SocketAddr::new(ip, port));
     }
 
@@ -33,7 +37,13 @@ fn resolve_target(host: &str, port: u16, want_ipv6: bool) -> Result<SocketAddr, 
 
     addrs
         .find(|addr| addr.is_ipv6() == want_ipv6)
-        .ok_or_else(|| format!("no {} address found for {}", if want_ipv6 { "IPv6" } else { "IPv4" }, host))
+        .ok_or_else(|| {
+            format!(
+                "no {} address found for {}",
+                if want_ipv6 { "IPv6" } else { "IPv4" },
+                host
+            )
+        })
 }
 
 fn main() {

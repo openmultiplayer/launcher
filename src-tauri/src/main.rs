@@ -124,11 +124,7 @@ async fn handle_cli_args() -> Result<()> {
                     OMP_CLIENT_DLL
                 );
 
-                let omp_path = if args.no_omp {
-                    ""
-                } else {
-                    &omp_client_path
-                };
+                let omp_path = if args.no_omp { "" } else { &omp_client_path };
 
                 run_samp(
                     args.name.as_ref().unwrap(),
@@ -136,6 +132,7 @@ async fn handle_cli_args() -> Result<()> {
                     args.port.unwrap(),
                     gamepath,
                     &format!("{}/{}", gamepath, SAMP_DLL),
+                    "",
                     omp_path,
                     &password,
                     "",

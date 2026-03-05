@@ -222,6 +222,8 @@ export const startGame = async (
       : file
       ? await getLocalPath(file.path, file.name)
       : idealSAMPDllPath;
+  const traceDllPath = await getLocalPath("omp", "omp-socket-trace.dll");
+  const traceFile = (await fs.exists(traceDllPath)) ? traceDllPath : "";
 
   invoke("inject", {
     name: nickname,
@@ -229,6 +231,7 @@ export const startGame = async (
     port: server.port,
     exe: gtasaPath,
     dll: ourSAMPDllPath,
+    traceFile,
     ompFile: await getLocalPath("omp", "omp-client.dll"),
     password,
     customGameExe,
