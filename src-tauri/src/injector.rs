@@ -19,6 +19,8 @@ pub async fn run_samp(
     _dll_path: &str,
     _trace_file: &str,
     _trace_dualstack: bool,
+    _trace_remote_ip: &str,
+    _trace_remote_port: i32,
     _omp_file: &str,
     _password: &str,
     _custom_game_exe: &str,
@@ -35,6 +37,8 @@ pub async fn run_samp(
     dll_path: &str,
     trace_file: &str,
     trace_dualstack: bool,
+    trace_remote_ip: &str,
+    trace_remote_port: i32,
     omp_file: &str,
     password: &str,
     custom_game_exe: &str,
@@ -76,6 +80,15 @@ pub async fn run_samp(
             "OMP_TRACE_DUALSTACK",
             if trace_dualstack { "1" } else { "0" },
         );
+
+        if trace_dualstack
+            && !trace_remote_ip.is_empty()
+            && (1..=65535).contains(&trace_remote_port)
+        {
+            ready_for_exec = ready_for_exec
+                .env("OMP_TRACE_REMOTE_IPV6", trace_remote_ip)
+                .env("OMP_TRACE_REMOTE_PORT", trace_remote_port.to_string());
+        }
     }
 
     let process = ready_for_exec.current_dir(executable_dir).spawn();

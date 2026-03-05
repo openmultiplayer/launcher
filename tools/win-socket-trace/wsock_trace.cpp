@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstdlib>
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
@@ -25,6 +26,7 @@ struct SocketMeta {
 
 using socket_fn_t = SOCKET(WSAAPI*)(int, int, int);
 using wsasocketa_fn_t = SOCKET(WSAAPI*)(int, int, int, LPWSAPROTOCOL_INFOA, GROUP, DWORD);
+using wsasocketw_fn_t = SOCKET(WSAAPI*)(int, int, int, LPWSAPROTOCOL_INFOW, GROUP, DWORD);
 using closesocket_fn_t = int(WSAAPI*)(SOCKET);
 using connect_fn_t = int(WSAAPI*)(SOCKET, const sockaddr*, int);
 using wsaconnect_fn_t =
@@ -37,6 +39,7 @@ using getpeername_fn_t = int(WSAAPI*)(SOCKET, sockaddr*, int*);
 
 static socket_fn_t g_real_socket = nullptr;
 static wsasocketa_fn_t g_real_wsasocketa = nullptr;
+static wsasocketw_fn_t g_real_wsasocketw = nullptr;
 static closesocket_fn_t g_real_closesocket = nullptr;
 static connect_fn_t g_real_connect = nullptr;
 static wsaconnect_fn_t g_real_wsaconnect = nullptr;
@@ -55,6 +58,8 @@ static std::unordered_map<SOCKET, SocketMeta> g_socket_meta;
 
 static std::atomic<bool> g_initialized{false};
 static bool g_dualstack_enabled = false;
+static bool g_force_remote_enabled = false;
+static sockaddr_in6 g_forced_remote_addr{};
 
 static const char* family_name(int af) {
     switch (af) {
@@ -91,6 +96,31 @@ static bool get_env_bool(const char* key) {
     }
     std::transform(v.begin(), v.end(), v.begin(), [](unsigned char c) { return (char)tolower(c); });
     return v == "1" || v == "true" || v == "yes" || v == "on";
+}
+
+static bool parse_u16(const std::string& value, unsigned short* out) {
+    if (!out || value.empty()) {
+        return false;
+    }
+
+    char* end = nullptr;
+    unsigned long parsed = std::strtoul(value.c_str(), &end, 10);
+    if (end == value.c_str() || *end != '\0' || parsed > 65535) {
+        return false;
+    }
+
+    *out = static_cast<unsigned short>(parsed);
+    return true;
+}
+
+static std::string normalize_ipv6(std::string value) {
+    while (!value.empty() && value.front() == '[') {
+        value.erase(value.begin());
+    }
+    while (!value.empty() && value.back() == ']') {
+        value.pop_back();
+    }
+    return value;
 }
 
 static void ensure_directory_path(std::string path) {
@@ -331,6 +361,7 @@ static void resolve_real_functions() {
     }
     resolve_real(g_real_socket, ws2, "socket");
     resolve_real(g_real_wsasocketa, ws2, "WSASocketA");
+    resolve_real(g_real_wsasocketw, ws2, "WSASocketW");
     resolve_real(g_real_closesocket, ws2, "closesocket");
     resolve_real(g_real_connect, ws2, "connect");
     resolve_real(g_real_wsaconnect, ws2, "WSAConnect");
@@ -441,6 +472,13 @@ static SOCKET WSAAPI hook_wsasocketa(
     LPWSAPROTOCOL_INFOA info,
     GROUP group,
     DWORD flags);
+static SOCKET WSAAPI hook_wsasocketw(
+    int af,
+    int type,
+    int protocol,
+    LPWSAPROTOCOL_INFOW info,
+    GROUP group,
+    DWORD flags);
 static int WSAAPI hook_closesocket(SOCKET s);
 static int WSAAPI hook_connect(SOCKET s, const sockaddr* name, int namelen);
 static int WSAAPI hook_wsaconnect(
@@ -472,6 +510,7 @@ static int WSAAPI hook_getpeername(SOCKET s, sockaddr* name, int* namelen);
 static HookDef kHooks[] = {
     {"socket", (void*)&hook_socket, (void**)&g_real_socket},
     {"WSASocketA", (void*)&hook_wsasocketa, (void**)&g_real_wsasocketa},
+    {"WSASocketW", (void*)&hook_wsasocketw, (void**)&g_real_wsasocketw},
     {"closesocket", (void*)&hook_closesocket, (void**)&g_real_closesocket},
     {"connect", (void*)&hook_connect, (void**)&g_real_connect},
     {"WSAConnect", (void*)&hook_wsaconnect, (void**)&g_real_wsaconnect},
@@ -536,6 +575,53 @@ static SOCKET WSAAPI hook_socket(int af, int type, int protocol) {
         af,
         type,
         protocol,
+        (unsigned long long)s,
+        err,
+        forced ? 1 : 0);
+
+    if (s == INVALID_SOCKET) {
+        WSASetLastError(err);
+    }
+    return s;
+}
+
+static SOCKET WSAAPI hook_wsasocketw(
+    int af,
+    int type,
+    int protocol,
+    LPWSAPROTOCOL_INFOW info,
+    GROUP group,
+    DWORD flags) {
+    resolve_real_functions();
+    int requested_af = af;
+    bool forced = false;
+
+    if (g_dualstack_enabled && af == AF_INET) {
+        af = AF_INET6;
+        forced = true;
+    }
+
+    SOCKET s =
+        g_real_wsasocketw ? g_real_wsasocketw(af, type, protocol, info, group, flags) : INVALID_SOCKET;
+    int err = (s == INVALID_SOCKET) ? WSAGetLastError() : 0;
+
+    if (s != INVALID_SOCKET) {
+        remember_socket(s, af, forced);
+        if (forced) {
+            int off = 0;
+            setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, (const char*)&off, sizeof(off));
+        }
+    }
+
+    log_line(
+        "WSASocketW(req_af=%s/%d,real_af=%s/%d,type=%d,proto=%d,flags=0x%lx) => sock=%llu err=%d dualstack=%d",
+        family_name(requested_af),
+        requested_af,
+        family_name(af),
+        af,
+        type,
+        protocol,
+        (unsigned long)flags,
         (unsigned long long)s,
         err,
         forced ? 1 : 0);
@@ -612,22 +698,31 @@ static int WSAAPI hook_connect(SOCKET s, const sockaddr* name, int namelen) {
     int real_len = namelen;
     sockaddr_in6 mapped{};
     bool translated = false;
+    bool forced_remote = false;
 
-    if (name && name->sa_family == AF_INET && should_translate_to_v6(s)) {
-        mapped = v4_to_mapped(*reinterpret_cast<const sockaddr_in*>(name));
-        real_name = reinterpret_cast<const sockaddr*>(&mapped);
-        real_len = (int)sizeof(mapped);
-        translated = true;
+    if (should_translate_to_v6(s)) {
+        if (g_force_remote_enabled) {
+            real_name = reinterpret_cast<const sockaddr*>(&g_forced_remote_addr);
+            real_len = (int)sizeof(g_forced_remote_addr);
+            translated = true;
+            forced_remote = true;
+        } else if (name && name->sa_family == AF_INET) {
+            mapped = v4_to_mapped(*reinterpret_cast<const sockaddr_in*>(name));
+            real_name = reinterpret_cast<const sockaddr*>(&mapped);
+            real_len = (int)sizeof(mapped);
+            translated = true;
+        }
     }
 
     int rc = g_real_connect ? g_real_connect(s, real_name, real_len) : SOCKET_ERROR;
     int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
 
     log_line(
-        "connect(sock=%llu,target=%s,translated=%d) => rc=%d err=%d",
+        "connect(sock=%llu,target=%s,translated=%d,forced_remote=%d) => rc=%d err=%d",
         (unsigned long long)s,
         format_sockaddr(name, namelen).c_str(),
         translated ? 1 : 0,
+        forced_remote ? 1 : 0,
         rc,
         err);
 
@@ -651,12 +746,20 @@ static int WSAAPI hook_wsaconnect(
     int real_len = namelen;
     sockaddr_in6 mapped{};
     bool translated = false;
+    bool forced_remote = false;
 
-    if (name && name->sa_family == AF_INET && should_translate_to_v6(s)) {
-        mapped = v4_to_mapped(*reinterpret_cast<const sockaddr_in*>(name));
-        real_name = reinterpret_cast<const sockaddr*>(&mapped);
-        real_len = (int)sizeof(mapped);
-        translated = true;
+    if (should_translate_to_v6(s)) {
+        if (g_force_remote_enabled) {
+            real_name = reinterpret_cast<const sockaddr*>(&g_forced_remote_addr);
+            real_len = (int)sizeof(g_forced_remote_addr);
+            translated = true;
+            forced_remote = true;
+        } else if (name && name->sa_family == AF_INET) {
+            mapped = v4_to_mapped(*reinterpret_cast<const sockaddr_in*>(name));
+            real_name = reinterpret_cast<const sockaddr*>(&mapped);
+            real_len = (int)sizeof(mapped);
+            translated = true;
+        }
     }
 
     int rc = g_real_wsaconnect
@@ -665,10 +768,11 @@ static int WSAAPI hook_wsaconnect(
     int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
 
     log_line(
-        "WSAConnect(sock=%llu,target=%s,translated=%d) => rc=%d err=%d",
+        "WSAConnect(sock=%llu,target=%s,translated=%d,forced_remote=%d) => rc=%d err=%d",
         (unsigned long long)s,
         format_sockaddr(name, namelen).c_str(),
         translated ? 1 : 0,
+        forced_remote ? 1 : 0,
         rc,
         err);
 
@@ -723,23 +827,32 @@ static int WSAAPI hook_sendto(
     int real_tolen = tolen;
     sockaddr_in6 mapped{};
     bool translated = false;
+    bool forced_remote = false;
 
-    if (to && to->sa_family == AF_INET && should_translate_to_v6(s)) {
-        mapped = v4_to_mapped(*reinterpret_cast<const sockaddr_in*>(to));
-        real_to = reinterpret_cast<const sockaddr*>(&mapped);
-        real_tolen = (int)sizeof(mapped);
-        translated = true;
+    if (should_translate_to_v6(s)) {
+        if (g_force_remote_enabled) {
+            real_to = reinterpret_cast<const sockaddr*>(&g_forced_remote_addr);
+            real_tolen = (int)sizeof(g_forced_remote_addr);
+            translated = true;
+            forced_remote = true;
+        } else if (to && to->sa_family == AF_INET) {
+            mapped = v4_to_mapped(*reinterpret_cast<const sockaddr_in*>(to));
+            real_to = reinterpret_cast<const sockaddr*>(&mapped);
+            real_tolen = (int)sizeof(mapped);
+            translated = true;
+        }
     }
 
     int rc = g_real_sendto ? g_real_sendto(s, buf, len, flags, real_to, real_tolen) : SOCKET_ERROR;
     int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
 
     log_line(
-        "sendto(sock=%llu,len=%d,to=%s,translated=%d) => rc=%d err=%d",
+        "sendto(sock=%llu,len=%d,to=%s,translated=%d,forced_remote=%d) => rc=%d err=%d",
         (unsigned long long)s,
         len,
         format_sockaddr(to, tolen).c_str(),
         translated ? 1 : 0,
+        forced_remote ? 1 : 0,
         rc,
         err);
 
@@ -888,11 +1001,35 @@ static int WSAAPI hook_getpeername(SOCKET s, sockaddr* name, int* namelen) {
 static DWORD WINAPI init_worker(void*) {
     resolve_real_functions();
     g_dualstack_enabled = get_env_bool("OMP_TRACE_DUALSTACK");
+    g_force_remote_enabled = false;
+    std::memset(&g_forced_remote_addr, 0, sizeof(g_forced_remote_addr));
+
+    std::string remote_ipv6 = normalize_ipv6(get_env_string("OMP_TRACE_REMOTE_IPV6"));
+    std::string remote_port = get_env_string("OMP_TRACE_REMOTE_PORT");
+    unsigned short parsed_port = 0;
+    if (!remote_ipv6.empty() && parse_u16(remote_port, &parsed_port)) {
+        sockaddr_in6 forced{};
+        forced.sin6_family = AF_INET6;
+        forced.sin6_port = htons(parsed_port);
+        if (InetPtonA(AF_INET6, remote_ipv6.c_str(), &forced.sin6_addr) == 1) {
+            g_forced_remote_addr = forced;
+            g_force_remote_enabled = true;
+        }
+    }
+
     init_log_path();
 
+    std::string forced_target = g_force_remote_enabled
+        ? format_sockaddr(
+              reinterpret_cast<const sockaddr*>(&g_forced_remote_addr),
+              (int)sizeof(g_forced_remote_addr))
+        : "(disabled)";
+
     log_line(
-        "omp-socket-trace loaded; dualstack=%d; log=%s",
+        "omp-socket-trace loaded; dualstack=%d; forced_remote=%d; remote_target=%s; log=%s",
         g_dualstack_enabled ? 1 : 0,
+        g_force_remote_enabled ? 1 : 0,
+        forced_target.c_str(),
         g_log_path.c_str());
 
     DWORD loop = 0;

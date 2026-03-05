@@ -134,6 +134,8 @@ async fn handle_cli_args() -> Result<()> {
                     &format!("{}/{}", gamepath, SAMP_DLL),
                     "",
                     false,
+                    "",
+                    0,
                     omp_path,
                     &password,
                     "",

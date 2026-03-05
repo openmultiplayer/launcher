@@ -76,6 +76,9 @@ export const startGame = async (
   const resolvedAddress = (await getIpAddress(server.ip)) ?? server.ip;
   let launchAddress = resolvedAddress;
   let traceDualstack = false;
+  let traceRemoteIp = "";
+  let traceRemotePort = 0;
+  let injectAddress = launchAddress;
 
   if (resolvedAddress && isIPv6(resolvedAddress)) {
     const normalizedIPv6 = normalizeIPv6(resolvedAddress);
@@ -255,20 +258,69 @@ export const startGame = async (
       : file
       ? await getLocalPath(file.path, file.name)
       : idealSAMPDllPath;
-  const traceDllPath = await getLocalPath("omp", "omp-socket-trace.dll");
-  const traceFile = (await fs.exists(traceDllPath)) ? traceDllPath : "";
+  const traceCandidates: string[] = [
+    await getLocalPath("omp", "omp-socket-trace.dll"),
+    await path.join(gtasaPath, "omp-socket-trace.dll"),
+  ];
+
+  try {
+    const launcherDir = await path.executableDir();
+    traceCandidates.push(await path.join(launcherDir, "omp-socket-trace.dll"));
+  } catch (error) {
+    Log.warn(
+      "[startGame] Failed to resolve launcher directory for trace DLL lookup:",
+      error
+    );
+  }
+
+  let traceFile = "";
+  for (const candidate of traceCandidates) {
+    if (await fs.exists(candidate)) {
+      traceFile = candidate;
+      break;
+    }
+  }
+
   if (!traceFile.length) {
     traceDualstack = false;
+
+    if (launchAddress && isIPv6(launchAddress)) {
+      const fallbackIPv4 = await getIpAddress(server.ip, "ipv4");
+      if (fallbackIPv4 && !isIPv6(fallbackIPv4)) {
+        Log.warn(
+          `[startGame] IPv6 launch requires omp-socket-trace.dll; falling back to IPv4 ${fallbackIPv4}`
+        );
+        launchAddress = fallbackIPv4;
+      } else {
+        showOkModal(
+          "IPv6 compatibility layer missing",
+          "omp-socket-trace.dll was not found, and no IPv4 fallback address is available for this server."
+        );
+        showPrompt(true);
+        setServer(server);
+        return;
+      }
+    }
+  }
+
+  if (launchAddress && isIPv6(launchAddress) && traceDualstack && traceFile.length) {
+    traceRemoteIp = normalizeIPv6(launchAddress);
+    traceRemotePort = server.port;
+    injectAddress = "127.0.0.1";
+  } else {
+    injectAddress = launchAddress;
   }
 
   invoke("inject", {
     name: nickname,
-    ip: launchAddress,
+    ip: injectAddress,
     port: server.port,
     exe: gtasaPath,
     dll: ourSAMPDllPath,
     traceFile,
     traceDualstack,
+    traceRemoteIp,
+    traceRemotePort,
     ompFile: await getLocalPath("omp", "omp-client.dll"),
     password,
     customGameExe,
