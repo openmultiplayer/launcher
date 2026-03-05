@@ -34,6 +34,16 @@ using wsaconnect_fn_t =
 using bind_fn_t = int(WSAAPI*)(SOCKET, const sockaddr*, int);
 using sendto_fn_t = int(WSAAPI*)(SOCKET, const char*, int, int, const sockaddr*, int);
 using recvfrom_fn_t = int(WSAAPI*)(SOCKET, char*, int, int, sockaddr*, int*);
+using wsarecvfrom_fn_t = int(WSAAPI*)(
+    SOCKET,
+    LPWSABUF,
+    DWORD,
+    LPDWORD,
+    LPDWORD,
+    sockaddr*,
+    LPINT,
+    LPWSAOVERLAPPED,
+    LPWSAOVERLAPPED_COMPLETION_ROUTINE);
 using getsockname_fn_t = int(WSAAPI*)(SOCKET, sockaddr*, int*);
 using getpeername_fn_t = int(WSAAPI*)(SOCKET, sockaddr*, int*);
 using getprocaddress_fn_t = FARPROC(WINAPI*)(HMODULE, LPCSTR);
@@ -48,6 +58,7 @@ static wsaconnect_fn_t g_real_wsaconnect = nullptr;
 static bind_fn_t g_real_bind = nullptr;
 static sendto_fn_t g_real_sendto = nullptr;
 static recvfrom_fn_t g_real_recvfrom = nullptr;
+static wsarecvfrom_fn_t g_real_wsarecvfrom = nullptr;
 static getsockname_fn_t g_real_getsockname = nullptr;
 static getpeername_fn_t g_real_getpeername = nullptr;
 static getprocaddress_fn_t g_real_getprocaddress = nullptr;
@@ -508,6 +519,7 @@ static void resolve_real_functions() {
     resolve_real(g_real_bind, ws2, "bind");
     resolve_real(g_real_sendto, ws2, "sendto");
     resolve_real(g_real_recvfrom, ws2, "recvfrom");
+    resolve_real(g_real_wsarecvfrom, ws2, "WSARecvFrom");
     resolve_real(g_real_getsockname, ws2, "getsockname");
     resolve_real(g_real_getpeername, ws2, "getpeername");
 }
@@ -647,6 +659,16 @@ static int WSAAPI hook_recvfrom(
     int flags,
     sockaddr* from,
     int* fromlen);
+static int WSAAPI hook_wsarecvfrom(
+    SOCKET s,
+    LPWSABUF buffers,
+    DWORD buffer_count,
+    LPDWORD bytes_received,
+    LPDWORD flags,
+    sockaddr* from,
+    LPINT fromlen,
+    LPWSAOVERLAPPED overlapped,
+    LPWSAOVERLAPPED_COMPLETION_ROUTINE completion_routine);
 static int WSAAPI hook_getsockname(SOCKET s, sockaddr* name, int* namelen);
 static int WSAAPI hook_getpeername(SOCKET s, sockaddr* name, int* namelen);
 static FARPROC WINAPI hook_getprocaddress(HMODULE mod, LPCSTR proc_name);
@@ -661,6 +683,7 @@ static HookDef kSocketHooks[] = {
     {"bind", (void*)&hook_bind, (void**)&g_real_bind},
     {"sendto", (void*)&hook_sendto, (void**)&g_real_sendto},
     {"recvfrom", (void*)&hook_recvfrom, (void**)&g_real_recvfrom},
+    {"WSARecvFrom", (void*)&hook_wsarecvfrom, (void**)&g_real_wsarecvfrom},
     {"getsockname", (void*)&hook_getsockname, (void**)&g_real_getsockname},
     {"getpeername", (void*)&hook_getpeername, (void**)&g_real_getpeername},
 };
@@ -1113,6 +1136,87 @@ static int WSAAPI hook_recvfrom(
         "recvfrom(sock=%llu,len=%d,raw_from=%s,translated=%d) => rc=%d err=%d",
         (unsigned long long)s,
         len,
+        format_sockaddr(reinterpret_cast<sockaddr*>(&tmp), tmp_len).c_str(),
+        1,
+        rc,
+        err);
+
+    if (rc == SOCKET_ERROR) {
+        WSASetLastError(err);
+    }
+    return rc;
+}
+
+static int WSAAPI hook_wsarecvfrom(
+    SOCKET s,
+    LPWSABUF buffers,
+    DWORD buffer_count,
+    LPDWORD bytes_received,
+    LPDWORD flags,
+    sockaddr* from,
+    LPINT fromlen,
+    LPWSAOVERLAPPED overlapped,
+    LPWSAOVERLAPPED_COMPLETION_ROUTINE completion_routine) {
+    resolve_real_functions();
+
+    const bool translate_back = should_translate_to_v6(s) && from && fromlen && *fromlen > 0;
+    if (!translate_back || overlapped || completion_routine) {
+        int rc = g_real_wsarecvfrom
+            ? g_real_wsarecvfrom(
+                  s,
+                  buffers,
+                  buffer_count,
+                  bytes_received,
+                  flags,
+                  from,
+                  fromlen,
+                  overlapped,
+                  completion_routine)
+            : SOCKET_ERROR;
+        int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
+        log_line(
+            "WSARecvFrom(sock=%llu,buffers=%lu,overlapped=%d,translated=%d) => rc=%d err=%d from=%s",
+            (unsigned long long)s,
+            (unsigned long)buffer_count,
+            overlapped ? 1 : 0,
+            0,
+            rc,
+            err,
+            from && fromlen ? format_sockaddr(from, *fromlen).c_str() : "(null)");
+        if (rc == SOCKET_ERROR) {
+            WSASetLastError(err);
+        }
+        return rc;
+    }
+
+    sockaddr_storage tmp{};
+    int tmp_len = sizeof(tmp);
+    int rc = g_real_wsarecvfrom
+        ? g_real_wsarecvfrom(
+              s,
+              buffers,
+              buffer_count,
+              bytes_received,
+              flags,
+              reinterpret_cast<sockaddr*>(&tmp),
+              &tmp_len,
+              overlapped,
+              completion_routine)
+        : SOCKET_ERROR;
+    int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
+
+    if (rc != SOCKET_ERROR) {
+        copy_or_translate_addr(tmp, tmp_len, from, fromlen, true);
+    }
+
+    DWORD received_value = bytes_received ? *bytes_received : 0;
+    DWORD flags_value = flags ? *flags : 0;
+    log_line(
+        "WSARecvFrom(sock=%llu,buffers=%lu,bytes=%lu,flags=0x%lx,raw_from=%s,translated=%d) => rc=%d err=%d",
+        (unsigned long long)s,
+        (unsigned long)buffer_count,
+        (unsigned long)received_value,
+        (unsigned long)flags_value,
         format_sockaddr(reinterpret_cast<sockaddr*>(&tmp), tmp_len).c_str(),
         1,
         rc,
