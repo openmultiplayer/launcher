@@ -17,7 +17,12 @@ import {
   Server,
   SortType,
 } from "./types";
-import { parseServerAddress, validateServerAddress } from "./validation";
+import {
+  isIPv4,
+  isIPv6,
+  parseServerAddress,
+  validateServerAddress,
+} from "./validation";
 
 // Server update configuration
 const SERVER_UPDATE_CONFIG = {
@@ -190,20 +195,32 @@ export const fetchUpdateInfo = async () => {
 // This provides better separation of concerns and reusability
 
 export const getIpAddress = async (
-  hostname: string
+  hostname: string,
+  family?: "ipv4" | "ipv6"
 ): Promise<string | null> => {
   if (!hostname || typeof hostname !== "string") {
     Log.warn("Invalid hostname provided to getIpAddress:", hostname);
     return null;
   }
 
-  // Use validation function from validation.ts
-  if (validateServerAddress(hostname)) {
+  const literalIPv4 = isIPv4(hostname);
+  const literalIPv6 = isIPv6(hostname);
+  const literalLocalhost = hostname === "localhost";
+
+  if (literalIPv4 || literalIPv6 || literalLocalhost) {
+    if (!family) return hostname;
+    if (family === "ipv4" && literalIPv6) return null;
+    if (family === "ipv6" && (literalIPv4 || literalLocalhost)) return null;
     return hostname;
   }
 
+  if (!validateServerAddress(hostname)) {
+    Log.warn("Invalid server address provided to getIpAddress:", hostname);
+    return null;
+  }
+
   try {
-    const ip = await invoke<string>("resolve_hostname", { hostname });
+    const ip = await invoke<string>("resolve_hostname", { hostname, family });
     Log.debug(`Resolved ${hostname} to ${ip}`);
     return ip;
   } catch (error) {

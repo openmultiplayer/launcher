@@ -18,6 +18,7 @@ pub async fn run_samp(
     _executable_dir: &str,
     _dll_path: &str,
     _trace_file: &str,
+    _trace_dualstack: bool,
     _omp_file: &str,
     _password: &str,
     _custom_game_exe: &str,
@@ -33,6 +34,7 @@ pub async fn run_samp(
     executable_dir: &str,
     dll_path: &str,
     trace_file: &str,
+    trace_dualstack: bool,
     omp_file: &str,
     password: &str,
     custom_game_exe: &str,
@@ -67,6 +69,13 @@ pub async fn run_samp(
 
     if !password.is_empty() {
         ready_for_exec = ready_for_exec.arg("-z").arg(password);
+    }
+
+    if !trace_file.is_empty() {
+        ready_for_exec = ready_for_exec.env(
+            "OMP_TRACE_DUALSTACK",
+            if trace_dualstack { "1" } else { "0" },
+        );
     }
 
     let process = ready_for_exec.current_dir(executable_dir).spawn();

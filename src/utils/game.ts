@@ -74,10 +74,43 @@ export const startGame = async (
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
   const { setSelected } = useServers.getState();
   const resolvedAddress = (await getIpAddress(server.ip)) ?? server.ip;
+  let launchAddress = resolvedAddress;
+  let traceDualstack = false;
+
+  if (resolvedAddress && isIPv6(resolvedAddress)) {
+    const normalizedIPv6 = normalizeIPv6(resolvedAddress);
+    let ipv6ProbeOk = false;
+
+    try {
+      ipv6ProbeOk = await invoke<boolean>("probe_ipv6_query", {
+        host: normalizedIPv6,
+        port: server.port,
+      });
+      traceDualstack = ipv6ProbeOk;
+    } catch (error) {
+      Log.warn("[startGame] IPv6 probe failed unexpectedly:", error);
+    }
+
+    if (!ipv6ProbeOk) {
+      const fallbackIPv4 = await getIpAddress(server.ip, "ipv4");
+      if (fallbackIPv4 && !isIPv6(fallbackIPv4)) {
+        launchAddress = fallbackIPv4;
+        traceDualstack = false;
+        Log.warn(
+          `[startGame] IPv6 probe failed for ${normalizedIPv6}:${server.port}, falling back to IPv4 ${fallbackIPv4}`
+        );
+      } else {
+        Log.warn(
+          `[startGame] IPv6 probe failed for ${normalizedIPv6}:${server.port} and no IPv4 fallback was found`
+        );
+      }
+    }
+  }
+
   const connectAddress =
-    resolvedAddress && isIPv6(resolvedAddress)
-      ? `[${normalizeIPv6(resolvedAddress)}]`
-      : resolvedAddress;
+    launchAddress && isIPv6(launchAddress)
+      ? `[${normalizeIPv6(launchAddress)}]`
+      : launchAddress;
 
   if (IN_GAME) {
     invoke("send_message_to_game", {
@@ -224,14 +257,18 @@ export const startGame = async (
       : idealSAMPDllPath;
   const traceDllPath = await getLocalPath("omp", "omp-socket-trace.dll");
   const traceFile = (await fs.exists(traceDllPath)) ? traceDllPath : "";
+  if (!traceFile.length) {
+    traceDualstack = false;
+  }
 
   invoke("inject", {
     name: nickname,
-    ip: resolvedAddress,
+    ip: launchAddress,
     port: server.port,
     exe: gtasaPath,
     dll: ourSAMPDllPath,
     traceFile,
+    traceDualstack,
     ompFile: await getLocalPath("omp", "omp-client.dll"),
     password,
     customGameExe,
