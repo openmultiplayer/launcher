@@ -49,11 +49,15 @@ const stageTraceRuntimeIntoGameDir = async (
 
   const traceSourceDir = await path.dirname(traceSource);
   const runtimeSource = await path.join(traceSourceDir, "libwinpthread-1.dll");
-  if (await fs.exists(runtimeSource)) {
-    const runtimeTarget = await path.join(gtasaPath, "libwinpthread-1.dll");
-    if (runtimeSource !== runtimeTarget) {
-      await copyFile(runtimeSource, runtimeTarget);
-    }
+  if (!(await fs.exists(runtimeSource))) {
+    throw new Error(
+      `Missing trace runtime dependency next to omp-socket-trace.dll: ${runtimeSource}`
+    );
+  }
+
+  const runtimeTarget = await path.join(gtasaPath, "libwinpthread-1.dll");
+  if (runtimeSource !== runtimeTarget) {
+    await copyFile(runtimeSource, runtimeTarget);
   }
 
   return traceTarget;
@@ -310,7 +314,7 @@ export const startGame = async (
       }
     } catch (error) {
       Log.warn(
-        "[startGame] Failed to stage optional trace runtime into GTA directory:",
+        "[startGame] Failed to stage optional trace runtime into GTA directory. The trace shim requires omp-socket-trace.dll and libwinpthread-1.dll in the launcher directory:",
         error
       );
       traceFile = "";

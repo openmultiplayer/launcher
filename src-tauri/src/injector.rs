@@ -15,6 +15,19 @@ fn inject_optional_dll(child: u32, dll_path: &str) -> Result<()> {
     inject_dll(child, dll_path, INJECTION_MAX_RETRIES, true)
 }
 
+#[cfg(target_os = "windows")]
+fn format_injection_error_message(error: &impl std::fmt::Display) -> String {
+    let raw = error.to_string();
+    if raw.contains("os error 126") || raw.contains("The specified module could not be found") {
+        format!(
+            "{} (the target process could not load the DLL or one of its dependencies)",
+            raw
+        )
+    } else {
+        raw
+    }
+}
+
 #[cfg(not(target_os = "windows"))]
 pub async fn run_samp(
     _name: &str,
@@ -102,9 +115,10 @@ pub async fn run_samp(
         Ok(p) => {
             if !trace_file.is_empty() {
                 if let Err(e) = inject_optional_dll(p.id(), trace_file) {
+                    let error_text = format_injection_error_message(&e);
                     info!(
                         "[run_samp] optional trace DLL injection failed for {}: {}",
-                        trace_file, e
+                        trace_file, error_text
                     );
                 }
             }
@@ -202,13 +216,14 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
             match syringe.inject(dll_path) {
                 Ok(_) => Ok(()),
                 Err(e) => {
+                    let error_text = format_injection_error_message(&e);
                     let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
                     std::thread::sleep(delay);
 
                     if times >= INJECTION_MAX_RETRIES {
                         info!(
                             "[injector.rs] DLL {} injection failed after {} attempts: {}",
-                            dll_path, INJECTION_MAX_RETRIES, e
+                            dll_path, INJECTION_MAX_RETRIES, error_text
                         );
 
                         if !waiting_for_vorbis {
@@ -216,7 +231,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                         }
                         return Err(LauncherError::Injection(format!(
                             "DLL injection failed: {}",
-                            e
+                            error_text
                         )));
                     }
 
