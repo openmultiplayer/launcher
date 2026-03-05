@@ -317,6 +317,25 @@ static bool is_v4_mapped(const sockaddr_in6& in6) {
     return b[10] == 0xff && b[11] == 0xff;
 }
 
+static bool is_v4_any(const sockaddr_in& in4) {
+    return in4.sin_addr.s_addr == htonl(INADDR_ANY);
+}
+
+static bool is_v4_loopback(const sockaddr_in& in4) {
+    return ntohl(in4.sin_addr.s_addr) == INADDR_LOOPBACK;
+}
+
+static bool is_v6_any(const in6_addr& in6) {
+    static const unsigned char kZero[16] = {0};
+    return memcmp(&in6, kZero, sizeof(kZero)) == 0;
+}
+
+static bool is_v6_loopback(const in6_addr& in6) {
+    static const unsigned char kLoopback[16] = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+    return memcmp(&in6, kLoopback, sizeof(kLoopback)) == 0;
+}
+
 static sockaddr_in6 v4_to_mapped(const sockaddr_in& in4) {
     sockaddr_in6 out{};
     out.sin6_family = AF_INET6;
@@ -326,6 +345,24 @@ static sockaddr_in6 v4_to_mapped(const sockaddr_in& in4) {
     b[11] = 0xff;
     memcpy(&b[12], &in4.sin_addr, 4);
     return out;
+}
+
+static sockaddr_in6 v4_bind_to_v6(const sockaddr_in& in4) {
+    sockaddr_in6 out{};
+    out.sin6_family = AF_INET6;
+    out.sin6_port = in4.sin_port;
+
+    if (is_v4_any(in4)) {
+        return out;
+    }
+
+    if (is_v4_loopback(in4)) {
+        unsigned char* b = reinterpret_cast<unsigned char*>(&out.sin6_addr);
+        b[15] = 1;
+        return out;
+    }
+
+    return v4_to_mapped(in4);
 }
 
 static bool mapped_to_v4(const sockaddr_in6& in6, sockaddr_in* out4) {
@@ -339,6 +376,33 @@ static bool mapped_to_v4(const sockaddr_in6& in6, sockaddr_in* out4) {
     memcpy(&out.sin_addr, &b[12], 4);
     *out4 = out;
     return true;
+}
+
+static bool native_v6_to_v4_compat(
+    const sockaddr_in6& in6,
+    sockaddr_in* out4,
+    bool peer_addr) {
+    if (!out4) {
+        return false;
+    }
+
+    sockaddr_in out{};
+    out.sin_family = AF_INET;
+    out.sin_port = in6.sin6_port;
+
+    if (is_v6_any(in6.sin6_addr)) {
+        out.sin_addr.s_addr = htonl(INADDR_ANY);
+        *out4 = out;
+        return true;
+    }
+
+    if (is_v6_loopback(in6.sin6_addr) || (peer_addr && g_force_remote_enabled)) {
+        out.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        *out4 = out;
+        return true;
+    }
+
+    return false;
 }
 
 static void remember_socket(SOCKET s, int family, bool forced_dualstack) {
@@ -371,7 +435,12 @@ static bool should_translate_to_v6(SOCKET s) {
     return g_dualstack_enabled && get_socket_meta(s, &m) && m.forced_dualstack;
 }
 
-static bool copy_or_translate_addr(const sockaddr_storage& src, int src_len, sockaddr* dst, int* dst_len) {
+static bool copy_or_translate_addr(
+    const sockaddr_storage& src,
+    int src_len,
+    sockaddr* dst,
+    int* dst_len,
+    bool peer_addr) {
     if (!dst || !dst_len || *dst_len <= 0) {
         return false;
     }
@@ -379,7 +448,8 @@ static bool copy_or_translate_addr(const sockaddr_storage& src, int src_len, soc
     if (src.ss_family == AF_INET6 && src_len >= (int)sizeof(sockaddr_in6) &&
         *dst_len >= (int)sizeof(sockaddr_in)) {
         sockaddr_in out4{};
-        if (mapped_to_v4(*reinterpret_cast<const sockaddr_in6*>(&src), &out4)) {
+        const sockaddr_in6& in6 = *reinterpret_cast<const sockaddr_in6*>(&src);
+        if (mapped_to_v4(in6, &out4) || native_v6_to_v4_compat(in6, &out4, peer_addr)) {
             memcpy(dst, &out4, sizeof(out4));
             *dst_len = (int)sizeof(out4);
             return true;
@@ -927,13 +997,13 @@ static int WSAAPI hook_bind(SOCKET s, const sockaddr* name, int namelen) {
 
     const sockaddr* real_name = name;
     int real_len = namelen;
-    sockaddr_in6 mapped{};
+    sockaddr_in6 translated_addr{};
     bool translated = false;
 
     if (name && name->sa_family == AF_INET && should_translate_to_v6(s)) {
-        mapped = v4_to_mapped(*reinterpret_cast<const sockaddr_in*>(name));
-        real_name = reinterpret_cast<const sockaddr*>(&mapped);
-        real_len = (int)sizeof(mapped);
+        translated_addr = v4_bind_to_v6(*reinterpret_cast<const sockaddr_in*>(name));
+        real_name = reinterpret_cast<const sockaddr*>(&translated_addr);
+        real_len = (int)sizeof(translated_addr);
         translated = true;
     }
 
@@ -1036,7 +1106,7 @@ static int WSAAPI hook_recvfrom(
     int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
 
     if (rc != SOCKET_ERROR) {
-        copy_or_translate_addr(tmp, tmp_len, from, fromlen);
+        copy_or_translate_addr(tmp, tmp_len, from, fromlen, true);
     }
 
     log_line(
@@ -1080,7 +1150,7 @@ static int WSAAPI hook_getsockname(SOCKET s, sockaddr* name, int* namelen) {
         : SOCKET_ERROR;
     int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
     if (rc != SOCKET_ERROR) {
-        copy_or_translate_addr(tmp, tmp_len, name, namelen);
+        copy_or_translate_addr(tmp, tmp_len, name, namelen, false);
     }
 
     log_line(
@@ -1122,7 +1192,7 @@ static int WSAAPI hook_getpeername(SOCKET s, sockaddr* name, int* namelen) {
         : SOCKET_ERROR;
     int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
     if (rc != SOCKET_ERROR) {
-        copy_or_translate_addr(tmp, tmp_len, name, namelen);
+        copy_or_translate_addr(tmp, tmp_len, name, namelen, true);
     }
 
     log_line(
