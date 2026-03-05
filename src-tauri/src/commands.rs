@@ -86,6 +86,21 @@ pub fn rerun_as_admin() -> std::result::Result<String, String> {
 }
 
 #[tauri::command]
+pub fn get_launcher_directory() -> std::result::Result<String, String> {
+    let exe_path = std::env::current_exe()
+        .map_err(|e| format!("Failed to get current executable path: {}", e))?;
+
+    let launcher_dir = exe_path
+        .parent()
+        .ok_or_else(|| "Failed to determine launcher directory".to_string())?;
+
+    launcher_dir
+        .to_str()
+        .map(|path| path.to_string())
+        .ok_or_else(|| "Launcher directory contains invalid UTF-8".to_string())
+}
+
+#[tauri::command]
 pub fn get_samp_favorite_list() -> String {
     samp::get_samp_favorite_list()
 }

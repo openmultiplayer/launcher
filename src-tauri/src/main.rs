@@ -172,6 +172,7 @@ async fn run_tauri_app() -> Result<()> {
             commands::inject,
             commands::get_gtasa_path_from_samp,
             commands::get_nickname_from_samp,
+            commands::get_launcher_directory,
             commands::get_samp_favorite_list,
             commands::rerun_as_admin,
             commands::resolve_hostname,

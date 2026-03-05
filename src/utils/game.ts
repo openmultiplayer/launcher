@@ -33,6 +33,11 @@ const showOkModal = (title: string, description: string) => {
 const getLocalPath = async (...segments: string[]) =>
   path.join(await path.appLocalDataDir(), ...segments);
 
+const getLauncherTracePath = async (): Promise<string> => {
+  const launcherDir = await invoke<string>("get_launcher_directory");
+  return path.join(launcherDir, "omp-socket-trace.dll");
+};
+
 const stageTraceRuntimeIntoGameDir = async (
   gtasaPath: string,
   traceSource: string
@@ -279,17 +284,19 @@ export const startGame = async (
       : file
       ? await getLocalPath(file.path, file.name)
       : idealSAMPDllPath;
-  const traceCandidates: string[] = [
-    await getLocalPath("omp", "omp-socket-trace.dll"),
-    await path.join(gtasaPath, "omp-socket-trace.dll"),
-  ];
-
   let traceFile = "";
-  for (const candidate of traceCandidates) {
-    if (await fs.exists(candidate)) {
-      traceFile = candidate;
-      break;
+
+  try {
+    const launcherTracePath = await getLauncherTracePath();
+    if (await fs.exists(launcherTracePath)) {
+      traceFile = launcherTracePath;
+    } else if (launchAddress && isIPv6(launchAddress)) {
+      Log.warn(
+        `[startGame] omp-socket-trace.dll not found in launcher directory: ${launcherTracePath}`
+      );
     }
+  } catch (error) {
+    Log.warn("[startGame] Failed to resolve launcher directory for trace DLL lookup:", error);
   }
 
   if (traceFile.length) {
@@ -322,9 +329,18 @@ export const startGame = async (
         );
         launchAddress = fallbackIPv4;
       } else {
+        let launcherTracePath = "launcher.exe directory";
+        try {
+          launcherTracePath = await getLauncherTracePath();
+        } catch (error) {
+          Log.warn(
+            "[startGame] Failed to resolve launcher directory while preparing IPv6 compat error:",
+            error
+          );
+        }
         showOkModal(
           "IPv6 compatibility layer missing",
-          "omp-socket-trace.dll was not found, and no IPv4 fallback address is available for this server."
+          `omp-socket-trace.dll is missing or unusable at ${launcherTracePath}, and no IPv4 fallback address is available for this server.`
         );
         showPrompt(true);
         setServer(server);
