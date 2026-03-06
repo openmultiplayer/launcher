@@ -16,6 +16,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace {
 
@@ -81,6 +82,8 @@ static std::string g_log_path;
 
 static std::mutex g_socket_mutex;
 static std::unordered_map<SOCKET, SocketMeta> g_socket_meta;
+static std::mutex g_patch_log_mutex;
+static std::unordered_set<std::string> g_patch_log_seen;
 
 static std::atomic<bool> g_initialized{false};
 static bool g_dualstack_enabled = false;
@@ -592,6 +595,38 @@ static void resolve_real_functions() {
     resolve_real(g_real_getpeername, ws2, "getpeername");
 }
 
+static void log_patch_once(
+    HMODULE mod,
+    const char* import_name,
+    const char* func_name,
+    bool by_ordinal) {
+    if (!import_name || !func_name) {
+        return;
+    }
+
+    std::string module_name = module_name_for_handle(mod);
+    std::string key = module_name;
+    key.append("|");
+    key.append(import_name);
+    key.append("|");
+    key.append(func_name);
+    key.append(by_ordinal ? "|ord" : "|name");
+
+    {
+        std::lock_guard<std::mutex> lock(g_patch_log_mutex);
+        if (!g_patch_log_seen.insert(key).second) {
+            return;
+        }
+    }
+
+    log_line(
+        "hook-patch module=%s import=%s symbol=%s mode=%s",
+        module_name.c_str(),
+        import_name,
+        func_name,
+        by_ordinal ? "ordinal" : "name");
+}
+
 static bool patch_iat_for_module(
     HMODULE mod,
     const char* import_name,
@@ -627,16 +662,41 @@ static bool patch_iat_for_module(
             continue;
         }
 
+        void* import_symbol = nullptr;
+        HMODULE import_module = GetModuleHandleA(dll);
+        if (import_module) {
+            FARPROC proc =
+                g_real_getprocaddress ? g_real_getprocaddress(import_module, func_name)
+                                      : ::GetProcAddress(import_module, func_name);
+            import_symbol = reinterpret_cast<void*>(proc);
+            if (original_store && *original_store == nullptr && import_symbol) {
+                *original_store = import_symbol;
+            }
+        }
+
         auto* thunk = reinterpret_cast<IMAGE_THUNK_DATA*>(base + imp->FirstThunk);
         auto* orig = reinterpret_cast<IMAGE_THUNK_DATA*>(
             base + (imp->OriginalFirstThunk ? imp->OriginalFirstThunk : imp->FirstThunk));
 
         for (; orig->u1.AddressOfData; ++orig, ++thunk) {
             auto current = reinterpret_cast<void*>((uintptr_t)thunk->u1.Function);
+            bool matched_by_ordinal = false;
             if (IMAGE_SNAP_BY_ORDINAL(orig->u1.Ordinal)) {
-                if (!original_store || *original_store == nullptr || current != *original_store) {
+                if (current == replacement) {
                     continue;
                 }
+
+                bool ordinal_match = false;
+                if (original_store && *original_store != nullptr && current == *original_store) {
+                    ordinal_match = true;
+                } else if (import_symbol && current == import_symbol) {
+                    ordinal_match = true;
+                }
+
+                if (!ordinal_match) {
+                    continue;
+                }
+                matched_by_ordinal = true;
             } else {
                 auto* by_name =
                     reinterpret_cast<IMAGE_IMPORT_BY_NAME*>(base + orig->u1.AddressOfData);
@@ -675,6 +735,7 @@ static bool patch_iat_for_module(
                 &thunk->u1.Function,
                 sizeof(thunk->u1.Function));
             patched = true;
+            log_patch_once(mod, dll, func_name, matched_by_ordinal);
         }
     }
 
