@@ -36,6 +36,7 @@ using bind_fn_t = int(WSAAPI*)(SOCKET, const sockaddr*, int);
 using sendto_fn_t = int(WSAAPI*)(SOCKET, const char*, int, int, const sockaddr*, int);
 using recv_fn_t = int(WSAAPI*)(SOCKET, char*, int, int);
 using recvfrom_fn_t = int(WSAAPI*)(SOCKET, char*, int, int, sockaddr*, int*);
+using wsarecvex_fn_t = int(WSAAPI*)(SOCKET, char*, int, int*);
 using wsarecv_fn_t = int(WSAAPI*)(
     SOCKET,
     LPWSABUF,
@@ -69,6 +70,7 @@ static bind_fn_t g_real_bind = nullptr;
 static sendto_fn_t g_real_sendto = nullptr;
 static recv_fn_t g_real_recv = nullptr;
 static recvfrom_fn_t g_real_recvfrom = nullptr;
+static wsarecvex_fn_t g_real_wsarecvex = nullptr;
 static wsarecv_fn_t g_real_wsarecv = nullptr;
 static wsarecvfrom_fn_t g_real_wsarecvfrom = nullptr;
 static getsockname_fn_t g_real_getsockname = nullptr;
@@ -384,7 +386,8 @@ static bool module_name_equals(HMODULE mod, const char* expected) {
 }
 
 static bool is_ws2_family_module(HMODULE mod) {
-    return module_name_equals(mod, "ws2_32.dll") || module_name_equals(mod, "wsock32.dll");
+    return module_name_equals(mod, "ws2_32.dll") || module_name_equals(mod, "wsock32.dll") ||
+           module_name_equals(mod, "mswsock.dll");
 }
 
 static bool is_v4_mapped(const sockaddr_in6& in6) {
@@ -579,6 +582,10 @@ static void resolve_real_functions() {
     if (!ws2) {
         ws2 = g_real_loadlibrarya ? g_real_loadlibrarya("ws2_32.dll") : LoadLibraryA("ws2_32.dll");
     }
+    HMODULE mswsock = GetModuleHandleA("mswsock.dll");
+    if (!mswsock) {
+        mswsock = g_real_loadlibrarya ? g_real_loadlibrarya("mswsock.dll") : LoadLibraryA("mswsock.dll");
+    }
     resolve_real(g_real_socket, ws2, "socket");
     resolve_real(g_real_wsasocketa, ws2, "WSASocketA");
     resolve_real(g_real_wsasocketw, ws2, "WSASocketW");
@@ -589,6 +596,7 @@ static void resolve_real_functions() {
     resolve_real(g_real_sendto, ws2, "sendto");
     resolve_real(g_real_recv, ws2, "recv");
     resolve_real(g_real_recvfrom, ws2, "recvfrom");
+    resolve_real(g_real_wsarecvex, mswsock, "WSARecvEx");
     resolve_real(g_real_wsarecv, ws2, "WSARecv");
     resolve_real(g_real_wsarecvfrom, ws2, "WSARecvFrom");
     resolve_real(g_real_getsockname, ws2, "getsockname");
@@ -807,6 +815,7 @@ static int WSAAPI hook_wsarecvfrom(
     LPINT fromlen,
     LPWSAOVERLAPPED overlapped,
     LPWSAOVERLAPPED_COMPLETION_ROUTINE completion_routine);
+static int WSAAPI hook_wsarecvex(SOCKET s, char* buf, int len, int* flags);
 static int WSAAPI hook_getsockname(SOCKET s, sockaddr* name, int* namelen);
 static int WSAAPI hook_getpeername(SOCKET s, sockaddr* name, int* namelen);
 static FARPROC WINAPI hook_getprocaddress(HMODULE mod, LPCSTR proc_name);
@@ -822,6 +831,7 @@ static HookDef kSocketHooks[] = {
     {"sendto", (void*)&hook_sendto, (void**)&g_real_sendto},
     {"recv", (void*)&hook_recv, (void**)&g_real_recv},
     {"recvfrom", (void*)&hook_recvfrom, (void**)&g_real_recvfrom},
+    {"WSARecvEx", (void*)&hook_wsarecvex, (void**)&g_real_wsarecvex},
     {"WSARecv", (void*)&hook_wsarecv, (void**)&g_real_wsarecv},
     {"WSARecvFrom", (void*)&hook_wsarecvfrom, (void**)&g_real_wsarecvfrom},
     {"getsockname", (void*)&hook_getsockname, (void**)&g_real_getsockname},
@@ -851,6 +861,9 @@ static void apply_hooks_for_module(HMODULE mod) {
         patch_iat_for_module(mod, "WS2_32.dll", hook.symbol, hook.replacement, hook.original);
         patch_iat_for_module(mod, "wsock32.dll", hook.symbol, hook.replacement, hook.original);
         patch_iat_for_module(mod, "WSOCK32.dll", hook.symbol, hook.replacement, hook.original);
+        patch_iat_for_module(mod, "mswsock.dll", hook.symbol, hook.replacement, hook.original);
+        patch_iat_for_module(mod, "MSWSOCK.dll", hook.symbol, hook.replacement, hook.original);
+        patch_iat_for_module(mod, "MSWSOCK.DLL", hook.symbol, hook.replacement, hook.original);
     }
 
     if (mod == g_self_module) {
@@ -1302,6 +1315,31 @@ static int WSAAPI hook_recvfrom(
         len,
         format_sockaddr(reinterpret_cast<sockaddr*>(&tmp), tmp_len).c_str(),
         1,
+        rc != SOCKET_ERROR ? format_buffer_prefix(buf, static_cast<size_t>(rc)).c_str() : "-",
+        rc,
+        err);
+
+    if (rc == SOCKET_ERROR) {
+        WSASetLastError(err);
+    }
+    return rc;
+}
+
+static int WSAAPI hook_wsarecvex(SOCKET s, char* buf, int len, int* flags) {
+    resolve_real_functions();
+
+    int flags_before = flags ? *flags : 0;
+    int rc = g_real_wsarecvex ? g_real_wsarecvex(s, buf, len, flags) : SOCKET_ERROR;
+    int err = (rc == SOCKET_ERROR) ? WSAGetLastError() : 0;
+    int flags_after = flags ? *flags : flags_before;
+
+    log_line(
+        "WSARecvEx(sock=%llu,len=%d,flags_before=0x%x,flags_after=0x%x,dualstack=%d,data=%s) => rc=%d err=%d",
+        (unsigned long long)s,
+        len,
+        flags_before,
+        flags_after,
+        should_translate_to_v6(s) ? 1 : 0,
         rc != SOCKET_ERROR ? format_buffer_prefix(buf, static_cast<size_t>(rc)).c_str() : "-",
         rc,
         err);
