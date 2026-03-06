@@ -19,6 +19,7 @@ pub const OMP_EXTRA_INFO_UPDATE_COOLDOWN_SECS: u64 = 3;
 
 pub const INJECTION_MAX_RETRIES: u32 = 5;
 pub const INJECTION_RETRY_DELAY_MS: u64 = 500;
+pub const MODULE_WAIT_MAX_RETRIES: u32 = 40;
 
 pub const UDP_BUFFER_SIZE: usize = 1500;
 pub const PROCESS_MODULE_BUFFER_SIZE: usize = 1024;
