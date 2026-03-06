@@ -35,7 +35,7 @@ cmake --build build-mingw32 -j
 ### Direct g++
 
 ```bash
-i686-w64-mingw32-g++ -O2 -std=c++17 -shared -o omp-socket-trace.dll wsock_trace.cpp -lws2_32
+i686-w64-mingw32-g++ -O2 -std=c++17 -shared -static-libgcc -static-libstdc++ -o omp-socket-trace.dll wsock_trace.cpp -lws2_32
 ```
 
 ## Launcher integration

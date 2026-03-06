@@ -9,3 +9,7 @@ set_target_properties(omp-socket-trace PROPERTIES
 
 target_compile_features(omp-socket-trace PRIVATE cxx_std_17)
 target_link_libraries(omp-socket-trace PRIVATE ws2_32)
+
+if(MINGW)
+    target_link_options(omp-socket-trace PRIVATE -static-libgcc -static-libstdc++)
+endif()
