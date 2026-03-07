@@ -1,6 +1,6 @@
 import { fs, invoke, path, process, shell } from "@tauri-apps/api";
 import { open, save } from "@tauri-apps/api/dialog";
-import { copyFile, exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
+import { exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { t } from "i18next";
 import {
   IN_GAME,
@@ -19,7 +19,7 @@ import { Log } from "./logger";
 import { PING_TIMEOUT_VALUE } from "./query";
 import { sc } from "./sizeScaler";
 import { Server } from "./types";
-import { isIPv6, normalizeIPv6 } from "./validation";
+import { isIPv6 } from "./validation";
 
 const showOkModal = (title: string, description: string) => {
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
@@ -33,34 +33,31 @@ const showOkModal = (title: string, description: string) => {
 const getLocalPath = async (...segments: string[]) =>
   path.join(await path.appLocalDataDir(), ...segments);
 
-const getLauncherTracePath = async (): Promise<string> => {
-  const launcherDir = await invoke<string>("get_launcher_directory");
-  return path.join(launcherDir, "omp-socket-trace.dll");
+interface ProxyInfo {
+  host: string;
+  port: number;
+}
+
+const stopIpv6ProxySilently = async () => {
+  try {
+    await invoke("stop_ipv6_proxy");
+  } catch {
+    // Best effort cleanup.
+  }
 };
 
-const stageTraceRuntimeIntoGameDir = async (
-  gtasaPath: string,
-  traceSource: string
-): Promise<string | null> => {
-  const traceTarget = await path.join(gtasaPath, "omp-socket-trace.dll");
-  if (traceSource !== traceTarget) {
-    await copyFile(traceSource, traceTarget);
+const startIpv6Proxy = async (host: string, port: number): Promise<ProxyInfo | null> => {
+  try {
+    const proxy = await invoke<ProxyInfo>("start_ipv6_proxy", {
+      host,
+      port,
+      localPort: 0,
+    });
+    return proxy;
+  } catch (error) {
+    Log.warn(`[startGame] Failed to start IPv6 proxy for ${host}:${port}`, error);
+    return null;
   }
-
-  const traceSourceDir = await path.dirname(traceSource);
-  const runtimeSource = await path.join(traceSourceDir, "libwinpthread-1.dll");
-  if (!(await fs.exists(runtimeSource))) {
-    throw new Error(
-      `Missing trace runtime dependency next to omp-socket-trace.dll: ${runtimeSource}`
-    );
-  }
-
-  const runtimeTarget = await path.join(gtasaPath, "libwinpthread-1.dll");
-  if (runtimeSource !== runtimeTarget) {
-    await copyFile(runtimeSource, runtimeTarget);
-  }
-
-  return traceTarget;
 };
 
 export const copySharedFilesIntoGameFolder = async () => {
@@ -105,52 +102,51 @@ export const startGame = async (
   const { setSelected } = useServers.getState();
   const resolvedAddress = (await getIpAddress(server.ip)) ?? server.ip;
   let launchAddress = resolvedAddress;
-  let traceDualstack = false;
-  let traceRemoteIp = "";
-  let traceRemotePort = 0;
-  let injectAddress = launchAddress;
+  let launchPort = server.port;
 
   if (resolvedAddress && isIPv6(resolvedAddress)) {
-    const normalizedIPv6 = normalizeIPv6(resolvedAddress);
-    let ipv6ProbeOk = false;
+    const normalizedIPv6 = resolvedAddress
+      .trim()
+      .replace(/^\[/, "")
+      .replace(/\]$/, "");
+    const proxy = await startIpv6Proxy(normalizedIPv6, server.port);
 
-    try {
-      ipv6ProbeOk = await invoke<boolean>("probe_ipv6_query", {
-        host: normalizedIPv6,
-        port: server.port,
-      });
-      traceDualstack = ipv6ProbeOk;
-    } catch (error) {
-      Log.warn("[startGame] IPv6 probe failed unexpectedly:", error);
-    }
-
-    if (!ipv6ProbeOk) {
+    if (proxy) {
+      launchAddress = proxy.host;
+      launchPort = proxy.port;
+      Log.info(
+        `[startGame] IPv6 proxy active ${normalizedIPv6}:${server.port} -> ${launchAddress}:${launchPort}`
+      );
+    } else {
       const fallbackIPv4 = await getIpAddress(server.ip, "ipv4");
       if (fallbackIPv4 && !isIPv6(fallbackIPv4)) {
         launchAddress = fallbackIPv4;
-        traceDualstack = false;
+        launchPort = server.port;
+        await stopIpv6ProxySilently();
         Log.warn(
-          `[startGame] IPv6 probe failed for ${normalizedIPv6}:${server.port}, falling back to IPv4 ${fallbackIPv4}`
+          `[startGame] IPv6 proxy start failed for ${normalizedIPv6}:${server.port}, falling back to IPv4 ${fallbackIPv4}:${server.port}`
         );
       } else {
-        Log.warn(
-          `[startGame] IPv6 probe failed for ${normalizedIPv6}:${server.port} and no IPv4 fallback was found`
+        showOkModal(
+          "IPv6 connection failed",
+          `Could not start local IPv6 proxy for ${normalizedIPv6}:${server.port} and no IPv4 fallback address is available.`
         );
+        showPrompt(true);
+        setServer(server);
+        return;
       }
     }
+  } else {
+    await stopIpv6ProxySilently();
   }
-
-  const connectAddress =
-    launchAddress && isIPv6(launchAddress)
-      ? `[${normalizeIPv6(launchAddress)}]`
-      : launchAddress;
+  const connectAddress = launchAddress;
 
   if (IN_GAME) {
     invoke("send_message_to_game", {
       id: IN_GAME_PROCESS_ID,
       message: password.length
-        ? `connect:${connectAddress}:${server.port}:${nickname}:${password}`
-        : `connect:${connectAddress}:${server.port}:${nickname}`,
+        ? `connect:${connectAddress}:${launchPort}:${nickname}:${password}`
+        : `connect:${connectAddress}:${launchPort}:${nickname}`,
     });
     return;
   }
@@ -288,89 +284,17 @@ export const startGame = async (
       : file
       ? await getLocalPath(file.path, file.name)
       : idealSAMPDllPath;
-  let traceFile = "";
-
-  try {
-    const launcherTracePath = await getLauncherTracePath();
-    if (await fs.exists(launcherTracePath)) {
-      traceFile = launcherTracePath;
-    } else if (launchAddress && isIPv6(launchAddress)) {
-      Log.warn(
-        `[startGame] omp-socket-trace.dll not found in launcher directory: ${launcherTracePath}`
-      );
-    }
-  } catch (error) {
-    Log.warn("[startGame] Failed to resolve launcher directory for trace DLL lookup:", error);
-  }
-
-  if (traceFile.length) {
-    try {
-      const stagedTraceFile = await stageTraceRuntimeIntoGameDir(
-        gtasaPath,
-        traceFile
-      );
-      if (stagedTraceFile) {
-        traceFile = stagedTraceFile;
-      }
-    } catch (error) {
-      Log.warn(
-        "[startGame] Failed to stage optional trace runtime into GTA directory. The trace shim requires omp-socket-trace.dll and libwinpthread-1.dll in the launcher directory:",
-        error
-      );
-      traceFile = "";
-      traceDualstack = false;
-    }
-  }
-
-  if (!traceFile.length) {
-    traceDualstack = false;
-
-    if (launchAddress && isIPv6(launchAddress)) {
-      const fallbackIPv4 = await getIpAddress(server.ip, "ipv4");
-      if (fallbackIPv4 && !isIPv6(fallbackIPv4)) {
-        Log.warn(
-          `[startGame] IPv6 launch requires omp-socket-trace.dll; falling back to IPv4 ${fallbackIPv4}`
-        );
-        launchAddress = fallbackIPv4;
-      } else {
-        let launcherTracePath = "launcher.exe directory";
-        try {
-          launcherTracePath = await getLauncherTracePath();
-        } catch (error) {
-          Log.warn(
-            "[startGame] Failed to resolve launcher directory while preparing IPv6 compat error:",
-            error
-          );
-        }
-        showOkModal(
-          "IPv6 compatibility layer missing",
-          `omp-socket-trace.dll is missing or unusable at ${launcherTracePath}, and no IPv4 fallback address is available for this server.`
-        );
-        showPrompt(true);
-        setServer(server);
-        return;
-      }
-    }
-  }
-
-  if (launchAddress && isIPv6(launchAddress) && traceDualstack && traceFile.length) {
-    traceRemoteIp = normalizeIPv6(launchAddress);
-    traceRemotePort = server.port;
-    injectAddress = "127.0.0.1";
-  } else {
-    injectAddress = launchAddress;
-  }
 
   invoke("inject", {
     name: nickname,
-    ip: injectAddress,
-    port: server.port,
+    ip: launchAddress,
+    port: launchPort,
     exe: gtasaPath,
     dll: ourSAMPDllPath,
-    traceFile,
-    traceDualstack,
-    traceRemoteIp,
-    traceRemotePort,
+    traceFile: "",
+    traceDualstack: false,
+    traceRemoteIp: "",
+    traceRemotePort: 0,
     ompFile: await getLocalPath("omp", "omp-client.dll"),
     password,
     customGameExe,

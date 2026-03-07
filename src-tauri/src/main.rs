@@ -8,6 +8,7 @@ mod errors;
 mod helpers;
 mod injector;
 mod ipc;
+mod ipv6_proxy;
 mod query;
 mod samp;
 mod validation;
@@ -17,6 +18,7 @@ mod validation;
 mod deeplink;
 
 use std::env;
+use std::net::IpAddr;
 use std::process::exit;
 use std::sync::Mutex;
 
@@ -109,6 +111,36 @@ async fn handle_cli_args() -> Result<()> {
             if args.has_game_launch_args() {
                 let gamepath = args.gamepath.as_ref().unwrap();
                 let password = args.get_password();
+                let mut launch_host = args.host.as_ref().unwrap().to_string();
+                let mut launch_port = args.port.unwrap();
+
+                let normalized_host = launch_host
+                    .trim()
+                    .trim_start_matches('[')
+                    .trim_end_matches(']')
+                    .to_string();
+                let using_ipv6 = normalized_host
+                    .parse::<IpAddr>()
+                    .map(|ip| ip.is_ipv6())
+                    .unwrap_or(false);
+
+                if using_ipv6 {
+                    let proxy =
+                        ipv6_proxy::start_ipv6_proxy(launch_host.clone(), launch_port, Some(0))
+                            .await
+                            .map_err(LauncherError::Network)?;
+                    launch_host = proxy.host;
+                    launch_port = i32::from(proxy.port);
+                    info!(
+                        "[cli] IPv6 proxy active {}:{} -> {}:{}",
+                        normalized_host.as_str(),
+                        args.port.unwrap(),
+                        launch_host,
+                        launch_port
+                    );
+                } else {
+                    let _ = ipv6_proxy::stop_ipv6_proxy().await;
+                }
 
                 let omp_client_path = format!(
                     "{}/{}/omp/{}",
@@ -128,8 +160,8 @@ async fn handle_cli_args() -> Result<()> {
 
                 run_samp(
                     args.name.as_ref().unwrap(),
-                    args.host.as_ref().unwrap(),
-                    args.port.unwrap(),
+                    &launch_host,
+                    launch_port,
                     gamepath,
                     &format!("{}/{}", gamepath, SAMP_DLL),
                     "",
@@ -177,6 +209,8 @@ async fn run_tauri_app() -> Result<()> {
             commands::rerun_as_admin,
             commands::resolve_hostname,
             commands::probe_ipv6_query,
+            ipv6_proxy::start_ipv6_proxy,
+            ipv6_proxy::stop_ipv6_proxy,
             commands::is_process_alive,
             commands::log_info,
             commands::log_warn,
