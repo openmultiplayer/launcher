@@ -17,6 +17,7 @@ const ContextMenu = memo(() => {
   const { width, height } = useWindowDimensions();
   const { theme } = useTheme();
   const { visible, position, server, hide } = useContextMenu();
+  const { showPrompt, setServer } = useJoinServerPrompt();
   const { addToFavorites, removeFromFavorites, favorites } =
     usePersistentServers();
   const { nickName, gtasaPath } = useSettings();
@@ -84,7 +85,6 @@ const ContextMenu = memo(() => {
   const handleConnect = useCallback(() => {
     if (server) {
       if (server.hasPassword) {
-        const { showPrompt, setServer } = useJoinServerPrompt();
         setServer(server);
         showPrompt(true);
       } else {
@@ -92,7 +92,7 @@ const ContextMenu = memo(() => {
       }
       hide();
     }
-  }, [server, nickName, gtasaPath, hide]);
+  }, [server, nickName, gtasaPath, hide, setServer, showPrompt]);
 
   const handleFavoriteToggle = useCallback(() => {
     if (!server) return;
