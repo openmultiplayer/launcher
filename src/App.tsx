@@ -114,8 +114,8 @@ const App = memo(() => {
       await Promise.all([
         // Start these operations without waiting
         fetchServers(),
-        fetchUpdateInfo(),
         generateLanguageFilters(),
+        ...(IN_GAME ? [] : [fetchUpdateInfo()]),
       ]);
     } finally {
       endTimer();
