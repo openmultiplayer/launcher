@@ -7,7 +7,11 @@ import { useAppState } from "../../../states/app";
 import { usePersistentServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
-import { autoDetectGtasaPath, checkDirectoryValidity } from "../../../utils/game";
+import {
+  autoDetectGtasaPath,
+  checkDirectoryValidity,
+  locateGameExeDir,
+} from "../../../utils/game";
 import { Log } from "../../../utils/logger";
 import { sc } from "../../../utils/sizeScaler";
 import { stateStorage } from "../../../utils/stateStorage";
@@ -24,6 +28,14 @@ const General = () => {
     if (!gtasaPath) {
       const detected = await autoDetectGtasaPath();
       if (detected) return;
+    }
+
+    // macOS: the game lives deep inside a CrossOver bottle, so let the user
+    // point straight at the game executable; the folder is derived from it.
+    if (hostOS === "Darwin") {
+      const dir = await locateGameExeDir();
+      if (dir) return;
+      // user cancelled / invalid pick → fall through to directory picker
     }
 
     const selected: string = (await open({

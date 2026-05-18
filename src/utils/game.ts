@@ -346,6 +346,14 @@ export const checkDirectoryValidity = async (
       buttonWidth: 150,
       buttons: [
         {
+          title: t("browse"),
+          onPress: async () => {
+            const dir = await locateGameExeDir();
+            hideMessageBox();
+            if (!dir) onFail?.("gtasa");
+          },
+        },
+        {
           title: t("open_settings"),
           onPress: () => {
             showPrompt(false);
