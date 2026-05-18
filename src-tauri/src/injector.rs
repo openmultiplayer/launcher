@@ -216,31 +216,51 @@ pub async fn run_samp(
         "1280x720",
     );
 
-    // SA-MP injection under Wine: samp_debug.exe is the SA-MP loader present
-    // in the game folder; it spawns gta_sa.exe (per the gta_sa_exe registry
-    // value) with samp.dll loaded and connects to the server. Launching the
-    // game exe directly cannot inject samp.dll on macOS (only single player).
-    let samp_debug = game_dir.join("samp_debug.exe");
-    let mut cmd = Command::new(cxstart);
-    cmd.arg("--bottle").arg(&bottle);
-    if samp_debug.is_file() {
-        cmd.arg(&samp_debug).arg(ip).arg(port.to_string());
-        info!(
-            "[run_samp] cxstart bottle='{}' samp_debug.exe {} {}",
-            bottle, ip, port
-        );
-    } else {
-        cmd.arg(&exe_path).args(&game_args);
-        info!(
-            "[run_samp] cxstart bottle='{}' exe='{}' (no samp_debug.exe; single player only)",
-            bottle,
-            exe_path.display()
-        );
+    // SA-MP injection under Wine. Native DLL injection is impossible from
+    // macOS, and samp_debug.exe is localhost-only. Instead install a
+    // vorbisFile.dll proxy: GTA SA imports vorbisFile.dll for audio, so the
+    // proxy is auto-loaded and its DllMain LoadLibrary's samp.dll, which
+    // then reads our -c -n -h -p args and connects to the real server. The
+    // proxy forwards every export to the renamed real DLL (vorbisFile_o.dll)
+    // so game audio is unaffected.
+    {
+        const PROXY: &[u8] = include_bytes!("vorbisFile_loader.dll");
+        let vf = game_dir.join("vorbisFile.dll");
+        let vf_o = game_dir.join("vorbisFile_o.dll");
+        let proxy_installed = vf.metadata().map(|m| m.len() as usize == PROXY.len()).unwrap_or(false);
+        if !vf_o.is_file() && vf.is_file() && !proxy_installed {
+            // Preserve the real audio DLL exactly once.
+            if let Err(e) = std::fs::rename(&vf, &vf_o) {
+                info!("[run_samp] could not preserve real vorbisFile.dll: {}", e);
+            }
+        }
+        if vf_o.is_file() {
+            // Only install the proxy if the real DLL it forwards to exists.
+            match std::fs::write(&vf, PROXY) {
+                Ok(_) => info!("[run_samp] installed vorbisFile.dll SA-MP loader proxy"),
+                Err(e) => info!("[run_samp] failed to install proxy: {}", e),
+            }
+        } else {
+            info!("[run_samp] no real vorbisFile_o.dll; skipping proxy (single player only)");
+        }
     }
-    cmd.current_dir(&game_dir)
+
+    // Launch the game with the connect args; samp.dll (pulled in by the
+    // proxy) parses these and joins the server automatically.
+    let mut cmd = Command::new(cxstart);
+    cmd.arg("--bottle")
+        .arg(&bottle)
+        .arg(&exe_path)
+        .args(&game_args)
+        .current_dir(&game_dir)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null());
+    info!(
+        "[run_samp] cxstart bottle='{}' exe='{}'",
+        bottle,
+        exe_path.display()
+    );
 
     cmd.spawn()
         .map(|_| ())

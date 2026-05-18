@@ -27,3 +27,4 @@ omp-client.dll
 
 # Build artifacts (published as release assets, not committed)
 *.dmg
+tools/samp-loader/vorbisFile.dll
