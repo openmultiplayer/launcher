@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 omp-launcher-setup.exe
 omp-client.dll
+
+# Build artifacts (published as release assets, not committed)
+*.dmg
