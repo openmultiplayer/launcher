@@ -26,12 +26,30 @@ This build is ad-hoc signed, not Apple-notarized. macOS quarantines every
 internet download and refuses to open the app until that flag is cleared,
 showing a misleading *"omp-launcher is damaged"* message. Step 2 removes it.
 
-> A double-click `.command` installer does not work: current macOS
-> (Sequoia / macOS 26) immediately kills any downloaded script that still
-> carries the quarantine flag. The Terminal line above is the only reliable
-> free method. A true no-Terminal install requires Apple notarization (paid
-> Apple Developer account). The DMG includes a `HOW TO INSTALL` text file with
-> these same steps.
+> The DMG includes a `HOW TO INSTALL` text file with these same steps. A true
+> no-Terminal install requires Apple notarization (paid Apple Developer
+> account), which this free build does not have.
+
+### Opening it without Terminal every time
+
+Step 2 only clears the quarantine flag on the *current* copy — re-downloading
+or rebuilding the app brings it back, and macOS still gatekeeps ad-hoc-signed
+apps on launch. To make the app (and any future rebuild) just double-click
+open, run this **once**:
+
+```bash
+sudo spctl --master-disable
+```
+
+This turns off Gatekeeper assessment globally and unlocks
+**System Settings → Privacy & Security → "Allow applications from: Anywhere"**.
+After it, omp-launcher opens by double-click forever — no quarantine step, no
+Terminal.
+
+> **Trade-off:** while disabled, *any* unsigned app runs without a Gatekeeper
+> check. Re-enable anytime with `sudo spctl --master-enable`. Ad-hoc and
+> self-signed builds fail Gatekeeper identically — only this or notarization
+> avoids the per-launch block.
 
 ## Playing on macOS
 
