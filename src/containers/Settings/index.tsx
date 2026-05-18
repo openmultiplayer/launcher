@@ -23,8 +23,8 @@ import Health from "./Tab/Health";
 import Languages from "./Tab/Languages";
 import i18n from "../../locales";
 
-const MODAL_WIDTH = 500;
-const MODAL_HEIGHT = 300;
+const MODAL_WIDTH = 520;
+const MODAL_HEIGHT = 360;
 const TITLEBAR_HEIGHT = 25;
 
 type TabType = "general" | "languages" | "advanced" | "health";
@@ -92,6 +92,8 @@ const SettingsModal = () => {
             height: MODAL_HEIGHT,
             width: MODAL_WIDTH,
             backgroundColor: theme.secondary,
+            borderWidth: 1,
+            borderColor: `${theme.textPrimary}1F`,
           },
         ]}
       >
@@ -100,6 +102,12 @@ const SettingsModal = () => {
           onChange={(type) => handleTabChange(type as TabType)}
           selected={selectedTab}
           style={styles.tabBar}
+        />
+        <View
+          style={[
+            styles.tabDivider,
+            { backgroundColor: `${theme.textPrimary}1F` },
+          ]}
         />
         {tabComponents[selectedTab]}
         <View style={styles.appInfoContainer}>
@@ -135,20 +143,26 @@ const SettingsModal = () => {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: sc(11),
+    borderRadius: sc(12),
     position: "absolute",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 0,
+      height: sc(8),
     },
-    shadowOpacity: 0.9,
-    shadowRadius: 10,
+    shadowOpacity: 0.45,
+    shadowRadius: sc(24),
   },
   tabBar: {
     height: sc(30),
     paddingHorizontal: sc(15),
     marginTop: sc(15),
+  },
+  tabDivider: {
+    height: 1,
+    marginTop: sc(10),
+    marginHorizontal: sc(15),
+    marginBottom: sc(4),
   },
   appInfoContainer: {
     height: 30,

@@ -207,20 +207,18 @@ const App = memo(() => {
     endTimer();
   }, []);
 
-  const appStyle = useMemo(
-    () => [styles.app, { padding: maximized || IN_GAME ? 0 : 4 }],
-    [maximized]
-  );
+  const appStyle = useMemo(() => styles.app, []);
 
   const appViewStyle = useMemo(
     () => [
       styles.appView,
       {
-        borderRadius: maximized || IN_GAME ? 0 : 10,
         backgroundColor: theme.secondary,
+        // Square edges when maximized so it fills the screen cleanly.
+        borderRadius: maximized ? 0 : sc(10),
       },
     ],
-    [maximized, theme.secondary]
+    [theme.secondary, maximized]
   );
 
   if (loading) {
@@ -261,19 +259,13 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4.65,
   },
   appBody: {
     flex: 1,
     width: "100%",
     paddingHorizontal: sc(15),
     paddingBottom: sc(15),
+    paddingTop: sc(12),
   },
 });
 

@@ -11,10 +11,14 @@ interface SettingsPersistentState {
   customGameExe: string;
   sampVersion: SAMPDLLVersions;
   dataMerged: boolean;
+  // macOS: override the CrossOver bottle name if it is not the default
+  // "Rockstar Games Launcher".
+  bottleName: string;
   setNickName: (name: string) => void;
   setGTASAPath: (path: string) => void;
   setCustomGameExe: (fileName: string) => void;
   setSampVersion: (version: SAMPDLLVersions) => void;
+  setBottleName: (name: string) => void;
 }
 
 const emitWithDelay = (event: string, payload: any) =>
@@ -28,6 +32,7 @@ const useSettings = create<SettingsPersistentState>()(
       customGameExe: "",
       sampVersion: "custom",
       dataMerged: false,
+      bottleName: "",
       setNickName: (name) =>
         set(() => {
           emitWithDelay("setNickName", name);
@@ -36,6 +41,7 @@ const useSettings = create<SettingsPersistentState>()(
       setGTASAPath: (path) => set({ gtasaPath: path }),
       setCustomGameExe: (fileName) => set({ customGameExe: fileName }),
       setSampVersion: (version) => set({ sampVersion: version }),
+      setBottleName: (name) => set({ bottleName: name }),
     }),
     {
       name: "settings-storage",

@@ -1,56 +1,24 @@
 import { invoke, shell } from "@tauri-apps/api";
-import { open } from "@tauri-apps/api/dialog";
 import { t } from "i18next";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Text from "../../../components/Text";
 import { useAppState } from "../../../states/app";
 import { usePersistentServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
-import {
-  autoDetectGtasaPath,
-  checkDirectoryValidity,
-  locateGameExeDir,
-} from "../../../utils/game";
+import { checkDirectoryValidity } from "../../../utils/game";
 import { Log } from "../../../utils/logger";
 import { sc } from "../../../utils/sizeScaler";
 import { stateStorage } from "../../../utils/stateStorage";
 import { Server } from "../../../utils/types";
 
+// The GTA SA path is no longer entered by hand: macOS only runs the game
+// through a CrossOver bottle, so the bottle is chosen in Settings > Advanced
+// and the launcher auto-detects the game directory from it.
 const General = () => {
-  const { hostOS } = useAppState();
   const { theme } = useTheme();
-  const { gtasaPath, setGTASAPath, setNickName } = useSettings();
+  const { setGTASAPath, setNickName } = useSettings();
   const { updateInfo, version } = useAppState();
-
-  const selectPath = async () => {
-    // If nothing is set yet, try to locate the game automatically first.
-    if (!gtasaPath) {
-      const detected = await autoDetectGtasaPath();
-      if (detected) return;
-    }
-
-    // macOS: the game lives deep inside a CrossOver bottle, so let the user
-    // point straight at the game executable; the folder is derived from it.
-    if (hostOS === "Darwin") {
-      const dir = await locateGameExeDir();
-      if (dir) return;
-      // user cancelled / invalid pick → fall through to directory picker
-    }
-
-    const selected: string = (await open({
-      defaultPath:
-        hostOS === "Windows_NT" ? gtasaPath.replace(/\//g, "\\") : gtasaPath,
-      directory: true,
-    })) as string;
-
-    if (selected) {
-      const newPath = selected.replace(/\\/g, "/");
-
-      const isDirValid = await checkDirectoryValidity(newPath);
-      if (isDirValid) setGTASAPath(newPath);
-    }
-  };
 
   const importDataFromSAMP = async () => {
     try {
@@ -135,40 +103,29 @@ const General = () => {
         flex: 1,
       }}
     >
-      <Text semibold color={theme.textPrimary} size={2}>
-        {t("settings_gta_path_input_label")}:
-      </Text>
-      <View style={styles.pathInputContainer}>
-        <TextInput
-          value={gtasaPath}
-          onChangeText={(text) => setGTASAPath(text)}
-          style={[
-            styles.pathInput,
-            {
-              color: theme.textPrimary,
-              backgroundColor: theme.textInputBackgroundColor,
-            },
-          ]}
-        />
-        <TouchableOpacity
-          style={[
-            styles.browseButton,
-            {
-              backgroundColor: `${theme.primary}BB`,
-              borderColor: theme.textSecondary,
-            },
-          ]}
-          onPress={() => selectPath()}
+      <View
+        style={[
+          styles.hintBox,
+          { borderColor: `${theme.textPrimary}33` },
+        ]}
+      >
+        <Text size={2} color={theme.primary} style={styles.hintIcon}>
+          ⓘ
+        </Text>
+        <Text
+          size={1}
+          color={`${theme.textPrimary}AA`}
+          numberOfLines={0}
+          style={styles.hintText}
         >
-          <Text semibold color={"#FFFFFF"} size={2}>
-            {t("browse")}
-          </Text>
-        </TouchableOpacity>
+          {t("settings_general_bottle_hint")}
+        </Text>
       </View>
       <TouchableOpacity
         style={[
           styles.importButton,
           {
+            marginTop: sc(12),
             backgroundColor: `${theme.primary}BB`,
             borderColor: theme.textSecondary,
           },
@@ -196,7 +153,7 @@ const General = () => {
         style={[
           styles.resetButton,
           {
-            backgroundColor: "red",
+            backgroundColor: "#A8443E",
           },
         ]}
         onPress={() => {
@@ -227,29 +184,22 @@ const General = () => {
 };
 
 const styles = StyleSheet.create({
-  pathInputContainer: {
+  hintBox: {
     flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    marginTop: 7,
+    alignItems: "flex-start",
+    gap: sc(8),
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderRadius: sc(8),
+    paddingVertical: sc(10),
+    paddingHorizontal: sc(12),
   },
-  pathInput: {
-    paddingHorizontal: sc(10),
+  hintIcon: {
+    marginTop: sc(1),
+  },
+  hintText: {
     flex: 1,
-    height: sc(38),
-    borderRadius: sc(5),
-    // @ts-ignore
-    outlineStyle: "none",
-    fontFamily: "Proxima Nova Regular",
-    fontSize: sc(17),
-  },
-  browseButton: {
-    height: sc(36),
-    paddingHorizontal: sc(15),
-    borderRadius: sc(5),
-    marginLeft: sc(10),
-    justifyContent: "center",
-    alignItems: "center",
+    lineHeight: sc(18),
   },
   importButton: {
     marginTop: sc(8),

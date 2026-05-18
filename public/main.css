@@ -209,3 +209,9 @@
   bottom: 10px;
   border-radius: 1000px;
 }
+
+.modal-blur-backdrop {
+  background-color: rgba(0, 0, 0, 0.42);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+}

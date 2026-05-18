@@ -182,6 +182,7 @@ async fn run_tauri_app() -> Result<()> {
             commands::get_checksum_of_files,
             commands::kill_game,
             commands::get_macos_health,
+            commands::list_bottles,
             commands::extract_7z,
             commands::copy_files_to_gtasa,
             query::query_server,
@@ -203,6 +204,8 @@ fn setup_tauri_app(app: &mut tauri::App) -> std::result::Result<(), Box<dyn std:
 
     if let Some(main_window) = app.get_window("main") {
         main_window.set_min_size(Some(PhysicalSize::new(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)))?;
+        // Always open centred (otherwise macOS may restore an old position).
+        let _ = main_window.center();
     }
 
     let config = handle.config();

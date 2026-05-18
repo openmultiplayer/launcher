@@ -5,6 +5,14 @@ A native **macOS (Apple Silicon)** build of the [open.mp launcher](https://githu
 Upstream open.mp ships Windows only. This fork adds the changes needed to
 compile, sign, and package the launcher as a macOS `.dmg`.
 
+> **Note on trust / notarization.** A clean, double-click install on macOS
+> requires the app to be **Apple-notarized**, which needs a paid Apple
+> Developer account. This is a free, unofficial port — I built it only to run
+> open.mp on a Mac and play — and there is **no Apple Developer account**
+> behind it. So the app is ad-hoc signed, and macOS treats it as untrusted.
+> Everything below (quarantine removal, the one-time Gatekeeper toggle) is the
+> **workaround** for not having notarization. They are safe and one-time.
+
 ## Download
 
 Get the latest `.dmg` from the

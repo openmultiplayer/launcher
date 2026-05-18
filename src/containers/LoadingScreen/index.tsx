@@ -484,7 +484,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
   ]);
 
   return (
-    <View style={[styles.app, { padding: 4 }]}>
+    <View style={styles.app}>
       <View style={[styles.appView, dynamicStyles.appView]}>
         <View style={styles.loaderContainer}>
           <div
@@ -542,13 +542,6 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 4.65,
     borderRadius: sc(10),
     paddingTop: sc(40),
     paddingBottom: sc(30),

@@ -1,4 +1,4 @@
-import { Pressable, View, useWindowDimensions } from "react-native";
+import { View, useWindowDimensions } from "react-native";
 
 interface IProps {
   onDismiss: () => void;
@@ -19,14 +19,18 @@ const StaticModal = (props: IProps) => {
         zIndex: 61,
       }}
     >
-      <Pressable
+      {/* Blurred, dimmed backdrop — click anywhere outside to dismiss. */}
+      <div
+        className="modal-blur-backdrop"
+        onClick={() => props.onDismiss()}
         style={{
-          height: "100%",
-          width: "100%",
-          // @ts-ignore
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           cursor: "default",
         }}
-        onPress={() => props.onDismiss()}
       />
       {props.children}
     </View>

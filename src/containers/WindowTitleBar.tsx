@@ -2,13 +2,7 @@ import { invoke } from "@tauri-apps/api";
 import { appWindow } from "@tauri-apps/api/window";
 import { useTranslation } from "react-i18next";
 import { memo, useCallback, useMemo } from "react";
-import {
-  ColorValue,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ColorValue, Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
 import Icon from "../components/Icon";
 import Text from "../components/Text";
 import { IN_GAME, IN_GAME_PROCESS_ID } from "../constants/app";
@@ -17,49 +11,40 @@ import { useSettingsModal } from "../states/settingsModal";
 import { useTheme } from "../states/theme";
 import { sc } from "../utils/sizeScaler";
 
-interface NativeButtonProps {
-  size?: number;
-  iconSize?: number;
-  image: string;
-  title?: string;
-  onPress: () => void;
+// macOS-style traffic lights (close / minimize / zoom), top-left.
+const TRAFFIC_LIGHTS = [
+  { key: "close", color: "#FF5F57" },
+  { key: "minimize", color: "#FEBC2E" },
+  { key: "maximize", color: "#28C840" },
+] as const;
+
+interface TrafficLightsProps {
+  onClose: () => void;
+  onMinimize: () => void;
+  onMaximize: () => void;
 }
 
-const NativeWindowTitleBarButtons = memo<NativeButtonProps>(
-  ({ size = sc(30), image, onPress, iconSize = 15, title = "" }) => {
-    const { theme } = useTheme();
-
-    const buttonStyle = useMemo(
-      () => ({
-        height: size,
-        width: size,
-        borderRadius: sc(3),
-      }),
-      [size]
-    );
-
-    const pressableStyle = useMemo(
-      () => ({
-        height: "100%",
-        width: "100%",
-        justifyContent: "center" as const,
-        alignItems: "center" as const,
-      }),
-      []
-    );
-
+const TrafficLights = memo<TrafficLightsProps>(
+  ({ onClose, onMinimize, onMaximize }) => {
+    const handlers: Record<string, () => void> = {
+      close: onClose,
+      minimize: onMinimize,
+      maximize: onMaximize,
+    };
     return (
-      <div className="titlebar-button" style={buttonStyle}>
-        {/* @ts-ignore */}
-        <Pressable style={pressableStyle} onPress={onPress}>
-          <Icon
-            title={title}
-            image={image}
-            size={iconSize}
-            color={theme.textPrimary}
+      // @ts-ignore — zIndex keeps the lights above the drag region.
+      <View style={styles.trafficLights}>
+        {TRAFFIC_LIGHTS.map((light) => (
+          <Pressable
+            key={light.key}
+            onPress={handlers[light.key]}
+            style={({ pressed, hovered }: any) => [
+              styles.light,
+              { backgroundColor: light.color, opacity: pressed ? 0.6 : hovered ? 0.85 : 1 },
+            ]}
           />
-        </Pressable>
-      </div>
+        ))}
+      </View>
     );
   }
 );
@@ -143,12 +128,13 @@ const WindowTitleBar = memo(() => {
         alignItems: "center" as const,
         paddingTop: sc(15),
         paddingHorizontal: sc(15),
-        paddingBottom: sc(8),
+        paddingBottom: sc(12),
+        borderBottomWidth: 1,
+        borderBottomColor: `${theme.textPrimary}1F`,
       },
       leftSection: {
         flexDirection: "row" as const,
         alignItems: "center" as const,
-        flex: 1,
       },
       logoContainer: [
         styles.logoContainer,
@@ -193,7 +179,7 @@ const WindowTitleBar = memo(() => {
         filter: `drop-shadow(0 0 20px ${theme.primary}44)`,
       },
     }),
-    [theme.itemBackgroundColor]
+    [theme.itemBackgroundColor, theme.textPrimary]
   );
 
   const handleReconnect = useCallback(() => {
@@ -241,16 +227,22 @@ const WindowTitleBar = memo(() => {
     return {
       reconnect: t("reconnect"),
       settings: t("settings"),
-      minimize: t("minimize"),
-      maximize: t("maximize"),
-      close: t("close"),
     };
   }, [t, i18n.language]);
 
   return (
     // @ts-ignore
     <View style={containerStyles.main}>
+      {/* Drag region first so the buttons rendered after it stay clickable. */}
+      {!IN_GAME && (
+        <div data-tauri-drag-region style={containerStyles.dragRegion} />
+      )}
       <View style={containerStyles.leftSection}>
+        <TrafficLights
+          onClose={handleClose}
+          onMinimize={handleMinimize}
+          onMaximize={handleMaximize}
+        />
         <View style={containerStyles.logoContainer}>
           <Icon image={images.icons.omp} size={sc(22)} />
         </View>
@@ -263,9 +255,6 @@ const WindowTitleBar = memo(() => {
           Open Multiplayer
         </Text>
       </View>
-      {!IN_GAME && (
-        <div data-tauri-drag-region style={containerStyles.dragRegion} />
-      )}
       {/* @ts-ignore */}
       <View style={containerStyles.rightSection}>
         {IN_GAME && (
@@ -286,36 +275,18 @@ const WindowTitleBar = memo(() => {
           title=""
           iconSize={sc(30)}
           image={themeIcon}
-          marginRight={sc(10)}
+          marginRight={!IN_GAME ? sc(10) : 0}
           onPress={handleThemeToggle}
         />
         {!IN_GAME && (
-          <>
-            <CustomWindowTitleBarButtons
-              title={buttonTitles.settings}
-              image={images.icons.settings}
-              marginRight={sc(16)}
-              color={theme.textSecondary}
-              backgroundColor={theme.itemBackgroundColor}
-              onPress={showSettings}
-            />
-            <NativeWindowTitleBarButtons
-              title={buttonTitles.minimize}
-              image={images.icons.windowMinimize}
-              onPress={handleMinimize}
-            />
-            <NativeWindowTitleBarButtons
-              title={buttonTitles.maximize}
-              image={images.icons.windowMaximize}
-              onPress={handleMaximize}
-            />
-          </>
+          <CustomWindowTitleBarButtons
+            title={buttonTitles.settings}
+            image={images.icons.settings}
+            color={theme.textSecondary}
+            backgroundColor={theme.itemBackgroundColor}
+            onPress={showSettings}
+          />
         )}
-        <NativeWindowTitleBarButtons
-          title={buttonTitles.close}
-          image={images.icons.windowClose}
-          onPress={handleClose}
-        />
       </View>
     </View>
   );
@@ -329,9 +300,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: sc(5),
   },
+  trafficLights: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: sc(8),
+    marginRight: sc(14),
+    // @ts-ignore — sit above the absolute drag region so clicks land.
+    zIndex: 20,
+  },
+  light: {
+    height: sc(13),
+    width: sc(13),
+    borderRadius: sc(7),
+  },
 });
 
-NativeWindowTitleBarButtons.displayName = "NativeWindowTitleBarButtons";
+TrafficLights.displayName = "TrafficLights";
 CustomWindowTitleBarButtons.displayName = "CustomWindowTitleBarButtons";
 WindowTitleBar.displayName = "WindowTitleBar";
 

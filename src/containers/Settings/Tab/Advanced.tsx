@@ -1,4 +1,6 @@
+import { invoke } from "@tauri-apps/api";
 import { t } from "i18next";
+import { useEffect, useState } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import Text from "../../../components/Text";
 import { IN_GAME } from "../../../constants/app";
@@ -12,7 +14,24 @@ import { sc } from "../../../utils/sizeScaler";
 
 const Advanced = () => {
   const { theme } = useTheme();
-  const { customGameExe, setCustomGameExe } = useSettings();
+  const { customGameExe, setCustomGameExe, bottleName, setBottleName } =
+    useSettings();
+  const [bottles, setBottles] = useState<string[]>([]);
+  const [autoBottle, setAutoBottle] = useState("");
+
+  useEffect(() => {
+    invoke<string[]>("list_bottles")
+      .then(setBottles)
+      .catch(() => setBottles([]));
+    invoke<{ bottle: string }>("get_macos_health", { bottleName: "" })
+      .then((h) => setAutoBottle(h.bottle))
+      .catch(() => setAutoBottle(""));
+  }, []);
+
+  const autoLabel = autoBottle
+    ? `${t("settings_bottle_auto_detect")} — ${autoBottle}`
+    : t("settings_bottle_auto_detect");
+
   return (
     <View
       style={{
@@ -40,22 +59,46 @@ const Advanced = () => {
               ]}
             />
           </View>
+
+          <View style={{ marginTop: sc(12) }}>
+            <Text semibold color={theme.textPrimary} size={2}>
+              {t("settings_bottle_name_label")}:
+            </Text>
+            {/* Native select — reliable, unlike the overlay dropdown. */}
+            <select
+              value={bottleName}
+              onChange={(e) => setBottleName(e.target.value)}
+              style={{
+                marginTop: 7,
+                width: "100%",
+                height: sc(38),
+                borderRadius: sc(5),
+                border: "none",
+                outline: "none",
+                paddingLeft: sc(8),
+                paddingRight: sc(8),
+                color: theme.textPrimary as string,
+                backgroundColor: theme.textInputBackgroundColor as string,
+                fontFamily: "Proxima Nova Regular",
+                fontSize: sc(15),
+              }}
+            >
+              <option value="">{autoLabel}</option>
+              {bottles.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+          </View>
         </View>
       )}
       <View style={{ flex: 1 }} />
-      <View
-        style={{
-          width: "100%",
-          marginTop: sc(10),
-        }}
-      >
+      <View style={{ width: "100%", marginTop: sc(10) }}>
         <TouchableOpacity
           style={[
             styles.importButton,
-            {
-              backgroundColor: `${theme.primary}BB`,
-              borderColor: theme.primary,
-            },
+            { backgroundColor: `${theme.primary}BB`, borderColor: theme.primary },
           ]}
           onPress={() => exportFavoriteListFile()}
         >
@@ -67,10 +110,7 @@ const Advanced = () => {
         <TouchableOpacity
           style={[
             styles.importButton,
-            {
-              backgroundColor: `${theme.primary}BB`,
-              borderColor: theme.primary,
-            },
+            { backgroundColor: `${theme.primary}BB`, borderColor: theme.primary },
           ]}
           onPress={() => importFavoriteListFile()}
         >
@@ -79,10 +119,10 @@ const Advanced = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.pathInputContainer}></View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   pathInputContainer: {
     flexDirection: "row",
@@ -100,15 +140,6 @@ const styles = StyleSheet.create({
     fontFamily: "Proxima Nova Regular",
     fontSize: sc(17),
   },
-  browseButton: {
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    marginLeft: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-  },
   importButton: {
     marginTop: 10,
     height: 30,
@@ -117,21 +148,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-  },
-  resetButton: {
-    marginTop: 5,
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-  },
-  appInfoContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    width: "100%",
-    alignItems: "center",
   },
 });
 

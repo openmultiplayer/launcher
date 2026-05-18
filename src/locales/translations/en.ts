@@ -59,13 +59,28 @@ export default {
   settings_credits_made_by: "Made with ❤️ by",
   settings_credits_view_source_on_github: "View source code on GitHub",
   settings_credits_macos_port: "macOS port by",
-  settings_health_tab_title: "Health",
-  settings_health_crossover: "CrossOver",
-  settings_health_game_exe: "GTA: San Andreas executable",
-  settings_health_rockstar: "Rockstar Games Launcher",
-  settings_health_ok: "Detected",
-  settings_health_missing: "Not found",
+  settings_health_tab_title: "Status",
   settings_health_recheck: "Re-check",
+  settings_health_linked: "Linked",
+  settings_health_not_linked: "Not linked",
+  settings_health_crossover_app: "CrossOver app",
+  settings_health_crossover_bottle: "CrossOver bottle",
+  settings_health_game_file: "Game file executable",
+  settings_health_no_bottle: "No bottle found",
+  settings_health_help_crossover_ok: "CrossOver is installed and ready.",
+  settings_health_help_crossover_bad:
+    "CrossOver is not installed. Download and install it from codeweavers.com, then re-check.",
+  settings_health_help_bottle_ok:
+    "A CrossOver bottle was found. Override it in the Advanced tab if needed.",
+  settings_health_help_bottle_bad:
+    "No CrossOver bottle found. Create a bottle in CrossOver (install the Rockstar Games Launcher / GTA SA into it), or pick the correct bottle in the Advanced tab.",
+  settings_health_help_game_ok: "The GTA: San Andreas executable was found.",
+  settings_health_help_game_bad:
+    "gta-sa.exe was not found. Install GTA: San Andreas (v1.0) inside the CrossOver bottle.",
+  settings_bottle_name_label: "CrossOver bottle",
+  settings_bottle_auto_detect: "(Auto-detect)",
+  settings_general_bottle_hint:
+    "The game runs through a CrossOver bottle. Pick your bottle in the Advanced tab; the launcher detects the game from it automatically.",
   update_modal_update_available_title: "Update Available!",
   update_modal_update_available_description:
     'New launcher build is available!\nYour launcher build version: {{ version }}\nCurrent launcher build version: {{ newVersion }}\nClick "Download" to open release page',

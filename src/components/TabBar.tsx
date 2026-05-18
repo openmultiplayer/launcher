@@ -44,40 +44,31 @@ const TabBarItem = memo<TabItemProps>(
       () => ({
         overflow: "hidden" as const,
         marginRight: sc(10),
-        borderRadius: sc(5),
-        ...(isSelected && {
-          shadowColor: themeType === "dark" ? "#fff" : "#000",
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.17,
-          shadowRadius: 4.65,
-        }),
+        borderRadius: sc(6),
       }),
-      [isSelected, themeType]
+      []
     );
 
     const iconStyle = useMemo(
       () => ({
         marginRight: sc(10),
-        opacity: isSelected ? 1 : 0.25,
+        opacity: isSelected ? 1 : 0.65,
       }),
       [isSelected]
     );
 
+    // No textShadow — that glow made selected labels look blurry.
     const textStyle = useMemo(
-      () => [
-        isSelected
-          ? {
-              opacity: 1,
-              textShadowColor: "rgba(132, 119, 183, 0.5)",
-              textShadowOffset: { width: 0, height: 0 },
-              textShadowRadius: 4,
-            }
-          : {
-              opacity: 0.25,
-            },
-      ],
+      () => (isSelected ? undefined : { opacity: 0.65 }),
       [isSelected]
     );
+
+    void themeType;
+    const itemBg = isSelected
+      ? `${theme.primary}22`
+      : theme.itemBackgroundColor;
+    const itemBorder = isSelected ? theme.primary : `${theme.textPrimary}26`;
+    const labelColor = isSelected ? theme.primary : theme.textPrimary;
 
     return (
       <View key={`list-type-${item.type}`} style={containerStyle}>
@@ -85,7 +76,7 @@ const TabBarItem = memo<TabItemProps>(
           disabled={isSelected}
           style={[
             styles.listItem,
-            { backgroundColor: theme.itemBackgroundColor },
+            { backgroundColor: itemBg, borderColor: itemBorder },
           ]}
           onPress={handlePress}
         >
@@ -95,10 +86,10 @@ const TabBarItem = memo<TabItemProps>(
               image={item.icon}
               size={sc(20)}
               style={iconStyle}
-              color={theme.textPrimary}
+              color={labelColor}
             />
           )}
-          <Text semibold color={theme.textPrimary} size={3} style={textStyle}>
+          <Text semibold color={labelColor} size={3} style={textStyle}>
             {item.label}
           </Text>
         </TouchableOpacity>
@@ -139,11 +130,12 @@ const styles = StyleSheet.create({
   },
   listItem: {
     height: sc(35),
-    paddingHorizontal: sc(10),
+    paddingHorizontal: sc(12),
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    borderRadius: sc(5),
+    borderRadius: sc(6),
+    borderWidth: 1,
   },
 });
 

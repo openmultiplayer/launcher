@@ -140,15 +140,42 @@ pub struct MacosHealth {
     crossover: bool,
     /// A GTA SA executable was found (auto-detected or via the SA-MP key).
     game_exe: bool,
-    /// The Rockstar Games Launcher is installed in a CrossOver bottle.
+    /// The Rockstar Games Launcher bottle is present.
     rockstar_launcher: bool,
     /// The detected game directory (empty if none).
     game_path: String,
+    /// Name of the CrossOver bottle that was matched (empty if none).
+    bottle: String,
 }
 
-/// Health check for the macOS setup, surfaced in Settings.
+/// List the CrossOver bottle names (folders under .../CrossOver/Bottles).
 #[tauri::command]
-pub fn get_macos_health() -> MacosHealth {
+pub fn list_bottles() -> Vec<String> {
+    use std::path::PathBuf;
+    let mut names = Vec::new();
+    if let Ok(home) = std::env::var("HOME") {
+        let bottles =
+            PathBuf::from(&home).join("Library/Application Support/CrossOver/Bottles");
+        if let Ok(entries) = std::fs::read_dir(&bottles) {
+            for e in entries.flatten() {
+                if e.path().is_dir() {
+                    if let Some(name) = e.file_name().to_str() {
+                        if !name.starts_with('.') {
+                            names.push(name.to_string());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    names.sort();
+    names
+}
+
+/// Health/status check for the macOS setup, surfaced in Settings.
+/// `bottle_name` overrides the bottle to look in; empty = auto-scan all.
+#[tauri::command]
+pub fn get_macos_health(bottle_name: String) -> MacosHealth {
     use std::path::{Path, PathBuf};
 
     let crossover = Path::new("/Applications/CrossOver.app").is_dir()
@@ -160,17 +187,26 @@ pub fn get_macos_health() -> MacosHealth {
     let game_path = samp::get_gtasa_path();
     let game_exe = !game_path.is_empty();
 
-    // Rockstar Games Launcher present inside any CrossOver bottle.
+    // The Rockstar Games Launcher lives inside a CrossOver bottle. Use the
+    // user-provided bottle name if set, otherwise find the bottle that has it.
     let mut rockstar_launcher = false;
+    let mut bottle = String::new();
     if let Ok(home) = std::env::var("HOME") {
         let bottles =
             PathBuf::from(&home).join("Library/Application Support/CrossOver/Bottles");
-        if let Ok(entries) = std::fs::read_dir(&bottles) {
+        let has_rgl =
+            |b: &Path| b.join("drive_c/Program Files/Rockstar Games/Launcher").is_dir();
+
+        if !bottle_name.is_empty() {
+            let b = bottles.join(&bottle_name);
+            if b.is_dir() {
+                bottle = bottle_name.clone();
+                rockstar_launcher = has_rgl(&b);
+            }
+        } else if let Ok(entries) = std::fs::read_dir(&bottles) {
             for e in entries.flatten() {
-                if e.path()
-                    .join("drive_c/Program Files/Rockstar Games/Launcher")
-                    .is_dir()
-                {
+                if has_rgl(&e.path()) {
+                    bottle = e.file_name().to_string_lossy().to_string();
                     rockstar_launcher = true;
                     break;
                 }
@@ -183,6 +219,7 @@ pub fn get_macos_health() -> MacosHealth {
         game_exe,
         rockstar_launcher,
         game_path,
+        bottle,
     }
 }
 
