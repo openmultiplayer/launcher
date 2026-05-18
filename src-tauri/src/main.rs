@@ -181,6 +181,7 @@ async fn run_tauri_app() -> Result<()> {
             commands::log_error,
             commands::get_checksum_of_files,
             commands::kill_game,
+            commands::get_macos_health,
             commands::extract_7z,
             commands::copy_files_to_gtasa,
             query::query_server,

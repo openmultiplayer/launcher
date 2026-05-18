@@ -134,6 +134,58 @@ pub fn kill_game() -> u32 {
     helpers::kill_game_processes()
 }
 
+#[derive(serde::Serialize)]
+pub struct MacosHealth {
+    /// CrossOver is installed and its launch tool is available.
+    crossover: bool,
+    /// A GTA SA executable was found (auto-detected or via the SA-MP key).
+    game_exe: bool,
+    /// The Rockstar Games Launcher is installed in a CrossOver bottle.
+    rockstar_launcher: bool,
+    /// The detected game directory (empty if none).
+    game_path: String,
+}
+
+/// Health check for the macOS setup, surfaced in Settings.
+#[tauri::command]
+pub fn get_macos_health() -> MacosHealth {
+    use std::path::{Path, PathBuf};
+
+    let crossover = Path::new("/Applications/CrossOver.app").is_dir()
+        && Path::new(
+            "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/cxstart",
+        )
+        .exists();
+
+    let game_path = samp::get_gtasa_path();
+    let game_exe = !game_path.is_empty();
+
+    // Rockstar Games Launcher present inside any CrossOver bottle.
+    let mut rockstar_launcher = false;
+    if let Ok(home) = std::env::var("HOME") {
+        let bottles =
+            PathBuf::from(&home).join("Library/Application Support/CrossOver/Bottles");
+        if let Ok(entries) = std::fs::read_dir(&bottles) {
+            for e in entries.flatten() {
+                if e.path()
+                    .join("drive_c/Program Files/Rockstar Games/Launcher")
+                    .is_dir()
+                {
+                    rockstar_launcher = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    MacosHealth {
+        crossover,
+        game_exe,
+        rockstar_launcher,
+        game_path,
+    }
+}
+
 #[tauri::command]
 pub fn get_checksum_of_files(list: Vec<String>) -> std::result::Result<Vec<String>, String> {
     let mut result = Vec::new();

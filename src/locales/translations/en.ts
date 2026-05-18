@@ -59,6 +59,13 @@ export default {
   settings_credits_made_by: "Made with ❤️ by",
   settings_credits_view_source_on_github: "View source code on GitHub",
   settings_credits_macos_port: "macOS port by",
+  settings_health_tab_title: "Health",
+  settings_health_crossover: "CrossOver",
+  settings_health_game_exe: "GTA: San Andreas executable",
+  settings_health_rockstar: "Rockstar Games Launcher",
+  settings_health_ok: "Detected",
+  settings_health_missing: "Not found",
+  settings_health_recheck: "Re-check",
   update_modal_update_available_title: "Update Available!",
   update_modal_update_available_description:
     'New launcher build is available!\nYour launcher build version: {{ version }}\nCurrent launcher build version: {{ newVersion }}\nClick "Download" to open release page',
