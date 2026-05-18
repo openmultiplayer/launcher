@@ -1,6 +1,8 @@
 build/
+vorbisFile.dll
 dinput8.dll
 dinput8_tpfix.dll
+vorbisFile_o.dll
 *.asi
 *.log
 *.o

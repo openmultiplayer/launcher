@@ -178,24 +178,29 @@ CrossOver 21+, Wine 6+, and Whisky (all modern macOS setups).
 
 ## Install
 
-1. Copy **`dinput8.dll`** into the GTA SA folder (next to `gta_sa.exe`).
-2. **Remove any other `dinput8.dll`** already there (e.g. an old ASI loader).
-3. **Set the DLL override** (mandatory — Wine loads its builtin dinput8 and
-   ignores this file otherwise):
-   - CrossOver: bottle → *Wine Configuration* → *Libraries* tab → type
-     `dinput8` in "New override", *Add*, *Edit* → **Native (Windows)** → *OK*
-     → *Apply*.
-   - or set the env var `WINEDLLOVERRIDES=dinput8=n,b` for the launch.
-4. Optionally copy `TrackpadFixSA.ini` too (defaults are sane without it).
-5. Launch through CrossOver / Wine / Whisky.
+The plugin ships as **`vorbisFile.dll`** — GTA SA's own audio DLL, which it
+always imports. (An earlier `dinput8.dll` build crashed on Wine: the only way
+to get real DirectInput under that name is to copy the Wine *builtin* dinput8,
+and a copied builtin cannot bind input. vorbisFile is a normal game-shipped PE,
+so proxying it is safe and needs **no DLL override**.)
 
-On first launch it creates `dinput8_tpfix.dll` (a copy of the real system
-DirectInput) next to the game — leave it there. Delete it only after a Wine /
-CrossOver upgrade so a fresh copy is taken.
+In the GTA SA folder (next to `gta_sa.exe`):
 
-Standalone — no SilentPatch, no ASI loader, no other files required. If you also
-want SilentPatch, run it through its own loader under a *different* name (e.g.
-`vorbisFile.dll`); the two do not interfere.
+1. **Rename** the existing `vorbisFile.dll` → **`vorbisFile_o.dll`**.
+2. Copy this project's **`vorbisFile.dll`** in (the renamed original stays).
+3. Delete any leftover `dinput8.dll` / `dinput8_tpfix.dll` from older builds,
+   and remove the old `dinput8` DLL override if you added one.
+4. Optionally copy `TrackpadFixSA.ini` (defaults are sane without it).
+5. Launch through CrossOver / Wine / Whisky — no override, no other files.
+
+How it works: our `vorbisFile.dll` forwards every audio call to
+`vorbisFile_o.dll`, `LoadLibrary`s the **real Wine-builtin dinput8** (loaded
+normally, behaves exactly like vanilla — never copied), and inline-hooks
+`DirectInput8Create` in its code. The DRM-wrapped game executable is never
+touched.
+
+Standalone — no SilentPatch, no ASI loader. To also run SilentPatch, use its
+own loader under yet another name; they do not interfere.
 
 ---
 

@@ -5,7 +5,7 @@
 # Plain assignment (not ?=) so make's built-in CXX=g++ default does not win.
 # A command-line `make CXX=...` still overrides this.
 CXX       = i686-w64-mingw32-g++
-TARGET    = dinput8.dll
+TARGET    = vorbisFile.dll
 SRCDIR    = src
 OBJDIR    = build
 SRCS      = $(wildcard $(SRCDIR)/*.cpp)
