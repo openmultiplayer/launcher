@@ -72,6 +72,18 @@ pub async fn run_samp(
             return;
         }
         let dst = game_dir.join(dst_name);
+        // The "custom" SA-MP version passes the in-folder DLL back as the
+        // source. std::fs::copy(x, x) truncates the file to 0 bytes on
+        // macOS, which then crashes the game. If src and dst are the same
+        // file it is already in place: skip the copy.
+        let same_file = match (std::fs::canonicalize(src_path), std::fs::canonicalize(&dst)) {
+            (Ok(a), Ok(b)) => a == b,
+            _ => false,
+        };
+        if same_file {
+            info!("[run_samp] already in place, skip self-copy: {}", dst.display());
+            return;
+        }
         match std::fs::copy(src_path, &dst) {
             Ok(_) => info!("[run_samp] placed {} -> {}", src, dst.display()),
             Err(e) => info!("[run_samp] failed to place {}: {}", dst.display(), e),
