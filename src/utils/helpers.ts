@@ -143,7 +143,7 @@ export const fetchUpdateInfo = async () => {
 
     if (updateInfo) {
       if (
-        updateInfo.version != version &&
+        Number(updateInfo.version) > Number(version) &&
         skippedUpdateVersion != updateInfo.version
       ) {
         showMessageBox({

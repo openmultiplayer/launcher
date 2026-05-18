@@ -192,7 +192,7 @@ const General = () => {
         </Text>
       </TouchableOpacity>
       <View style={styles.appInfoContainer}>
-        {updateInfo && updateInfo.version != version && (
+        {updateInfo && Number(updateInfo.version) > Number(version) && (
           <Text
             style={{ marginBottom: sc(10) }}
             semibold
