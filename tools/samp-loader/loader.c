@@ -17,9 +17,11 @@
 
 static void load_client(void)
 {
-    /* Search order resolves these from the game directory first. */
+    /* Load only samp.dll. omp-client.dll loaded this early (inside the
+     * import-time DllMain) faults with 0xC0000005; samp.dll alone connects
+     * to both SA-MP and open.mp servers. Search order resolves it from the
+     * game directory. */
     LoadLibraryA("samp.dll");
-    LoadLibraryA("omp-client.dll");
 }
 
 BOOL WINAPI DllMain(HINSTANCE inst, DWORD reason, LPVOID reserved)

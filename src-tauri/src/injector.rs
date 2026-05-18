@@ -216,15 +216,17 @@ pub async fn run_samp(
         "DefaultBitsPerSample",
         "16",
     );
-    // Force a Wine virtual desktop so the game runs in a normal window
-    // instead of grabbing the whole screen (otherwise it is very hard to
-    // quit the game on macOS).
-    reg("HKCU\\Software\\Wine\\Explorer", "Desktop", "Default");
-    reg(
-        "HKCU\\Software\\Wine\\Explorer\\Desktops",
-        "Default",
-        "1280x720",
-    );
+    // Remove any previously-set Wine virtual desktop so the game runs
+    // normally (fullscreen) rather than inside a forced window.
+    let _ = Command::new(cxstart)
+        .arg("--bottle")
+        .arg(&bottle)
+        .args(["reg", "delete", "HKCU\\Software\\Wine\\Explorer", "/v", "Desktop", "/f"])
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status();
+    info!("[run_samp] removed Wine virtual desktop (fullscreen)");
 
     // SA-MP injection under Wine. Native DLL injection is impossible from
     // macOS, and samp_debug.exe is localhost-only. Instead install a

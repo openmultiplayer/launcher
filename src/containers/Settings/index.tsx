@@ -70,6 +70,10 @@ const SettingsModal = () => {
     shell.open("https://github.com/openmultiplayer/launcher/");
   }, []);
 
+  const handleMacPortPress = useCallback(() => {
+    shell.open("https://github.com/isiddharthasharma/open.mp-launcher-macOS");
+  }, []);
+
   if (!visible) {
     return null;
   }
@@ -106,6 +110,12 @@ const SettingsModal = () => {
               {t("settings_credits_view_source_on_github")}
             </Text>{" "}
             | v{nativeAppVersion} (Build {version})
+          </Text>
+          <Text size={1} color={`${theme.textPrimary}AA`}>
+            {t("settings_credits_macos_port")}{" "}
+            <Text size={1} onPress={handleMacPortPress} color={theme.primary}>
+              Siddharth
+            </Text>
           </Text>
         </View>
         <TouchableOpacity style={styles.closeButton} onPress={handleDismiss}>

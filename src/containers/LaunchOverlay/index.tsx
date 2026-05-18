@@ -1,5 +1,12 @@
+import { invoke } from "@tauri-apps/api";
 import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, View } from "react-native";
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { t } from "i18next";
 import Text from "../../components/Text";
 import { useGameLaunch } from "../../states/gameLaunch";
@@ -7,27 +14,27 @@ import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
 
 // Full-window overlay shown while a game launch is in progress. The bar is
-// indeterminate (the launch has no granular progress events).
+// indeterminate (the launch has no granular progress events) and loops
+// continuously until the launch finishes or is cancelled.
 const LaunchOverlay = () => {
-  const { launching } = useGameLaunch();
+  const { launching, setLaunching } = useGameLaunch();
   const { theme } = useTheme();
   const anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!launching) return;
+    anim.setValue(0);
     const loop = Animated.loop(
       Animated.timing(anim, {
         toValue: 1,
         duration: 1100,
         easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true,
+        // Web: the native driver does not loop transforms reliably.
+        useNativeDriver: false,
       })
     );
     loop.start();
-    return () => {
-      loop.stop();
-      anim.setValue(0);
-    };
+    return () => loop.stop();
   }, [launching, anim]);
 
   if (!launching) return null;
@@ -38,6 +45,11 @@ const LaunchOverlay = () => {
     inputRange: [0, 1],
     outputRange: [-fillWidth, trackWidth],
   });
+
+  const cancel = () => {
+    invoke("kill_game").catch(() => {});
+    setLaunching(false);
+  };
 
   return (
     <View style={styles.overlay}>
@@ -65,6 +77,14 @@ const LaunchOverlay = () => {
         <Text size={1} color={`${theme.textPrimary}99`}>
           {t("launching_game_hint")}
         </Text>
+        <TouchableOpacity
+          style={[styles.cancelButton, { borderColor: `${theme.textPrimary}44` }]}
+          onPress={cancel}
+        >
+          <Text semibold size={1} color={theme.textPrimary}>
+            {t("cancel")}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -97,6 +117,13 @@ const styles = StyleSheet.create({
   fill: {
     height: "100%",
     borderRadius: sc(4),
+  },
+  cancelButton: {
+    marginTop: sc(4),
+    paddingVertical: sc(7),
+    paddingHorizontal: sc(22),
+    borderRadius: sc(6),
+    borderWidth: 1,
   },
 });
 

@@ -127,6 +127,13 @@ pub fn is_process_alive(pid: u32) -> bool {
     sys.process(Pid::from_u32(pid)).is_some()
 }
 
+/// Kill every running GTA SA instance. Used by the launch overlay's Cancel
+/// button and to enforce a single game at a time. Returns how many.
+#[tauri::command]
+pub fn kill_game() -> u32 {
+    helpers::kill_game_processes()
+}
+
 #[tauri::command]
 pub fn get_checksum_of_files(list: Vec<String>) -> std::result::Result<Vec<String>, String> {
     let mut result = Vec::new();
