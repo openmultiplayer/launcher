@@ -1,0 +1,7 @@
+build/
+dinput8.dll
+dinput8_tpfix.dll
+*.asi
+*.log
+*.o
+.claude/
