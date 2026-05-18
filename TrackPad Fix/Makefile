@@ -5,7 +5,7 @@
 # Plain assignment (not ?=) so make's built-in CXX=g++ default does not win.
 # A command-line `make CXX=...` still overrides this.
 CXX       = i686-w64-mingw32-g++
-TARGET    = vorbisFile.dll
+TARGET    = version.dll
 SRCDIR    = src
 OBJDIR    = build
 SRCS      = $(wildcard $(SRCDIR)/*.cpp)
@@ -27,8 +27,8 @@ $(OBJDIR):
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(TARGET): $(OBJS)
-	$(CXX) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
+$(TARGET): $(OBJS) version.def
+	$(CXX) $(LDFLAGS) $(OBJS) version.def $(LIBS) -o $@
 	@echo "==> $(TARGET) built"
 
 clean:

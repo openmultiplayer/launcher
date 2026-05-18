@@ -178,29 +178,32 @@ CrossOver 21+, Wine 6+, and Whisky (all modern macOS setups).
 
 ## Install
 
-The plugin ships as **`vorbisFile.dll`** — GTA SA's own audio DLL, which it
-always imports. (An earlier `dinput8.dll` build crashed on Wine: the only way
-to get real DirectInput under that name is to copy the Wine *builtin* dinput8,
-and a copied builtin cannot bind input. vorbisFile is a normal game-shipped PE,
-so proxying it is safe and needs **no DLL override**.)
+The plugin ships as **`version.dll`**. Rationale (after `dinput8.dll` and
+`vorbisFile.dll` both failed on the Rockstar Launcher build under Wine):
+
+| Vector | Problem |
+|---|---|
+| `vorbisFile.dll` | a **game-shipped** file → Rockstar Games Launcher's integrity check repairs/restores it on launch; our DLL never loads. |
+| `dinput8.dll` | a **system** file (RGL ignores it, good) but the only way to get real DirectInput under that name is to copy the Wine *builtin* dinput8 — a copied builtin cannot bind input (`E_ACCESSDENIED` → crash). |
+| **`version.dll`** | **system** file → RGL never repairs it; not normally in the game folder → no rename, no override; the Wine builtin is pure version-resource parsing → **copy-safe**; the DRM exe imports it → we get loaded. |
 
 In the GTA SA folder (next to `gta_sa.exe`):
 
-1. **Rename** the existing `vorbisFile.dll` → **`vorbisFile_o.dll`**.
-2. Copy this project's **`vorbisFile.dll`** in (the renamed original stays).
-3. Delete any leftover `dinput8.dll` / `dinput8_tpfix.dll` from older builds,
-   and remove the old `dinput8` DLL override if you added one.
+1. Copy this project's **`version.dll`** in.
+2. Delete any leftover `dinput8.dll`, `dinput8_tpfix.dll`, or a renamed
+   `vorbisFile_o.dll` from earlier attempts. Restore the original
+   `vorbisFile.dll` if you renamed it (or let RGL repair it).
+3. Remove any `dinput8` DLL override you added in Wine Configuration.
 4. Optionally copy `TrackpadFixSA.ini` (defaults are sane without it).
-5. Launch through CrossOver / Wine / Whisky — no override, no other files.
+5. Launch normally (through Rockstar Games Launcher is fine) — no override,
+   no rename, no other files.
 
-How it works: our `vorbisFile.dll` forwards every audio call to
-`vorbisFile_o.dll`, `LoadLibrary`s the **real Wine-builtin dinput8** (loaded
-normally, behaves exactly like vanilla — never copied), and inline-hooks
+How it works: our `version.dll` forwards every `version.dll` call to a
+copy-safe copy of the system one (`version_tpfix.dll`, auto-created),
+`LoadLibrary`s the **real Wine-builtin dinput8** (loaded normally under its own
+name — behaves exactly like vanilla, never copied), and inline-hooks
 `DirectInput8Create` in its code. The DRM-wrapped game executable is never
-touched.
-
-Standalone — no SilentPatch, no ASI loader. To also run SilentPatch, use its
-own loader under yet another name; they do not interfere.
+touched. Standalone — no SilentPatch, no ASI loader.
 
 ---
 

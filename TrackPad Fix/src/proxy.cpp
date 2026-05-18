@@ -1,26 +1,31 @@
-// TrackpadFixSA - vorbisFile.dll proxy entry point
+// TrackpadFixSA - version.dll proxy entry point
 //
-// Why vorbisFile.dll (not dinput8.dll):
-//   GTA SA imports vorbisFile.dll (real libvorbisfile shipped BY THE GAME, not
-//   a Wine builtin). Replacing/forwarding it is safe -- it is an ordinary PE.
-//   Wine has no vorbisFile builtin, so it loads our app-dir file with no DLL
-//   override needed.
+// Why version.dll (after dinput8.dll and vorbisFile.dll both failed):
 //
-//   The earlier dinput8.dll proxy failed because the only way to obtain the
-//   real DirectInput under that name was to COPY the Wine builtin dinput8 and
-//   load it as native -- a copied builtin cannot bind input (Acquire returns
-//   E_ACCESSDENIED) and crashes. Proven by the Enabled=0 isolation test.
+//   * vorbisFile.dll is a GAME-shipped file -> the Rockstar Games Launcher
+//     integrity check repairs/restores it on launch (our DLL never even loaded
+//     -> "no logs"). Unusable when the game must run through RGL.
+//   * dinput8.dll is a SYSTEM file -> RGL ignores it (it loaded fine), but the
+//     only way to get real DirectInput under that name is to copy the Wine
+//     BUILTIN dinput8 and load it native, which cannot bind input
+//     (Acquire -> E_ACCESSDENIED -> crash, proven by the Enabled=0 test).
 //
-// What this does instead:
-//   1. forward every vorbisFile export to the user-renamed original
-//      (vorbisFile_o.dll) via naked jmp thunks (calling-convention agnostic),
-//   2. LoadLibrary the REAL Wine-builtin dinput8 (loaded normally, behaves
-//      exactly like vanilla -- never copied),
-//   3. inline-hook dinput8!DirectInput8Create in memory (its code, not the
-//      DRM-wrapped game executable) and install the delta filter on the COM
-//      vtables from there.
+//   version.dll threads the needle:
+//     - SYSTEM file  -> RGL never repairs it (no manifest entry, and it does
+//       not normally exist in the game folder, so no rename either).
+//     - Trivially copy-safe -> the Wine builtin version.dll is pure PE
+//       version-resource parsing: no devices, no threads, no subsystem
+//       binding. A copied+native instance behaves identically.
+//     - The DRM-wrapped executable imports it (anti-tamper / CRT version
+//       checks), so our DLL is loaded.
 //
-// Standalone: no SilentPatch, no .asi.
+//   From there we LoadLibrary the REAL Wine-builtin dinput8 (loaded normally
+//   under its own name, behaves exactly like vanilla, never copied) and
+//   inline-hook DirectInput8Create in its code. The game executable is never
+//   touched.
+//
+// Install: just drop version.dll into the GTA SA folder. No rename, no DLL
+// override, no other files. Standalone (no SilentPatch / .asi).
 
 #include "dinput_hook.h"
 #include "delta_filter.h"
@@ -37,37 +42,40 @@
 
 using namespace tpfix;
 
-// ---- vorbisFile export forwarding ------------------------------------------
-// Full standard libvorbisfile surface. Each export is a naked thunk that jumps
-// straight to the resolved real function -- transparent for any signature /
-// calling convention since we never touch args, stack or registers.
+// ---- version.dll export forwarding -----------------------------------------
+// Full, stable version.dll surface. Naked thunks jump straight to the real
+// (copied) version.dll -- transparent for the WINAPI/stdcall signatures since
+// we never touch the stack: a jmp (not call) lets the real function return
+// directly to the game and clean the stack itself.
 
-#define VORBIS_EXPORTS(X) \
-    X(ov_clear) X(ov_open) X(ov_open_callbacks) X(ov_test) \
-    X(ov_test_callbacks) X(ov_test_open) X(ov_bitrate) X(ov_bitrate_instant) \
-    X(ov_streams) X(ov_seekable) X(ov_serialnumber) X(ov_raw_total) \
-    X(ov_pcm_total) X(ov_time_total) X(ov_raw_seek) X(ov_pcm_seek) \
-    X(ov_pcm_seek_page) X(ov_time_seek) X(ov_time_seek_page) X(ov_raw_tell) \
-    X(ov_pcm_tell) X(ov_time_tell) X(ov_info) X(ov_comment) X(ov_read) \
-    X(ov_read_float) X(ov_crosslap) X(ov_halfrate) X(ov_halfrate_p) \
-    X(ov_fopen) X(ov_raw_seek_lap) X(ov_pcm_seek_lap) X(ov_pcm_seek_page_lap) \
-    X(ov_time_seek_lap) X(ov_time_seek_page_lap) X(ov_read_filter)
+#define VERSION_EXPORTS(X) \
+    X(GetFileVersionInfoA) X(GetFileVersionInfoW) \
+    X(GetFileVersionInfoSizeA) X(GetFileVersionInfoSizeW) \
+    X(GetFileVersionInfoExA) X(GetFileVersionInfoExW) \
+    X(GetFileVersionInfoSizeExA) X(GetFileVersionInfoSizeExW) \
+    X(GetFileVersionInfoByHandle) \
+    X(VerQueryValueA) X(VerQueryValueW) \
+    X(VerLanguageNameA) X(VerLanguageNameW) \
+    X(VerFindFileA) X(VerFindFileW) \
+    X(VerInstallFileA) X(VerInstallFileW)
 
+// Internal thunk symbols (tp_*) exported under the real undecorated names via
+// version.def -- avoids clashing with the prototypes in <winver.h>.
 #define DECL_PTR(n)  static FARPROC p_##n = nullptr;
-VORBIS_EXPORTS(DECL_PTR)
+VERSION_EXPORTS(DECL_PTR)
 
-#define MAKE_THUNK(n)                                                       \
-    extern "C" __declspec(dllexport) __attribute__((naked)) void n(void) {  \
-        __asm__ __volatile__("jmp *%0" :: "m"(p_##n));                      \
+#define MAKE_THUNK(n)                                                  \
+    extern "C" __attribute__((naked)) void tp_##n(void) {              \
+        __asm__ __volatile__("jmp *%0" :: "m"(p_##n));                 \
     }
-VORBIS_EXPORTS(MAKE_THUNK)
+VERSION_EXPORTS(MAKE_THUNK)
 
 // ---- state ------------------------------------------------------------------
 
 typedef HRESULT (WINAPI *DI8Create_t)(HINSTANCE, DWORD, REFIID, LPVOID*, LPUNKNOWN);
 
 static HMODULE       g_self     = nullptr;
-static HMODULE       g_orig     = nullptr;   // vorbisFile_o.dll
+static HMODULE       g_realVer  = nullptr;   // version_tpfix.dll (copied builtin)
 static HMODULE       g_dinput8  = nullptr;   // real Wine builtin
 static DI8Create_t   g_trampDI8 = nullptr;   // -> original DirectInput8Create
 static char          g_moduleDir[MAX_PATH] = {0};
@@ -107,7 +115,7 @@ static void EnsureInit() {
     boot("TPFIX: EnsureInit");
     LogInit(g_moduleDir);
     const HostInfo& host = DetectHost();
-    Log("TrackpadFixSA (vorbisFile proxy) | host=%s wine=%s build=%s",
+    Log("TrackpadFixSA (version.dll proxy) | host=%s wine=%s build=%s",
         host.kind == HostKind::Native    ? "Native"
       : host.kind == HostKind::CrossOver ? "CrossOver" : "Wine",
         host.wineVersion[0] ? host.wineVersion : "-",
@@ -134,27 +142,35 @@ static HRESULT WINAPI Detour_DI8(HINSTANCE hinst, DWORD ver, REFIID riid,
     return hr;
 }
 
-// ---- DllMain ----------------------------------------------------------------
+// ---- bring-up ---------------------------------------------------------------
 
 static void Setup() {
-    // Forward target: the original audio DLL the user renamed.
-    char orig[MAX_PATH];
-    wsprintfA(orig, "%s\\vorbisFile_o.dll", g_moduleDir);
-    g_orig = LoadLibraryA(orig);
-    if (!g_orig) {
-        boot("TPFIX: vorbisFile_o.dll MISSING gle=%lu -- rename the original!",
-             GetLastError());
+    char sysDir[MAX_PATH] = {0};
+    UINT n = GetSystemDirectoryA(sysDir, sizeof(sysDir));
+    if (n == 0 || n >= sizeof(sysDir)) { boot("TPFIX: GetSystemDirectory FAIL"); return; }
+
+    // Copy-safe: version.dll is pure resource parsing, no subsystem binding.
+    char srcVer[MAX_PATH], cpyVer[MAX_PATH];
+    wsprintfA(srcVer, "%s\\version.dll", sysDir);
+    wsprintfA(cpyVer, "%s\\version_tpfix.dll", g_moduleDir);
+    if (GetFileAttributesA(cpyVer) == INVALID_FILE_ATTRIBUTES &&
+        !CopyFileA(srcVer, cpyVer, FALSE)) {
+        boot("TPFIX: copy version.dll FAILED gle=%lu", GetLastError());
+    }
+    g_realVer = LoadLibraryA(cpyVer);
+    if (!g_realVer) {
+        boot("TPFIX: load version_tpfix.dll FAILED gle=%lu", GetLastError());
     } else {
         int ok = 0, miss = 0;
-        #define RES_PTR(n) p_##n = GetProcAddress(g_orig, #n); \
+        #define RES_PTR(n) p_##n = GetProcAddress(g_realVer, #n); \
                            if (p_##n) ++ok; else ++miss;
-        VORBIS_EXPORTS(RES_PTR)
-        boot("TPFIX: vorbisFile_o.dll loaded, %d exports resolved, %d missing",
+        VERSION_EXPORTS(RES_PTR)
+        boot("TPFIX: version_tpfix.dll loaded, %d exports ok, %d missing",
              ok, miss);
     }
 
-    // Real Wine-builtin dinput8 (we are vorbisFile, so no name collision and
-    // no copy -- this is the genuine, fully functional implementation).
+    // Real Wine-builtin dinput8 -- we are version.dll, so NO name collision,
+    // NO copy. This is the genuine, fully functional implementation.
     g_dinput8 = LoadLibraryA("dinput8.dll");
     if (!g_dinput8) { boot("TPFIX: LoadLibrary(dinput8) FAILED gle=%lu",
                            GetLastError()); return; }
@@ -187,7 +203,7 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD reason, LPVOID) {
                 DeleteFileA(g_bootLog);
             }
         }
-        boot("TPFIX: DllMain attach (vorbisFile proxy), self=%s", selfPath);
+        boot("TPFIX: DllMain attach (version.dll proxy), self=%s", selfPath);
         Setup();
     }
     return TRUE;

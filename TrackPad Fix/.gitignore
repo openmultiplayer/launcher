@@ -1,4 +1,6 @@
 build/
+version.dll
+version_tpfix.dll
 vorbisFile.dll
 dinput8.dll
 dinput8_tpfix.dll
