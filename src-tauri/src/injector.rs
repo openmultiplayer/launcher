@@ -11,6 +11,9 @@ use std::process::{Command, Stdio};
 use crate::{constants::*, errors::*};
 
 #[cfg(not(target_os = "windows"))]
+use crate::errors::Result;
+
+#[cfg(not(target_os = "windows"))]
 pub async fn run_samp(
     _name: &str,
     _ip: &str,

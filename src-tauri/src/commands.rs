@@ -100,6 +100,7 @@ pub fn resolve_hostname(hostname: String) -> std::result::Result<String, String>
     Err(format!("No IPv4 address found for hostname '{}'", hostname))
 }
 
+#[cfg(target_os = "windows")]
 #[tauri::command]
 pub fn is_process_alive(pid: u32) -> bool {
     use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
@@ -114,6 +115,16 @@ pub fn is_process_alive(pid: u32) -> bool {
             false
         }
     }
+}
+
+#[cfg(not(target_os = "windows"))]
+#[tauri::command]
+pub fn is_process_alive(pid: u32) -> bool {
+    use sysinfo::{Pid, System};
+
+    let mut sys = System::new();
+    sys.refresh_processes();
+    sys.process(Pid::from_u32(pid)).is_some()
 }
 
 #[tauri::command]
