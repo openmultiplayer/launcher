@@ -106,7 +106,7 @@ pub async fn run_samp(
         found
     };
 
-    // SA-MP / open.mp connect arguments.
+    // SA-MP / open.mp connect arguments (used for the direct-exe fallback).
     let mut game_args: Vec<String> = vec![
         "-c".into(),
         "-n".into(),
@@ -121,42 +121,38 @@ pub async fn run_samp(
         game_args.push(password.to_string());
     }
 
-    // Prefer CrossOver's cxstart (honours the bottle's Wine build + DXVK).
     let cxstart = Path::new(CROSSOVER_CXSTART);
     let wine_bin = [CROSSOVER_WINE_BIN, CROSSOVER_WINE_HOSTED]
         .iter()
         .map(Path::new)
         .find(|p| p.is_file());
 
-    let spawn_result = if cxstart.is_file() {
-        let pfx = prefix.ok_or_else(|| {
+    let pfx = prefix.ok_or_else(|| {
+        LauncherError::NotFound(
+            "Could not locate the Wine bottle (no drive_c ancestor)".to_string(),
+        )
+    })?;
+    let bottle = pfx
+        .file_name()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_default();
+
+    // Map a unix path inside the bottle to its Windows path: everything
+    // under <prefix>/drive_c maps to C:\ .
+    let to_win_path = |p: &Path| -> Option<String> {
+        let rel = p.strip_prefix(pfx.join("drive_c")).ok()?;
+        let mut s = String::from("C:\\");
+        s.push_str(&rel.to_string_lossy().replace('/', "\\"));
+        Some(s)
+    };
+
+    if !cxstart.is_file() {
+        // No CrossOver: best-effort direct exe launch via bundled wine.
+        let wine = wine_bin.ok_or_else(|| {
             LauncherError::NotFound(
-                "Could not locate the Wine bottle (no drive_c ancestor)".to_string(),
-            )
-        })?;
-        let bottle = pfx
-            .file_name()
-            .map(|s| s.to_string_lossy().to_string())
-            .unwrap_or_default();
-        let mut cmd = Command::new(cxstart);
-        cmd.arg("--bottle")
-            .arg(&bottle)
-            .arg(&exe_path)
-            .args(&game_args)
-            .current_dir(&game_dir)
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null());
-        info!(
-            "[run_samp] cxstart bottle='{}' exe='{}'",
-            bottle,
-            exe_path.display()
-        );
-        cmd.spawn()
-    } else if let Some(wine) = wine_bin {
-        let pfx = prefix.ok_or_else(|| {
-            LauncherError::NotFound(
-                "Could not locate the Wine prefix (no drive_c ancestor)".to_string(),
+                "CrossOver not found at /Applications/CrossOver.app. Install \
+                 CrossOver to run the game on macOS."
+                    .to_string(),
             )
         })?;
         let mut cmd = Command::new(wine);
@@ -167,28 +163,79 @@ pub async fn run_samp(
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(Stdio::null());
+        info!("[run_samp] wine fallback exe='{}'", exe_path.display());
+        return cmd
+            .spawn()
+            .map(|_| ())
+            .map_err(|e| LauncherError::Process(format!("Failed to launch via Wine: {}", e)));
+    }
+
+    // --- CrossOver path ---------------------------------------------------
+
+    // Apply bottle registry settings before launch (best effort):
+    //  * HKCU\Software\SAMP  : samp_debug.exe reads gta_sa_exe + PlayerName
+    //  * Wine\DirectSound    : HW-accel "Emulation" avoids the macOS
+    //    CoreAudio/mmdevapi assertion that crashes GTA SA ~17s in.
+    let reg = |key: &str, val: &str, data: &str| {
+        let _ = Command::new(cxstart)
+            .arg("--bottle")
+            .arg(&bottle)
+            .args(["reg", "add", key, "/v", val, "/t", "REG_SZ", "/d", data, "/f"])
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status();
+        info!("[run_samp] reg add {}\\{} = {}", key, val, data);
+    };
+    if let Some(exe_win) = to_win_path(&exe_path) {
+        reg("HKCU\\Software\\SAMP", "gta_sa_exe", &exe_win);
+    }
+    reg("HKCU\\Software\\SAMP", "PlayerName", name);
+    reg(
+        "HKCU\\Software\\Wine\\DirectSound",
+        "HardwareAcceleration",
+        "Emulation",
+    );
+    reg(
+        "HKCU\\Software\\Wine\\DirectSound",
+        "DefaultSampleRate",
+        "44100",
+    );
+    reg(
+        "HKCU\\Software\\Wine\\DirectSound",
+        "DefaultBitsPerSample",
+        "16",
+    );
+
+    // SA-MP injection under Wine: samp_debug.exe spawns gta_sa.exe (per the
+    // gta_sa_exe registry value) and loads samp.dll into it, then connects
+    // to the given server. Launching the game exe directly cannot inject
+    // samp.dll on macOS, so it would only ever reach single player.
+    let samp_debug = game_dir.join("samp_debug.exe");
+    let mut cmd = Command::new(cxstart);
+    cmd.arg("--bottle").arg(&bottle);
+    if samp_debug.is_file() {
+        cmd.arg(&samp_debug).arg(ip).arg(port.to_string());
         info!(
-            "[run_samp] wine='{}' prefix='{}' exe='{}'",
-            wine.display(),
-            pfx.display(),
+            "[run_samp] cxstart bottle='{}' samp_debug.exe {} {}",
+            bottle, ip, port
+        );
+    } else {
+        cmd.arg(&exe_path).args(&game_args);
+        info!(
+            "[run_samp] cxstart bottle='{}' exe='{}' (no samp_debug.exe; single player only)",
+            bottle,
             exe_path.display()
         );
-        cmd.spawn()
-    } else {
-        return Err(LauncherError::NotFound(
-            "CrossOver not found at /Applications/CrossOver.app. Install \
-             CrossOver to run the game on macOS."
-                .to_string(),
-        ));
-    };
-
-    match spawn_result {
-        Ok(_) => Ok(()),
-        Err(e) => Err(LauncherError::Process(format!(
-            "Failed to launch the game through Wine: {}",
-            e
-        ))),
     }
+    cmd.current_dir(&game_dir)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null());
+
+    cmd.spawn()
+        .map(|_| ())
+        .map_err(|e| LauncherError::Process(format!("Failed to launch the game through Wine: {}", e)))
 }
 
 #[cfg(target_os = "windows")]
