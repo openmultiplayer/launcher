@@ -78,6 +78,8 @@ export default {
   nickname_modal_name_not_set_title: "No Nickname!",
   nickname_modal_name_not_set_description:
     "You must choose a nickname for yourself before joining a server.",
+  launching_game: "Launching game...",
+  launching_game_hint: "GTA: San Andreas is starting, please wait.",
   gta_path_modal_path_not_set_title: "GTA: San Andreas path is not set!",
   gta_path_modal_path_not_set_description:
     "You didn't set GTA: San Andreas path, go to settings and search for game folder.",

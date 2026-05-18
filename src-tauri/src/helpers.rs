@@ -81,6 +81,34 @@ pub fn decode_buffer(buf: Vec<u8>) -> (String, String) {
     (buff_output, actual_encoding.name().to_string())
 }
 
+/// True if a process looks like the GTA SA game (native or under Wine).
+fn is_game_process(p: &sysinfo::Process) -> bool {
+    let name = p.name().to_lowercase();
+    if name.contains("gta-sa.exe") || name.contains("gta_sa.exe") {
+        return true;
+    }
+    p.cmd().iter().any(|a| {
+        let a = a.to_lowercase();
+        a.contains("gta-sa.exe") || a.contains("gta_sa.exe")
+    })
+}
+
+/// Kill every running GTA SA instance. Enforces a single game at a time and
+/// clears a crashed/zombie instance that would otherwise make the next
+/// connection crash on the loading screen. Returns how many were killed.
+pub fn kill_game_processes() -> u32 {
+    use sysinfo::System;
+    let mut sys = System::new();
+    sys.refresh_processes();
+    let mut killed = 0;
+    for p in sys.processes().values() {
+        if is_game_process(p) && p.kill() {
+            killed += 1;
+        }
+    }
+    killed
+}
+
 pub fn copy_files(src: impl AsRef<Path>, dest: impl AsRef<Path>) -> crate::errors::Result<()> {
     let files = fs::read_dir(src).map_err(|e| crate::errors::LauncherError::from(e))?;
 

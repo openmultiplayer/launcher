@@ -16,6 +16,7 @@ import {
 } from "react";
 import { StyleSheet, View } from "react-native";
 import { DEBUG_MODE, IN_GAME, IN_GAME_PROCESS_ID } from "./constants/app";
+import LaunchOverlay from "./containers/LaunchOverlay";
 import LoadingScreen from "./containers/LoadingScreen";
 import WindowTitleBar from "./containers/WindowTitleBar";
 import { changeLanguage } from "./locales";
@@ -240,6 +241,7 @@ const App = memo(() => {
           <ExternalServerHandler />
           <Notification />
           <MessageBox />
+          <LaunchOverlay />
         </View>
       </View>
     </View>

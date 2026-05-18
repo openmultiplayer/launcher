@@ -8,6 +8,7 @@ import {
   ResourceInfo,
   validFileChecksums,
 } from "../constants/app";
+import { useGameLaunch } from "../states/gameLaunch";
 import { useJoinServerPrompt } from "../states/joinServerPrompt";
 import { useMessageBox } from "../states/messageModal";
 import { useNotification } from "../states/notification";
@@ -186,7 +187,7 @@ export const startGame = async (
     }
   }
 
-  if (!nickname) {
+  if (!nickname || !nickname.trim()) {
     showOkModal(
       t("nickname_modal_name_not_set_title"),
       t("nickname_modal_name_not_set_description")
@@ -294,6 +295,8 @@ export const startGame = async (
       ? await getLocalPath(file.path, file.name)
       : idealSAMPDllPath;
 
+  const { setLaunching } = useGameLaunch.getState();
+  setLaunching(true);
   invoke("inject", {
     name: nickname,
     ip: await getIpAddress(server.ip),
@@ -325,6 +328,10 @@ export const startGame = async (
           ],
         });
       }
+    })
+    .finally(() => {
+      // Keep the overlay briefly after spawn while the game window opens.
+      setTimeout(() => setLaunching(false), 1500);
     });
 };
 

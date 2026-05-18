@@ -43,6 +43,16 @@ pub async fn run_samp(
         )));
     }
 
+    // Only one game at a time: kill any running/zombie GTA SA first. A
+    // crashed instance left behind also makes the next connection crash on
+    // the loading screen and can hold the DLLs we are about to replace.
+    let killed = crate::helpers::kill_game_processes();
+    if killed > 0 {
+        info!("[run_samp] killed {} stale game process(es)", killed);
+        // Give the OS a moment to reap them and release file locks.
+        std::thread::sleep(std::time::Duration::from_millis(1200));
+    }
+
     // Resolve the executable: explicit override, else the Rockstar
     // re-release name, else the SA-MP 1.0 downgrade name.
     let exe_name = if !custom_game_exe.is_empty() {
