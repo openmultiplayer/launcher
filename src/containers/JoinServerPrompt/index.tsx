@@ -203,6 +203,13 @@ const JoinServerPrompt = () => {
         updateInRecentlyJoinedList(srvCpy);
       }
 
+      // The dropdown drives perServerVersion, but startGame reads the global
+      // sampVersion (default "custom"). Without this the chosen version never
+      // reaches startGame, so a machine with no samp.dll in the game folder
+      // (typical on macOS) loops on the "Can't find SA-MP" modal.
+      const effectiveVersion = perServerVersion ? perServerVersion : sampVersion;
+      setSampVersion(effectiveVersion);
+
       startGame(
         server,
         perServerNickname.length ? perServerNickname : nickName,
@@ -217,6 +224,9 @@ const JoinServerPrompt = () => {
     perServerNickname,
     nickName,
     gtasaPath,
+    perServerVersion,
+    sampVersion,
+    setSampVersion,
     updateServer,
     updateInFavoritesList,
     updateInRecentlyJoinedList,
