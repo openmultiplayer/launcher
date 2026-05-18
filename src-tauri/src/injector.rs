@@ -206,11 +206,20 @@ pub async fn run_samp(
         "DefaultBitsPerSample",
         "16",
     );
+    // Force a Wine virtual desktop so the game runs in a normal window
+    // instead of grabbing the whole screen (otherwise it is very hard to
+    // quit the game on macOS).
+    reg("HKCU\\Software\\Wine\\Explorer", "Desktop", "Default");
+    reg(
+        "HKCU\\Software\\Wine\\Explorer\\Desktops",
+        "Default",
+        "1280x720",
+    );
 
-    // SA-MP injection under Wine: samp_debug.exe spawns gta_sa.exe (per the
-    // gta_sa_exe registry value) and loads samp.dll into it, then connects
-    // to the given server. Launching the game exe directly cannot inject
-    // samp.dll on macOS, so it would only ever reach single player.
+    // SA-MP injection under Wine: samp_debug.exe is the SA-MP loader present
+    // in the game folder; it spawns gta_sa.exe (per the gta_sa_exe registry
+    // value) with samp.dll loaded and connects to the server. Launching the
+    // game exe directly cannot inject samp.dll on macOS (only single player).
     let samp_debug = game_dir.join("samp_debug.exe");
     let mut cmd = Command::new(cxstart);
     cmd.arg("--bottle").arg(&bottle);
