@@ -7,7 +7,7 @@ import { useAppState } from "../../../states/app";
 import { usePersistentServers } from "../../../states/servers";
 import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
-import { checkDirectoryValidity } from "../../../utils/game";
+import { autoDetectGtasaPath, checkDirectoryValidity } from "../../../utils/game";
 import { Log } from "../../../utils/logger";
 import { sc } from "../../../utils/sizeScaler";
 import { stateStorage } from "../../../utils/stateStorage";
@@ -20,6 +20,12 @@ const General = () => {
   const { updateInfo, version } = useAppState();
 
   const selectPath = async () => {
+    // If nothing is set yet, try to locate the game automatically first.
+    if (!gtasaPath) {
+      const detected = await autoDetectGtasaPath();
+      if (detected) return;
+    }
+
     const selected: string = (await open({
       defaultPath:
         hostOS === "Windows_NT" ? gtasaPath.replace(/\//g, "\\") : gtasaPath,

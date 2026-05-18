@@ -11,20 +11,172 @@ use std::process::{Command, Stdio};
 use crate::{constants::*, errors::*};
 
 #[cfg(not(target_os = "windows"))]
-use crate::errors::Result;
+use crate::{constants::*, errors::*};
+#[cfg(not(target_os = "windows"))]
+use log::info;
+#[cfg(not(target_os = "windows"))]
+use std::path::{Path, PathBuf};
+#[cfg(not(target_os = "windows"))]
+use std::process::{Command, Stdio};
 
+// macOS/Linux: the game is a Windows binary inside a CrossOver/Wine bottle,
+// so runtime DLL injection is not possible. The proxy load-vector DLL
+// (version.dll / vorbisFile.dll) already in the game folder loads the
+// client DLLs from disk, so we copy the chosen samp.dll / omp-client.dll
+// next to the exe and then launch the game through CrossOver.
 #[cfg(not(target_os = "windows"))]
 pub async fn run_samp(
-    _name: &str,
-    _ip: &str,
-    _port: i32,
-    _executable_dir: &str,
-    _dll_path: &str,
-    _omp_file: &str,
-    _password: &str,
-    _custom_game_exe: &str,
+    name: &str,
+    ip: &str,
+    port: i32,
+    executable_dir: &str,
+    dll_path: &str,
+    omp_file: &str,
+    password: &str,
+    custom_game_exe: &str,
 ) -> Result<()> {
-    Ok(())
+    let game_dir = PathBuf::from(executable_dir);
+    if !game_dir.is_dir() {
+        return Err(LauncherError::NotFound(format!(
+            "GTA SA directory not found: {}",
+            executable_dir
+        )));
+    }
+
+    // Resolve the executable: explicit override, else the Rockstar
+    // re-release name, else the SA-MP 1.0 downgrade name.
+    let exe_name = if !custom_game_exe.is_empty() {
+        custom_game_exe.to_string()
+    } else if game_dir.join(GTA_SA_EXECUTABLE_ALT).is_file() {
+        GTA_SA_EXECUTABLE_ALT.to_string()
+    } else {
+        GTA_SA_EXECUTABLE.to_string()
+    };
+    let exe_path = game_dir.join(&exe_name);
+    if !exe_path.is_file() {
+        return Err(LauncherError::NotFound(format!(
+            "Game executable not found: {}",
+            exe_path.display()
+        )));
+    }
+
+    // Place the chosen client DLLs next to the exe (best effort; the proxy
+    // DLL needs them on disk before launch).
+    let place = |src: &str, dst_name: &str| {
+        if src.is_empty() {
+            return;
+        }
+        let src_path = Path::new(src);
+        if !src_path.is_file() {
+            info!("[run_samp] skip copy, source missing: {}", src);
+            return;
+        }
+        let dst = game_dir.join(dst_name);
+        match std::fs::copy(src_path, &dst) {
+            Ok(_) => info!("[run_samp] placed {} -> {}", src, dst.display()),
+            Err(e) => info!("[run_samp] failed to place {}: {}", dst.display(), e),
+        }
+    };
+    place(dll_path, SAMP_DLL);
+    place(omp_file, OMP_CLIENT_DLL);
+
+    // The Wine prefix is the bottle root: nearest ancestor with a drive_c.
+    let prefix = {
+        let mut cur = game_dir.as_path();
+        let mut found: Option<PathBuf> = None;
+        while let Some(parent) = cur.parent() {
+            if parent.join("drive_c").is_dir() {
+                found = Some(parent.to_path_buf());
+                break;
+            }
+            cur = parent;
+        }
+        found
+    };
+
+    // SA-MP / open.mp connect arguments.
+    let mut game_args: Vec<String> = vec![
+        "-c".into(),
+        "-n".into(),
+        name.to_string(),
+        "-h".into(),
+        ip.to_string(),
+        "-p".into(),
+        port.to_string(),
+    ];
+    if !password.is_empty() {
+        game_args.push("-z".into());
+        game_args.push(password.to_string());
+    }
+
+    // Prefer CrossOver's cxstart (honours the bottle's Wine build + DXVK).
+    let cxstart = Path::new(CROSSOVER_CXSTART);
+    let wine_bin = [CROSSOVER_WINE_BIN, CROSSOVER_WINE_HOSTED]
+        .iter()
+        .map(Path::new)
+        .find(|p| p.is_file());
+
+    let spawn_result = if cxstart.is_file() {
+        let pfx = prefix.ok_or_else(|| {
+            LauncherError::NotFound(
+                "Could not locate the Wine bottle (no drive_c ancestor)".to_string(),
+            )
+        })?;
+        let bottle = pfx
+            .file_name()
+            .map(|s| s.to_string_lossy().to_string())
+            .unwrap_or_default();
+        let mut cmd = Command::new(cxstart);
+        cmd.arg("--bottle")
+            .arg(&bottle)
+            .arg(&exe_path)
+            .args(&game_args)
+            .current_dir(&game_dir)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null());
+        info!(
+            "[run_samp] cxstart bottle='{}' exe='{}'",
+            bottle,
+            exe_path.display()
+        );
+        cmd.spawn()
+    } else if let Some(wine) = wine_bin {
+        let pfx = prefix.ok_or_else(|| {
+            LauncherError::NotFound(
+                "Could not locate the Wine prefix (no drive_c ancestor)".to_string(),
+            )
+        })?;
+        let mut cmd = Command::new(wine);
+        cmd.env("WINEPREFIX", &pfx)
+            .arg(&exe_path)
+            .args(&game_args)
+            .current_dir(&game_dir)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null());
+        info!(
+            "[run_samp] wine='{}' prefix='{}' exe='{}'",
+            wine.display(),
+            pfx.display(),
+            exe_path.display()
+        );
+        cmd.spawn()
+    } else {
+        return Err(LauncherError::NotFound(
+            "CrossOver not found at /Applications/CrossOver.app. Install \
+             CrossOver to run the game on macOS."
+                .to_string(),
+        ));
+    };
+
+    match spawn_result {
+        Ok(_) => Ok(()),
+        Err(e) => Err(LauncherError::Process(format!(
+            "Failed to launch the game through Wine: {}",
+            e
+        ))),
+    }
 }
 
 #[cfg(target_os = "windows")]

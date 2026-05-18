@@ -40,6 +40,33 @@ pub const GTA_SA_EXECUTABLE: &str = "gta_sa.exe";
 pub const SAMP_DLL: &str = "samp.dll";
 pub const OMP_CLIENT_DLL: &str = "omp-client.dll";
 
+// On macOS the game runs inside a CrossOver/Wine bottle. The Rockstar
+// re-release ships as "gta-sa.exe"; the SA-MP-compatible 1.0 downgrade is
+// "gta_sa.exe". Detection/launch tries customGameExe, then these in order.
+#[cfg(not(target_os = "windows"))]
+pub const GTA_SA_EXECUTABLE_ALT: &str = "gta-sa.exe";
+
+// CrossOver's bundled Wine entry points (preferred launch path on macOS).
+#[cfg(not(target_os = "windows"))]
+pub const CROSSOVER_CXSTART: &str =
+    "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/cxstart";
+#[cfg(not(target_os = "windows"))]
+pub const CROSSOVER_WINE_BIN: &str =
+    "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine";
+#[cfg(not(target_os = "windows"))]
+pub const CROSSOVER_WINE_HOSTED: &str =
+    "/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/CrossOver-Hosted Application/wine";
+
+// Relative game-dir locations probed inside each CrossOver bottle's drive_c.
+#[cfg(not(target_os = "windows"))]
+pub const BOTTLE_GAME_SUBPATHS: &[&str] = &[
+    "drive_c/Program Files/Rockstar Games/Grand Theft Auto San Andreas",
+    "drive_c/Program Files (x86)/Rockstar Games/Grand Theft Auto San Andreas",
+    "drive_c/Program Files (x86)/Steam/steamapps/common/Grand Theft Auto San Andreas",
+    "drive_c/Program Files/Rockstar Games/GTA San Andreas",
+    "drive_c/Games/GTA San Andreas",
+];
+
 pub const DEEPLINK_SCHEME_OMP: &str = "omp";
 pub const DEEPLINK_SCHEME_SAMP: &str = "samp";
 pub const DEEPLINK_IDENTIFIER: &str = "mp.open.launcher";

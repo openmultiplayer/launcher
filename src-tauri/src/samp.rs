@@ -33,9 +33,41 @@ pub struct SAMPUserData {
     pub favorite_servers: Vec<SAMPServerInfo>,
 }
 
+// macOS/Linux: there is no SA-MP registry key. The game lives inside a
+// CrossOver/Wine bottle, so probe every bottle for a known GTA SA layout
+// and return the first directory that actually contains a game executable.
 #[cfg(not(target_os = "windows"))]
 pub fn get_gtasa_path() -> String {
-    "".to_string()
+    use crate::constants::{BOTTLE_GAME_SUBPATHS, GTA_SA_EXECUTABLE, GTA_SA_EXECUTABLE_ALT};
+    use std::path::{Path, PathBuf};
+
+    let home = match std::env::var("HOME") {
+        Ok(h) => h,
+        Err(_) => return String::new(),
+    };
+
+    let exe_names = [GTA_SA_EXECUTABLE_ALT, GTA_SA_EXECUTABLE];
+    let has_game = |dir: &Path| exe_names.iter().any(|e| dir.join(e).is_file());
+
+    let bottles_root =
+        PathBuf::from(&home).join("Library/Application Support/CrossOver/Bottles");
+
+    if let Ok(entries) = std::fs::read_dir(&bottles_root) {
+        for entry in entries.flatten() {
+            let bottle = entry.path();
+            if !bottle.is_dir() {
+                continue;
+            }
+            for sub in BOTTLE_GAME_SUBPATHS {
+                let dir = bottle.join(sub);
+                if has_game(&dir) {
+                    return dir.to_string_lossy().replace('\\', "/");
+                }
+            }
+        }
+    }
+
+    String::new()
 }
 
 #[cfg(not(target_os = "windows"))]

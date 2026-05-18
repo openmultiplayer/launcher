@@ -32,6 +32,61 @@ const showOkModal = (title: string, description: string) => {
 const getLocalPath = async (...segments: string[]) =>
   path.join(await path.appLocalDataDir(), ...segments);
 
+// Known GTA SA executables. "gta-sa.exe" is the Rockstar re-release shipped
+// in CrossOver bottles; "gta_sa.exe" is the SA-MP-compatible 1.0 downgrade.
+const KNOWN_GAME_EXES = ["gta-sa.exe", "gta_sa.exe"];
+
+const candidateExes = () => {
+  const { customGameExe } = useSettings.getState();
+  return [customGameExe, ...KNOWN_GAME_EXES].filter(
+    (e, i, a) => e && a.indexOf(e) === i
+  );
+};
+
+// True if dirPath contains any recognised game executable. No UI side-effects.
+const hasGameExe = async (dirPath: string) => {
+  for (const exe of candidateExes()) {
+    if (await exists(`${dirPath}/${exe}`)) return true;
+  }
+  return false;
+};
+
+// Ask the backend to auto-detect the game directory (scans CrossOver bottles
+// on macOS, reads the SA-MP registry key on Windows). Persists + returns the
+// path if a valid game directory is found, otherwise "".
+export const autoDetectGtasaPath = async (): Promise<string> => {
+  try {
+    const detected: string = await invoke("get_gtasa_path_from_samp");
+    if (detected && detected.length) {
+      const norm = detected.replace(/\\/g, "/");
+      if (await hasGameExe(norm)) {
+        useSettings.getState().setGTASAPath(norm);
+        return norm;
+      }
+    }
+  } catch (e) {
+    Log.debug("autoDetectGtasaPath failed:", e);
+  }
+  return "";
+};
+
+// Fallback when auto-detect fails: let the user point at the game executable;
+// the containing folder becomes the GTA SA path.
+export const locateGameExeDir = async (): Promise<string> => {
+  const selected = await open({
+    multiple: false,
+    directory: false,
+    filters: [{ name: "GTA San Andreas", extensions: ["exe"] }],
+  });
+  if (!selected || typeof selected !== "string") return "";
+  const dir = (await path.dirname(selected)).replace(/\\/g, "/");
+  if (await hasGameExe(dir)) {
+    useSettings.getState().setGTASAPath(dir);
+    return dir;
+  }
+  return "";
+};
+
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
   const shared = await getLocalPath("samp", "shared");
@@ -86,29 +141,49 @@ export const startGame = async (
   }
 
   if (!gtasaPath) {
-    showMessageBox({
-      title: t("gta_path_modal_path_not_set_title"),
-      description: t("gta_path_modal_path_not_set_description"),
-      buttons: [
-        {
-          title: t("open_settings"),
-          onPress: () => {
-            showPrompt(false);
-            showSettings();
-            hideMessageBox();
+    // Try to find the game automatically (CrossOver bottles on macOS, the
+    // SA-MP registry key on Windows) before bothering the user.
+    const detected = await autoDetectGtasaPath();
+    if (detected) {
+      gtasaPath = detected;
+    } else {
+      showMessageBox({
+        title: t("gta_path_modal_path_not_set_title"),
+        description: t("gta_path_modal_path_not_set_description"),
+        buttons: [
+          {
+            title: t("browse"),
+            onPress: async () => {
+              const dir = await locateGameExeDir();
+              hideMessageBox();
+              if (dir) {
+                startGame(server, nickname, dir, password);
+              } else {
+                showPrompt(true);
+                setServer(server);
+              }
+            },
           },
-        },
-        {
-          title: t("cancel"),
-          onPress: () => {
-            showPrompt(true);
-            setServer(server);
-            hideMessageBox();
+          {
+            title: t("open_settings"),
+            onPress: () => {
+              showPrompt(false);
+              showSettings();
+              hideMessageBox();
+            },
           },
-        },
-      ],
-    });
-    return;
+          {
+            title: t("cancel"),
+            onPress: () => {
+              showPrompt(true);
+              setServer(server);
+              hideMessageBox();
+            },
+          },
+        ],
+      });
+      return;
+    }
   }
 
   if (!nickname) {
@@ -261,7 +336,7 @@ export const checkDirectoryValidity = async (
   const { show: showSettings } = useSettingsModal.getState();
   const { showPrompt } = useJoinServerPrompt.getState();
 
-  if (!(await exists(`${dirPath}/gta_sa.exe`))) {
+  if (!(await hasGameExe(dirPath))) {
     showMessageBox({
       title: t("gta_path_modal_cant_find_game_title"),
       description: t("gta_path_modal_cant_find_game_description", {
