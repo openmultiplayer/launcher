@@ -158,10 +158,11 @@ impl Query {
         packet.push(query_type as u8);
 
         if query_type == 'p' {
-            packet.push(0);
-            packet.push(0);
-            packet.push(0);
-            packet.push(0);
+            let payload = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map(|duration| (duration.as_nanos() as u32).to_le_bytes())
+                .unwrap_or([b'S', b'A', b'M', b'P']);
+            packet.extend_from_slice(&payload);
         }
 
         let amt = self
