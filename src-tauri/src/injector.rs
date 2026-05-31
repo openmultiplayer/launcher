@@ -10,6 +10,24 @@ use std::process::{Command, Stdio};
 #[cfg(target_os = "windows")]
 use crate::{constants::*, errors::*};
 
+#[cfg(target_os = "windows")]
+fn inject_optional_dll(child: u32, dll_path: &str) -> Result<()> {
+    inject_dll(child, dll_path, INJECTION_MAX_RETRIES, true)
+}
+
+#[cfg(target_os = "windows")]
+fn format_injection_error_message(error: &impl std::fmt::Display) -> String {
+    let raw = error.to_string();
+    if raw.contains("os error 126") || raw.contains("The specified module could not be found") {
+        format!(
+            "{} (the target process could not load the DLL or one of its dependencies)",
+            raw
+        )
+    } else {
+        raw
+    }
+}
+
 #[cfg(not(target_os = "windows"))]
 pub async fn run_samp(
     _name: &str,
@@ -17,6 +35,10 @@ pub async fn run_samp(
     _port: i32,
     _executable_dir: &str,
     _dll_path: &str,
+    _trace_file: &str,
+    _trace_dualstack: bool,
+    _trace_remote_ip: &str,
+    _trace_remote_port: i32,
     _omp_file: &str,
     _password: &str,
     _custom_game_exe: &str,
@@ -31,6 +53,10 @@ pub async fn run_samp(
     port: i32,
     executable_dir: &str,
     dll_path: &str,
+    trace_file: &str,
+    trace_dualstack: bool,
+    trace_remote_ip: &str,
+    trace_remote_port: i32,
     omp_file: &str,
     password: &str,
     custom_game_exe: &str,
@@ -67,13 +93,51 @@ pub async fn run_samp(
         ready_for_exec = ready_for_exec.arg("-z").arg(password);
     }
 
+    if !trace_file.is_empty() {
+        ready_for_exec = ready_for_exec.env(
+            "OMP_TRACE_DUALSTACK",
+            if trace_dualstack { "1" } else { "0" },
+        );
+
+        if trace_dualstack
+            && !trace_remote_ip.is_empty()
+            && (1..=65535).contains(&trace_remote_port)
+        {
+            ready_for_exec = ready_for_exec
+                .env("OMP_TRACE_REMOTE_IPV6", trace_remote_ip)
+                .env("OMP_TRACE_REMOTE_PORT", trace_remote_port.to_string());
+        }
+    }
+
+    info!(
+        "[run_samp] launching {} for {}:{} trace={} omp={}",
+        exe_path.display(),
+        ip,
+        port,
+        !trace_file.is_empty(),
+        !omp_file.is_empty()
+    );
+
     let process = ready_for_exec.current_dir(executable_dir).spawn();
 
     match process {
         Ok(p) => {
+            info!("[run_samp] spawned process pid={}", p.id());
+            if !trace_file.is_empty() {
+                info!("[run_samp] injecting optional trace DLL {}", trace_file);
+                if let Err(e) = inject_optional_dll(p.id(), trace_file) {
+                    let error_text = format_injection_error_message(&e);
+                    info!(
+                        "[run_samp] optional trace DLL injection failed for {}: {}",
+                        trace_file, error_text
+                    );
+                }
+            }
+            info!("[run_samp] injecting primary DLL {}", dll_path);
             inject_dll(p.id(), dll_path, 0, false)?;
             info!("[run_samp] omp_file.is_empty(): {}", omp_file.is_empty());
             if !omp_file.is_empty() {
+                info!("[run_samp] injecting OMP DLL {}", omp_file);
                 inject_dll(p.id(), omp_file, 0, false)
             } else {
                 Ok(())
@@ -129,9 +193,25 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                     let mut bytes = [0i8; PROCESS_MODULE_BUFFER_SIZE];
 
                     if found == 0 {
+                        let next_attempt = times + 1;
+                        if next_attempt > MODULE_WAIT_MAX_RETRIES {
+                            return Err(LauncherError::Injection(format!(
+                                "DLL injection timed out waiting for process modules: {}",
+                                dll_path
+                            )));
+                        }
+                        if next_attempt == 1
+                            || next_attempt == MODULE_WAIT_MAX_RETRIES
+                            || next_attempt % 5 == 0
+                        {
+                            info!(
+                                "[injector.rs] waiting for process modules before injecting {} (attempt {}/{})",
+                                dll_path, next_attempt, MODULE_WAIT_MAX_RETRIES
+                            );
+                        }
                         let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
                         std::thread::sleep(delay);
-                        return inject_dll(child, dll_path, times, true);
+                        return inject_dll(child, dll_path, next_attempt, true);
                     }
 
                     let mut found_vorbis = false;
@@ -151,9 +231,25 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                     }
 
                     if !found_vorbis {
+                        let next_attempt = times + 1;
+                        if next_attempt > MODULE_WAIT_MAX_RETRIES {
+                            return Err(LauncherError::Injection(format!(
+                                "DLL injection timed out waiting for vorbis: {}",
+                                dll_path
+                            )));
+                        }
+                        if next_attempt == 1
+                            || next_attempt == MODULE_WAIT_MAX_RETRIES
+                            || next_attempt % 5 == 0
+                        {
+                            info!(
+                                "[injector.rs] waiting for vorbis before injecting {} (attempt {}/{})",
+                                dll_path, next_attempt, MODULE_WAIT_MAX_RETRIES
+                            );
+                        }
                         let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
                         std::thread::sleep(delay);
-                        return inject_dll(child, dll_path, times, true);
+                        return inject_dll(child, dll_path, next_attempt, true);
                     }
                 }
             }
@@ -162,16 +258,23 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
             let syringe = Syringe::for_process(p);
 
             // inject the payload into the target process
+            info!(
+                "[injector.rs] attempting DLL injection {} (attempt {}, waiting_for_vorbis={})",
+                dll_path,
+                times + 1,
+                waiting_for_vorbis
+            );
             match syringe.inject(dll_path) {
                 Ok(_) => Ok(()),
                 Err(e) => {
+                    let error_text = format_injection_error_message(&e);
                     let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
                     std::thread::sleep(delay);
 
                     if times >= INJECTION_MAX_RETRIES {
                         info!(
                             "[injector.rs] DLL {} injection failed after {} attempts: {}",
-                            dll_path, INJECTION_MAX_RETRIES, e
+                            dll_path, INJECTION_MAX_RETRIES, error_text
                         );
 
                         if !waiting_for_vorbis {
@@ -179,7 +282,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                         }
                         return Err(LauncherError::Injection(format!(
                             "DLL injection failed: {}",
-                            e
+                            error_text
                         )));
                     }
 

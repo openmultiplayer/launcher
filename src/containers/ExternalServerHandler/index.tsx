@@ -18,11 +18,8 @@ import { useTheme } from "../../states/theme";
 import { startGame } from "../../utils/game";
 import { Log } from "../../utils/logger";
 import { sc } from "../../utils/sizeScaler";
-import { Server } from "../../utils/types";
-import {
-  isValidDomain,
-  validateServerAddressIPv4,
-} from "../../utils/validation";
+import { getServerEndpoint, Server } from "../../utils/types";
+import { parseServerAddress } from "../../utils/validation";
 
 const ExternalServerHandler = () => {
   const [visible, showModal] = useState(false);
@@ -98,23 +95,11 @@ const ExternalServerHandler = () => {
       rules: {} as Server["rules"],
     };
 
-    if (serverAddress.length) {
-      if (serverAddress.includes(":")) {
-        const data = serverAddress.split(":");
-        serverInfo.ip = data[0];
-        serverInfo.port = parseInt(data[1]);
-        serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
-      } else {
-        if (
-          validateServerAddressIPv4(serverAddress) ||
-          isValidDomain(serverAddress)
-        ) {
-          serverInfo.ip = serverAddress;
-          serverInfo.port = 7777;
-          serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
-        }
-      }
-
+    const parsed = parseServerAddress(serverAddress);
+    if (parsed) {
+      serverInfo.ip = parsed.ip;
+      serverInfo.port = parsed.port;
+      serverInfo.hostname += ` (${getServerEndpoint(parsed)})`;
       addToFavorites(serverInfo);
       showModal(false);
     }
@@ -139,23 +124,11 @@ const ExternalServerHandler = () => {
       rules: {} as Server["rules"],
     };
 
-    if (serverAddress.length) {
-      if (serverAddress.includes(":")) {
-        const data = serverAddress.split(":");
-        serverInfo.ip = data[0];
-        serverInfo.port = parseInt(data[1]);
-        serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
-      } else {
-        if (
-          validateServerAddressIPv4(serverAddress) ||
-          isValidDomain(serverAddress)
-        ) {
-          serverInfo.ip = serverAddress;
-          serverInfo.port = 7777;
-          serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
-        }
-      }
-
+    const parsed = parseServerAddress(serverAddress);
+    if (parsed) {
+      serverInfo.ip = parsed.ip;
+      serverInfo.port = parsed.port;
+      serverInfo.hostname += ` (${getServerEndpoint(parsed)})`;
       startGame(serverInfo, nickName, gtasaPath, "");
       showModal(false);
     }

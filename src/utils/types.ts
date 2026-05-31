@@ -1,3 +1,5 @@
+import { isIPv6, normalizeIPv6, parseServerAddress } from "./validation";
+
 // Core game-related types
 export const RULE_TYPES = [
   "artwork",
@@ -142,15 +144,19 @@ export const isValidSAMPVersion = (value: string): value is SAMPDLLVersions => {
 
 // Helper functions for server operations
 export const getServerEndpoint = (server: ServerIdentifier): ServerEndpoint => {
-  return `${server.ip}:${server.port}` as ServerEndpoint;
+  const host = isIPv6(server.ip) ? `[${normalizeIPv6(server.ip)}]` : server.ip;
+  return `${host}:${server.port}` as ServerEndpoint;
 };
 
 export const parseServerEndpoint = (
   endpoint: ServerEndpoint
 ): ServerIdentifier => {
-  const [ip, portStr] = endpoint.split(":");
-  return {
-    ip,
-    port: parseInt(portStr, 10),
-  };
+  const parsed = parseServerAddress(endpoint);
+  if (!parsed) {
+    return {
+      ip: endpoint,
+      port: 7777,
+    };
+  }
+  return parsed;
 };

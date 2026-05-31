@@ -19,6 +19,7 @@ import { Log } from "./logger";
 import { PING_TIMEOUT_VALUE } from "./query";
 import { sc } from "./sizeScaler";
 import { Server } from "./types";
+import { isIPv6 } from "./validation";
 
 const showOkModal = (title: string, description: string) => {
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
@@ -31,6 +32,33 @@ const showOkModal = (title: string, description: string) => {
 
 const getLocalPath = async (...segments: string[]) =>
   path.join(await path.appLocalDataDir(), ...segments);
+
+interface ProxyInfo {
+  host: string;
+  port: number;
+}
+
+const stopIpv6ProxySilently = async () => {
+  try {
+    await invoke("stop_ipv6_proxy");
+  } catch {
+    // Best effort cleanup.
+  }
+};
+
+const startIpv6Proxy = async (host: string, port: number): Promise<ProxyInfo | null> => {
+  try {
+    const proxy = await invoke<ProxyInfo>("start_ipv6_proxy", {
+      host,
+      port,
+      localPort: 0,
+    });
+    return proxy;
+  } catch (error) {
+    Log.warn(`[startGame] Failed to start IPv6 proxy for ${host}:${port}`, error);
+    return null;
+  }
+};
 
 export const copySharedFilesIntoGameFolder = async () => {
   const { gtasaPath } = useSettings.getState();
@@ -72,15 +100,53 @@ export const startGame = async (
   const { sampVersion, customGameExe } = useSettings.getState();
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
   const { setSelected } = useServers.getState();
+  const resolvedAddress = (await getIpAddress(server.ip)) ?? server.ip;
+  let launchAddress = resolvedAddress;
+  let launchPort = server.port;
+
+  if (resolvedAddress && isIPv6(resolvedAddress)) {
+    const normalizedIPv6 = resolvedAddress
+      .trim()
+      .replace(/^\[/, "")
+      .replace(/\]$/, "");
+    const proxy = await startIpv6Proxy(normalizedIPv6, server.port);
+
+    if (proxy) {
+      launchAddress = proxy.host;
+      launchPort = proxy.port;
+      Log.info(
+        `[startGame] IPv6 proxy active ${normalizedIPv6}:${server.port} -> ${launchAddress}:${launchPort}`
+      );
+    } else {
+      const fallbackIPv4 = await getIpAddress(server.ip, "ipv4");
+      if (fallbackIPv4 && !isIPv6(fallbackIPv4)) {
+        launchAddress = fallbackIPv4;
+        launchPort = server.port;
+        await stopIpv6ProxySilently();
+        Log.warn(
+          `[startGame] IPv6 proxy start failed for ${normalizedIPv6}:${server.port}, falling back to IPv4 ${fallbackIPv4}:${server.port}`
+        );
+      } else {
+        showOkModal(
+          "IPv6 connection failed",
+          `Could not start local IPv6 proxy for ${normalizedIPv6}:${server.port} and no IPv4 fallback address is available.`
+        );
+        showPrompt(true);
+        setServer(server);
+        return;
+      }
+    }
+  } else {
+    await stopIpv6ProxySilently();
+  }
+  const connectAddress = launchAddress;
 
   if (IN_GAME) {
     invoke("send_message_to_game", {
       id: IN_GAME_PROCESS_ID,
       message: password.length
-        ? `connect:${await getIpAddress(server.ip)}:${
-            server.port
-          }:${nickname}:${password}`
-        : `connect:${await getIpAddress(server.ip)}:${server.port}:${nickname}`,
+        ? `connect:${connectAddress}:${launchPort}:${nickname}:${password}`
+        : `connect:${connectAddress}:${launchPort}:${nickname}`,
     });
     return;
   }
@@ -221,10 +287,14 @@ export const startGame = async (
 
   invoke("inject", {
     name: nickname,
-    ip: await getIpAddress(server.ip),
-    port: server.port,
+    ip: launchAddress,
+    port: launchPort,
     exe: gtasaPath,
     dll: ourSAMPDllPath,
+    traceFile: "",
+    traceDualstack: false,
+    traceRemoteIp: "",
+    traceRemotePort: 0,
     ompFile: await getLocalPath("omp", "omp-client.dll"),
     password,
     customGameExe,

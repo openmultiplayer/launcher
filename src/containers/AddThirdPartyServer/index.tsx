@@ -16,11 +16,8 @@ import { useAddThirdPartyServerModal } from "../../states/addThirdPartyServerMod
 import { usePersistentServers } from "../../states/servers";
 import { useTheme } from "../../states/theme";
 import { sc } from "../../utils/sizeScaler";
-import { Server } from "../../utils/types";
-import {
-  isValidDomain,
-  validateServerAddressIPv4,
-} from "../../utils/validation";
+import { getServerEndpoint, Server } from "../../utils/types";
+import { parseServerAddress } from "../../utils/validation";
 
 const AddThirdPartyServerModal = () => {
   const { visible, showAddThirdPartyServer } = useAddThirdPartyServerModal();
@@ -58,23 +55,11 @@ const AddThirdPartyServerModal = () => {
       rules: {} as Server["rules"],
     };
 
-    if (serverAddress.length) {
-      if (serverAddress.includes(":")) {
-        const data = serverAddress.split(":");
-        serverInfo.ip = data[0];
-        serverInfo.port = parseInt(data[1]);
-        serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
-      } else {
-        if (
-          validateServerAddressIPv4(serverAddress) ||
-          isValidDomain(serverAddress)
-        ) {
-          serverInfo.ip = serverAddress;
-          serverInfo.port = 7777;
-          serverInfo.hostname += ` (${serverInfo.ip}:${serverInfo.port})`;
-        }
-      }
-
+    const parsed = parseServerAddress(serverAddress);
+    if (parsed) {
+      serverInfo.ip = parsed.ip;
+      serverInfo.port = parsed.port;
+      serverInfo.hostname += ` (${getServerEndpoint(parsed)})`;
       addToFavorites(serverInfo);
       showAddThirdPartyServer(false);
     }
@@ -115,7 +100,7 @@ const AddThirdPartyServerModal = () => {
           </Text>
         </View>
         <TextInput
-          placeholder={"IP:Port"}
+          placeholder={"IP/Host[:Port] or [IPv6]:Port"}
           placeholderTextColor={theme.textPlaceholder}
           value={serverAddress}
           onSubmitEditing={addServer}
