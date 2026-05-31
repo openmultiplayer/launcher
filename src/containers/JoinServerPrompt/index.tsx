@@ -69,18 +69,13 @@ const JoinServerPrompt = () => {
 
   useEffect(() => {
     if (settings) {
-      if (settings.nickname !== undefined) {
-        setPerServerNickname(settings.nickname);
-      }
-
-      if (settings.sampVersion !== undefined) {
-        setPerServerVersion(settings.sampVersion);
-      }
+      setPerServerNickname(settings.nickname || "");
+      setPerServerVersion(settings.sampVersion);
     } else {
       setPerServerNickname("");
       setPerServerVersion(undefined);
     }
-  }, [settings]);
+  }, [visible, server?.ip, server?.port]);
 
   useEffect(() => {
     setPassword(server && server.password ? server.password : "");
@@ -181,6 +176,8 @@ const JoinServerPrompt = () => {
 
   const handleNicknameChange = useCallback(
     (text: string) => {
+      setPerServerNickname(text);
+
       if (server) {
         if (settings) {
           setServerSettings(server, text, settings.sampVersion);
@@ -228,14 +225,14 @@ const JoinServerPrompt = () => {
       const version = getSampVersionFromName(value);
       if (server) {
         if (settings) {
-          setServerSettings(server, settings.nickname, version);
+          setServerSettings(server, perServerNickname, version);
         } else {
-          setServerSettings(server, undefined, version);
+          setServerSettings(server, perServerNickname || undefined, version);
         }
         setPerServerVersion(version);
       }
     },
-    [server, settings, setServerSettings]
+    [server, settings, perServerNickname, setServerSettings]
   );
 
   if (!visible) {
