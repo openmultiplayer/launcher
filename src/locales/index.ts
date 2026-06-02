@@ -68,6 +68,8 @@ const loadTranslation = (lang: string) => {
       return import("./translations/fi");
     case "kr":
       return import("./translations/kr");
+    case "bg":
+      return import("./translations/bg");
     default:
       return import("./translations/en");
   }
@@ -109,7 +111,8 @@ export type LanguageType =
   | "ua"
   | "ge"
   | "fi"
-  | "kr";
+  | "kr"
+  | "bg";
 
 interface LanguageResource {
   label: string;
@@ -154,6 +157,7 @@ const LANGUAGE_METADATA: Record<
   sr: { label: "Српски", type: "sr" },
   fi: { label: "Suomi", type: "fi" },
   kr: { label: "한국어", type: "kr" },
+  bg: { label: "Български", type: "bg" },
 };
 
 // Cache for loaded translations
