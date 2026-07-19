@@ -11,6 +11,7 @@ edition = "2021"
 
 [build-dependencies]
 tauri-build = { version = "1", features = [] }
+winres = "0.1"
 
 [dependencies]
 tauri = { version = "1.8.3", features = [ "clipboard-all", "fs-all", "path-all", "macos-private-api", "process-all", "window-all", "dialog-all", "os-all", "shell-open"] }
@@ -72,4 +73,4 @@ custom-protocol = ["tauri/custom-protocol"]
 codegen-units = 1
 lto = true
 opt-level = "z"
-strip = true
+strip = "debuginfo"

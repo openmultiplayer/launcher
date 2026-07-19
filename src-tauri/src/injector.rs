@@ -105,7 +105,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
         um::{
             processthreadsapi::OpenProcess,
             psapi::{EnumProcessModulesEx, GetModuleFileNameExA},
-            winnt::PROCESS_ALL_ACCESS,
+            winnt::{PROCESS_QUERY_INFORMATION, PROCESS_VM_READ},
         },
     };
 
@@ -113,7 +113,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
         Ok(p) => {
             if waiting_for_vorbis {
                 unsafe {
-                    let handle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, child);
+                    let handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, child);
                     let mut module_handles: [HMODULE; PROCESS_MODULE_BUFFER_SIZE] =
                         [0 as *mut _; PROCESS_MODULE_BUFFER_SIZE];
                     let mut found = 0;
