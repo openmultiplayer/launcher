@@ -9,7 +9,7 @@ fn main() {
         res.set("InternalName", "omp-launcher.exe");
         res.set("OriginalFilename", "omp-launcher.exe");
         if let Err(e) = res.compile() {
-            eprintln!("winres failed: {}", e);
+            panic!("winres failed to compile Windows resources: {}", e);
         }
     }
     tauri_build::build()
