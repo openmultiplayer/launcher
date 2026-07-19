@@ -43,6 +43,7 @@ jobs:
           echo "setup_artifact_name=${setup_artifact_name}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
+        id: upload-exe
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.vars.outputs.artifact_name }}
@@ -50,8 +51,40 @@ jobs:
           if-no-files-found: error
 
       - name: Upload setup artifacts
+        id: upload-setup
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.vars.outputs.setup_artifact_name }}
-          path: src-tauri/target/i686-pc-windows-msvc/release/bundle/nsis/omp-launcher_1.7.0_x86-setup.exe
+          path: src-tauri/target/i686-pc-windows-msvc/release/bundle/nsis/omp-launcher_*_x86-setup.exe
           if-no-files-found: error
+
+      # Sign artifacts via SignPath Foundation (free for open source).
+      # Required repository configuration:
+      #   Secret:   SIGNPATH_API_TOKEN - API token from your SignPath account
+      #   Variable: SIGNPATH_ORGANIZATION_ID - value for the action `organization-id` input
+      #   Variable: SIGNPATH_PROJECT_SLUG - project slug you created in SignPath (e.g. "omp-launcher")
+      #   Variable: SIGNPATH_SIGNING_POLICY_SLUG - signing policy slug (e.g. "release-signing")
+      # Apply for a free open-source certificate at: https://about.signpath.io/product/open-source
+      - name: Sign exe via SignPath
+        if: github.event_name != 'pull_request'
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-exe.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-name: ${{ steps.vars.outputs.artifact_name }}-signed
+
+      - name: Sign setup installer via SignPath
+        if: github.event_name != 'pull_request'
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-setup.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-name: ${{ steps.vars.outputs.setup_artifact_name }}-signed
