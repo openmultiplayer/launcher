@@ -59,12 +59,11 @@ jobs:
           if-no-files-found: error
 
       # Sign artifacts via SignPath Foundation (free for open source).
-      # Required secrets/variables to configure in repository settings:
-      #   SIGNPATH_API_TOKEN       — API token from your SignPath account
-      #   SIGNPATH_ORGANIZATION_ID — Organization ID from SignPath dashboard
-      # Required variables (Settings → Secrets and variables → Variables):
-      #   SIGNPATH_PROJECT_SLUG          — project slug you created in SignPath (e.g. "omp-launcher")
-      #   SIGNPATH_SIGNING_POLICY_SLUG   — signing policy slug (e.g. "release-signing")
+      # Required repository configuration:
+      #   Secret:   SIGNPATH_API_TOKEN         — API token from your SignPath account
+      #   Variable: SIGNPATH_ORGANIZATION_ID   — Organization ID from SignPath dashboard
+      #   Variable: SIGNPATH_PROJECT_SLUG      — project slug you created in SignPath (e.g. "omp-launcher")
+      #   Variable: SIGNPATH_SIGNING_POLICY_SLUG — signing policy slug (e.g. "release-signing")
       # Apply for a free open-source certificate at: https://about.signpath.io/product/open-source
       - name: Sign exe via SignPath
         if: github.event_name != 'pull_request'
