@@ -200,6 +200,19 @@ const App = memo(() => {
     };
   }, [windowResizeListener, initializeApp]);
 
+  useEffect(() => {
+    // Re-fetch the server list when the network comes back online,
+    // in case the initial fetch failed because the launcher started offline.
+    const handleOnline = () => {
+      fetchServers();
+    };
+
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+
   const handleLoadingEnd = useCallback(async () => {
     const endTimer = PerformanceMonitor.time("loading-end");
     setLoading(false);
