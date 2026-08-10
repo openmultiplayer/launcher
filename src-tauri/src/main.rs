@@ -54,7 +54,22 @@ async fn main() {
         deeplink::prepare(DEEPLINK_IDENTIFIER);
     }
 
-    if let Err(e) = simple_logging::log_to_file(LOG_FILE_NAME, LevelFilter::Info) {
+    // Write the log to the app data directory instead of the current working
+    // directory, so it ends up somewhere stable no matter where the app is
+    // launched from.
+    let log_dir = dirs_next::data_dir()
+        .map(|dir| dir.join(DATA_DIR_NAME))
+        .unwrap_or_else(|| {
+            eprintln!("Failed to get data directory");
+            exit(1);
+        });
+
+    if let Err(e) = fs::create_dir_all(&log_dir) {
+        eprintln!("Failed to create data directory: {}", e);
+        exit(1);
+    }
+
+    if let Err(e) = simple_logging::log_to_file(log_dir.join(LOG_FILE_NAME), LevelFilter::Info) {
         eprintln!("Failed to initialize logging: {}", e);
         exit(1);
     }
