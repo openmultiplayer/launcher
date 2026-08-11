@@ -50,12 +50,19 @@ jobs:
       #     setup_artifact_name="open.mp-launcher-win-setup-${GITHUB_RUN_ID}"
       #     echo "setup_artifact_name=${setup_artifact_name}" >> $GITHUB_OUTPUT
 
+      - name: Prepare unsigned launcher
+        shell: pwsh
+        run: |
+          Copy-Item `
+            -LiteralPath "src-tauri/target/i686-pc-windows-msvc/release/omp-launcher.exe" `
+            -Destination "unsigned-omp-launcher.exe" `
+            -Force
+
       - name: Upload unsigned launcher
         uses: actions/upload-artifact@v7
         id: upload-launcher
         with:
-          name: unsigned-omp-launcher.exe
-          path: src-tauri/target/i686-pc-windows-msvc/release/omp-launcher.exe
+          path: unsigned-omp-launcher.exe
           if-no-files-found: error
           archive: false
 
@@ -72,23 +79,42 @@ jobs:
           output-artifact-directory: signed-launcher
           skip-decompress: true
 
+      - name: Restore signed launcher for NSIS
+        shell: pwsh
+        run: |
+          Copy-Item `
+            -LiteralPath "signed-launcher/unsigned-omp-launcher.exe" `
+            -Destination "src-tauri/target/i686-pc-windows-msvc/release/omp-launcher.exe" `
+            -Force
+
+          Copy-Item `
+            -LiteralPath "signed-launcher/unsigned-omp-launcher.exe" `
+            -Destination "omp-launcher.exe" `
+            -Force
+
       - name: Upload signed launcher
         uses: actions/upload-artifact@v7
         with:
-          name: omp-launcher.exe
-          path: signed-launcher/omp-launcher.exe
+          path: omp-launcher.exe
           if-no-files-found: error
           archive: false
 
       - name: Make NSIS archive
         run: yarn installer
 
+      - name: Prepare unsigned installer
+        shell: pwsh
+        run: |
+          Copy-Item `
+            -LiteralPath "src-tauri/nsis/omp-launcher-setup.exe" `
+            -Destination "unsigned-omp-launcher-setup.exe" `
+            -Force
+
       - name: Upload unsigned installer
         id: upload-installer
         uses: actions/upload-artifact@v7
         with:
-          name: unsigned-omp-launcher-setup
-          path: src-tauri/nsis/omp-launcher-setup.exe
+          path: unsigned-omp-launcher-setup.exe
           if-no-files-found: error
           archive: false
 
@@ -105,10 +131,17 @@ jobs:
           output-artifact-directory: signed-installer
           skip-decompress: true
 
+      - name: Rename signed installer
+        shell: pwsh
+        run: |
+          Copy-Item `
+            -LiteralPath "signed-installer/unsigned-omp-launcher-setup.exe" `
+            -Destination "omp-launcher-setup.exe" `
+            -Force
+
       - name: Upload signed installer
         uses: actions/upload-artifact@v7
         with:
-          name: omp-launcher-setup.exe
-          path: signed-installer/omp-launcher-setup.exe
+          path: omp-launcher-setup.exe
           if-no-files-found: error
           archive: false
