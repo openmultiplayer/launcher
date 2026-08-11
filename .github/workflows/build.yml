@@ -33,25 +33,30 @@ jobs:
       - name: Build project
         run: yarn release
 
-      - name: Generate artifact name
-        id: vars
-        shell: bash
-        run: |
-          artifact_name="open.mp-launcher-win-${GITHUB_RUN_ID}"
-          echo "artifact_name=${artifact_name}" >> $GITHUB_OUTPUT
-          setup_artifact_name="open.mp-launcher-win-setup-${GITHUB_RUN_ID}"
-          echo "setup_artifact_name=${setup_artifact_name}" >> $GITHUB_OUTPUT
+      - name: Make NSIS archive
+        run: yarn installer
+
+      # - name: Generate artifact name
+      #   id: vars
+      #   shell: bash
+      #   run: |
+      #     artifact_name="open.mp-launcher-win-${GITHUB_RUN_ID}"
+      #     echo "artifact_name=${artifact_name}" >> $GITHUB_OUTPUT
+      #     setup_artifact_name="open.mp-launcher-win-setup-${GITHUB_RUN_ID}"
+      #     echo "setup_artifact_name=${setup_artifact_name}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.vars.outputs.artifact_name }}
+          name: omp-launcher.exe
           path: src-tauri/target/i686-pc-windows-msvc/release/omp-launcher.exe
           if-no-files-found: error
+          archive: false
 
       - name: Upload setup artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.vars.outputs.setup_artifact_name }}
-          path: src-tauri/target/i686-pc-windows-msvc/release/bundle/nsis/omp-launcher_1.7.0_x86-setup.exe
+          name: omp-launcher-setup.exe
+          path: src-tauri/nsis/omp-launcher-setup.exe
           if-no-files-found: error
+          archive: false
