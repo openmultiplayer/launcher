@@ -70,6 +70,7 @@ jobs:
           github-artifact-id: ${{ steps.upload-launcher.outputs.artifact-id }}
           wait-for-completion: true
           output-artifact-directory: signed-launcher
+          skip-decompress: true
 
       - name: Upload signed launcher
         uses: actions/upload-artifact@v7
@@ -102,6 +103,7 @@ jobs:
           github-artifact-id: ${{ steps.upload-installer.outputs.artifact-id }}
           wait-for-completion: true
           output-artifact-directory: signed-installer
+          skip-decompress: true
 
       - name: Upload signed installer
         uses: actions/upload-artifact@v7
