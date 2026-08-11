@@ -41,9 +41,6 @@ jobs:
       - name: Build project
         run: yarn release
 
-      - name: Make NSIS archive
-        run: yarn installer
-
       # - name: Generate artifact name
       #   id: vars
       #   shell: bash
@@ -53,18 +50,63 @@ jobs:
       #     setup_artifact_name="open.mp-launcher-win-setup-${GITHUB_RUN_ID}"
       #     echo "setup_artifact_name=${setup_artifact_name}" >> $GITHUB_OUTPUT
 
-      - name: Upload build artifacts
+      - name: Upload unsigned launcher
         uses: actions/upload-artifact@v7
+        id: upload-launcher
         with:
-          name: omp-launcher.exe
+          name: unsigned-omp-launcher.exe
           path: src-tauri/target/i686-pc-windows-msvc/release/omp-launcher.exe
           if-no-files-found: error
           archive: false
 
-      - name: Upload setup artifacts
+      - name: Sign launcher
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: fcba8f0f-2f8a-4e8a-bb02-1734b44f73ca
+          project-slug: launcher
+          signing-policy-slug: test-signing
+          artifact-configuration-slug: omp-launcher-exe
+          github-artifact-id: ${{ steps.upload-launcher.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed-launcher
+
+      - name: Upload signed launcher
+        uses: actions/upload-artifact@v7
+        with:
+          name: omp-launcher.exe
+          path: signed-launcher/omp-launcher.exe
+          if-no-files-found: error
+          archive: false
+
+      - name: Make NSIS archive
+        run: yarn installer
+
+      - name: Upload unsigned installer
+        id: upload-installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: unsigned-omp-launcher-setup
+          path: src-tauri/nsis/omp-launcher-setup.exe
+          if-no-files-found: error
+          archive: false
+
+      - name: Sign installer
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: fcba8f0f-2f8a-4e8a-bb02-1734b44f73ca
+          project-slug: launcher
+          signing-policy-slug: test-signing
+          artifact-configuration-slug: omp-launcher-setup-exe
+          github-artifact-id: ${{ steps.upload-installer.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed-installer
+
+      - name: Upload signed installer
         uses: actions/upload-artifact@v7
         with:
           name: omp-launcher-setup.exe
-          path: src-tauri/nsis/omp-launcher-setup.exe
+          path: signed-installer/omp-launcher-setup.exe
           if-no-files-found: error
           archive: false
