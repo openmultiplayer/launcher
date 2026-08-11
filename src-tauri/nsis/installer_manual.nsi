@@ -36,7 +36,7 @@ ${StrLoc}
 !define PLUGINSPATH "${__FILEDIR__}"
 !define ALLOWDOWNGRADES "true"
 !define DISPLAYLANGUAGESELECTOR "false"
-!define INSTALLWEBVIEW2MODE "embedBootstrapper"
+!define INSTALLWEBVIEW2MODE "downloadBootstrapper"
 !define WEBVIEW2INSTALLERARGS ""
 !define WEBVIEW2BOOTSTRAPPERPATH "${__FILEDIR__}\..\extra\MicrosoftEdgeWebview2Setup.exe"
 !define WEBVIEW2INSTALLERPATH ""
