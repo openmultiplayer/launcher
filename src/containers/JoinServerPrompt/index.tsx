@@ -1,8 +1,9 @@
 import { fs } from "@tauri-apps/api";
 import { t } from "i18next";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Image,
+  Pressable,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -46,7 +47,10 @@ const JoinServerPrompt = () => {
     SAMPDLLVersions | undefined
   >();
   const [perServerNickname, setPerServerNickname] = useState("");
-  const { nickName, gtasaPath, sampVersion, setSampVersion } = useSettings();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { nickName, gtasaPath, sampVersion, setSampVersion, recentNicknames } =
+    useSettings();
 
   const settings = useMemo(() => {
     if (server) {
@@ -192,6 +196,32 @@ const JoinServerPrompt = () => {
     [server, settings, setServerSettings]
   );
 
+  const openDropdown = useCallback(() => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    setDropdownOpen(true);
+  }, []);
+
+  const closeDropdown = useCallback(() => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setDropdownOpen(false), 150);
+  }, []);
+
+  const handleRecentNicknamePress = useCallback(
+    (name: string) => {
+      setPerServerNickname(name);
+      if (server) {
+        if (settings) {
+          setServerSettings(server, name, settings.sampVersion);
+        } else {
+          setServerSettings(server, name, undefined);
+        }
+      }
+      if (hideTimer.current) clearTimeout(hideTimer.current);
+      setDropdownOpen(false);
+    },
+    [server, settings, setServerSettings]
+  );
+
   const handleConnect = useCallback(() => {
     if (server) {
       if (server.hasPassword && password.length) {
@@ -326,14 +356,47 @@ const JoinServerPrompt = () => {
             <Text semibold color={theme.textPrimary} size={2}>
               {t("nickname")}:
             </Text>
-            <TextInput
-              placeholderTextColor={theme.textPlaceholder}
-              placeholder={nickName}
-              value={perServerNickname}
-              onChangeText={handleNicknameChange}
-              // @ts-ignore
-              style={[styles.textInput, dynamicStyles.nicknameInput]}
-            />
+            <View style={styles.nicknameInputWrapper}>
+              <TextInput
+                placeholderTextColor={theme.textPlaceholder}
+                placeholder={nickName}
+                value={perServerNickname}
+                onChangeText={handleNicknameChange}
+                onFocus={openDropdown}
+                onBlur={closeDropdown}
+                // @ts-ignore
+                style={[styles.textInput, dynamicStyles.nicknameInput]}
+              />
+              {dropdownOpen && recentNicknames.length > 0 && (
+                <View
+                  style={[
+                    styles.dropdown,
+                    {
+                      backgroundColor: theme.itemBackgroundColor,
+                      borderColor: theme.textSecondary,
+                    },
+                  ]}
+                >
+                  {recentNicknames.map((name) => (
+                    <Pressable
+                      key={name}
+                      onPress={() => handleRecentNicknamePress(name)}
+                      style={styles.dropdownItem}
+                    >
+                      <Text
+                        numberOfLines={1}
+                        style={[
+                          styles.dropdownItemText,
+                          { color: theme.textPrimary },
+                        ]}
+                      >
+                        {name}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+            </View>
           </View>
           <TouchableOpacity
             style={[styles.connectButton, dynamicStyles.connectButton]}
@@ -444,6 +507,27 @@ const styles = StyleSheet.create({
   },
   nicknameSection: {
     marginTop: sc(10),
+  },
+  nicknameInputWrapper: {
+    position: "relative",
+  },
+  dropdown: {
+    position: "absolute",
+    top: sc(43),
+    left: 0,
+    width: 300,
+    borderRadius: sc(5),
+    borderWidth: 1,
+    overflow: "hidden",
+    zIndex: 100,
+  },
+  dropdownItem: {
+    paddingHorizontal: sc(8),
+    paddingVertical: sc(7),
+  },
+  dropdownItemText: {
+    fontFamily: "Proxima Nova Regular",
+    fontSize: sc(15),
   },
   textInput: {
     fontFamily: "Proxima Nova Regular",
