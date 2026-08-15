@@ -33,6 +33,9 @@ import PerformanceMonitor from "./utils/performance";
 import { PING_TIMEOUT_VALUE } from "./utils/query";
 import { sc } from "./utils/sizeScaler";
 
+const LOADING_WINDOW_SIZE = new LogicalSize(250, 300);
+const DEFAULT_WINDOW_SIZE = new LogicalSize(1000, 700);
+
 // Lazy load heavy components for better initial load time
 const MainView = lazy(() => import("./containers/MainBody"));
 const NavBar = lazy(() => import("./containers/NavBar"));
@@ -89,9 +92,18 @@ const App = memo(() => {
 
       mainWindowSize.current = innerSize.toLogical(scaleFactor);
 
+      // If the window is already at the loading size (e.g. after a reload),
+      // do not capture it as the main window size.
+      if (
+        mainWindowSize.current.width === LOADING_WINDOW_SIZE.width &&
+        mainWindowSize.current.height === LOADING_WINDOW_SIZE.height
+      ) {
+        mainWindowSize.current = DEFAULT_WINDOW_SIZE;
+      }
+
       // Set window attributes for loading screen
       await Promise.all([
-        appWindow.setSize(new LogicalSize(250, 300)),
+        appWindow.setSize(LOADING_WINDOW_SIZE),
         appWindow.setResizable(false),
         appWindow.center(),
       ]);
@@ -128,7 +140,7 @@ const App = memo(() => {
 
   useEffect(() => {
     if (!loading) {
-      const targetSize = mainWindowSize.current || new LogicalSize(1000, 700);
+      const targetSize = mainWindowSize.current || DEFAULT_WINDOW_SIZE;
 
       Promise.all([
         appWindow.setResizable(true),
