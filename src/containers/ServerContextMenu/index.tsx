@@ -1,6 +1,6 @@
 import { Clipboard } from "@react-native-clipboard/clipboard/dist/Clipboard.web";
 import { t } from "i18next";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, View, useWindowDimensions } from "react-native";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
@@ -25,6 +25,12 @@ const ContextMenu = memo(() => {
   const [connectBtnBgCol, setConnectBtnBgCol] = useState(theme.secondary);
   const [favBtnBgCol, setFavBtnBgCol] = useState(theme.secondary);
   const [cpyBtnBgCol, setCpyBtnBgCol] = useState(theme.secondary);
+
+  useEffect(() => {
+    setConnectBtnBgCol(theme.secondary);
+    setFavBtnBgCol(theme.secondary);
+    setCpyBtnBgCol(theme.secondary);
+  }, [theme.secondary]);
 
   const favorited = useMemo(() => {
     if (!server) return false;
