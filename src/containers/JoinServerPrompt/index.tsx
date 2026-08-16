@@ -455,6 +455,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     alignItems: "center",
     paddingVertical: sc(11),
+    overflow: "visible",
   },
   bannerContainer: {
     width: "100%",
@@ -507,6 +508,7 @@ const styles = StyleSheet.create({
   },
   nicknameSection: {
     marginTop: sc(10),
+    zIndex: 1,
   },
   nicknameInputWrapper: {
     position: "relative",
