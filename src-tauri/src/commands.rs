@@ -107,11 +107,20 @@ pub fn get_checksum_of_files(list: Vec<String>) -> std::result::Result<Vec<Strin
         let mut f =
             File::open(&file).map_err(|e| format!("Failed to open file '{}': {}", file, e))?;
 
-        let mut contents = Vec::new();
-        f.read_to_end(&mut contents)
-            .map_err(|e| format!("Failed to read file '{}': {}", file, e))?;
+        let mut context = md5::Context::new();
+        let mut buffer = [0u8; 65536];
 
-        let digest = compute(&contents);
+        loop {
+            let bytes_read = f
+                .read(&mut buffer)
+                .map_err(|e| format!("Failed to read file '{}': {}", file, e))?;
+            if bytes_read == 0 {
+                break;
+            }
+            context.consume(&buffer[..bytes_read]);
+        }
+
+        let digest = context.compute();
         let checksum_entry = format!("{}|{:x}", file, digest);
         result.push(checksum_entry);
     }
