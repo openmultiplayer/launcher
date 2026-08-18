@@ -5,13 +5,17 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { stateStorage } from "../utils/stateStorage";
 import { SAMPDLLVersions } from "../utils/types";
 
+const MAX_RECENT_NICKNAMES = 5;
+
 interface SettingsPersistentState {
   nickName: string;
   gtasaPath: string;
   customGameExe: string;
   sampVersion: SAMPDLLVersions;
   dataMerged: boolean;
+  recentNicknames: string[];
   setNickName: (name: string) => void;
+  addRecentNickname: (name: string) => void;
   setGTASAPath: (path: string) => void;
   setCustomGameExe: (fileName: string) => void;
   setSampVersion: (version: SAMPDLLVersions) => void;
@@ -28,10 +32,23 @@ const useSettings = create<SettingsPersistentState>()(
       customGameExe: "",
       sampVersion: "custom",
       dataMerged: false,
+      recentNicknames: [],
       setNickName: (name) =>
         set(() => {
           emitWithDelay("setNickName", name);
           return { nickName: name };
+        }),
+      addRecentNickname: (name) =>
+        set((state) => {
+          const trimmed = name.trim();
+          if (!trimmed) return state;
+          emitWithDelay("setRecentNickname", trimmed);
+          const rest = state.recentNicknames.filter(
+            (n) => n.toLowerCase() !== trimmed.toLowerCase()
+          );
+          return {
+            recentNicknames: [trimmed, ...rest].slice(0, MAX_RECENT_NICKNAMES),
+          };
         }),
       setGTASAPath: (path) => set({ gtasaPath: path }),
       setCustomGameExe: (fileName) => set({ customGameExe: fileName }),
@@ -44,7 +61,7 @@ const useSettings = create<SettingsPersistentState>()(
   )
 );
 
-["setNickName"].forEach((event) =>
+["setNickName", "setRecentNickname"].forEach((event) =>
   listen(event, (ev) => {
     if (ev.windowLabel !== appWindow.label) {
       useSettings.persist.rehydrate();
