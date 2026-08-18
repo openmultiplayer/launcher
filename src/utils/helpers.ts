@@ -80,29 +80,33 @@ const updateServersInBatches = (
   });
 };
 
-export const fetchServers = async (cached: boolean = true): Promise<void> => {
+export const fetchServers = async (
+  cached: boolean = true,
+  listType: "internet" | "favorites" | "all" = "all"
+): Promise<void> => {
   if (!cached) return;
 
   try {
-    // Import getCachedList from the API layer
     const { getCachedList } = await import("../api/apis");
-
-    // Update favorites in batches
     const { favorites } = usePersistentServers.getState();
-    if (Array.isArray(favorites) && favorites.length > 0) {
+
+    // Refresh favorites
+    if ((listType === "favorites" || listType === "all") && favorites?.length) {
       updateServersInBatches(favorites, "favorites");
     }
 
-    // Fetch and set servers through the API
-    const response = await getCachedList();
-    if (response.success && response.data.length > 0) {
-      updateServersInBatches(response.data, "internet");
-      Log.debug(`Fetched ${response.data.length} servers`);
-    } else {
-      Log.warn(
-        "Failed to fetch servers or received empty list",
-        response.error
-      );
+    // Refresh internet list
+    if (listType === "internet" || listType === "all") {
+      const response = await getCachedList();
+      if (response.success && response.data.length > 0) {
+        updateServersInBatches(response.data, "internet");
+        Log.debug(`Fetched ${response.data.length} servers`);
+      } else {
+        Log.warn(
+          "Failed to fetch servers or received empty list",
+          response.error
+        );
+      }
     }
   } catch (error) {
     Log.error("Failed to fetch servers:", error);
