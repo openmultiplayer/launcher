@@ -2,7 +2,8 @@ use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::io::BufRead;
 use std::net::{TcpListener, TcpStream};
-use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex, OnceLock};
 use std::thread;
 use tauri::{AppHandle, Manager, WindowBuilder, WindowUrl};
 
@@ -11,6 +12,25 @@ use crate::constants::*;
 type SharedStreams = Arc<Mutex<HashMap<i32, TcpStream>>>;
 
 pub static GAME_STREAMS: Lazy<SharedStreams> = Lazy::new(|| Arc::new(Mutex::new(HashMap::new())));
+
+static IPC_HANDLE: OnceLock<AppHandle> = OnceLock::new();
+static IPC_STARTED: AtomicBool = AtomicBool::new(false);
+
+pub fn init_ipc(app_handle: AppHandle) {
+    let _ = IPC_HANDLE.set(app_handle);
+}
+
+pub fn ensure_listening() {
+    if IPC_STARTED
+        .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+        .is_err()
+    {
+        return;
+    }
+    if let Some(handle) = IPC_HANDLE.get() {
+        listen_for_ipc(handle.clone());
+    }
+}
 
 fn create_overlay_window(
     app: &tauri::AppHandle,

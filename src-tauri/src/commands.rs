@@ -22,6 +22,8 @@ pub async fn inject(
         omp_file
     };
 
+    crate::ipc::ensure_listening();
+
     match injector::run_samp(
         name,
         ip,
