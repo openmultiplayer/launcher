@@ -1,6 +1,5 @@
 use crate::{errors::LauncherError, helpers, injector, samp};
 use log::{error, info, warn};
-use md5::compute;
 use sevenz_rust::decompress_file;
 use std::fs::File;
 use std::io::Read;
