@@ -75,10 +75,6 @@ const ExternalServerHandler = () => {
     };
   }, []);
 
-  if (!visible) {
-    return null;
-  }
-
   const addServer = useCallback(() => {
     const serverInfo: Server = {
       ip: "",
@@ -177,6 +173,10 @@ const ExternalServerHandler = () => {
     }),
     [height, width, theme]
   );
+
+  if (!visible) {
+    return null;
+  }
 
   return (
     <StaticModal onDismiss={() => showModal(false)}>

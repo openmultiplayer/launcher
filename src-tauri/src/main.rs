@@ -54,9 +54,34 @@ async fn main() {
         deeplink::prepare(DEEPLINK_IDENTIFIER);
     }
 
-    if let Err(e) = simple_logging::log_to_file(LOG_FILE_NAME, LevelFilter::Info) {
-        eprintln!("Failed to initialize logging: {}", e);
-        exit(1);
+    let exe_log_result = env::current_exe().and_then(|exe| {
+        simple_logging::log_to_file(exe.with_file_name(LOG_FILE_NAME), LevelFilter::Info)
+    });
+
+    if let Err(exe_log_error) = exe_log_result {
+        let local_log_result = dirs_next::data_local_dir()
+            .ok_or_else(|| {
+                std::io::Error::new(std::io::ErrorKind::NotFound, "Local app data unavailable")
+            })
+            .and_then(|data_dir| {
+                let log_dir = data_dir.join(DATA_DIR_NAME);
+                fs::create_dir_all(&log_dir)?;
+                simple_logging::log_to_file(log_dir.join(LOG_FILE_NAME), LevelFilter::Info)
+            });
+
+        match local_log_result {
+            Ok(()) => log::warn!(
+                "Failed to create log next to executable: {}; using local app data",
+                exe_log_error
+            ),
+            Err(local_log_error) => {
+                eprintln!(
+                    "Failed to initialize logging: {}; local app data fallback failed: {}",
+                    exe_log_error, local_log_error
+                );
+                simple_logging::log_to_stderr(LevelFilter::Info);
+            }
+        }
     }
 
     #[cfg(windows)]

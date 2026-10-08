@@ -12,6 +12,8 @@ jobs:
   build-omp-launcher:
     name: Windows build
     runs-on: windows-latest
+    env:
+      CAN_SIGN: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -67,6 +69,7 @@ jobs:
           archive: false
 
       - name: Sign launcher
+        if: env.CAN_SIGN == 'true'
         uses: signpath/github-action-submit-signing-request@v2
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -80,6 +83,7 @@ jobs:
           skip-decompress: true
 
       - name: Restore signed launcher for NSIS
+        if: env.CAN_SIGN == 'true'
         shell: pwsh
         run: |
           Copy-Item `
@@ -93,6 +97,7 @@ jobs:
             -Force
 
       - name: Upload signed launcher
+        if: env.CAN_SIGN == 'true'
         uses: actions/upload-artifact@v7
         with:
           path: omp-launcher.exe
@@ -119,6 +124,7 @@ jobs:
           archive: false
 
       - name: Sign installer
+        if: env.CAN_SIGN == 'true'
         uses: signpath/github-action-submit-signing-request@v2
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -132,6 +138,7 @@ jobs:
           skip-decompress: true
 
       - name: Rename signed installer
+        if: env.CAN_SIGN == 'true'
         shell: pwsh
         run: |
           Copy-Item `
@@ -140,6 +147,7 @@ jobs:
             -Force
 
       - name: Upload signed installer
+        if: env.CAN_SIGN == 'true'
         uses: actions/upload-artifact@v7
         with:
           path: omp-launcher-setup.exe
