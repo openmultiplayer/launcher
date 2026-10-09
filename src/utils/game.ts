@@ -236,6 +236,10 @@ export const startGame = async (
       useSettings.getState().addRecentNickname(nickname);
     })
     .catch((e) => {
+      if (String(e).includes("operation_in_progress")) {
+        showOkModal(t("cache_manager_title"), t("cache_error_operation_in_progress"));
+        return;
+      }
       if (e === "need_admin") {
         showMessageBox({
           title: t("admin_permissions_required_modal_title"),

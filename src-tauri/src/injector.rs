@@ -67,7 +67,14 @@ pub async fn run_samp(
         ready_for_exec = ready_for_exec.arg("-z").arg(password);
     }
 
-    let process = ready_for_exec.current_dir(executable_dir).spawn();
+    let process = {
+        let _launch = crate::cache::guard_game_launch()?;
+        let process = ready_for_exec.current_dir(executable_dir).spawn();
+        if process.is_ok() {
+            crate::cache::remember_game_name(&target_game_exe);
+        }
+        process
+    };
 
     match process {
         Ok(p) => {
