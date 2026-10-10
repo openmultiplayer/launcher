@@ -16,7 +16,7 @@ const List = (props: IProps) => {
   const { themeType } = useTheme();
 
   return (
-    <View style={styles.mainContainer} ref={props.listRef}>
+    <View style={styles.mainContainer} ref={props.listRef} id="main-container">
       <ListHeader />
       <BigList
         id={themeType === "dark" ? "scroll" : "scroll-light"}
