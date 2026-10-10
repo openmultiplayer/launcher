@@ -212,6 +212,16 @@ const App = memo(() => {
     };
   }, [windowResizeListener, initializeApp]);
 
+  useEffect(() => {
+    // Refetch the server list once we get a connection back
+    const handleOnline = () => {
+      fetchServers();
+    };
+
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
+  }, []);
+
   const handleLoadingEnd = useCallback(async () => {
     const endTimer = PerformanceMonitor.time("loading-end");
     setLoading(false);
