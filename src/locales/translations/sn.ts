@@ -97,4 +97,29 @@ export default {
   from_gtasa_folder: "جي فولڊر مان GTASA",
   gta_path_modal_cant_find_samp_description_2:
     ".مھرباني ڪري ٻيو ڪو ورين چونڊيو. يا سا.مپ کي ھٿ سان ڊاءنلوڊ ۽ انسٽال ڪريو",
+  add_or_play_external_server: "پسندیدہ ۾ وجهو يا کيڏو",
+  reconnect: "وري جڙو",
+  settings_advanced_discord_status_requires_restart:
+    "(راند کي وري کولڻ جي ضرورت آهي)",
+  settings_export_favorite_list_file: "پسندیدہ جي فهرست کي فائل ۾ درآمد ڪريو",
+  settings_import_favorite_list_file: "پسندیدہ جي فهرست کي فائل مان برآمد ڪريو",
+  export_no_servers_description:
+    "توهان وٽ ڪي به سرور ڪونهي پسندیدہ ۾",
+  export_successful_title: "درآمد پورو ٿيو",
+  export_successful_description: "سرورن جي فهرست درآمد صحيح ٿي وئي",
+  export_failed_title: "درآمد نه ٿي سگهيو",
+  export_failed_description:
+    "هڪ ئرر اچي ويو",
+  import_successful_title: "برآمد پورو ٿيو",
+  import_successful_description: "سرورن جي فهرست صحيح برآمد ٿي وئي",
+  import_failed_title: "برآمد نه ٿي سگهي",
+  import_failed_description:
+    "هڪ ئرر اچي ويو",
+  import_invalid_data_description:
+    "هن فائل ۾ ڪا غلطي آهي. صحيح فائل چونڊيو",
+  settings_custom_game_exe_label: "ڪسٽم راند جي ايگزيڪيوٽيبل جو نالو",
+  unable_to_find_custom_game_exe_title:
+    "نه ملي سگهيو",
+  unable_to_find_custom_game_exe_description:
+    "راند جي فائل نه ملي سگهي. وري سيٽنگ ۾ ايڊوانس ڊسو",
 };
