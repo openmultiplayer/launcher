@@ -1,7 +1,6 @@
 use actix_web::web::Buf;
 use byteorder::{LittleEndian, ReadBytesExt};
 use once_cell::sync::Lazy;
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::{Cursor, Read};
@@ -84,50 +83,25 @@ pub struct ErrorResponse {
 
 impl Query {
     pub async fn new(addr: &str, port: i32) -> Result<Self> {
-        let regex = Regex::new(r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
-            .map_err(|e| LauncherError::Parse(format!("Invalid regex pattern: {}", e)))?;
+        let parsed_address = if let Ok(ipv4) = addr.parse::<Ipv4Addr>() {
+            ipv4
+        } else {
+            let socket_addresses = lookup_host(format!("{}:{}", addr, port))
+                .await
+                .map_err(|e| LauncherError::Network(format!("Failed to resolve hostname: {}", e)))?;
 
-        let address = match regex.captures(addr) {
-            Some(_) => {
-                // it's valid ipv4, move on
-                addr.to_string()
-            }
-            None => {
-                let socket_addresses = lookup_host(format!("{}:{}", addr, port)).await;
-                match socket_addresses {
-                    Ok(s) => {
-                        let mut ipv4 = "".to_string();
-                        for socket_address in s {
-                            if socket_address.is_ipv4() {
-                                // hostname is resolved to ipv4:port, lets split it by ":" and get ipv4 only
-                                let ip_port = socket_address.to_string();
-                                let vec: Vec<&str> = ip_port.split(':').collect();
-                                if !vec.is_empty() {
-                                    ipv4 = vec[0].to_string();
-                                    break;
-                                }
-                            }
-                        }
-                        if ipv4.is_empty() {
-                            return Err(LauncherError::NotFound(
-                                "No IPv4 address found for hostname".to_string(),
-                            ));
-                        }
-                        ipv4
-                    }
-                    Err(e) => {
-                        return Err(LauncherError::Network(format!(
-                            "Failed to resolve hostname: {}",
-                            e
-                        )));
-                    }
+            let mut found_ipv4 = None;
+            for socket_address in socket_addresses {
+                if let std::net::IpAddr::V4(ipv4) = socket_address.ip() {
+                    found_ipv4 = Some(ipv4);
+                    break;
                 }
             }
-        };
 
-        let parsed_address = address
-            .parse::<Ipv4Addr>()
-            .map_err(|e| LauncherError::InvalidInput(format!("Invalid IP address: {}", e)))?;
+            found_ipv4.ok_or_else(|| {
+                LauncherError::NotFound("No IPv4 address found for hostname".to_string())
+            })?
+        };
 
         let socket = UdpSocket::bind("0.0.0.0:0")
             .await
@@ -186,8 +160,10 @@ impl Query {
             Err(e) => return Err(LauncherError::from(e)),
         };
 
-        if amt == 0 {
-            return Err(LauncherError::Network("No data received".to_string()));
+        if amt < 11 {
+            return Err(LauncherError::Network(
+                "No data received or packet too short".to_string(),
+            ));
         }
 
         let query_type = buf[10] as char;
