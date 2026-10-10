@@ -1,6 +1,13 @@
-export const VERSION = "2";
+export const BUILD_VERSION = "7";
+
+const params = new URLSearchParams(window.location.search);
+const attachedId = params.get("attached_id");
+export const IN_GAME = attachedId !== null;
+export const IN_GAME_PROCESS_ID = attachedId ? parseInt(attachedId) : 0;
+export const DEBUG_MODE = process.argv[3] && process.argv[3] == "--ompdebug";
 
 type ResourceName =
+  | "samp_clients.7z"
   | "037R1_samp.dll"
   | "037R2_samp.dll"
   | "037R3_samp.dll"
@@ -34,11 +41,12 @@ export interface ResourceInfo {
 
 export const validFileChecksums = new Map<ResourceName, ResourceInfo>();
 
-/*
-5572377f1c6f9fbcb673a8cf26c19984 : C:/Users/Amyr/AppData/Local/com.open.mp/samp/samp_clients.7z
-*/
-
 const fillvalidFileChecksumsMap = () => {
+  validFileChecksums.set("samp_clients.7z", {
+    path: "samp/",
+    name: "samp_clients.7z",
+    checksum: "5572377f1c6f9fbcb673a8cf26c19984",
+  });
   validFileChecksums.set("037R1_samp.dll", {
     path: "samp/0.3.7-R1/",
     name: "samp.dll",
@@ -92,12 +100,12 @@ const fillvalidFileChecksumsMap = () => {
     checksum: "337ddcbe53be7dd8032fb8f6fe1b607b",
     requiredInGameDir: true,
   });
-  validFileChecksums.set("rcon.exe", {
-    path: "samp/shared/",
-    name: "rcon.exe",
-    checksum: "3f4821cda1de6d7d10654e5537b4df6e",
-    requiredInGameDir: true,
-  });
+  // validFileChecksums.set("rcon.exe", {
+  //   path: "samp/shared/",
+  //   name: "rcon.exe",
+  //   checksum: "3f4821cda1de6d7d10654e5537b4df6e",
+  //   requiredInGameDir: true,
+  // });
   validFileChecksums.set("blanktex.txd", {
     path: "samp/shared/SAMP/",
     name: "blanktex.txd",
@@ -164,12 +172,12 @@ const fillvalidFileChecksumsMap = () => {
     checksum: "1423c18dfa2064d967b397227960b93d",
     requiredInGameDir: true,
   });
-  validFileChecksums.set("samp_debug.exe", {
-    path: "samp/shared/",
-    name: "samp_debug.exe",
-    checksum: "2c00c60a5511c3a41a70296fd1879067",
-    requiredInGameDir: true,
-  });
+  // validFileChecksums.set("samp_debug.exe", {
+  //   path: "samp/shared/",
+  //   name: "samp_debug.exe",
+  //   checksum: "2c00c60a5511c3a41a70296fd1879067",
+  //   requiredInGameDir: true,
+  // });
 };
 
 fillvalidFileChecksumsMap();

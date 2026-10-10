@@ -7,16 +7,9 @@ Made with Tauri + React-Native ❤️
 Use open.mp launcher to enjoy a live, reliable, and populated server list to find any server you want to play on!  
 Just download it from [Releases](https://github.com/openmultiplayer/launcher/releases/latest) page and run it!
 
-For users using old Windows 10, Windows 8(.1), or Windows 7, if you do not have WebView2 installed (comes preinstalled in newer Windows 10 and 11 setups, and comes with Microsoft Edge), you must download **WebView2** from [Here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)  
-https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section
-
-**Note**: Download Evergreen Bootstrapper and let installer download the right version for you for best experience.
-
-**Note**: You still need samp installed to play, you can install samp from https://sa-mp.mp/downloads/ .
-
 # Development
 
-### For all OS's:
+### For all OSes:
 
 - Install [nightly version](https://rust-lang.github.io/rustup/concepts/channels.html) of rust toolchain
 - Install [NodeJS](https://nodejs.org/en/download) and `npm` (or `yarn` or anything else)  
@@ -40,6 +33,20 @@ yarn start
 ```bash
 yarn tauri build
 ```
+
+# Internationalization
+
+Translations are stored in `src/locales/translations`. To update an existing
+language, edit the matching file in that directory.
+
+To add a new language:
+
+1. Copy `src/locales/translations/en.ts` to a new file named after the language
+   code, for example `src/locales/translations/fr.ts`.
+2. Translate the string values while keeping the translation keys unchanged.
+3. Register the new language in `src/locales/index.ts` by adding it to
+   `loadTranslation`, `LanguageType`, and `LANGUAGE_METADATA`.
+4. Check that the language appears in the launcher settings.
 
 # Donations
 

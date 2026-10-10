@@ -49,8 +49,7 @@ export default {
   hide_player_and_rule_list: "Sembunyikan pemain dan aturan list",
   show_player_and_rule_list: "Menampilkan pemain and aturan list",
   copy_server_info: "Menyalin Server Info",
-  settings_gta_path_input_label:
-    "Direktori GTA: San Andreas (di mana SA-MP juga diinstal)",
+  settings_gta_path_input_label: "Direktori GTA: San Andreas",
   browse: "Jelajahi",
   settings_import_nickname_gta_path_from_samp:
     "Impor nickname dan direktori GTA:SA dari pengaturan SA-MP",
@@ -67,7 +66,8 @@ export default {
   download: "Download",
   update_modal_remind_me_next_time: "Ingatkan Saya Lain Kali",
   update_modal_skip_this_update: "Lewati Update Ini!",
-  gta_path_modal_cant_find_game_title: "Tidak dapat menemukan GTA: San Andreas!",
+  gta_path_modal_cant_find_game_title:
+    "Tidak dapat menemukan GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
     'Tidak dapat menemukan GTA: San Andreas di direktori ini:\n  - "{{ path }}"\n"gta_sa.exe" tidak dapat ditemukan di direktori yang anda berikan.',
   open_settings: "Buka Pengaturan",
@@ -90,4 +90,17 @@ export default {
   run_as_admin: "Run as Admin",
   settings_general_tab_title: "Umum",
   settings_lang_tab_title: "Bahasa",
+  settings_advanced_tab_title: "Opsi Lanjutan",
+  settings_advanced_discord_status: "Tampilkan status di Discord",
+  join_discord: "Gabung Server Discord",
+  samp_version: "Versi SA-MP",
+  change_version: "Ganti Versi",
+  offline: "Offline",
+  from_gtasa_folder: "Dari Folder GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "Silakan pilih versi lain atau unduh dan instal SA-MP secara manual.",
+  add_or_play_external_server: "Tambahkan ke favorit atau mainkan",
+  reconnect: "Reconnect",
+  settings_advanced_discord_status_requires_restart:
+    "(Perlu restart game untuk menerapkan perubahan)",
 };

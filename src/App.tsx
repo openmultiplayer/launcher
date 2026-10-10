@@ -1,126 +1,246 @@
-import { invoke, process } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api";
 import {
-  LogicalSize,
   appWindow,
+  LogicalPosition,
+  LogicalSize,
   type PhysicalSize,
 } from "@tauri-apps/api/window";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import AddThirdPartyServerModal from "./containers/AddThirdPartyServer";
-import JoinServerPrompt from "./containers/JoinServerPrompt";
-import LoadingScreen from "./containers/LoadingScreen";
-import MainView from "./containers/MainBody";
-import MessageBox from "./containers/MessageBox";
-import NavBar from "./containers/NavBar";
-import Notification from "./containers/Notification";
-import ContextMenu from "./containers/ServerContextMenu";
-import SettingsModal from "./containers/Settings";
-import WindowTitleBar from "./containers/WindowTitleBar";
-import i18n from "./locales";
-import { useGenericPersistentState } from "./states/genericStates";
-import { useTheme } from "./states/theme";
-import { debounce } from "./utils/debounce";
 import {
+  lazy,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { StyleSheet, View } from "react-native";
+import { DEBUG_MODE, IN_GAME, IN_GAME_PROCESS_ID } from "./constants/app";
+import LoadingScreen from "./containers/LoadingScreen";
+import WindowTitleBar from "./containers/WindowTitleBar";
+import { changeLanguage } from "./locales";
+import { useGenericPersistentState } from "./states/genericStates";
+import { usePersistentServers } from "./states/servers";
+import { useTheme } from "./states/theme";
+import { throttle } from "./utils/debounce";
+import {
+  checkIfProcessAlive,
   fetchServers,
   fetchUpdateInfo,
   generateLanguageFilters,
 } from "./utils/helpers";
+import PerformanceMonitor from "./utils/performance";
+import { PING_TIMEOUT_VALUE } from "./utils/query";
 import { sc } from "./utils/sizeScaler";
 
-const App = () => {
-  const [loading, setLoading] = useState(true);
+const LOADING_WINDOW_SIZE = new LogicalSize(250, 300);
+const DEFAULT_WINDOW_SIZE = new LogicalSize(1000, 700);
+
+// Lazy load heavy components for better initial load time
+const MainView = lazy(() => import("./containers/MainBody"));
+const NavBar = lazy(() => import("./containers/NavBar"));
+const AddThirdPartyServerModal = lazy(
+  () => import("./containers/AddThirdPartyServer")
+);
+const ExternalServerHandler = lazy(
+  () => import("./containers/ExternalServerHandler")
+);
+const JoinServerPrompt = lazy(() => import("./containers/JoinServerPrompt"));
+const MessageBox = lazy(() => import("./containers/MessageBox"));
+const Notification = lazy(() => import("./containers/Notification"));
+const ContextMenu = lazy(() => import("./containers/ServerContextMenu"));
+const SettingsModal = lazy(() => import("./containers/Settings"));
+
+const App = memo(() => {
+  const [loading, setLoading] = useState(!IN_GAME);
   const [maximized, setMaximized] = useState(false);
   const { theme } = useTheme();
-  const { language, shouldUpdateDiscordStatus } = useGenericPersistentState();
+  const { language } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
   const mainWindowSize = useRef<LogicalSize>();
+  const processCheckInterval = useRef<NodeJS.Timeout>();
 
   const windowResizeListener = useCallback(
-    debounce(async ({ payload }: { payload: PhysicalSize }) => {
-      if (
-        payload.width !== windowSize.current?.width ||
-        payload.height !== windowSize.current?.height
-      )
-        setMaximized(await appWindow.isMaximized());
+    throttle(async ({ payload }: { payload: PhysicalSize }) => {
+      const endTimer = PerformanceMonitor.time("window-resize");
 
-      windowSize.current = payload;
-    }, 50),
+      try {
+        const hasChanged =
+          payload.width !== windowSize.current?.width ||
+          payload.height !== windowSize.current?.height;
+
+        if (hasChanged) {
+          const isMaximized = await appWindow.isMaximized();
+          setMaximized(isMaximized);
+          windowSize.current = payload;
+        }
+      } finally {
+        endTimer();
+      }
+    }, 100), // Increased throttle delay for better performance
     []
   );
 
-  const initializeApp = async () => {
-    invoke("toggle_drpc", {
-      toggle: shouldUpdateDiscordStatus,
-    });
-    fetchServers();
-    fetchUpdateInfo();
-    generateLanguageFilters();
+  const initializeApp = useCallback(async () => {
+    const endTimer = PerformanceMonitor.time("app-initialization");
 
-    mainWindowSize.current = (await appWindow.innerSize()).toLogical(
-      await appWindow.scaleFactor()
-    );
-    // Set window attributes for loading screen
-    appWindow.setResizable(false);
-    appWindow.setSize(new LogicalSize(250, 300));
-    appWindow.center();
-  };
+    try {
+      const [innerSize, scaleFactor] = await Promise.all([
+        appWindow.innerSize(),
+        appWindow.scaleFactor(),
+      ]);
+
+      mainWindowSize.current = innerSize.toLogical(scaleFactor);
+
+      // If the window is already at the loading size (e.g. after a reload),
+      // do not capture it as the main window size.
+      if (
+        mainWindowSize.current.width === LOADING_WINDOW_SIZE.width &&
+        mainWindowSize.current.height === LOADING_WINDOW_SIZE.height
+      ) {
+        mainWindowSize.current = DEFAULT_WINDOW_SIZE;
+      }
+
+      // Set window attributes for loading screen
+      await Promise.all([
+        appWindow.setSize(LOADING_WINDOW_SIZE),
+        appWindow.setResizable(false),
+        appWindow.center(),
+      ]);
+
+      // Reset favorite server list outdated cached data
+      const { favorites, updateInFavoritesList } =
+        usePersistentServers.getState();
+      if (Array.isArray(favorites) && favorites.length > 0) {
+        favorites.forEach((server) => {
+          server.ping = PING_TIMEOUT_VALUE;
+          server.playerCount = 0;
+          server.players = [];
+          server.rules = {} as typeof server.rules;
+          server.hasPassword = false;
+          updateInFavoritesList(server);
+        });
+      }
+
+      // Run independent operations in parallel
+      await Promise.all([
+        // Start these operations without waiting
+        fetchServers(),
+        generateLanguageFilters(),
+        ...(IN_GAME ? [] : [fetchUpdateInfo()]),
+      ]);
+    } finally {
+      endTimer();
+    }
+  }, []);
 
   useEffect(() => {
-    i18n.changeLanguage(language);
+    changeLanguage(language as any);
   }, [language]);
+
+  useEffect(() => {
+    if (!loading) {
+      const targetSize = mainWindowSize.current || DEFAULT_WINDOW_SIZE;
+
+      Promise.all([
+        appWindow.setResizable(true),
+        appWindow.setSize(targetSize),
+      ]);
+
+      if (!IN_GAME) {
+        appWindow.center();
+      }
+    }
+  }, [loading]);
 
   useEffect(() => {
     let killResizeListener: (() => void) | null = null;
 
     const setupListeners = async () => {
-      document.addEventListener("contextmenu", (event) => {
-        try {
-          // @ts-ignore
-          if (process && process.env.NODE_DEV !== "development") {
-            event.preventDefault();
-          }
-        } catch (e) {}
-      });
+      // Optimize context menu handler
+      if (!DEBUG_MODE) {
+        const handleContextMenu = (event: Event) => {
+          event.preventDefault();
+        };
+        document.addEventListener("contextmenu", handleContextMenu, {
+          passive: false,
+        });
+      }
 
       killResizeListener = await appWindow.onResized(windowResizeListener);
     };
 
+    const setupGameMonitoring = () => {
+      if (IN_GAME) {
+        processCheckInterval.current = setInterval(async () => {
+          try {
+            const isAlive = await checkIfProcessAlive(IN_GAME_PROCESS_ID);
+            if (!isAlive) {
+              await invoke("send_message_to_game", {
+                id: IN_GAME_PROCESS_ID,
+                message: "close_overlay",
+              });
+              setTimeout(() => appWindow.close(), 300);
+            }
+          } catch (error) {
+            console.error("Game process check failed:", error);
+          }
+        }, 1000); // Reduced frequency for better performance
+      }
+    };
+
     setupListeners();
     initializeApp();
+    setupGameMonitoring();
+
+    if (IN_GAME) {
+      setInterval(async () => {
+        appWindow.setPosition(new LogicalPosition(-15000, -15000));
+
+        const visible = await appWindow.isVisible();
+        if (!visible) {
+          appWindow.show();
+        }
+      }, 100);
+    }
 
     return () => {
-      if (killResizeListener) killResizeListener();
+      killResizeListener?.();
+      if (processCheckInterval.current) {
+        clearInterval(processCheckInterval.current);
+      }
     };
+  }, [windowResizeListener, initializeApp]);
+
+  const handleLoadingEnd = useCallback(async () => {
+    const endTimer = PerformanceMonitor.time("loading-end");
+    setLoading(false);
+    endTimer();
   }, []);
 
+  const appStyle = useMemo(
+    () => [styles.app, { padding: maximized || IN_GAME ? 0 : 4 }],
+    [maximized]
+  );
+
+  const appViewStyle = useMemo(
+    () => [
+      styles.appView,
+      {
+        borderRadius: maximized || IN_GAME ? 0 : 10,
+        backgroundColor: theme.secondary,
+      },
+    ],
+    [maximized, theme.secondary]
+  );
+
   if (loading) {
-    return (
-      <LoadingScreen
-        onEnd={async () => {
-          await appWindow.setResizable(true);
-          await appWindow.setSize(
-            mainWindowSize.current
-              ? mainWindowSize.current
-              : new LogicalSize(1000, 700)
-          );
-          await appWindow.center();
-          setLoading(false);
-        }}
-      />
-    );
+    return <LoadingScreen onEnd={handleLoadingEnd} />;
   }
 
   return (
-    <View style={[styles.app, { padding: maximized ? 0 : 4 }]} key={language}>
-      <View
-        style={[
-          styles.appView,
-          {
-            borderRadius: maximized ? 0 : sc(10),
-            backgroundColor: theme.secondary,
-          },
-        ]}
-      >
+    <View style={appStyle} key={language}>
+      <View style={appViewStyle}>
         <WindowTitleBar />
         <View style={styles.appBody}>
           <NavBar />
@@ -129,13 +249,16 @@ const App = () => {
           <JoinServerPrompt />
           <SettingsModal />
           <AddThirdPartyServerModal />
+          <ExternalServerHandler />
           <Notification />
           <MessageBox />
         </View>
       </View>
     </View>
   );
-};
+});
+
+App.displayName = "App";
 
 const styles = StyleSheet.create({
   app: {

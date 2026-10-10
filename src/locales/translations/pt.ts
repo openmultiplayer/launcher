@@ -3,7 +3,7 @@ export default {
   internet: "Internet",
   partners: "Parceiros",
   recently_joined: "Entrou Recentemente",
-  nickname: "Usuário",
+  nickname: "Nome de Usuário",
   settings: "Configurações",
   minimize: "Minimizar",
   maximize: "Maximizar",
@@ -29,7 +29,7 @@ export default {
   filter_unpassworded_servers: "Servidores sem senha",
   rule: "Regra",
   value: "Valor",
-  player: "Player",
+  player: "Jogador",
   score: "Score",
   locked: "Trancado",
   unlocked: "Destrancado",
@@ -46,12 +46,11 @@ export default {
     "Remover servidor selecionado dos favoritos",
   add_selected_server_to_favorites:
     "Adicionar servidor selecionado aos favoritos",
-  add_server: "Adicionar Servidor",
+  add_server: "Adicionar servidor",
   hide_player_and_rule_list: "Ocultar lista de jogadores e regras",
   show_player_and_rule_list: "Mostrar lista de jogadores e regras",
   copy_server_info: "Copiar informações do servidor",
-  settings_gta_path_input_label:
-    "Caminho do GTA: San Andreas (onde o SA-MP está instalado)",
+  settings_gta_path_input_label: "Caminho do GTA: San Andreas",
   browse: "Selecionar",
   settings_import_nickname_gta_path_from_samp:
     "Importar configurações do SA-MP",
@@ -72,12 +71,12 @@ export default {
     "Não foi possível encontrar o GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
     'Não é possível encontrar o GTA: San Andreas neste diretório:\n  - "{{ path }}"\nNão é possível encontrar "gta_sa.exe" no caminho fornecido',
-  open_settings: "Abrir Configurações",
+  open_settings: "Abrir configurações",
   cancel: "Cancelar",
   gta_path_modal_cant_find_samp_title: "Não foi possível encontrar o SA-MP!",
   gta_path_modal_cant_find_samp_description:
     'Não é possível encontrar a instalação do SA-MP neste diretório:\n  - "{{ path }}"\nNão é possível encontrar "samp.dll" no caminho fornecido\n',
-  notification_add_to_favorites_title: "Adicionado aos Favoritos!",
+  notification_add_to_favorites_title: "Adicionado aos favoritos!",
   notification_add_to_favorites_description:
     "{{ server }} foi adicionado à sua lista de favoritos.",
   nickname_modal_name_not_set_title: "Sem Nome de Usuário!",
@@ -90,8 +89,44 @@ export default {
   admin_permissions_required_modal_title:
     "Permissões de Administrador necessárias!",
   admin_permissions_required_modal_description:
-    'Parece que o seu jogo GTA: San Andreas requer permissões de Administrador para ser executado. Isso pode ser devido a vários motivos, como ter o jogo instalado na unidade “C”. Abra novamente o launcher do open.mp como administrador usando o botão "Executar como administrador" ou manualmente por você mesmo.',
-  run_as_admin: "Executar como Administrador",
+    'Parece que o seu jogo GTA: San Andreas requer permissões de Administrador para ser executado. Isso pode ser devido a vários motivos, como ter o jogo instalado na unidade "C". Abra novamente o launcher do open.mp como administrador usando o botão "Executar como administrador" ou manualmente por você mesmo.',
+  run_as_admin: "Executar como administrador",
   settings_general_tab_title: "Geral",
   settings_lang_tab_title: "Idiomas",
+  settings_advanced_tab_title: "Avançado",
+  settings_advanced_discord_status: "Habilitar status no Discord",
+  join_discord: "Entrar no servidor do Discord",
+  samp_version: "Versão do SA-MP",
+  change_version: "Mudar versão",
+  offline: "Offline",
+  from_gtasa_folder: "Da pasta do GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "Escolha outra versão ou instale o SA-MP manualmente.",
+  add_or_play_external_server: "Adicionar aos favoritos ou jogar",
+  reconnect: "Reconectar",
+  settings_advanced_discord_status_requires_restart:
+    "(Requer reiniciar o jogo para aplicar)",
+  settings_export_favorite_list_file:
+    "Exportar lista de favoritos para um arquivo",
+  settings_import_favorite_list_file:
+    "Importar lista de favoritos de um arquivo",
+  export_no_servers_description:
+    "Você não tem servidores favoritos para exportar.",
+  export_successful_title: "Exportação Concluída",
+  export_successful_description: "Lista de servidores exportada com sucesso.",
+  export_failed_title: "Falha na Exportação",
+  export_failed_description:
+    "Ocorreu um erro ao exportar seus servidores favoritos.",
+  import_successful_title: "Importação Concluída",
+  import_successful_description: "Lista de servidores importada com sucesso.",
+  import_failed_title: "Falha na Importação",
+  import_failed_description:
+    "Ocorreu um erro ao importar seus servidores favoritos.",
+  import_invalid_data_description:
+    "O arquivo selecionado contém dados inválidos. Selecione um arquivo de lista de favoritos válido.",
+  settings_custom_game_exe_label: "Nome do executável custom",
+  unable_to_find_custom_game_exe_title:
+    "Não foi possível encontrar o executável custom do jogo!",
+  unable_to_find_custom_game_exe_description:
+    "O arquivo executável custom especificado não foi encontrado no diretório do GTA: San Andreas. Por favor, verifique em Configurações -> aba Avançado.",
 };

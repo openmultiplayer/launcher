@@ -21,18 +21,7 @@ const Internet = () => {
 
   const list = useMemo(() => {
     return sortAndSearchInServerList(servers, searchData);
-  }, [
-    searchData.query,
-    searchData.ompOnly,
-    searchData.nonEmpty,
-    searchData.unpassworded,
-    searchData.sortPing,
-    searchData.sortPlayer,
-    searchData.sortName,
-    searchData.sortMode,
-    searchData.languages,
-    servers,
-  ]);
+  }, [servers, searchData]);
 
   const onSelect = (server: Server) => {
     stopQuery();

@@ -1,60 +1,88 @@
-import { Pressable, StyleSheet, View } from "react-native";
-import CheckBox from "../../../components/CheckBox";
-import Text from "../../../components/Text";
-import { useGenericPersistentState } from "../../../states/genericStates";
-import { useTheme } from "../../../states/theme";
-import { sc } from "../../../utils/sizeScaler";
 import { t } from "i18next";
-import { invoke } from "@tauri-apps/api";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import Text from "../../../components/Text";
+import { IN_GAME } from "../../../constants/app";
+import { useSettings } from "../../../states/settings";
+import { useTheme } from "../../../states/theme";
+import {
+  exportFavoriteListFile,
+  importFavoriteListFile,
+} from "../../../utils/game";
+import { sc } from "../../../utils/sizeScaler";
 
 const Advanced = () => {
   const { theme } = useTheme();
-  const { shouldUpdateDiscordStatus, toggleDiscordStatus } =
-    useGenericPersistentState();
-
+  const { customGameExe, setCustomGameExe } = useSettings();
   return (
     <View
       style={{
         paddingHorizontal: 12,
         overflow: "hidden",
-        paddingTop: sc(6),
-        paddingBottom: sc(12),
+        paddingVertical: 10,
         flex: 1,
       }}
     >
+      {!IN_GAME && (
+        <View>
+          <Text semibold color={theme.textPrimary} size={2}>
+            {t("settings_custom_game_exe_label")}:
+          </Text>
+          <View style={styles.pathInputContainer}>
+            <TextInput
+              value={customGameExe}
+              onChangeText={(text) => setCustomGameExe(text)}
+              style={[
+                styles.pathInput,
+                {
+                  color: theme.textPrimary,
+                  backgroundColor: theme.textInputBackgroundColor,
+                },
+              ]}
+            />
+          </View>
+        </View>
+      )}
+      <View style={{ flex: 1 }} />
       <View
         style={{
-          height: "100%",
           width: "100%",
           marginTop: sc(10),
         }}
       >
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-          onPress={async () => {
-            await invoke("toggle_drpc", {
-              toggle: !shouldUpdateDiscordStatus,
-            });
-            toggleDiscordStatus(!shouldUpdateDiscordStatus);
-          }}
+        <TouchableOpacity
+          style={[
+            styles.importButton,
+            {
+              backgroundColor: `${theme.primary}BB`,
+              borderColor: theme.primary,
+            },
+          ]}
+          onPress={() => exportFavoriteListFile()}
         >
-          <CheckBox
-            value={shouldUpdateDiscordStatus}
-            style={{ marginRight: sc(7) }}
-          />
-          <Text semibold color={theme.textPrimary} size={2}>
-            {t("settings_advanced_discord_status")}
+          <Text semibold color={"#FFFFFF"} size={2}>
+            {t("settings_export_favorite_list_file")}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.importButton,
+            {
+              backgroundColor: `${theme.primary}BB`,
+              borderColor: theme.primary,
+            },
+          ]}
+          onPress={() => importFavoriteListFile()}
+        >
+          <Text semibold color={"#FFFFFF"} size={2}>
+            {t("settings_import_favorite_list_file")}
+          </Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.pathInputContainer}></View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   pathInputContainer: {
     flexDirection: "row",
@@ -63,13 +91,14 @@ const styles = StyleSheet.create({
     marginTop: 7,
   },
   pathInput: {
-    paddingHorizontal: 5,
+    paddingHorizontal: sc(10),
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    height: 29,
-    borderRadius: 8,
-    borderWidth: 2,
+    height: sc(38),
+    borderRadius: sc(5),
+    // @ts-ignore
     outlineStyle: "none",
+    fontFamily: "Proxima Nova Regular",
+    fontSize: sc(17),
   },
   browseButton: {
     height: 30,

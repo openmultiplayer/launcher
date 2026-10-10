@@ -5,6 +5,7 @@ import {
   darkThemeColors,
   lightThemeColors,
 } from "../constants/theme";
+import { stateStorage } from "../utils/stateStorage";
 
 interface ThemePersistentState {
   theme: ThemeColors;
@@ -25,7 +26,7 @@ const useTheme = create<ThemePersistentState>()(
     }),
     {
       name: "theme-storage",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => stateStorage),
     }
   )
 );

@@ -1,11 +1,11 @@
 import { t } from "i18next";
+import { useMemo } from "react";
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from "react-native";
 import Text from "../../../components/Text";
+import { useServers } from "../../../states/servers";
 import { useTheme } from "../../../states/theme";
 import { sc } from "../../../utils/sizeScaler";
 import { Player } from "../../../utils/types";
-import { useServers } from "../../../states/servers";
-import { useMemo } from "react";
 
 interface IProps {
   players: Player[];

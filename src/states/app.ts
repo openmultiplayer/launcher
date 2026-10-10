@@ -1,11 +1,20 @@
 import { OsType } from "@tauri-apps/api/os";
 import { create } from "zustand";
-import { VERSION } from "../constants/app";
+import { BUILD_VERSION } from "../constants/app";
 
 export interface UpdateInfo {
   version: string;
   download: string;
   changelog: string;
+  ompPluginChecksum: string;
+  ompPluginDownload: string;
+  versions: {
+    [version: string]: {
+      download: string;
+      ompPluginChecksum: string;
+      ompPluginDownload: string;
+    };
+  };
 }
 
 interface AppState {
@@ -21,7 +30,7 @@ interface AppState {
 }
 
 const useAppState = create<AppState>()((set) => ({
-  version: VERSION,
+  version: BUILD_VERSION,
   updateInfo: undefined,
   skippedUpdateVersion: "",
   nativeAppVersion: "",
@@ -35,4 +44,3 @@ const useAppState = create<AppState>()((set) => ({
 }));
 
 export { useAppState };
-

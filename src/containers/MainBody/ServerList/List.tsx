@@ -9,13 +9,14 @@ interface IProps {
   data: Server[];
   renderItem: (item: Server, index: number) => JSX.Element;
   containerStyle?: StyleProp<ViewStyle>;
+  listRef?: React.RefObject<any>;
 }
 
 const List = (props: IProps) => {
   const { themeType } = useTheme();
 
   return (
-    <View style={styles.mainContainer} id="main-container">
+    <View style={styles.mainContainer} ref={props.listRef} id="main-container">
       <ListHeader />
       <BigList
         id={themeType === "dark" ? "scroll" : "scroll-light"}

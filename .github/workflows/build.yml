@@ -12,42 +12,144 @@ jobs:
   build-omp-launcher:
     name: Windows build
     runs-on: windows-latest
+    env:
+      CAN_SIGN: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Scoop
+        uses: MinoruSekine/setup-scoop@v5
+
+      - name: Setup NSIS
+        run: |
+          scoop bucket add extras
+          scoop install extras/nsis
 
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install Rust nightly toolchain
-        uses: dtolnay/rust-toolchain@nightly
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: nightly-2024-01-01 # Specific nightly version that works with dll-syringe, remove when it gets fixed so we can use latest
 
       - name: Install frontend dependencies
-        run: yarn install # change this to npm or pnpm depending on which one you use
+        run: yarn install
 
-      - uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install rust i686-pc-windows-msvc target
+        run: rustup target add i686-pc-windows-msvc
 
-      - name: Run UPX against portable version
-        uses: crazy-max/ghaction-upx@v3
-        with:
-          version: latest
-          files: |
-            ./src-tauri/target/release/omp-launcher.exe
-          args: -9 -fq
+      - name: Build project
+        run: yarn release
 
-      - name: Generate artifact name
-        id: vars
-        shell: bash
+      # - name: Generate artifact name
+      #   id: vars
+      #   shell: bash
+      #   run: |
+      #     artifact_name="open.mp-launcher-win-${GITHUB_RUN_ID}"
+      #     echo "artifact_name=${artifact_name}" >> $GITHUB_OUTPUT
+      #     setup_artifact_name="open.mp-launcher-win-setup-${GITHUB_RUN_ID}"
+      #     echo "setup_artifact_name=${setup_artifact_name}" >> $GITHUB_OUTPUT
+
+      - name: Prepare unsigned launcher
+        shell: pwsh
         run: |
-          artifact_name="open.mp-launcher-win-${GITHUB_RUN_ID}"
-          echo "artifact_name=${artifact_name}" >> $GITHUB_OUTPUT
+          Copy-Item `
+            -LiteralPath "src-tauri/target/i686-pc-windows-msvc/release/omp-launcher.exe" `
+            -Destination "unsigned-omp-launcher.exe" `
+            -Force
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload unsigned launcher
+        uses: actions/upload-artifact@v7
+        id: upload-launcher
         with:
-          name: ${{ steps.vars.outputs.artifact_name }}
-          path: src-tauri/target/release/omp-launcher.exe
+          path: unsigned-omp-launcher.exe
           if-no-files-found: error
+          archive: false
+
+      - name: Sign launcher
+        if: env.CAN_SIGN == 'true'
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: fcba8f0f-2f8a-4e8a-bb02-1734b44f73ca
+          project-slug: launcher
+          signing-policy-slug: test-signing
+          artifact-configuration-slug: omp-launcher-exe
+          github-artifact-id: ${{ steps.upload-launcher.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed-launcher
+          skip-decompress: true
+
+      - name: Restore signed launcher for NSIS
+        if: env.CAN_SIGN == 'true'
+        shell: pwsh
+        run: |
+          Copy-Item `
+            -LiteralPath "signed-launcher/unsigned-omp-launcher.exe" `
+            -Destination "src-tauri/target/i686-pc-windows-msvc/release/omp-launcher.exe" `
+            -Force
+
+          Copy-Item `
+            -LiteralPath "signed-launcher/unsigned-omp-launcher.exe" `
+            -Destination "omp-launcher.exe" `
+            -Force
+
+      - name: Upload signed launcher
+        if: env.CAN_SIGN == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          path: omp-launcher.exe
+          if-no-files-found: error
+          archive: false
+
+      - name: Make NSIS archive
+        run: yarn installer
+
+      - name: Prepare unsigned installer
+        shell: pwsh
+        run: |
+          Copy-Item `
+            -LiteralPath "src-tauri/nsis/omp-launcher-setup.exe" `
+            -Destination "unsigned-omp-launcher-setup.exe" `
+            -Force
+
+      - name: Upload unsigned installer
+        id: upload-installer
+        uses: actions/upload-artifact@v7
+        with:
+          path: unsigned-omp-launcher-setup.exe
+          if-no-files-found: error
+          archive: false
+
+      - name: Sign installer
+        if: env.CAN_SIGN == 'true'
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: fcba8f0f-2f8a-4e8a-bb02-1734b44f73ca
+          project-slug: launcher
+          signing-policy-slug: test-signing
+          artifact-configuration-slug: omp-launcher-setup-exe
+          github-artifact-id: ${{ steps.upload-installer.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed-installer
+          skip-decompress: true
+
+      - name: Rename signed installer
+        if: env.CAN_SIGN == 'true'
+        shell: pwsh
+        run: |
+          Copy-Item `
+            -LiteralPath "signed-installer/unsigned-omp-launcher-setup.exe" `
+            -Destination "omp-launcher-setup.exe" `
+            -Force
+
+      - name: Upload signed installer
+        if: env.CAN_SIGN == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          path: omp-launcher-setup.exe
+          if-no-files-found: error
+          archive: false

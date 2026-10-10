@@ -47,8 +47,7 @@ export default {
   hide_player_and_rule_list: "Sakrij listu igrača i pravila",
   show_player_and_rule_list: "Prikaži listu igrača i pravila",
   copy_server_info: "Kopiraj Server Info",
-  settings_gta_path_input_label:
-    "Lokacija GTA: San Andreas-a (gdje je SA-MP također instaliran)",
+  settings_gta_path_input_label: "Lokacija GTA: San Andreas-a",
   browse: "Pretraži",
   settings_import_nickname_gta_path_from_samp:
     "Prenesi nadimak i GTA SA lokaciju iz SA-MP postavki",
@@ -64,7 +63,7 @@ export default {
   update_modal_update_available_description:
     'Dostupan je novi build launcher-a!\nBuild verzija tvoga launhcer-a: {{ version }}\nTrenutna build verzija launcher-a: {{ newVersion }}\nKlikni "Skini" da otvorite stranicu izdanja',
   download: "Skini",
-  update_modal_remind_me_next_time: "Podjseti Me Slijedeći Put",
+  update_modal_remind_me_next_time: "Podsjeti Me Sljedeći Put",
   update_modal_skip_this_update: "Preskoči Ovo Ažuriranje",
   gta_path_modal_cant_find_game_title: "GTA: San Andreas nije pronađen!",
   gta_path_modal_cant_find_game_description:
@@ -94,6 +93,10 @@ export default {
   settings_advanced_tab_title: "Napredno",
   settings_advanced_discord_status: "Uključi Discord status",
   join_discord: "Pridruži se Discord Serveru",
-  samp_verison: "SA-MP Verzija",
+  samp_version: "SA-MP Verzija",
   change_version: "Promijeni Verziju",
+  offline: "Offline",
+  from_gtasa_folder: "Iz GTASA Foldera",
+  gta_path_modal_cant_find_samp_description_2:
+    "Molimo vas da odaberete drugu verziju ili preuzmite i instalirajte SA-MP ručno.",
 };

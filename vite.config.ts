@@ -15,8 +15,9 @@ const extensions = [
   ".json",
 ];
 
-export default defineConfig(async () => ({
+export default defineConfig({
   define: {
+    process: process,
     global: "window",
     __DEV__: false,
   },
@@ -33,7 +34,7 @@ export default defineConfig(async () => ({
   plugins: [
     {
       name: "treat-js-files-as-jsx",
-      async transform(code, id) {
+      async transform(code: any, id: any) {
         if (!id.match(/node_modules\/.*\.js$/)) return null;
         // Use the exposed transform from vite, instead of directly
         // transforming with esbuild
@@ -69,13 +70,16 @@ export default defineConfig(async () => ({
   clearScreen: false,
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
-    port: 1420,
+    port: 8050,
     strictPort: true,
+		host: "0.0.0.0",
   },
   // 3. to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
   envPrefix: ["VITE_", "TAURI_"],
   build: {
-    chunkSizeWarningLimit: 700,
+    chunkSizeWarningLimit: 400,
+    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+    sourcemap: !!process.env.TAURI_DEBUG,
   },
-}));
+});

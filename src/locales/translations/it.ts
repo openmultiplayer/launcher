@@ -51,8 +51,7 @@ export default {
   hide_player_and_rule_list: "Nascondi lista giocatori e regole",
   show_player_and_rule_list: "Mostra lista giocatori e regole",
   copy_server_info: "Copia Informazioni Server",
-  settings_gta_path_input_label:
-    "Percorso di GTA: San Andreas (dov'è installato anche SA-MP)",
+  settings_gta_path_input_label: "Percorso di GTA: San Andreas",
   browse: "Cerca",
   settings_import_nickname_gta_path_from_samp:
     "Importa nickname e percorso di gtasa dalle impostazioni di SA-MP",
@@ -97,6 +96,35 @@ export default {
   settings_advanced_tab_title: "Avanzate",
   settings_advanced_discord_status: "Mostra stato su Discord",
   join_discord: "Unisciti su Discord",
-  samp_verison: "Versione SA-MP",
+  samp_version: "Versione SA-MP",
   change_version: "Cambia Versione",
+  offline: "Offline",
+  from_gtasa_folder: "Cartella di GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "Scegli un'altra versione o scarica e installa SA-MP manualmente.",
+  add_or_play_external_server: "Aggiungi ai favoriti o gioca",
+  reconnect: "Ricollegati",
+  settings_advanced_discord_status_requires_restart:
+    "(Richiede riavvio del gioco per avere effetto)",
+  settings_export_favorite_list_file: "Esporta lista preferiti su file",
+  settings_import_favorite_list_file: "Importa lista preferiti da file",
+  export_no_servers_description: "Non hai alcun server preferito da esportare.",
+  export_successful_title: "Esportazione Completata",
+  export_successful_description: "Lista preferiti esportata con successo.",
+  export_failed_title: "Esportazione Fallita",
+  export_failed_description:
+    "Si è verificato un errore mentre esportavi i tuoi server preferiti.",
+  import_successful_title: "Importazione Completata",
+  import_successful_description: "Lista preferiti importata con successo.",
+  import_failed_title: "Importazione Fallita",
+  import_failed_description:
+    "Si è verificato un errore mentre importavi i tuoi server preferiti.",
+  import_invalid_data_description:
+    "Il file selezionato contiene dati non validi. Seleziona una lista preferiti valida.",
+  settings_custom_game_exe_label: "Nome eseguibile custom del gioco",
+  unable_to_find_custom_game_exe_title:
+    "Impossibile trovare l'eseguibile custom del gioco!",
+  unable_to_find_custom_game_exe_description:
+    "Il file eseguibile custom del gioco non è stato trovato nella cartella di GTA: San Andreas. Controlla la scheda Impostazioni -> Avanzate.",	
 };
+

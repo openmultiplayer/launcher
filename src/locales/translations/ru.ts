@@ -47,8 +47,7 @@ export default {
   hide_player_and_rule_list: "Скрыть список игроков и правил",
   show_player_and_rule_list: "Показать список игроков и правил",
   copy_server_info: "Скопировать информацию",
-  settings_gta_path_input_label:
-    "Путь к GTA: San Andreas (где также установлен SA-MP)",
+  settings_gta_path_input_label: "Путь к GTA: San Andreas",
   browse: "Обзор",
   settings_import_nickname_gta_path_from_samp:
     "Импортировать никнейм и путь к игре из SA-MP настроек",
@@ -62,7 +61,7 @@ export default {
   settings_credits_view_source_on_github: "Исходный код на GitHub",
   update_modal_update_available_title: "Доступно обновление!",
   update_modal_update_available_description:
-    'Доступна новая версия лаунчера!\nВаша версия лаунчера: {{ version }}\nАктуальная версия лаунчера: {{ newVersion }}\nНажмите "Загрузить" для открытия страницы релиза',
+    'Доступна новая сборка лаунчера!\nВаша версия сборки: {{ version }}\nАктуальная версия сборки: {{ newVersion }}\nНажмите "Загрузить" для открытия страницы релиза',
   download: "Загрузить",
   update_modal_remind_me_next_time: "Напомнить позже",
   update_modal_skip_this_update: "Пропустить обновление",
@@ -87,4 +86,41 @@ export default {
   admin_permissions_required_modal_description:
     'Похоже, что для запуска GTA: San Andreas требуются права администратора. Это может произойти по разным причинам, например, если ваша игра установлена на диске "C". Пожалуйста, откройте open.mp лаунчер повторно от имени администратора с помощью кнопки "Запуск от имени администратора" либо вручную',
   run_as_admin: "Запуск от имени администратора",
+  settings_general_tab_title: "Главное",
+  settings_lang_tab_title: "Языки",
+  settings_advanced_tab_title: "Дополнительно",
+  settings_advanced_discord_status: "Включить статус Discord",
+  join_discord: "Присоединиться к Discord",
+  samp_version: "SA-MP версия",
+  change_version: "Изменить версию",
+  offline: "Оффлайн",
+  from_gtasa_folder: "Из папки GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "Пожалуйста, выберите другую версию или загрузите и установите SA-MP вручную.",
+  add_or_play_external_server: "Добавить в избранные или играть",
+  reconnect: "Переподключиться",
+  settings_advanced_discord_status_requires_restart:
+    "(Для вступления в силу требуется перезапуск игры)",
+  settings_export_favorite_list_file: "Экспортировать список избранного в файл",
+  settings_import_favorite_list_file:
+    "Импортировать список избранного из файла",
+  export_no_servers_description: "У вас нет избранных серверов для экспорта.",
+  export_successful_title: "Экспорт завершен",
+  export_successful_description: "Список серверов успешно экспортирован.",
+  export_failed_title: "Экспорт не выполнен",
+  export_failed_description:
+    "Произошла ошибка при экспорте ваших избранных серверов.",
+  import_successful_title: "Импорт завершен",
+  import_successful_description: "Список серверов успешно импортирован.",
+  import_failed_title: "Импорт не выполнен",
+  import_failed_description:
+    "Произошла ошибка при импорте ваших избранных серверов.",
+  import_invalid_data_description:
+    "Выбранный файл содержит недействительные данные. Выберите корректный файл со списком избранного.",
+  settings_custom_game_exe_label:
+    "Пользовательское название исполняемого файла игры",
+  unable_to_find_custom_game_exe_title:
+    "Не удается найти исполняемый файл игры!",
+  unable_to_find_custom_game_exe_description:
+    "Указанный исполняемый файл игры не найден в папке GTA: San Andreas. Проверьте во вкладке Настройки -> Дополнительно.",
 };

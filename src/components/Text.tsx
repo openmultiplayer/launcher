@@ -1,7 +1,8 @@
+import React, { memo, useMemo } from "react";
 import { ColorValue, Text as RNText, TextProps } from "react-native";
 import { sc } from "../utils/sizeScaler";
 
-interface IProps extends TextProps {
+interface TextComponentProps extends Omit<TextProps, "style"> {
   color?: ColorValue;
   bold?: boolean;
   light?: boolean;
@@ -9,50 +10,69 @@ interface IProps extends TextProps {
   semibold?: boolean;
   size?: 1 | 2 | 3 | 4;
   selectable?: boolean;
-  children?: React.ReactNode | undefined;
+  children?: React.ReactNode;
+  style?: TextProps["style"];
 }
 
-const Text = (props: IProps) => {
-  const size = props.size
-    ? props.size === 1
-      ? sc(14)
-      : props.size === 2
-      ? sc(16)
-      : props.size === 3
-      ? sc(18)
-      : sc(20)
-    : sc(12);
+const SIZE_MAP = {
+  1: sc(14),
+  2: sc(16),
+  3: sc(18),
+  4: sc(20),
+} as const;
 
-  const font = props.bold
-    ? "Proxima Nova Semibold"
-    : props.light
-    ? "Proxima Nova Regular"
-    : props.medium
-    ? "Proxima Nova Regular"
-    : props.semibold
-    ? "Proxima Nova Semibold"
-    : "Proxima Nova Regular";
+const FONT_WEIGHTS = {
+  bold: "Proxima Nova Semibold",
+  semibold: "Proxima Nova Semibold",
+  light: "Proxima Nova Regular",
+  medium: "Proxima Nova Regular",
+  regular: "Proxima Nova Regular",
+} as const;
 
-  const { style, ...propsWithoutStyle } = props;
+const Text = memo<TextComponentProps>(
+  ({
+    size,
+    bold,
+    light,
+    medium,
+    semibold,
+    color,
+    selectable = false,
+    style,
+    children,
+    ...rest
+  }) => {
+    const computedStyle = useMemo(() => {
+      const fontSize = size ? SIZE_MAP[size] : sc(12);
 
-  return (
-    <RNText
-      numberOfLines={1}
-      style={[
+      const fontFamily =
+        bold || semibold
+          ? FONT_WEIGHTS.semibold
+          : light
+          ? FONT_WEIGHTS.light
+          : medium
+          ? FONT_WEIGHTS.medium
+          : FONT_WEIGHTS.regular;
+
+      return [
         {
-          fontSize: size,
-          fontFamily: font,
-          color: props.color,
-        },
-        // @ts-ignore
-        props.selectable ? {} : { userSelect: "none" },
+          fontSize,
+          fontFamily,
+          color,
+          userSelect: selectable ? "auto" : "none",
+        } as const,
         style,
-      ]}
-      {...propsWithoutStyle}
-    >
-      {props.children}
-    </RNText>
-  );
-};
+      ];
+    }, [size, bold, semibold, light, medium, color, selectable, style]);
+
+    return (
+      <RNText numberOfLines={1} style={computedStyle} {...rest}>
+        {children}
+      </RNText>
+    );
+  }
+);
+
+Text.displayName = "Text";
 
 export default Text;

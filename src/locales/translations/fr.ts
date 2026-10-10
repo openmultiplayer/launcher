@@ -52,8 +52,7 @@ export default {
   hide_player_and_rule_list: "Masquer la liste des joueurs et des règles",
   show_player_and_rule_list: "Afficher la liste des joueurs et des règles",
   copy_server_info: "Copier les informations du Serveur",
-  settings_gta_path_input_label:
-    "Chemin de GTA : San Andreas (où SA-MP est également installé)",
+  settings_gta_path_input_label: "Chemin de GTA : San Andreas",
   browse: "Parcourir",
   settings_import_nickname_gta_path_from_samp:
     "Importer le pseudo et le chemin de GTA:SA depuis les paramètres de SA-MP",
@@ -83,4 +82,49 @@ export default {
   notification_add_to_favorites_title: "Ajouté aux favoris !",
   notification_add_to_favorites_description:
     "{{ server }} a été ajouté à votre liste de favoris.",
+  nickname_modal_name_not_set_title: "Pas de pseudo !",
+  nickname_modal_name_not_set_description:
+    "Vous devez choisir un pseudonyme avant de rejoindre un serveur.",
+  gta_path_modal_path_not_set_title:
+    "Le chemin vers GTA : San Andreas n'est pas sélectionné !",
+  gta_path_modal_path_not_set_description:
+    "Vous n'avez pas sélectionné le chemin vers GTA : San Andreas, allez dans les paramètres puis cherchez le dossier du jeu.",
+  admin_permissions_required_modal_title: "Permissions admin requises !",
+  admin_permissions_required_modal_description:
+    'Il semblerait que votre jeu GTA : San Andreas a besoin des permissions administrateur pour se lancer. Cela peut être dû à de nombreuses raisons, comme le fait d\'avoir le jeu installé sur le lecteur "C:". Prière de ré-ouvrir le lanceur open.mp en tant qu\'administrateur, soit en utilisant le bouton "Exécuter en tant qu\'administrateur" ou manuellement vous-même.',
+  run_as_admin: "Exécuter en tant qu'administrateur",
+  settings_general_tab_title: "Général",
+  settings_lang_tab_title: "Langues",
+  settings_advanced_tab_title: "Avancé",
+  settings_advanced_discord_status: "Activer le statut Discord",
+  join_discord: "Rejoindre le serveur Discord",
+  samp_version: "Version de SA-MP",
+  change_version: "Changer de version",
+  offline: "Hors-ligne",
+  from_gtasa_folder: "Depuis le dossier GTASA",
+  gta_path_modal_cant_find_samp_description_2:
+    "Veuillez choisir une autre version ou télécharger et installer SA-MP manuellement.",
+  add_or_play_external_server: "Ajouter aux favoris ou jouer",
+  reconnect: "Se reconnecter",
+  settings_advanced_discord_status_requires_restart:
+    "(Nécessite de redémarrer le jeu pour prendre effet)",
+  settings_export_favorite_list_file:
+    "Exporter la liste des favoris vers un fichier",
+  settings_import_favorite_list_file:
+    "Importer la liste des favoris depuis un fichier",
+  export_no_servers_description: "Vous n'avez aucun serveur favori à exporter.",
+  export_successful_title: "Export terminé",
+  export_successful_description:
+    "La liste des serveurs a été exportée avec succès.",
+  export_failed_title: "Échec de l'export",
+  export_failed_description:
+    "Une erreur est survenue lors de l'export de vos serveurs favoris.",
+  import_successful_title: "Import terminé",
+  import_successful_description:
+    "La liste des serveurs a été importée avec succès.",
+  import_failed_title: "Échec de l'import",
+  import_failed_description:
+    "Une erreur est survenue lors de l'import de vos serveurs favoris.",
+  import_invalid_data_description:
+    "Le fichier sélectionné contient des données invalides. Veuillez sélectionner un fichier de liste de favoris valide.",
 };

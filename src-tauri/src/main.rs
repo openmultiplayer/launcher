@@ -1,197 +1,278 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-// use serde_json::json;
-mod discord;
+
+mod cli;
+mod commands;
+mod constants;
+mod errors;
 mod helpers;
 mod injector;
+mod ipc;
 mod query;
 mod samp;
+mod validation;
 
-use log::LevelFilter;
-use md5::compute;
-use runas;
-use sevenz_rust::decompress_file;
-use std::fs::File;
-use std::io::Read;
-use std::time::Instant;
+#[path = "deeplink/lib.rs"]
+#[cfg(target_os = "windows")]
+mod deeplink;
+
+use std::env;
+use std::process::exit;
+use std::sync::Mutex;
+
+use cli::CliArgs;
+use constants::*;
+use errors::{LauncherError, Result};
+use gumdrop::Options;
+use injector::run_samp;
+use log::{error, info, LevelFilter};
+use std::fs;
+use tauri::api::path::app_data_dir;
 use tauri::Manager;
 use tauri::PhysicalSize;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+static URI_SCHEME_VALUE: Mutex<String> = Mutex::new(String::new());
+static NO_OMP_FLAG: Mutex<bool> = Mutex::new(false);
+
 #[tauri::command]
-async fn request_server_info(ip: &str, port: i32) -> Result<String, String> {
-    match query::Query::new(ip, port).await {
-        Ok(q) => {
-            let _ = q.send('i').await;
-            match q.recv().await {
-                Ok(p) => Ok(format!("{}", p)),
-                Err(e) => Err(e.to_string()),
+async fn get_uri_scheme_value() -> String {
+    URI_SCHEME_VALUE.lock().unwrap().clone()
+}
+
+#[tokio::main]
+async fn main() {
+    // let mut f =
+    //     std::fs::File::open("D:\\Projects\\open.mp\\Launcher-tauri\\omp-launcher\\omp-client.dll")
+    //         .unwrap();
+    // let mut contents = Vec::<u8>::new();
+    // f.read_to_end(&mut contents).unwrap();
+    // let digest = md5::compute(contents.as_slice());
+    // println!("{:x}", digest);
+
+    #[cfg(windows)]
+    {
+        deeplink::prepare(DEEPLINK_IDENTIFIER);
+    }
+
+    let exe_log_result = env::current_exe().and_then(|exe| {
+        simple_logging::log_to_file(exe.with_file_name(LOG_FILE_NAME), LevelFilter::Info)
+    });
+
+    if let Err(exe_log_error) = exe_log_result {
+        let local_log_result = dirs_next::data_local_dir()
+            .ok_or_else(|| {
+                std::io::Error::new(std::io::ErrorKind::NotFound, "Local app data unavailable")
+            })
+            .and_then(|data_dir| {
+                let log_dir = data_dir.join(DATA_DIR_NAME);
+                fs::create_dir_all(&log_dir)?;
+                simple_logging::log_to_file(log_dir.join(LOG_FILE_NAME), LevelFilter::Info)
+            });
+
+        match local_log_result {
+            Ok(()) => log::warn!(
+                "Failed to create log next to executable: {}; using local app data",
+                exe_log_error
+            ),
+            Err(local_log_error) => {
+                eprintln!(
+                    "Failed to initialize logging: {}; local app data fallback failed: {}",
+                    exe_log_error, local_log_error
+                );
+                simple_logging::log_to_stderr(LevelFilter::Info);
             }
         }
-        Err(e) => Err(e.to_string()),
+    }
+
+    #[cfg(windows)]
+    {
+        #[cfg(not(debug_assertions))]
+        {
+            use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
+            let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
+        }
+    }
+
+    if let Err(e) = handle_cli_args().await {
+        error!("CLI error: {}", e);
+        exit(1);
+    }
+
+    #[cfg(windows)]
+    {
+        #[cfg(not(debug_assertions))]
+        {
+            use windows::Win32::System::Console::FreeConsole;
+            let _ = unsafe { FreeConsole() };
+        }
+    }
+
+    if let Err(e) = run_tauri_app().await {
+        error!("Failed to run Tauri app: {}", e);
+        exit(1);
     }
 }
 
-#[tauri::command]
-async fn request_server_players(ip: &str, port: i32) -> Result<String, String> {
-    match query::Query::new(ip, port).await {
-        Ok(q) => {
-            let _ = q.send('c').await;
-            match q.recv().await {
-                Ok(p) => Ok(format!("{}", p)),
-                Err(_) => Ok("{\"error\": true}".to_string()),
+async fn handle_cli_args() -> Result<()> {
+    let raw_args: Vec<String> = env::args().collect();
+    let parse_result = CliArgs::parse_args_default::<String>(&raw_args[1..]);
+
+    match parse_result {
+        Ok(args) => {
+            args.validate()?;
+
+            if args.no_omp {
+                if let Ok(mut flag) = NO_OMP_FLAG.lock() {
+                    *flag = true;
+                }
+            }
+
+            if args.help {
+                CliArgs::print_help_and_exit(&raw_args[0]);
+            }
+
+            if args.has_game_launch_args() {
+                let gamepath = args.gamepath.as_ref().unwrap();
+                let password = args.get_password();
+
+                let omp_client_path = format!(
+                    "{}/{}/omp/{}",
+                    dirs_next::data_local_dir()
+                        .ok_or(LauncherError::InternalError(
+                            "Failed to get data directory".to_string()
+                        ))?
+                        .to_str()
+                        .ok_or(LauncherError::InternalError(
+                            "Invalid data directory path".to_string()
+                        ))?,
+                    DATA_DIR_NAME,
+                    OMP_CLIENT_DLL
+                );
+
+                let omp_path = if args.no_omp {
+                    ""
+                } else {
+                    &omp_client_path
+                };
+
+                // resolve hostname to ipv4 so the game does not truncate hyphenated hosts
+                let host = args.host.as_ref().unwrap();
+                let resolved_host =
+                    helpers::resolve_hostname_to_ipv4(host).unwrap_or_else(|e| {
+                        info!("Failed to resolve hostname '{}', using raw value: {}", host, e);
+                        host.clone()
+                    });
+
+                run_samp(
+                    args.name.as_ref().unwrap(),
+                    &resolved_host,
+                    args.port.unwrap(),
+                    gamepath,
+                    &format!("{}/{}", gamepath, SAMP_DLL),
+                    omp_path,
+                    &password,
+                    "",
+                )
+                .await
+                .map_err(|e| LauncherError::InternalError(e.to_string()))?;
+
+                info!("Successfully launched game from command line");
+                exit(0);
             }
         }
-        Err(_) => Ok("{\"error\": true}".to_string()),
-    }
-}
-
-#[tauri::command]
-async fn request_server_rules(ip: &str, port: i32) -> Result<String, String> {
-    match query::Query::new(ip, port).await {
-        Ok(q) => {
-            let _ = q.send('r').await;
-            match q.recv().await {
-                Ok(p) => Ok(format!("{}", p)),
-                Err(e) => Err(e.to_string()),
+        Err(e) => {
+            if raw_args.len() > 1
+                && (raw_args[1].contains("omp://") || raw_args[1].contains("samp://"))
+            {
+                if let Ok(mut uri_scheme_value) = URI_SCHEME_VALUE.lock() {
+                    *uri_scheme_value = raw_args[1].clone();
+                }
+            } else {
+                info!("Invalid CLI arguments: {}", e);
             }
         }
-        Err(e) => Err(e.to_string()),
     }
+
+    Ok(())
 }
 
-#[tauri::command]
-async fn request_server_omp_extra_info(ip: &str, port: i32) -> Result<String, String> {
-    match query::Query::new(ip, port).await {
-        Ok(q) => {
-            let _ = q.send('o').await;
-            match q.recv().await {
-                Ok(p) => Ok(format!("{}", p)),
-                Err(e) => Err(e.to_string()),
-            }
-        }
-        Err(e) => Err(e.to_string()),
-    }
-}
-
-#[tauri::command]
-async fn ping_server(ip: &str, port: i32) -> Result<u32, String> {
-    match query::Query::new(ip, port).await {
-        Ok(q) => {
-            let _ = q.send('p').await;
-            let before = Instant::now();
-            match q.recv().await {
-                Ok(_p) => Ok(before.elapsed().as_millis() as u32),
-                Err(_) => Ok(9999),
-            }
-        }
-        Err(_) => Ok(9999),
-    }
-}
-
-#[tauri::command]
-async fn inject(
-    name: &str,
-    ip: &str,
-    port: i32,
-    exe: &str,
-    dll: &str,
-    password: &str,
-) -> Result<(), String> {
-    injector::run_samp(name, ip, port, exe, dll, password).await
-}
-
-#[tauri::command]
-fn get_gtasa_path_from_samp() -> String {
-    samp::get_gtasa_path().to_string()
-}
-
-#[tauri::command]
-fn get_nickname_from_samp() -> String {
-    samp::get_nickname().to_string()
-}
-
-#[tauri::command]
-fn rerun_as_admin() -> Result<String, String> {
-    let res = std::env::current_exe();
-    match res {
-        Ok(p) => {
-            let path = p.into_os_string().into_string().unwrap();
-            runas::Command::new(path).arg("").status().unwrap();
-            Ok("SUCCESS".to_string())
-        }
-        Err(_) => Err("FAILED".to_string()),
-    }
-}
-
-#[tauri::command]
-fn get_samp_favorite_list() -> String {
-    samp::get_samp_favorite_list()
-}
-
-#[tauri::command]
-fn toggle_drpc(toggle: bool) -> () {
-    discord::toggle_drpc(toggle);
-}
-
-#[tauri::command]
-fn get_checksum_of_files(list: Vec<&str>) -> Vec<String> {
-    let mut result = Vec::<String>::new();
-    for file in list {
-        let mut f = File::open(file).unwrap();
-        let mut contents = Vec::<u8>::new();
-        f.read_to_end(&mut contents).unwrap();
-        let digest = compute(&contents.as_slice());
-        let mut combine = file.to_string().to_owned();
-        combine.push_str("|");
-        combine.push_str(format!("{:x}", digest).as_str());
-        result.push(combine);
-    }
-    result
-}
-
-#[tauri::command]
-fn extract_7z(path: &str, output_path: &str) -> Result<String, String> {
-    match decompress_file(path, output_path) {
-        Ok(_) => Ok("success".to_string()),
-        Err(e) => Err(e.to_string()),
-    }
-}
-
-#[tauri::command]
-fn copy_files_to_gtasa(src: &str, gtasa_dir: &str) -> Result<(), String> {
-    helpers::copy_files(src, gtasa_dir)
-}
-
-fn main() {
-    simple_logging::log_to_file("omp-launcher.log", LevelFilter::Info).unwrap();
-
-    discord::initialize_drpc();
-    tauri::Builder::default()
+async fn run_tauri_app() -> Result<()> {
+    let builder_result = tauri::Builder::default()
         .plugin(tauri_plugin_upload::init())
-        .setup(|app| {
-            let main_window = app.get_window("main").unwrap();
-            main_window
-                .set_min_size(Some(PhysicalSize::new(1000, 700)))
-                .unwrap();
-            Ok(())
-        })
+        .setup(setup_tauri_app)
         .invoke_handler(tauri::generate_handler![
-            request_server_info,
-            request_server_players,
-            request_server_rules,
-            request_server_omp_extra_info,
-            ping_server,
-            inject,
-            get_gtasa_path_from_samp,
-            get_nickname_from_samp,
-            rerun_as_admin,
-            get_samp_favorite_list,
-            toggle_drpc,
-            get_checksum_of_files,
-            extract_7z,
-            copy_files_to_gtasa,
+            get_uri_scheme_value,
+            commands::inject,
+            commands::get_gtasa_path_from_samp,
+            commands::get_nickname_from_samp,
+            commands::get_samp_favorite_list,
+            commands::rerun_as_admin,
+            commands::resolve_hostname,
+            commands::is_process_alive,
+            commands::log_info,
+            commands::log_warn,
+            commands::log_error,
+            commands::get_checksum_of_files,
+            commands::extract_7z,
+            commands::copy_files_to_gtasa,
+            query::query_server,
+            ipc::send_message_to_game
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .run(tauri::generate_context!());
+
+    match builder_result {
+        Ok(_) => Ok(()),
+        Err(e) => Err(LauncherError::InternalError(format!(
+            "Tauri initialization failed: {}",
+            e
+        ))),
+    }
+}
+
+fn setup_tauri_app(app: &mut tauri::App) -> std::result::Result<(), Box<dyn std::error::Error>> {
+    let handle = app.handle();
+
+    if let Some(main_window) = app.get_window("main") {
+        main_window.set_min_size(Some(PhysicalSize::new(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)))?;
+    }
+
+    let config = handle.config();
+    if let Some(path) = app_data_dir(&config) {
+        fs::create_dir_all(&path).map_err(|e| {
+            error!("Failed to create app data directory: {}", e);
+            e
+        })?;
+    }
+
+    #[cfg(windows)]
+    setup_deeplinks(handle.clone())?;
+
+    ipc::init_ipc(handle);
+    Ok(())
+}
+
+#[cfg(windows)]
+fn setup_deeplinks(
+    handle: tauri::AppHandle,
+) -> std::result::Result<(), Box<dyn std::error::Error>> {
+    let handle_omp = handle.clone();
+    let handle_samp = handle.clone();
+
+    deeplink::register(DEEPLINK_SCHEME_OMP, move |request| {
+        info!("Received OMP deeplink: {}", request);
+        if let Ok(mut uri_value) = URI_SCHEME_VALUE.lock() {
+            *uri_value = request.clone();
+        }
+        let _ = handle_omp.emit_all("scheme-request-received", &request);
+    })?;
+
+    deeplink::register(DEEPLINK_SCHEME_SAMP, move |request| {
+        info!("Received SAMP deeplink: {}", request);
+        if let Ok(mut uri_value) = URI_SCHEME_VALUE.lock() {
+            *uri_value = request.clone();
+        }
+        let _ = handle_samp.emit_all("scheme-request-received", &request);
+    })?;
+
+    Ok(())
 }

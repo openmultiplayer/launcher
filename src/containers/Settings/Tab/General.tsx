@@ -10,6 +10,7 @@ import { useTheme } from "../../../states/theme";
 import { checkDirectoryValidity } from "../../../utils/game";
 import { Log } from "../../../utils/logger";
 import { sc } from "../../../utils/sizeScaler";
+import { stateStorage } from "../../../utils/stateStorage";
 import { Server } from "../../../utils/types";
 
 const General = () => {
@@ -135,7 +136,7 @@ const General = () => {
           style={[
             styles.browseButton,
             {
-              backgroundColor: theme.primary,
+              backgroundColor: `${theme.primary}BB`,
               borderColor: theme.textSecondary,
             },
           ]}
@@ -150,7 +151,7 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            backgroundColor: theme.primary,
+            backgroundColor: `${theme.primary}BB`,
             borderColor: theme.textSecondary,
           },
         ]}
@@ -164,7 +165,7 @@ const General = () => {
         style={[
           styles.importButton,
           {
-            backgroundColor: theme.primary,
+            backgroundColor: `${theme.primary}BB`,
           },
         ]}
         onPress={() => importFavListFromSAMP()}
@@ -181,6 +182,7 @@ const General = () => {
           },
         ]}
         onPress={() => {
+          stateStorage.clear();
           localStorage.clear();
           window.location.reload();
         }}
@@ -218,6 +220,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: sc(38),
     borderRadius: sc(5),
+    // @ts-ignore
     outlineStyle: "none",
     fontFamily: "Proxima Nova Regular",
     fontSize: sc(17),

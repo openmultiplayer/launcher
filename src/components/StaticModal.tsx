@@ -22,7 +22,8 @@ const StaticModal = (props: IProps) => {
       <Pressable
         style={{
           height: "100%",
-          width: "100%", // @ts-ignore
+          width: "100%",
+          // @ts-ignore
           cursor: "default",
         }}
         onPress={() => props.onDismiss()}
