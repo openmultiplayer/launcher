@@ -104,4 +104,90 @@ export default {
   reconnect: "Kết nối lại",
   settings_advanced_discord_status_requires_restart:
     "(Cần phải khởi động lại trò chơi để thực hiện hành động)",
+  settings_export_favorite_list_file: "Xuất danh sách yêu thích ra tệp",
+  settings_import_favorite_list_file: "Nhập danh sách yêu thích từ tệp",
+  export_no_servers_description: "Bạn chưa có máy chủ yêu thích nào để xuất.",
+  export_successful_title: "Xuất hoàn tất",
+  export_successful_description: "Đã xuất danh sách máy chủ thành công.",
+  export_failed_title: "Xuất thất bại",
+  export_failed_description:
+    "Đã xảy ra lỗi khi xuất danh sách máy chủ yêu thích của bạn.",
+  import_successful_title: "Nhập hoàn tất",
+  import_successful_description: "Đã nhập danh sách máy chủ thành công.",
+  import_failed_title: "Nhập thất bại",
+  import_failed_description:
+    "Đã xảy ra lỗi khi nhập danh sách máy chủ yêu thích của bạn.",
+  import_invalid_data_description:
+    "Tệp đã chọn chứa dữ liệu không hợp lệ. Vui lòng chọn một tệp danh sách yêu thích hợp lệ.",
+  settings_custom_game_exe_label: "Tên tệp thực thi tùy chỉnh của trò chơi",
+  unable_to_find_custom_game_exe_title:
+    "Không tìm thấy tệp thực thi tùy chỉnh của trò chơi!",
+  unable_to_find_custom_game_exe_description:
+    "Không tìm thấy tệp thực thi tùy chỉnh đã chỉ định trong thư mục GTA: San Andreas. Vui lòng kiểm tra trong Cài đặt → Nâng cao.",
+  cache_manager_title: "Quản lý cache SA-MP",
+  cache_scope_description:
+    "Thống kê chỉ tính tài nguyên DFF/TXD. Xóa một mục sẽ xóa vĩnh viễn toàn bộ thư mục của mục đó, bao gồm các tệp khác. Bạn có thể phải tải lại tài nguyên.",
+  cache_item: "Mục cache",
+  cache_file_count: "Tệp DFF/TXD",
+  cache_resource_size: "Dung lượng DFF/TXD",
+  cache_actions: "Thao tác",
+  cache_summary:
+    "{{count}} mục · {{files}} tệp DFF/TXD · {{size}} tài nguyên DFF/TXD",
+  cache_summary_partial:
+    "{{count}} mục · ít nhất {{files}} tệp DFF/TXD · ít nhất {{size}} tài nguyên DFF/TXD, một số mục chưa được thống kê đầy đủ",
+  cache_unknown_size: "Chưa xác định đầy đủ",
+  cache_rescan: "Quét lại",
+  cache_select_all: "Chọn các mục có thể xóa",
+  cache_clear_selection: "Bỏ chọn tất cả",
+  cache_delete_selected: "Xóa mục đã chọn ({{count}})",
+  cache_delete: "Xóa mục",
+  cache_scanning: "Đang quét…",
+  cache_deleting: "Đang xóa… Vui lòng giữ trình khởi chạy mở.",
+  cache_root_missing:
+    "Thư mục cache SA-MP chưa tồn tại. Không có dữ liệu nào được tạo.",
+  cache_empty: "Không tìm thấy mục cache máy chủ hợp lệ.",
+  cache_confirm_title: "Xóa vĩnh viễn các mục cache?",
+  cache_confirm_description:
+    "Xóa vĩnh viễn {{count}} thư mục cache đã chọn? Dung lượng tài nguyên DFF/TXD đã thống kê: khoảng {{size}}. Toàn bộ các thư mục sẽ bị xóa, bao gồm các tệp khác. Bạn có thể phải tải lại tài nguyên khi kết nối lại, nhưng những tài nguyên đó có thể không còn khả dụng. Không thể hoàn tác thao tác này trong trình khởi chạy.",
+  cache_result_title: "Kết quả xóa",
+  cache_removed_summary:
+    "Tài nguyên DFF/TXD đã xóa thành công: {{size}}. Đây không phải dung lượng của tất cả các tệp đã xóa và không đảm bảo dung lượng ổ đĩa thực tế được giải phóng.",
+  cache_status_deleted: "Đã xóa",
+  cache_status_already_missing: "Không còn tồn tại",
+  cache_status_failed: "Thất bại",
+  cache_status_partial: "Đã xóa một phần",
+  cache_status_skipped: "Đã bỏ qua",
+  cache_error_unsupported_platform:
+    "Hãy sử dụng tính năng này trong trình khởi chạy độc lập trên Windows.",
+  cache_error_documents_unavailable:
+    "Không thể xác định vị trí thư mục Documents của Windows.",
+  cache_error_invalid_cache_root:
+    "Vị trí cache không phải là thư mục thông thường.",
+  cache_error_access_denied:
+    "Không có quyền truy cập hoặc một mục đang bị khóa. Hãy đóng các chương trình đang sử dụng cache và quét lại.",
+  cache_error_invalid_selection:
+    "Lựa chọn không hợp lệ. Hãy quét lại và chọn các mục có thể xóa.",
+  cache_error_stale_scan:
+    "Kết quả quét đã hết hạn hoặc bị thay thế. Hãy quét lại trước khi xóa.",
+  cache_error_unsafe_path:
+    "Đường dẫn cache không an toàn. Không được phép xóa.",
+  cache_error_reparse_point:
+    "Phát hiện liên kết hoặc điểm chuyển hướng (junction/reparse point). Không thể xóa mục này.",
+  cache_error_game_running:
+    "Hãy đóng GTA: San Andreas trước khi xóa các mục cache, sau đó quét lại.",
+  cache_error_process_check_failed:
+    "Không thể xác định đáng tin cậy trạng thái tiến trình trò chơi. Chức năng xóa đã bị vô hiệu hóa, hãy đóng trò chơi và quét lại.",
+  cache_error_operation_in_progress:
+    "Một thao tác cache khác hoặc quá trình khởi chạy trò chơi đang diễn ra. Vui lòng chờ.",
+  cache_error_cache_changed:
+    "Cache đã thay đổi sau khi quét. Hãy quét lại và xác nhận lựa chọn mới.",
+  cache_error_delete_failed:
+    "Không thể xóa hoàn toàn mục này. Các tệp còn lại được giữ nguyên, hãy quét lại.",
+  cache_error_scan_failed: "Không thể quét cache. Vui lòng thử lại.",
+  cache_error_scan_limit:
+    "Mục này vượt giới hạn quét an toàn và không thể xóa.",
+  cache_error_already_missing:
+    "Mục này đã thay đổi hoặc biến mất trong lúc quét. Vui lòng quét lại.",
+  cache_error_size_overflow:
+    "Không thể biểu diễn dung lượng tài nguyên một cách an toàn. Chức năng xóa đã bị vô hiệu hóa.",
 };

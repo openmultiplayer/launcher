@@ -6,6 +6,38 @@ use std::fs::File;
 use std::io::Read;
 
 #[tauri::command]
+pub async fn scan_samp_cache(
+    window: tauri::Window,
+    custom_game_exe: Option<String>,
+) -> std::result::Result<crate::cache::CacheScanResult, String> {
+    if window.label() != "main" {
+        return Err("unsupported_platform".into());
+    }
+    tokio::task::spawn_blocking(move || crate::cache::scan(custom_game_exe))
+        .await
+        .map_err(|error| {
+            log::error!("Cache scan worker: {}", error);
+            "scan_failed".to_string()
+        })?
+}
+
+#[tauri::command]
+pub async fn delete_samp_cache(
+    window: tauri::Window,
+    request: crate::cache::CacheDeleteRequest,
+) -> std::result::Result<crate::cache::CacheDeleteResult, String> {
+    if window.label() != "main" {
+        return Err("unsupported_platform".into());
+    }
+    tokio::task::spawn_blocking(move || crate::cache::delete(request))
+        .await
+        .map_err(|error| {
+            log::error!("Cache delete worker: {}", error);
+            "delete_failed".to_string()
+        })?
+}
+
+#[tauri::command]
 pub async fn inject(
     name: &str,
     ip: &str,
