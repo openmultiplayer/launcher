@@ -11,6 +11,7 @@
     "build": "tsc && vite build -- --omprelease",
     "build-ingame": "tsc && vite build -- --omprelease --ingame",
     "preview": "vite preview",
+    "format": "prettier --write ./src",
     "tauri": "tauri",
     "start": "tauri dev",
     "release": "tauri build -t i686-pc-windows-msvc",
@@ -45,6 +46,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-react-native-web": "^0.19.12",
+    "prettier": "^3.9.9",
     "typescript": "^5.3.3",
     "vite": "^5.3.3"
   }

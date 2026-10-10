@@ -16,7 +16,8 @@ export default {
   players: "Jugadores",
   server_join_prompt_enter_password:
     "Este servidor está protegido, por favor ingresa la contraseña.",
-  server_join_prompt_enter_password_input_placeholder: "Ingresa la contraseña...",
+  server_join_prompt_enter_password_input_placeholder:
+    "Ingresa la contraseña...",
   server_join_prompt_nickname_input_placeholder: "Ingresa el usuario...",
   connect: "Conectar",
   copy: "Copiar",
@@ -85,7 +86,8 @@ export default {
     "¡La ruta de GTA: San Andreas no está definida!",
   gta_path_modal_path_not_set_description:
     "No has definido la ruta de GTA: San Andreas, ve a configuración y busca la carpeta del juego.",
-  admin_permissions_required_modal_title: "¡Se requieren permisos de administrador!",
+  admin_permissions_required_modal_title:
+    "¡Se requieren permisos de administrador!",
   admin_permissions_required_modal_description:
     'Parece que tu juego GTA: San Andreas requiere permisos de administrador para ejecutarse. Esto puede deberse a varios motivos, como tener el juego instalado en la unidad "C". Vuelve a abrir el launcher de open.mp como administrador usando el botón "Ejecutar como administrador" o hazlo manualmente.',
   run_as_admin: "Ejecutar como administrador",

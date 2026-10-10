@@ -254,5 +254,3 @@ export const changeLanguage = async (lang: LanguageType): Promise<void> => {
 };
 
 export default i18n;
-
-

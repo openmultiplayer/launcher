@@ -82,7 +82,8 @@ export default {
   nickname_modal_name_not_set_title: "Walang Palayaw!",
   nickname_modal_name_not_set_description:
     "Kailangan mong pumili ng palayaw para sa iyong sarili bago sumali sa isang server.",
-  gta_path_modal_path_not_set_title: "Hindi naka-set ang lokasyon ng GTA: San Andreas!",
+  gta_path_modal_path_not_set_title:
+    "Hindi naka-set ang lokasyon ng GTA: San Andreas!",
   gta_path_modal_path_not_set_description:
     "Hindi mo inilagay ang lokasyon ng GTA: San Andreas, pumunta sa settings at hanapin ang game folder.",
   admin_permissions_required_modal_title: "Kailangan ng admin permissions!",
@@ -105,7 +106,8 @@ export default {
   settings_advanced_discord_status_requires_restart:
     "(Kailangan i-restart ang laro para gumana)",
   settings_export_favorite_list_file: "I-export ang favorites list sa file",
-  settings_import_favorite_list_file: "I-import ang favorites list mula sa file",
+  settings_import_favorite_list_file:
+    "I-import ang favorites list mula sa file",
   export_no_servers_description:
     "Wala kang anumang favorite servers na pupwedeng ma-export.",
   export_successful_title: "Kumpleto na ang Export",

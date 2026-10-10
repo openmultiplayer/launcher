@@ -70,13 +70,17 @@ const updateServersInBatches = (
   const batches = chunk(servers, SERVER_UPDATE_CONFIG.BATCH_SIZE);
 
   batches.forEach((batch, batchIndex) => {
-    setTimeout(() => {
-      batch.forEach((server) => {
-        if (server) {
-          queryServer(server, listType, "basic");
-        }
-      });
-    }, SERVER_UPDATE_CONFIG.INITIAL_DELAY + batchIndex * SERVER_UPDATE_CONFIG.BATCH_DELAY);
+    setTimeout(
+      () => {
+        batch.forEach((server) => {
+          if (server) {
+            queryServer(server, listType, "basic");
+          }
+        });
+      },
+      SERVER_UPDATE_CONFIG.INITIAL_DELAY +
+        batchIndex * SERVER_UPDATE_CONFIG.BATCH_DELAY
+    );
   });
 };
 

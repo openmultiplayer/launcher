@@ -41,8 +41,7 @@ export default {
   clear_recently_joined_list: "최근 접속 목록 초기화",
   refresh_servers: "서버 목록 새로고침",
   play: "플레이",
-  remove_selected_server_from_favorites:
-    "선택한 서버를 즐겨찾기에서 제거",
+  remove_selected_server_from_favorites: "선택한 서버를 즐겨찾기에서 제거",
   add_selected_server_to_favorites: "선택한 서버를 즐겨찾기에 추가",
   add_server: "서버 추가",
   hide_player_and_rule_list: "플레이어 및 규칙 목록 숨기기",
@@ -55,7 +54,8 @@ export default {
   settings_import_samp_favorite_list: "SA-MP 데이터에서 즐겨찾기 목록 불러오기",
   settings_reset_application_data:
     "애플리케이션 데이터 초기화 (설정 및 목록 삭제)",
-  settings_new_update_available: "⚠ 새로운 업데이트 가능. 클릭하여 다운로드하세요! ⚠",
+  settings_new_update_available:
+    "⚠ 새로운 업데이트 가능. 클릭하여 다운로드하세요! ⚠",
   settings_credits_made_by: "제작:",
   settings_credits_view_source_on_github: "GitHub에서 소스 코드 보기",
   update_modal_update_available_title: "업데이트 가능!",
@@ -102,18 +102,15 @@ export default {
     "(적용하려면 게임을 재시작해야 합니다)",
   settings_export_favorite_list_file: "즐겨찾기 목록 파일로 내보내기",
   settings_import_favorite_list_file: "즐겨찾기 목록 파일에서 불러오기",
-  export_no_servers_description:
-    "내보낼 즐겨찾기 서버가 없습니다.",
+  export_no_servers_description: "내보낼 즐겨찾기 서버가 없습니다.",
   export_successful_title: "내보내기 완료",
   export_successful_description: "서버 목록을 성공적으로 내보냈습니다.",
   export_failed_title: "내보내기 실패",
-  export_failed_description:
-    "즐겨찾기 서버를 내보내는 중 오류가 발생했습니다.",
+  export_failed_description: "즐겨찾기 서버를 내보내는 중 오류가 발생했습니다.",
   import_successful_title: "불러오기 완료",
   import_successful_description: "서버 목록을 성공적으로 불러왔습니다.",
   import_failed_title: "불러오기 실패",
-  import_failed_description:
-    "즐겨찾기 서버를 불러오는 중 오류가 발생했습니다.",
+  import_failed_description: "즐겨찾기 서버를 불러오는 중 오류가 발생했습니다.",
   import_invalid_data_description:
     "선택한 파일에 유효하지 않은 데이터가 포함되어 있습니다. 올바른 즐겨찾기 목록 파일을 선택해 주세요.",
   settings_custom_game_exe_label: "사용자 정의 실행 파일(.exe) 이름",

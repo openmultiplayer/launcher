@@ -13,4 +13,3 @@ const useSettingsModal = create<SettingsModalState>()((set) => ({
 }));
 
 export { useSettingsModal };
-

@@ -211,7 +211,7 @@ const setServerPlayers = async (
 const determineIfOmpServer = (rules: Server["rules"]): boolean => {
   return Boolean(
     rules["allowed_clients"] ||
-      (rules.version && rules.version.includes("omp "))
+    (rules.version && rules.version.includes("omp "))
   );
 };
 

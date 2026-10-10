@@ -2,13 +2,14 @@ export default {
   favorites: "Любими",
   internet: "Интернет",
   partners: "Партньори",
-  recently_joined: "Присъединихте се наскоро",  
+  recently_joined: "Присъединихте се наскоро",
   nickname: "Потребителско име",
   settings: "Настройки",
   minimize: "Минимизирай",
   maximize: "Максимизирай",
   close: "Затвори",
-  add_server_modal_description_1: "Добавете сървъра ръчно към списъка с любими.",
+  add_server_modal_description_1:
+    "Добавете сървъра ръчно към списъка с любими.",
   add_server_modal_description_2: "Например: 127.0.0.1:7777",
   add: "Добави",
   server: "Сървър",
@@ -17,7 +18,8 @@ export default {
   server_join_prompt_enter_password:
     "Този сървър е защитен, моля, въведете парола.",
   server_join_prompt_enter_password_input_placeholder: "Въведете парола...",
-  server_join_prompt_nickname_input_placeholder: "Въведете потребителско име...",
+  server_join_prompt_nickname_input_placeholder:
+    "Въведете потребителско име...",
   connect: "Свържи се",
   copy: "Копирай",
   remove_from_favorites: "Премахни от любими",
@@ -41,8 +43,7 @@ export default {
   clear_recently_joined_list: "Изчисти списъка с последно посетени",
   refresh_servers: "Обнови списъка със сървъри",
   play: "Играй",
-  remove_selected_server_from_favorites:
-    "Премахни избрания сървър от любими",
+  remove_selected_server_from_favorites: "Премахни избрания сървър от любими",
   add_selected_server_to_favorites: "Добави избрания сървър към любими",
   add_server: "Добави сървър",
   hide_player_and_rule_list: "Скрий списъка с играчи и правила",
@@ -55,7 +56,8 @@ export default {
   settings_import_samp_favorite_list: "Импортирай списъка с любими от SA-MP",
   settings_reset_application_data:
     "Нулирай данните на приложението (изчиства настройките и списъците)",
-  settings_new_update_available: "⚠ Налична е нова актуализация. Натисни за да я изтеглите! ⚠",
+  settings_new_update_available:
+    "⚠ Налична е нова актуализация. Натисни за да я изтеглите! ⚠",
   settings_credits_made_by: "Made with ❤️ by",
   settings_credits_view_source_on_github: "Виж изходния код в GitHub",
   update_modal_update_available_title: "Налична актуализация!",
@@ -64,7 +66,8 @@ export default {
   download: "Изтегли",
   update_modal_remind_me_next_time: "Напомни ми следващия път",
   update_modal_skip_this_update: "Пропусни тази актуализация",
-  gta_path_modal_cant_find_game_title: "Не може да бъде намерен GTA: San Andreas!",
+  gta_path_modal_cant_find_game_title:
+    "Не може да бъде намерен GTA: San Andreas!",
   gta_path_modal_cant_find_game_description:
     'Не може да бъде намерен GTA: San Andreas в тази директория:\n  - "{{ path }}"\nНе може да бъде намерен "gta_sa.exe" в посочения път.',
   open_settings: "Отвори настройките",
@@ -87,13 +90,13 @@ export default {
   run_as_admin: "Стартирай като администратор",
   settings_general_tab_title: "Общи",
   settings_lang_tab_title: "Езици",
-  settings_advanced_tab_title: "Разширени", 
+  settings_advanced_tab_title: "Разширени",
   settings_advanced_discord_status: "Активирай Discord статус",
   join_discord: "Присъедини се към Discord сървъра",
   samp_version: "SA-MP версия",
   change_version: "Промени версията",
   offline: "Офлайн",
-  from_gtasa_folder: "От папката на GTA: SA"",
+  from_gtasa_folder: "От папката на GTA: SA",
   gta_path_modal_cant_find_samp_description_2:
     "Моля, избери друга версия или изтегли и инсталирай SA-MP ръчно.",
   add_or_play_external_server: "Добави в любими или играй",
@@ -102,10 +105,10 @@ export default {
     "(Изисква рестартиране на играта, за да влезе в сила)",
   settings_export_favorite_list_file: "Експортирай списъка с любими във файл",
   settings_import_favorite_list_file: "Импортирай списъка с любими от файл",
-  export_no_servers_description:
-    "Нямаш любими сървъри за експортиране.",
+  export_no_servers_description: "Нямаш любими сървъри за експортиране.",
   export_successful_title: "Експортирането завърши",
-  export_successful_description: "Списъкът със сървъри беше експортиран успешно.",
+  export_successful_description:
+    "Списъкът със сървъри беше експортиран успешно.",
   export_failed_title: "Неуспешно експортиране",
   export_failed_description:
     "Възникна грешка при експортирането на любимите ти сървъри.",
@@ -116,7 +119,8 @@ export default {
     "Възникна грешка при импортирането на любимите ти сървъри.",
   import_invalid_data_description:
     "Избраният файл съдържа невалидни данни. Моля, избери валиден файл със списък с любими.",
-  settings_custom_game_exe_label: "Име на персонализирания изпълним файл на играта",
+  settings_custom_game_exe_label:
+    "Име на персонализирания изпълним файл на играта",
   unable_to_find_custom_game_exe_title:
     "Не може да бъде намерен персонализираният изпълним файл на играта!",
   unable_to_find_custom_game_exe_description:

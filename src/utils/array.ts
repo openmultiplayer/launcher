@@ -33,11 +33,14 @@ export const groupBy = <T, K extends string | number>(
   array: T[],
   keyFn: (item: T) => K
 ): Record<K, T[]> => {
-  return array.reduce((groups, item) => {
-    const key = keyFn(item);
-    (groups[key] ??= []).push(item);
-    return groups;
-  }, {} as Record<K, T[]>);
+  return array.reduce(
+    (groups, item) => {
+      const key = keyFn(item);
+      (groups[key] ??= []).push(item);
+      return groups;
+    },
+    {} as Record<K, T[]>
+  );
 };
 
 export const sortBy = <T>(

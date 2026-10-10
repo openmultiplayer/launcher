@@ -49,10 +49,10 @@ const Text = memo<TextComponentProps>(
         bold || semibold
           ? FONT_WEIGHTS.semibold
           : light
-          ? FONT_WEIGHTS.light
-          : medium
-          ? FONT_WEIGHTS.medium
-          : FONT_WEIGHTS.regular;
+            ? FONT_WEIGHTS.light
+            : medium
+              ? FONT_WEIGHTS.medium
+              : FONT_WEIGHTS.regular;
 
       return [
         {

@@ -14,8 +14,10 @@ export default {
   server: "Սերվեր",
   address: "Հասցե",
   players: "Խաղացողներ",
-  server_join_prompt_enter_password: "Սերվերը պաշտպանված է, մուտքագրեք գաղտնաբառը:",
-  server_join_prompt_enter_password_input_placeholder: "Մուտքագրեք գաղտնաբառը...",
+  server_join_prompt_enter_password:
+    "Սերվերը պաշտպանված է, մուտքագրեք գաղտնաբառը:",
+  server_join_prompt_enter_password_input_placeholder:
+    "Մուտքագրեք գաղտնաբառը...",
   server_join_prompt_nickname_input_placeholder: "Մուտքագրեք երկարանունը...",
   connect: "Կապվել",
   copy: "ՊԱՍՏԵՐԱԴՐԵԼ",
@@ -40,18 +42,24 @@ export default {
   clear_recently_joined_list: "Մաքրել Վերջերս միացած ցուցակը",
   refresh_servers: "Թարմացնել սերվերների ցուցակը",
   play: "Խաղալ",
-  remove_selected_server_from_favorites: "Հեռացնել ընտրված սերվերը սիրելի ցուցակից",
-  add_selected_server_to_favorites: "Ավելացնել ընտրված սերվերը սիրելի ցուցակում",
+  remove_selected_server_from_favorites:
+    "Հեռացնել ընտրված սերվերը սիրելի ցուցակից",
+  add_selected_server_to_favorites:
+    "Ավելացնել ընտրված սերվերը սիրելի ցուցակում",
   add_server: "Ավելացնել սերվեր",
   hide_player_and_rule_list: "Թաքցնել խաղացողների և կանոնների ցուցակը",
   show_player_and_rule_list: "Ցույց տալ խաղացողների և կանոնների ցուցակը",
   copy_server_info: "Պատճենել սերվերի տեղեկատվությունը",
   settings_gta_path_input_label: "GTA: San Andreas ուղի",
   browse: "ԸՆՏՐԵԼ",
-  settings_import_nickname_gta_path_from_samp: "Ներմուծել երկարանունն ու gtasa ուղին SA-MP կարգավորումներից",
-  settings_import_samp_favorite_list: "Ներմուծել սիրելի սերվերների ցուցակը SA-MP տվյալներից",
-  settings_reset_application_data: "Վերականգնել ծրագրի տվյալները (մաքրել կարգավորումները և ցուցակները)",
-  settings_new_update_available: "⚠ Նոր թարմացում է հասանելի. Սեղմեք ներբեռնելու համար! ⚠",
+  settings_import_nickname_gta_path_from_samp:
+    "Ներմուծել երկարանունն ու gtasa ուղին SA-MP կարգավորումներից",
+  settings_import_samp_favorite_list:
+    "Ներմուծել սիրելի սերվերների ցուցակը SA-MP տվյալներից",
+  settings_reset_application_data:
+    "Վերականգնել ծրագրի տվյալները (մաքրել կարգավորումները և ցուցակները)",
+  settings_new_update_available:
+    "⚠ Նոր թարմացում է հասանելի. Սեղմեք ներբեռնելու համար! ⚠",
   settings_credits_made_by: "Ստեղծված է ❤️-ով",
   settings_credits_view_source_on_github: "Դիտել աղբյուրը GitHub-ում",
   update_modal_update_available_title: "Թարմացում հասանելի է!",
@@ -69,12 +77,16 @@ export default {
   gta_path_modal_cant_find_samp_description:
     'Չի գտնվել SA-MP-ը այս գրացուցակում:\n  - "{{ path }}"\n"samp.dll" ֆայլը ձեր նշած ուղում բացակայում է:',
   notification_add_to_favorites_title: "Ավելացված է սիրելիներին!",
-  notification_add_to_favorites_description: "{{ server }} ավելացվել է ձեր սիրելի ցուցակին:",
+  notification_add_to_favorites_description:
+    "{{ server }} ավելացվել է ձեր սիրելի ցուցակին:",
   nickname_modal_name_not_set_title: "Երկարանունը չի ընտրված!",
-  nickname_modal_name_not_set_description: "Դուք պետք է ընտրեք երկարանուն նախքան սերվերին միանալը:",
+  nickname_modal_name_not_set_description:
+    "Դուք պետք է ընտրեք երկարանուն նախքան սերվերին միանալը:",
   gta_path_modal_path_not_set_title: "GTA: San Andreas-ի ուղին չի սահմանված!",
-  gta_path_modal_path_not_set_description: "Դուք չեք սահմանել խաղի ուղին, գնացեք կարգավորումներ և գտեք խաղի թղթապանակը:",
-  admin_permissions_required_modal_title: "Պահանջվում են ադմինիստրատորական իրավունքներ!",
+  gta_path_modal_path_not_set_description:
+    "Դուք չեք սահմանել խաղի ուղին, գնացեք կարգավորումներ և գտեք խաղի թղթապանակը:",
+  admin_permissions_required_modal_title:
+    "Պահանջվում են ադմինիստրատորական իրավունքներ!",
   admin_permissions_required_modal_description:
     'Միգուցե ձեր GTA: San Andreas խաղը պահանջում է ադմինիստրատորական իրավունքներ։ Դա կարող է լինել տարբեր պատճառներով, օրինակ խաղը C: սկավառակում է տեղադրված։ Խնդրում ենք նորից բացել open.mp լանչերը որպես ադմինիստրատոր՝ օգտագործելով "Run as Admin" կոճակը կամ ձեռքով։',
   run_as_admin: "Բացել որպես ադմին",
@@ -91,18 +103,22 @@ export default {
     "Խնդրում ենք ընտրել այլ տարբերակ կամ ներբեռնել և տեղադրել SA-MP-ը ձեռքով:",
   add_or_play_external_server: "Ավելացնել սիրելիներին կամ խաղալ",
   reconnect: "Կապվել կրկին",
-  settings_advanced_discord_status_requires_restart: "(Պահանջում է խաղի վերագործարկում)",
+  settings_advanced_discord_status_requires_restart:
+    "(Պահանջում է խաղի վերագործարկում)",
   settings_export_favorite_list_file: "Երեկուսացնել սիրելի ցուցակ ֆայլով",
   settings_import_favorite_list_file: "Ներմուծել սիրելի ցուցակ ֆայլից",
-  export_no_servers_description: "Դուք չունեք որևէ սիրելի սերվեր արտահանելու համար:",
+  export_no_servers_description:
+    "Դուք չունեք որևէ սիրելի սերվեր արտահանելու համար:",
   export_successful_title: "Արտահանումը ավարտված է",
   export_successful_description: "Սերվերի ցուցակը հաջողությամբ արտահանվել է:",
   export_failed_title: "Արտահանումը ձախողվեց",
-  export_failed_description: "Սխալ է տեղի ունեցել ձեր սիրելի սերվերների արտահանման ընթացքում:",
+  export_failed_description:
+    "Սխալ է տեղի ունեցել ձեր սիրելի սերվերների արտահանման ընթացքում:",
   import_successful_title: "Ներմուծումը ավարտված է",
   import_successful_description: "Սերվերի ցուցակը հաջողությամբ ներմուծվել է:",
   import_failed_title: "Ներմուծումը ձախողվեց",
-  import_failed_description: "Սխալ է տեղի ունեցել ձեր սիրելի սերվերների ներմուծման ընթացքում:",
+  import_failed_description:
+    "Սխալ է տեղի ունեցել ձեր սիրելի սերվերների ներմուծման ընթացքում:",
   import_invalid_data_description:
     "Ընտրված ֆայլը պարունակում է անվավեր տվյալներ։ Խնդրում ենք ընտրել վավեր ֆայլ:",
   settings_custom_game_exe_label: "Տեսական խաղի EXE անունը",

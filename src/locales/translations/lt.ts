@@ -43,8 +43,7 @@ export default {
   play: "Žaisti",
   remove_selected_server_from_favorites:
     "Pašalinkite pasirinktą serverį iš mėgstamų",
-  add_selected_server_to_favorites:
-    "Pridėti pasirinktą serverį prie mėgstamų",
+  add_selected_server_to_favorites: "Pridėti pasirinktą serverį prie mėgstamų",
   add_server: "Pridėti serverį",
   hide_player_and_rule_list: "Slėpti žaidėjų ir taisyklių sąrašą",
   show_player_and_rule_list: "Rodyti žaidėjų ir taisyklių sąrašą",
@@ -53,8 +52,7 @@ export default {
   browse: "NARŠYTI",
   settings_import_nickname_gta_path_from_samp:
     "Importuokite slapyvardį ir gtasa aplanką iš SA-MP nustatymų",
-  settings_import_samp_favorite_list:
-    "Importuokite mėgstamų sąrašą iš SA-MP",
+  settings_import_samp_favorite_list: "Importuokite mėgstamų sąrašą iš SA-MP",
   settings_reset_application_data:
     "Iš naujo nustatyti programos duomenis (išvalo nustatymus ir sąrašus)",
   settings_new_update_available:
@@ -104,23 +102,24 @@ export default {
   reconnect: "Jungtis iš naujo",
   settings_advanced_discord_status_requires_restart:
     "(Norint užbaigti veiksmą, reikia paleisti žaidimą iš naujo)",
-  settings_export_favorite_list_file: "Eksportuoti mėgstamų serverių sąrašą į failą",
-  settings_import_favorite_list_file: "Importuoti mėgstamų serverių sąrašą iš failo",
+  settings_export_favorite_list_file:
+    "Eksportuoti mėgstamų serverių sąrašą į failą",
+  settings_import_favorite_list_file:
+    "Importuoti mėgstamų serverių sąrašą iš failo",
   export_no_servers_description:
     "Neturite mėgstamų serverių, kuriuos būtų galima eksportuoti.",
   export_successful_title: "Eksportavimas baigtas",
   export_successful_description: "Serverių sąrašas sėkmingai eksportuotas.",
   export_failed_title: "Eksportavimas nepavyko",
-  export_failed_description:
-    "Įvyko klaida eksportuojant mėgstamus serverius.",
+  export_failed_description: "Įvyko klaida eksportuojant mėgstamus serverius.",
   import_successful_title: "Importavimas baigtas",
   import_successful_description: "Serverių sąrašas sėkmingai importuotas.",
   import_failed_title: "Importavimas nepavyko",
-  import_failed_description:
-    "Įvyko klaida importuojant mėgstamus serverius.",
+  import_failed_description: "Įvyko klaida importuojant mėgstamus serverius.",
   import_invalid_data_description:
     "Pasirinktame faile yra neteisingų duomenų. Pasirinkite tinkamą mėgstamų serverių sąrašo failą.",
-  settings_custom_game_exe_label: "Pasirinktinis žaidimo paleidimo failo pavadinimas",
+  settings_custom_game_exe_label:
+    "Pasirinktinis žaidimo paleidimo failo pavadinimas",
   unable_to_find_custom_game_exe_title:
     "Nepavyko rasti pasirinktinio žaidimo paleidimo failo!",
   unable_to_find_custom_game_exe_description:
