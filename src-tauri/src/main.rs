@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod cli;
+mod cache;
 mod commands;
 mod constants;
 mod errors;
@@ -215,6 +216,8 @@ async fn run_tauri_app() -> Result<()> {
             commands::get_checksum_of_files,
             commands::extract_7z,
             commands::copy_files_to_gtasa,
+            commands::scan_samp_cache,
+            commands::delete_samp_cache,
             query::query_server,
             ipc::send_message_to_game
         ])

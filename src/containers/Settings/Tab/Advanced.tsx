@@ -1,9 +1,18 @@
 import { t } from "i18next";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { type } from "@tauri-apps/api/os";
+import { useEffect, useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Text from "../../../components/Text";
 import { IN_GAME } from "../../../constants/app";
 import { useSettings } from "../../../states/settings";
 import { useTheme } from "../../../states/theme";
+import { useCacheManager } from "../../../states/cacheManager";
 import {
   exportFavoriteListFile,
   importFavoriteListFile,
@@ -13,8 +22,22 @@ import { sc } from "../../../utils/sizeScaler";
 const Advanced = () => {
   const { theme } = useTheme();
   const { customGameExe, setCustomGameExe } = useSettings();
+  const [supported, setSupported] = useState(false);
+  useEffect(() => {
+    let active = true;
+    void type()
+      .then((os) => {
+        if (active) setSupported(os === "Windows_NT");
+      })
+      .catch(() => {
+        if (active) setSupported(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   return (
-    <View
+    <ScrollView
       style={{
         paddingHorizontal: 12,
         overflow: "hidden",
@@ -43,6 +66,19 @@ const Advanced = () => {
         </View>
       )}
       <View style={{ flex: 1 }} />
+      {!IN_GAME && supported && (
+        <TouchableOpacity
+          style={[
+            styles.importButton,
+            { backgroundColor: theme.primary, borderColor: theme.primary },
+          ]}
+          onPress={() => useCacheManager.getState().open()}
+        >
+          <Text semibold color="#FFFFFF" size={2}>
+            {t("cache_manager_title")}
+          </Text>
+        </TouchableOpacity>
+      )}
       <View
         style={{
           width: "100%",
@@ -80,7 +116,7 @@ const Advanced = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.pathInputContainer}></View>
-    </View>
+    </ScrollView>
   );
 };
 const styles = StyleSheet.create({

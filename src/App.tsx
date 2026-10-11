@@ -7,6 +7,7 @@ import {
 } from "@tauri-apps/api/window";
 import {
   lazy,
+  Suspense,
   memo,
   useCallback,
   useEffect,
@@ -22,6 +23,7 @@ import { changeLanguage } from "./locales";
 import { useGenericPersistentState } from "./states/genericStates";
 import { usePersistentServers } from "./states/servers";
 import { useTheme } from "./states/theme";
+import { useCacheManager } from "./states/cacheManager";
 import { throttle } from "./utils/debounce";
 import {
   checkIfProcessAlive,
@@ -50,12 +52,14 @@ const MessageBox = lazy(() => import("./containers/MessageBox"));
 const Notification = lazy(() => import("./containers/Notification"));
 const ContextMenu = lazy(() => import("./containers/ServerContextMenu"));
 const SettingsModal = lazy(() => import("./containers/Settings"));
+const CacheManager = lazy(() => import("./containers/CacheManager"));
 
 const App = memo(() => {
   const [loading, setLoading] = useState(!IN_GAME);
   const [maximized, setMaximized] = useState(false);
   const { theme } = useTheme();
   const { language } = useGenericPersistentState();
+  const cacheVisible = useCacheManager((state) => state.visible);
   const windowSize = useRef<PhysicalSize>();
   const mainWindowSize = useRef<LogicalSize>();
   const processCheckInterval = useRef<NodeJS.Timeout>();
@@ -251,6 +255,11 @@ const App = memo(() => {
           <AddThirdPartyServerModal />
           <ExternalServerHandler />
           <Notification />
+          {cacheVisible && (
+            <Suspense fallback={null}>
+              <CacheManager />
+            </Suspense>
+          )}
           <MessageBox />
         </View>
       </View>
