@@ -71,10 +71,10 @@ pub async fn run_samp(
 
     match process {
         Ok(p) => {
-            inject_dll(p.id(), dll_path, 0, false)?;
+            inject_dll(p.id(), dll_path, 0, false, true)?;
             info!("[run_samp] omp_file.is_empty(): {}", omp_file.is_empty());
             if !omp_file.is_empty() {
-                inject_dll(p.id(), omp_file, 0, false)
+                inject_dll(p.id(), omp_file, 0, false, false)
             } else {
                 Ok(())
             }
@@ -99,7 +99,13 @@ pub async fn run_samp(
 }
 
 #[cfg(target_os = "windows")]
-pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bool) -> Result<()> {
+pub fn inject_dll(
+    child: u32,
+    dll_path: &str,
+    times: u32,
+    waiting_for_vorbis: bool,
+    initialize_client: bool,
+) -> Result<()> {
     use winapi::{
         shared::minwindef::{FALSE, HMODULE},
         um::{
@@ -131,7 +137,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                     if found == 0 {
                         let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
                         std::thread::sleep(delay);
-                        return inject_dll(child, dll_path, times, true);
+                        return inject_dll(child, dll_path, times, true, initialize_client);
                     }
 
                     let mut found_vorbis = false;
@@ -153,7 +159,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                     if !found_vorbis {
                         let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
                         std::thread::sleep(delay);
-                        return inject_dll(child, dll_path, times, true);
+                        return inject_dll(child, dll_path, times, true, initialize_client);
                     }
                 }
             }
@@ -163,7 +169,32 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
 
             // inject the payload into the target process
             match syringe.inject(dll_path) {
-                Ok(_) => Ok(()),
+                Ok(payload) => {
+                    if initialize_client {
+                        let initialize = unsafe {
+                            syringe.get_raw_procedure::<extern "C" fn()>(payload, "omp_initialize")
+                        }
+                        .map_err(|e| {
+                            LauncherError::Injection(format!(
+                                "Failed to find client initializer in {}: {}",
+                                dll_path, e
+                            ))
+                        })?
+                        .ok_or_else(|| {
+                            LauncherError::Injection(format!(
+                                "Client DLL {} does not export omp_initialize",
+                                dll_path
+                            ))
+                        })?;
+                        initialize.call().map_err(|e| {
+                            LauncherError::Injection(format!(
+                                "Failed to initialize client DLL {}: {}",
+                                dll_path, e
+                            ))
+                        })?;
+                    }
+                    Ok(())
+                }
                 Err(e) => {
                     let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
                     std::thread::sleep(delay);
@@ -175,7 +206,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                         );
 
                         if !waiting_for_vorbis {
-                            return inject_dll(child, dll_path, 0, true);
+                            return inject_dll(child, dll_path, 0, true, initialize_client);
                         }
                         return Err(LauncherError::Injection(format!(
                             "DLL injection failed: {}",
@@ -183,7 +214,13 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                         )));
                     }
 
-                    inject_dll(child, dll_path, times + 1, waiting_for_vorbis)
+                    inject_dll(
+                        child,
+                        dll_path,
+                        times + 1,
+                        waiting_for_vorbis,
+                        initialize_client,
+                    )
                 }
             }
         }
