@@ -76,11 +76,9 @@ export const startGame = async (
   if (IN_GAME) {
     invoke("send_message_to_game", {
       id: IN_GAME_PROCESS_ID,
-      message: password.length
-        ? `connect:${await getIpAddress(server.ip)}:${
-            server.port
-          }:${nickname}:${password}`
-        : `connect:${await getIpAddress(server.ip)}:${server.port}:${nickname}`,
+      message: `connectv2:${await getIpAddress(server.ip)}:${
+        server.port
+      }:${encodeURIComponent(nickname)}:${encodeURIComponent(password)}`,
     });
     useSettings.getState().addRecentNickname(nickname);
     return;
