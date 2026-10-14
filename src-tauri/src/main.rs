@@ -204,6 +204,8 @@ async fn run_tauri_app() -> Result<()> {
             get_uri_scheme_value,
             commands::inject,
             commands::get_gtasa_path_from_samp,
+            commands::get_model_cache_folder,
+            commands::set_model_cache_folder,
             commands::get_nickname_from_samp,
             commands::get_samp_favorite_list,
             commands::rerun_as_admin,

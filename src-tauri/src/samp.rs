@@ -16,6 +16,70 @@ use winreg::enums::*;
 #[cfg(target_os = "windows")]
 use winreg::RegKey;
 
+#[cfg(target_os = "windows")]
+const MODEL_CACHE_VALUE: &str = "model_cache";
+
+#[cfg(target_os = "windows")]
+fn default_model_cache_folder() -> Result<String, String> {
+    let documents = document_dir().ok_or("Could not find the Documents folder")?;
+    let cache = documents
+        .join("GTA San Andreas User Files")
+        .join("SAMP")
+        .join("cache");
+    cache
+        .to_str()
+        .map(str::to_owned)
+        .ok_or_else(|| "The Documents folder path is not valid Unicode".to_string())
+}
+
+#[cfg(target_os = "windows")]
+pub fn get_model_cache_folder() -> Result<String, String> {
+    let registry = RegKey::predef(HKEY_CURRENT_USER);
+    match registry.open_subkey_with_flags(SAMP_REGISTRY_KEY, KEY_READ) {
+        Ok(key) => match key.get_value::<String, _>(MODEL_CACHE_VALUE) {
+            Ok(path) if !path.is_empty() => Ok(path),
+            Ok(_) => Err("The SA-MP model cache registry value is empty".to_string()),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                default_model_cache_folder()
+            }
+            Err(error) => Err(format!(
+                "Could not read the SA-MP model cache folder: {error}"
+            )),
+        },
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => default_model_cache_folder(),
+        Err(error) => Err(format!("Could not open the SA-MP registry key: {error}")),
+    }
+}
+
+#[cfg(target_os = "windows")]
+pub fn set_model_cache_folder(folder: String) -> Result<String, String> {
+    let folder = folder.trim().replace('/', "\\");
+    if folder.is_empty() || folder.contains('\0') || !Path::new(&folder).is_absolute() {
+        return Err("Choose an absolute model cache folder path".to_string());
+    }
+    // samp.dll copies this value into a fixed-size ANSI buffer and appends "\\local".
+    if folder.len() > 240 {
+        return Err("The model cache folder path is too long for SA-MP".to_string());
+    }
+
+    let (key, _) = RegKey::predef(HKEY_CURRENT_USER)
+        .create_subkey(SAMP_REGISTRY_KEY)
+        .map_err(|error| format!("Could not open the SA-MP registry key: {error}"))?;
+    key.set_value(MODEL_CACHE_VALUE, &folder)
+        .map_err(|error| format!("Could not save the SA-MP model cache folder: {error}"))?;
+    Ok(folder)
+}
+
+#[cfg(not(target_os = "windows"))]
+pub fn get_model_cache_folder() -> Result<String, String> {
+    Err("SA-MP model cache settings are only available on Windows".to_string())
+}
+
+#[cfg(not(target_os = "windows"))]
+pub fn set_model_cache_folder(_folder: String) -> Result<String, String> {
+    Err("SA-MP model cache settings are only available on Windows".to_string())
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct SAMPServerInfo {
     pub ip: String,

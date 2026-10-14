@@ -55,6 +55,16 @@ pub fn get_gtasa_path_from_samp() -> String {
 }
 
 #[tauri::command]
+pub fn get_model_cache_folder() -> std::result::Result<String, String> {
+    samp::get_model_cache_folder()
+}
+
+#[tauri::command]
+pub fn set_model_cache_folder(folder: String) -> std::result::Result<String, String> {
+    samp::set_model_cache_folder(folder)
+}
+
+#[tauri::command]
 pub fn get_nickname_from_samp() -> String {
     samp::get_nickname()
 }

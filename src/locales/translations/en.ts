@@ -117,6 +117,8 @@ export default {
   import_invalid_data_description:
     "The selected file contains invalid data. Please select a valid favorites list file.",
   settings_custom_game_exe_label: "Custom game executable name",
+  settings_model_cache_folder_label: "Models cache folder",
+  settings_model_cache_folder_error: "Could not update the models cache folder",
   unable_to_find_custom_game_exe_title:
     "Unable to find custom game executable!",
   unable_to_find_custom_game_exe_description:
