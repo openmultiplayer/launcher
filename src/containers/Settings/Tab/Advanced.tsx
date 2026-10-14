@@ -171,7 +171,6 @@ const Advanced = () => {
             styles.importButton,
             {
               backgroundColor: `${theme.primary}BB`,
-              borderColor: theme.primary,
             },
           ]}
           onPress={() => exportFavoriteListFile()}
@@ -186,7 +185,6 @@ const Advanced = () => {
             styles.importButton,
             {
               backgroundColor: `${theme.primary}BB`,
-              borderColor: theme.primary,
             },
           ]}
           onPress={() => importFavoriteListFile()}
@@ -229,13 +227,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   importButton: {
-    marginTop: 10,
-    height: 30,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    marginTop: sc(8),
+    height: sc(36),
+    paddingHorizontal: sc(10),
+    borderRadius: sc(5),
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 2,
   },
   resetButton: {
     marginTop: 5,
