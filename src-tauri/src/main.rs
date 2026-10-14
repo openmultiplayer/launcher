@@ -85,6 +85,11 @@ async fn main() {
     }
 
     #[cfg(windows)]
+    if let Err(error) = samp::get_model_cache_folder() {
+        log::warn!("Could not initialize SA-MP model cache folder: {}", error);
+    }
+
+    #[cfg(windows)]
     {
         #[cfg(not(debug_assertions))]
         {

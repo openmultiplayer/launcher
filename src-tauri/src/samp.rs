@@ -40,13 +40,15 @@ pub fn get_model_cache_folder() -> Result<String, String> {
             Ok(path) if !path.is_empty() => Ok(path),
             Ok(_) => Err("The SA-MP model cache registry value is empty".to_string()),
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-                default_model_cache_folder()
+                set_model_cache_folder(default_model_cache_folder()?)
             }
             Err(error) => Err(format!(
                 "Could not read the SA-MP model cache folder: {error}"
             )),
         },
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => default_model_cache_folder(),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            set_model_cache_folder(default_model_cache_folder()?)
+        }
         Err(error) => Err(format!("Could not open the SA-MP registry key: {error}")),
     }
 }
