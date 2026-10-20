@@ -7,6 +7,7 @@ use std::io::Read;
 
 #[tauri::command]
 pub async fn inject(
+    app: tauri::AppHandle,
     name: &str,
     ip: &str,
     port: i32,
@@ -21,6 +22,11 @@ pub async fn inject(
     } else {
         omp_file
     };
+
+    // Fetch the server's models as one compressed pack first; failures fall back to in-game downloads.
+    if !actual_omp_file.is_empty() {
+        crate::model_pack::prefetch(app, ip.to_string(), port).await;
+    }
 
     crate::ipc::ensure_listening();
 
