@@ -96,6 +96,14 @@ pub fn resolve_hostname(hostname: String) -> std::result::Result<String, String>
 }
 
 #[tauri::command]
+pub fn is_wine() -> bool {
+    #[cfg(windows)]
+    return crate::wine::is_wine();
+    #[cfg(not(windows))]
+    false
+}
+
+#[tauri::command]
 pub fn is_process_alive(pid: u32) -> bool {
     use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
     use windows_sys::Win32::System::Threading::{OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION};

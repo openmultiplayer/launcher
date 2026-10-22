@@ -17,6 +17,7 @@ import {
 import { StyleSheet, View } from "react-native";
 import { DEBUG_MODE, IN_GAME, IN_GAME_PROCESS_ID } from "./constants/app";
 import LoadingScreen from "./containers/LoadingScreen";
+import { useIsWine, useWineCursorReset } from "./hooks/wine";
 import WindowTitleBar from "./containers/WindowTitleBar";
 import { changeLanguage } from "./locales";
 import { useGenericPersistentState } from "./states/genericStates";
@@ -54,6 +55,8 @@ const SettingsModal = lazy(() => import("./containers/Settings"));
 const App = memo(() => {
   const [loading, setLoading] = useState(!IN_GAME);
   const [maximized, setMaximized] = useState(false);
+  const isWine = useIsWine();
+  useWineCursorReset(isWine && !IN_GAME);
   const { theme } = useTheme();
   const { language } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
@@ -218,20 +221,22 @@ const App = memo(() => {
     endTimer();
   }, []);
 
+  const borderless = maximized || IN_GAME || isWine;
+
   const appStyle = useMemo(
-    () => [styles.app, { padding: maximized || IN_GAME ? 0 : 4 }],
-    [maximized]
+    () => [styles.app, { padding: borderless ? 0 : 4 }],
+    [borderless]
   );
 
   const appViewStyle = useMemo(
     () => [
       styles.appView,
       {
-        borderRadius: maximized || IN_GAME ? 0 : 10,
+        borderRadius: borderless ? 0 : 10,
         backgroundColor: theme.secondary,
       },
     ],
-    [maximized, theme.secondary]
+    [borderless, theme.secondary]
   );
 
   if (loading) {

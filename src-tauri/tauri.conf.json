@@ -85,6 +85,7 @@
         "decorations": false,
         "transparent": true,
         "userAgent": "omp-launcher",
+        "fileDropEnabled": false,
         "center": true
       }
     ],
