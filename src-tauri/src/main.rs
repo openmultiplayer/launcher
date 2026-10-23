@@ -247,9 +247,13 @@ fn tauri_context() -> tauri::Context<tauri::utils::assets::EmbeddedAssets> {
     let mut context = tauri::generate_context!();
 
     #[cfg(windows)]
-    if let Some(args) = wine::browser_args() {
+    if wine::is_wine() {
+        let args = wine::browser_args();
         for window in &mut context.config_mut().tauri.windows {
-            window.additional_browser_args = Some(args.clone());
+            window.additional_browser_args = args.clone();
+            // Wine cannot show the transparent window before the page draws,
+            // so it would flash white. The frontend shows it once it is sized.
+            window.visible = false;
         }
     }
 

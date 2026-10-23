@@ -111,6 +111,11 @@ const App = memo(() => {
         appWindow.center(),
       ]);
 
+      // Under Wine the window starts hidden (src-tauri/src/main.rs)
+      if (!IN_GAME && !(await appWindow.isVisible())) {
+        await appWindow.show();
+      }
+
       // Reset favorite server list outdated cached data
       const { favorites, updateInFavoritesList } =
         usePersistentServers.getState();
