@@ -13,6 +13,8 @@ mod samp;
 mod validation;
 #[cfg(windows)]
 mod wine;
+#[cfg(windows)]
+mod wine_overlay;
 
 #[path = "deeplink/lib.rs"]
 #[cfg(target_os = "windows")]
