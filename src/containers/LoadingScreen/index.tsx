@@ -7,6 +7,7 @@ import { getUpdateInfo } from "../../api/apis";
 import Icon from "../../components/Icon";
 import Text from "../../components/Text";
 import { validFileChecksums } from "../../constants/app";
+import { useIsWine } from "../../hooks/wine";
 import { images } from "../../constants/images";
 import i18n from "../../locales";
 import { UpdateInfo, useAppState } from "../../states/app";
@@ -44,6 +45,7 @@ const INITIAL_DOWNLOAD_STATE: DownloadProgress = {
 const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
   const { theme, themeType } = useTheme();
   const { language } = useGenericPersistentState();
+  const isWine = useIsWine();
   const [loadingStage, setLoadingStage] = useState<LoadingStage>(
     LoadingStage.INITIALIZING
   );
@@ -444,6 +446,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
     () => ({
       appView: {
         backgroundColor: theme.secondary,
+        ...(isWine && { borderRadius: 0 }),
       },
       progressBarContainer: {
         backgroundColor: theme.serverListItemBackgroundColor,
@@ -453,7 +456,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
         backgroundColor: theme.primary,
       },
     }),
-    [theme, downloadInfo.percent]
+    [theme, downloadInfo.percent, isWine]
   );
 
   const progressBar = useMemo(() => {
@@ -484,7 +487,7 @@ const LoadingScreen = ({ onEnd }: LoadingScreenProps) => {
   ]);
 
   return (
-    <View style={[styles.app, { padding: 4 }]}>
+    <View style={[styles.app, { padding: isWine ? 0 : 4 }]}>
       <View style={[styles.appView, dynamicStyles.appView]}>
         <View style={styles.loaderContainer}>
           <div

@@ -92,19 +92,25 @@ fn create_overlay_window(app: &tauri::AppHandle, pid: i32) -> Option<u32> {
         return overlay_window_id(&window);
     }
 
-    match WindowBuilder::new(
+    let mut builder = WindowBuilder::new(
         app,
         label.as_str(),
         WindowUrl::App(format!("index.html?attached_id={}", pid).into()),
-    )
-    .transparent(true)
-    .decorations(false)
-    .always_on_top(false)
-    .resizable(false)
-    .visible(false)
-    .position(-10000.0, -10000.0)
-    .skip_taskbar(true)
-    .build()
+    );
+    if let Some(args) = crate::wine::browser_args() {
+        builder = builder.additional_browser_args(&args);
+    }
+
+    match builder
+        .transparent(true)
+        .decorations(false)
+        .always_on_top(false)
+        .resizable(false)
+        .visible(false)
+        .position(-10000.0, -10000.0)
+        .skip_taskbar(true)
+        .disable_file_drop_handler()
+        .build()
     {
         Ok(window) => {
             let _ = window.set_title(&label);
