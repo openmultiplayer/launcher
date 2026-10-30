@@ -1,5 +1,6 @@
 import { fs, invoke, path, process, shell } from "@tauri-apps/api";
 import { open, save } from "@tauri-apps/api/dialog";
+import { listen } from "@tauri-apps/api/event";
 import { exists, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { t } from "i18next";
 import {
@@ -218,13 +219,35 @@ export const startGame = async (
         ? await getLocalPath(file.path, file.name)
         : idealSAMPDllPath;
 
+  const ip = await getIpAddress(server.ip);
+  const ompFile = await getLocalPath("omp", "omp-client.dll");
+
+  // The launcher downloads the server's models as compressed packs before starting the game.
+  const unlistenPack = await listen<{
+    phase: string;
+    done: number;
+    total: number;
+    files: number;
+  }>("model-pack-progress", ({ payload }) => {
+    const messageBox = useMessageBox.getState();
+    if (payload.phase === "end") {
+      messageBox.hideMessageBox();
+      return;
+    }
+    messageBox.showMessageBox({
+      title: t("model_pack_title", "Downloading server models"),
+      description: `${payload.files} files - ${Math.floor((100 * payload.done) / payload.total)}%`,
+      buttons: [],
+    });
+  });
+
   invoke("inject", {
     name: nickname,
-    ip: await getIpAddress(server.ip),
+    ip,
     port: server.port,
     exe: gtasaPath,
     dll: ourSAMPDllPath,
-    ompFile: await getLocalPath("omp", "omp-client.dll"),
+    ompFile,
     password,
     customGameExe,
   })
@@ -233,6 +256,7 @@ export const startGame = async (
       setSelected(undefined);
       useSettings.getState().addRecentNickname(nickname);
     })
+    .finally(() => unlistenPack())
     .catch((e) => {
       if (e === "need_admin") {
         showMessageBox({

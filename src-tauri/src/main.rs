@@ -7,6 +7,7 @@ mod constants;
 mod errors;
 mod helpers;
 mod injector;
+mod model_pack;
 mod ipc;
 mod query;
 mod samp;
