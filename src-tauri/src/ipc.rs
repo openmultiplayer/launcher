@@ -89,7 +89,21 @@ fn send_overlay_window_id(pid: i32, connection_id: u64, id: Option<u32>) {
 fn create_overlay_window(app: &tauri::AppHandle, pid: i32) -> Option<u32> {
     let label = overlay_window_label(pid);
     if let Some(window) = app.get_window(&label) {
-        return overlay_window_id(&window);
+        if crate::wine_overlay::reopen(&window) {
+            return overlay_window_id(&window);
+        }
+        // Under Wine it is still closing (wine_overlay.rs): wait for it to go,
+        // then build a new one, rather than handing the game a dying window
+        for _ in 0..50 {
+            if app.get_window(&label).is_none() {
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(20));
+        }
+        if let Some(window) = app.get_window(&label) {
+            log::warn!("Overlay window for game {} is still closing", pid);
+            return overlay_window_id(&window);
+        }
     }
 
     let mut builder = WindowBuilder::new(
@@ -101,12 +115,17 @@ fn create_overlay_window(app: &tauri::AppHandle, pid: i32) -> Option<u32> {
         builder = builder.additional_browser_args(&args);
     }
 
+    // Under Wine nothing stops a new window from taking the foreground, and the
+    // full-screen game minimises when it loses it (wine_overlay.rs)
+    let focused = !crate::wine::is_wine();
+
     match builder
         .transparent(true)
         .decorations(false)
         .always_on_top(false)
         .resizable(false)
         .visible(false)
+        .focused(focused)
         .position(-10000.0, -10000.0)
         .skip_taskbar(true)
         .disable_file_drop_handler()
@@ -114,6 +133,7 @@ fn create_overlay_window(app: &tauri::AppHandle, pid: i32) -> Option<u32> {
     {
         Ok(window) => {
             let _ = window.set_title(&label);
+            crate::wine_overlay::attach(&window, pid);
             overlay_window_id(&window)
         }
         Err(err) => {
@@ -167,6 +187,9 @@ pub fn listen_for_ipc(app_handle: AppHandle) {
                                                 );
                                                 client_pid = Some(pid);
                                             }
+                                        }
+                                        if client_pid == Some(pid) {
+                                            crate::wine_overlay::inject_hook(&handle, pid);
                                         }
                                         if client_pid == Some(pid) {
                                             if let Some(window) =
@@ -238,7 +261,7 @@ pub fn listen_for_ipc(app_handle: AppHandle) {
                                     {
                                         let window_label = overlay_window_label(pid);
                                         if let Some(window) = handle.get_window(&window_label) {
-                                            let _ = window.close();
+                                            crate::wine_overlay::close(&window);
                                         } else {
                                             log::warn!(
                                                 "IPC overlay window not found: {}",
