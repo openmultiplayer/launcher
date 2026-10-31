@@ -20,13 +20,14 @@ import { sc } from "../../utils/sizeScaler";
 import Advanced from "./Tab/Advanced";
 import General from "./Tab/General";
 import Languages from "./Tab/Languages";
+import Shortcuts from "./Tab/Shortcuts";
 import i18n from "../../locales";
 
-const MODAL_WIDTH = 500;
-const MODAL_HEIGHT = 300;
+const MODAL_WIDTH = 550;
+const MODAL_HEIGHT = 360;
 const TITLEBAR_HEIGHT = 25;
 
-type TabType = "general" | "languages" | "advanced";
+type TabType = "general" | "languages" | "advanced" | "shortcuts";
 
 const SettingsModal = () => {
   const { height, width } = useWindowDimensions();
@@ -41,6 +42,7 @@ const SettingsModal = () => {
       { label: t("settings_general_tab_title"), type: "general" },
       { label: t("settings_lang_tab_title"), type: "languages" },
       { label: t("settings_advanced_tab_title"), type: "advanced" },
+      { label: t("settings_shortcuts_tab_title"), type: "shortcuts" },
     ],
     [t, i18n.language]
   );
@@ -50,6 +52,7 @@ const SettingsModal = () => {
       general: <General />,
       languages: <Languages />,
       advanced: <Advanced />,
+      shortcuts: <Shortcuts />,
     }),
     []
   );

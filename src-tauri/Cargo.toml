@@ -34,7 +34,7 @@ md5 = "0.7.0"
 actix-web = "4.8.0"
 actix-rt = "2.10.0"
 actix-cors = "0.7.0"
-winapi = "0.3.9"
+winapi = { version = "0.3.9", features = ["psapi"] }
 gumdrop = "0.8.1"
 lazy_static = "1.5.0"
 dirs = "5.0.1"
@@ -54,7 +54,7 @@ windows-sys = { version = "0.52.0", features = [
     "Win32_System_JobObjects"
 ] }
 winreg = "0.52.0"
-dll-syringe = "0.15.2"
+dll-syringe = "0.18.2"
 windows = { version = "0.39.0", features = [
     "Win32_System_Console",
     "Win32_Foundation",

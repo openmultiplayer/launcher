@@ -201,6 +201,9 @@ const SearchBar = memo<SearchBarProps>(({ onChange }) => {
           />
         </View>
         <TextInput
+          nativeID="server-search-input"
+          // @ts-ignore
+          id="server-search-input"
           placeholder={t("search_for_server_hostname_mode")}
           placeholderTextColor={theme.textSecondary}
           value={searchQuery}

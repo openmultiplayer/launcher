@@ -36,8 +36,7 @@ export default defineConfig({
       name: "treat-js-files-as-jsx",
       async transform(code: any, id: any) {
         if (!id.match(/node_modules\/.*\.js$/)) return null;
-        // Use the exposed transform from vite, instead of directly
-        // transforming with esbuild
+
         return transformWithEsbuild(code, id, {
           loader: "jsx",
           jsx: "automatic",
@@ -64,19 +63,23 @@ export default defineConfig({
       "react-native": "react-native-web",
     },
   },
-  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  //
-  // 1. prevent vite from obscuring rust errors
+
   clearScreen: false,
-  // 2. tauri expects a fixed port, fail if that port is not available
+
   server: {
     port: 8050,
     strictPort: true,
-		host: "0.0.0.0",
+    host: "0.0.0.0",
+    watch: {
+      ignored: [
+        "**/src-tauri/target/**",
+        "**/target/**",
+      ],
+    },
   },
-  // 3. to make use of `TAURI_DEBUG` and other env variables
-  // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
+
   envPrefix: ["VITE_", "TAURI_"],
+
   build: {
     chunkSizeWarningLimit: 400,
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
