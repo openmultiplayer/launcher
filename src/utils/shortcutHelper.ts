@@ -1,29 +1,24 @@
 export const normalizeKeyFromEvent = (e: KeyboardEvent): string | null => {
-  // Ignore lone modifier presses
   if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) {
     return null;
   }
 
-  const parts: string[] = [];
+  const parts = [];
   if (e.ctrlKey || e.metaKey) parts.push("Ctrl");
   if (e.altKey) parts.push("Alt");
   if (e.shiftKey) parts.push("Shift");
 
-  let key = e.key;
-  if (key === " ") key = "Space";
-  else if (key.length === 1) key = key.toUpperCase();
-  else if (key.startsWith("Arrow")) key = key.replace("Arrow", "");
+  let k = e.key;
+  if (k === " ") k = "Space";
+  else if (k.length === 1) k = k.toUpperCase();
+  else if (k.startsWith("Arrow")) k = k.replace("Arrow", "");
 
-  parts.push(key);
+  parts.push(k);
   return parts.join("+");
 };
 
-export const eventMatchesShortcut = (
-  e: KeyboardEvent,
-  shortcutStr: string
-): boolean => {
-  if (!shortcutStr) return false;
+export const eventMatchesShortcut = (e: KeyboardEvent, shortcut: string): boolean => {
+  if (!shortcut) return false;
   const pressed = normalizeKeyFromEvent(e);
-  if (!pressed) return false;
-  return pressed.toLowerCase() === shortcutStr.toLowerCase();
+  return pressed ? pressed.toLowerCase() === shortcut.toLowerCase() : false;
 };

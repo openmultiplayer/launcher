@@ -10,56 +10,46 @@ import { sc } from "../../../utils/sizeScaler";
 const ShortcutsTab = () => {
   const { t } = useTranslation();
   const { theme, themeType } = useTheme();
-  const { shortcuts, setShortcut, resetShortcut, resetAllShortcuts } =
-    useShortcuts();
+  const { shortcuts, setShortcut, resetShortcut, resetAllShortcuts } = useShortcuts();
   const [recordingId, setRecordingId] = useState<string | null>(null);
 
-  // Global keydown listener when recording a shortcut
   useEffect(() => {
     if (!recordingId) return;
 
-    const handleRecordKey = (e: KeyboardEvent) => {
+    const onKeyDown = (e: KeyboardEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
-      // Escape cancels recording
       if (e.key === "Escape") {
         setRecordingId(null);
         return;
       }
 
-      const keyCombo = normalizeKeyFromEvent(e);
-      if (keyCombo) {
-        setShortcut(recordingId, keyCombo);
+      const combo = normalizeKeyFromEvent(e);
+      if (combo) {
+        setShortcut(recordingId, combo);
         setRecordingId(null);
       }
     };
 
-    window.addEventListener("keydown", handleRecordKey, { capture: true });
-    return () => {
-      window.removeEventListener("keydown", handleRecordKey, { capture: true });
-    };
+    window.addEventListener("keydown", onKeyDown, { capture: true });
+    return () => window.removeEventListener("keydown", onKeyDown, { capture: true });
   }, [recordingId, setShortcut]);
 
   const handleStartRecord = useCallback(
     (id: string) => {
-      setRecordingId(id === recordingId ? null : id);
+      setRecordingId(recordingId === id ? null : id);
     },
     [recordingId]
   );
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.listCard,
-          { backgroundColor: theme.itemBackgroundColor },
-        ]}
-      >
+      <View style={[styles.listCard, { backgroundColor: theme.itemBackgroundColor }]}>
         <ScrollView id={themeType === "dark" ? "scroll" : "scroll-light"}>
-          {shortcuts.map((item: ShortcutConfig, index: number) => {
+          {shortcuts.map((item: ShortcutConfig, idx) => {
             const isRecording = recordingId === item.id;
-            const isModified = item.currentKey !== item.defaultKey;
+            const isCustom = item.currentKey !== item.defaultKey;
 
             return (
               <View
@@ -68,7 +58,7 @@ const ShortcutsTab = () => {
                   styles.shortcutRow,
                   {
                     borderBottomColor: `${theme.textSecondary}22`,
-                    borderBottomWidth: index === shortcuts.length - 1 ? 0 : 1,
+                    borderBottomWidth: idx === shortcuts.length - 1 ? 0 : 1,
                   },
                 ]}
               >
@@ -76,28 +66,18 @@ const ShortcutsTab = () => {
                   <Text semibold color={theme.textPrimary} size={2}>
                     {t(item.labelKey)}
                   </Text>
-                  <Text
-                    color={theme.textSecondary}
-                    style={styles.descriptionText}
-                  >
+                  <Text color={theme.textSecondary} style={styles.descriptionText}>
                     {t(item.descriptionKey)}
                   </Text>
                 </View>
 
                 <View style={styles.actionGroup}>
-                  {isModified && (
+                  {isCustom && (
                     <Pressable
-                      style={[
-                        styles.resetSingleBtn,
-                        { backgroundColor: `${theme.textSecondary}22` },
-                      ]}
+                      style={[styles.resetSingleBtn, { backgroundColor: `${theme.textSecondary}22` }]}
                       onPress={() => resetShortcut(item.id)}
                     >
-                      <Text
-                        size={2}
-                        color={theme.textSecondary}
-                        style={{ lineHeight: sc(14) }}
-                      >
+                      <Text size={2} color={theme.textSecondary} style={{ lineHeight: sc(14) }}>
                         ↺
                       </Text>
                     </Pressable>
@@ -107,24 +87,14 @@ const ShortcutsTab = () => {
                     style={[
                       styles.keyBadge,
                       {
-                        backgroundColor: isRecording
-                          ? theme.primary
-                          : `${theme.secondary}`,
-                        borderColor: isRecording
-                          ? theme.primary
-                          : `${theme.textSecondary}55`,
+                        backgroundColor: isRecording ? theme.primary : theme.secondary,
+                        borderColor: isRecording ? theme.primary : `${theme.textSecondary}55`,
                       },
                     ]}
                     onPress={() => handleStartRecord(item.id)}
                   >
-                    <Text
-                      semibold
-                      size={2}
-                      color={isRecording ? "#FFFFFF" : theme.textPrimary}
-                    >
-                      {isRecording
-                        ? t("shortcuts_press_keys_prompt")
-                        : item.currentKey}
+                    <Text semibold size={2} color={isRecording ? "#FFFFFF" : theme.textPrimary}>
+                      {isRecording ? t("shortcuts_press_keys_prompt") : item.currentKey}
                     </Text>
                   </Pressable>
                 </View>
@@ -136,16 +106,11 @@ const ShortcutsTab = () => {
 
       <View style={styles.bottomBar}>
         <Text color={theme.textSecondary} style={styles.helperTip}>
-          {recordingId
-            ? t("shortcuts_recording_hint")
-            : t("shortcuts_click_to_edit_hint")}
+          {recordingId ? t("shortcuts_recording_hint") : t("shortcuts_click_to_edit_hint")}
         </Text>
 
         <Pressable
-          style={[
-            styles.resetAllBtn,
-            { backgroundColor: `${theme.primary}22` },
-          ]}
+          style={[styles.resetAllBtn, { backgroundColor: `${theme.primary}22` }]}
           onPress={resetAllShortcuts}
         >
           <Text semibold size={2} color={theme.primary}>

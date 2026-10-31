@@ -11,19 +11,15 @@ import { useTheme } from "../states/theme";
 import { fetchServers } from "../utils/helpers";
 import { eventMatchesShortcut } from "../utils/shortcutHelper";
 
-export const useGlobalShortcuts = (enabled: boolean = true) => {
+export const useGlobalShortcuts = (enabled = true) => {
   const { shortcuts } = useShortcuts();
 
   useEffect(() => {
     if (!enabled) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Find matching shortcut config
-      const matched = shortcuts.find((sc) =>
-        eventMatchesShortcut(e, sc.currentKey)
-      );
-
-      if (!matched) return;
+      const match = shortcuts.find((sc) => eventMatchesShortcut(e, sc.currentKey));
+      if (!match) return;
 
       const target = e.target as HTMLElement | null;
       const isInput =
@@ -31,7 +27,6 @@ export const useGlobalShortcuts = (enabled: boolean = true) => {
         target?.tagName === "TEXTAREA" ||
         target?.isContentEditable;
 
-      // In input elements, only permit shortcuts that use modifier keys, F-keys, or Escape
       if (isInput) {
         const isModifier = e.ctrlKey || e.altKey || e.metaKey;
         const isFKey = e.key.startsWith("F") && e.key.length > 1;
@@ -42,24 +37,21 @@ export const useGlobalShortcuts = (enabled: boolean = true) => {
         }
       }
 
-      switch (matched.id) {
+      switch (match.id) {
         case "search": {
           e.preventDefault();
-          const searchInput = document.getElementById(
-            "server-search-input"
-          ) as HTMLInputElement | null;
-          if (searchInput) {
-            searchInput.focus();
-            searchInput.select();
+          const el = document.getElementById("server-search-input") as HTMLInputElement | null;
+          if (el) {
+            el.focus();
+            el.select();
           }
           break;
         }
 
-        case "refresh": {
+        case "refresh":
           e.preventDefault();
           fetchServers();
           break;
-        }
 
         case "connect": {
           const { selected } = useServers.getState();
@@ -72,38 +64,28 @@ export const useGlobalShortcuts = (enabled: boolean = true) => {
           break;
         }
 
-        case "add_server": {
+        case "add_server":
           e.preventDefault();
-          const { showAddThirdPartyServer } =
-            useAddThirdPartyServerModal.getState();
-          showAddThirdPartyServer(true);
+          useAddThirdPartyServerModal.getState().showAddThirdPartyServer(true);
           break;
-        }
 
         case "favorite": {
           const { selected } = useServers.getState();
           if (selected) {
             e.preventDefault();
-            const { favorites, addToFavorites, removeFromFavorites } =
-              usePersistentServers.getState();
-            const isFav = favorites.some(
-              (fav) => fav.ip === selected.ip && fav.port === selected.port
-            );
-            if (isFav) {
-              removeFromFavorites(selected);
-            } else {
-              addToFavorites(selected);
-            }
+            const { favorites, addToFavorites, removeFromFavorites } = usePersistentServers.getState();
+            const isFav = favorites.some((fav) => fav.ip === selected.ip && fav.port === selected.port);
+            if (isFav) removeFromFavorites(selected);
+            else addToFavorites(selected);
           }
           break;
         }
 
-        case "filter": {
+        case "filter":
           e.preventDefault();
           const { filterMenu, showFilterMenu } = useGenericTempState.getState();
           showFilterMenu(!filterMenu);
           break;
-        }
 
         case "settings": {
           e.preventDefault();
@@ -121,21 +103,14 @@ export const useGlobalShortcuts = (enabled: boolean = true) => {
         }
 
         case "close_modal": {
-          const { visible: settingsVisible, hide: hideSettings } =
-            useSettingsModal.getState();
-          const { visible: promptVisible, showPrompt } =
-            useJoinServerPrompt.getState();
+          const { visible: settingsVisible, hide: hideSettings } = useSettingsModal.getState();
+          const { visible: promptVisible, showPrompt } = useJoinServerPrompt.getState();
           const { filterMenu, showFilterMenu } = useGenericTempState.getState();
-          const { visible: thirdPartyVisible, showAddThirdPartyServer } =
-            useAddThirdPartyServerModal.getState();
-          const { visible: msgBoxVisible, hideMessageBox } =
-            useMessageBox.getState();
-          const { visible: contextMenuVisible, hide: hideContextMenu } =
-            useContextMenu.getState();
+          const { visible: thirdPartyVisible, showAddThirdPartyServer } = useAddThirdPartyServerModal.getState();
+          const { visible: msgBoxVisible, hideMessageBox } = useMessageBox.getState();
+          const { visible: contextMenuVisible, hide: hideContextMenu } = useContextMenu.getState();
 
-          if (isInput && target) {
-            target.blur();
-          }
+          if (isInput && target) target.blur();
 
           if (contextMenuVisible) {
             e.preventDefault();
@@ -156,7 +131,6 @@ export const useGlobalShortcuts = (enabled: boolean = true) => {
             e.preventDefault();
             hideMessageBox();
           } else {
-            // Deselect selected server
             const { setSelected, selected } = useServers.getState();
             if (selected) {
               e.preventDefault();
@@ -165,15 +139,10 @@ export const useGlobalShortcuts = (enabled: boolean = true) => {
           }
           break;
         }
-
-        default:
-          break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [enabled, shortcuts]);
 };
