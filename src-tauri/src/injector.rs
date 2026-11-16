@@ -103,6 +103,7 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
     use winapi::{
         shared::minwindef::{FALSE, HMODULE},
         um::{
+            handleapi::CloseHandle,
             processthreadsapi::OpenProcess,
             psapi::{EnumProcessModulesEx, GetModuleFileNameExA},
             winnt::PROCESS_ALL_ACCESS,
@@ -127,33 +128,38 @@ pub fn inject_dll(child: u32, dll_path: &str, times: u32, waiting_for_vorbis: bo
                     );
 
                     let mut bytes = [0i8; PROCESS_MODULE_BUFFER_SIZE];
-
-                    if found == 0 {
-                        let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
-                        std::thread::sleep(delay);
-                        return inject_dll(child, dll_path, times, true);
-                    }
-
                     let mut found_vorbis = false;
-                    for i in 0..(found / 4) {
-                        if GetModuleFileNameExA(
-                            handle,
-                            module_handles[i as usize],
-                            bytes.as_mut_ptr(),
-                            PROCESS_MODULE_BUFFER_SIZE as u32,
-                        ) != 0
-                        {
-                            let string = std::ffi::CStr::from_ptr(bytes.as_ptr());
-                            if string.to_string_lossy().to_string().contains("vorbis") {
-                                found_vorbis = true;
+
+                    if found > 0 {
+                        for i in 0..(found / 4) {
+                            if GetModuleFileNameExA(
+                                handle,
+                                module_handles[i as usize],
+                                bytes.as_mut_ptr(),
+                                PROCESS_MODULE_BUFFER_SIZE as u32,
+                            ) != 0
+                            {
+                                let string = std::ffi::CStr::from_ptr(bytes.as_ptr());
+                                if string.to_string_lossy().to_string().contains("vorbis") {
+                                    found_vorbis = true;
+                                }
                             }
                         }
                     }
 
+                    CloseHandle(handle);
+
                     if !found_vorbis {
+                        if times >= INJECTION_MAX_RETRIES {
+                            return Err(LauncherError::Injection(format!(
+                                "Timed out waiting for the vorbis module in process {}",
+                                child
+                            )));
+                        }
+
                         let delay = std::time::Duration::from_millis(INJECTION_RETRY_DELAY_MS);
                         std::thread::sleep(delay);
-                        return inject_dll(child, dll_path, times, true);
+                        return inject_dll(child, dll_path, times + 1, true);
                     }
                 }
             }
