@@ -102,6 +102,9 @@ pub fn prepare(identifier: &str) {
             );
         };
         let _ = conn.write_all(b"\n");
+
+        // The primary instance owns the window, so this one is done.
+        std::process::exit(0);
     };
     ID.set(identifier.to_string())
         .expect("prepare() called more than once with different identifiers.");
