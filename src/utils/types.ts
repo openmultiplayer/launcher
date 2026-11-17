@@ -117,6 +117,7 @@ export interface PerServerSettings {
   ipPort: string;
   nickname?: string;
   sampVersion?: SAMPDLLVersions;
+  gtasaPath?: string;
 }
 
 // Utility types for better type safety

@@ -5,7 +5,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { queryServer } from "../utils/query";
 import { stateStorage } from "../utils/stateStorage";
-import { PerServerSettings, SAMPDLLVersions, Server } from "../utils/types";
+import { PerServerSettings, Server } from "../utils/types";
 import { useNotification } from "./notification";
 
 interface ServersState {
@@ -29,8 +29,7 @@ interface ServersPersistentState {
   updateInRecentlyJoinedList: (server: Server) => void;
   setServerSettings: (
     server: Server,
-    nickname?: string,
-    version?: SAMPDLLVersions
+    settings: Partial<Omit<PerServerSettings, "ipPort">>
   ) => void;
   getServerSettings: (server: Server) => PerServerSettings | undefined;
   reorderFavorites: (fromIndex: number, toIndex: number) => void;
@@ -145,13 +144,17 @@ const usePersistentServers = create<ServersPersistentState>()(
           return { recentlyJoined: updated };
         }),
 
-      setServerSettings: (server, nickname, version) =>
+      setServerSettings: (server, settings) =>
         set(() => {
           const ipPort = `${server.ip}:${server.port}`;
           const updated = [...get().perServerSettings];
           const index = updated.findIndex((s) => s.ipPort === ipPort);
 
-          const newSetting = { ipPort, nickname, sampVersion: version };
+          const newSetting: PerServerSettings = {
+            ...(index !== -1 ? updated[index] : { ipPort }),
+            ...settings,
+            ipPort,
+          };
 
           if (index !== -1) updated[index] = newSetting;
           else updated.push(newSetting);

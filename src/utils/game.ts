@@ -32,8 +32,7 @@ const showOkModal = (title: string, description: string) => {
 const getLocalPath = async (...segments: string[]) =>
   path.join(await path.appLocalDataDir(), ...segments);
 
-export const copySharedFilesIntoGameFolder = async () => {
-  const { gtasaPath } = useSettings.getState();
+export const copySharedFilesIntoGameFolder = async (gtasaPath: string) => {
   const shared = await getLocalPath("samp", "shared");
   await invoke("copy_files_to_gtasa", {
     src: shared,
@@ -43,8 +42,10 @@ export const copySharedFilesIntoGameFolder = async () => {
   });
 };
 
-const isFileAvailableInGTASADir = async (file: ResourceInfo) => {
-  const { gtasaPath } = useSettings.getState();
+const isFileAvailableInGTASADir = async (
+  file: ResourceInfo,
+  gtasaPath: string
+) => {
   const tempPath = await path.join(
     file.path.replace("samp/shared/", ""),
     file.name
@@ -52,10 +53,10 @@ const isFileAvailableInGTASADir = async (file: ResourceInfo) => {
   return fs.exists(await path.join(gtasaPath, tempPath));
 };
 
-export const checkResourceFilesAvailability = async () => {
+export const checkResourceFilesAvailability = async (gtasaPath: string) => {
   const checks = Array.from(validFileChecksums.values())
     .filter((file) => file.requiredInGameDir)
-    .map((file) => isFileAvailableInGTASADir(file));
+    .map((file) => isFileAvailableInGTASADir(file, gtasaPath));
 
   return Promise.all(checks);
 };
@@ -70,6 +71,9 @@ export const startGame = async (
   const { showMessageBox, hideMessageBox } = useMessageBox.getState();
   const { show: showSettings } = useSettingsModal.getState();
   const { sampVersion, customGameExe } = useSettings.getState();
+  const effectiveGtasaPath =
+    usePersistentServers.getState().getServerSettings(server)?.gtasaPath ||
+    gtasaPath;
   const { showPrompt, setServer } = useJoinServerPrompt.getState();
   const { setSelected } = useServers.getState();
 
@@ -84,7 +88,7 @@ export const startGame = async (
     return;
   }
 
-  if (!gtasaPath) {
+  if (!effectiveGtasaPath) {
     showMessageBox({
       title: t("gta_path_modal_path_not_set_title"),
       description: t("gta_path_modal_path_not_set_description"),
@@ -121,20 +125,23 @@ export const startGame = async (
   }
 
   let foundSampInGtaFolder = true;
-  const dirValidity = await checkDirectoryValidity(gtasaPath, (reason) => {
-    if (reason === "samp") foundSampInGtaFolder = false;
-    else {
-      showPrompt(true);
-      setServer(server);
+  const dirValidity = await checkDirectoryValidity(
+    effectiveGtasaPath,
+    (reason) => {
+      if (reason === "samp") foundSampInGtaFolder = false;
+      else {
+        showPrompt(true);
+        setServer(server);
+      }
     }
-  });
+  );
 
   if (sampVersion !== "custom") {
     try {
-      const checks = await checkResourceFilesAvailability();
+      const checks = await checkResourceFilesAvailability(effectiveGtasaPath);
       if (checks.includes(false)) {
         Log.debug("Missing files, copying into GTASA directory...");
-        await copySharedFilesIntoGameFolder();
+        await copySharedFilesIntoGameFolder(effectiveGtasaPath);
       }
     } catch (e) {
       if (e === "need_admin") {
@@ -170,7 +177,7 @@ export const startGame = async (
     showMessageBox({
       title: t("gta_path_modal_cant_find_samp_title"),
       description: `${t("gta_path_modal_cant_find_samp_description", {
-        path: gtasaPath,
+        path: effectiveGtasaPath,
       })}\n${t("gta_path_modal_cant_find_samp_description_2")}`,
       boxWidth: 360,
       buttonWidth: 150,
@@ -198,7 +205,10 @@ export const startGame = async (
   if (!dirValidity) return;
 
   // Custom exe doesn't exist
-  if ((await fs.exists(await path.join(gtasaPath, customGameExe))) === false) {
+  if (
+    (await fs.exists(await path.join(effectiveGtasaPath, customGameExe))) ===
+    false
+  ) {
     showMessageBox({
       title: t("unable_to_find_custom_game_exe_title"),
       description: t("unable_to_find_custom_game_exe_description"),
@@ -207,7 +217,7 @@ export const startGame = async (
     return;
   }
 
-  const idealSAMPDllPath = await path.join(gtasaPath, "samp.dll");
+  const idealSAMPDllPath = await path.join(effectiveGtasaPath, "samp.dll");
   const file = validFileChecksums.get(
     sampVersion !== "custom" ? sampVersion : "037R1_samp.dll"
   );
@@ -222,7 +232,7 @@ export const startGame = async (
     name: nickname,
     ip: await getIpAddress(server.ip),
     port: server.port,
-    exe: gtasaPath,
+    exe: effectiveGtasaPath,
     dll: ourSAMPDllPath,
     ompFile: await getLocalPath("omp", "omp-client.dll"),
     password,

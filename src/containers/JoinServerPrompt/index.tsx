@@ -1,4 +1,5 @@
 import { fs } from "@tauri-apps/api";
+import { open } from "@tauri-apps/api/dialog";
 import { t } from "i18next";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -17,11 +18,12 @@ import StaticModal from "../../components/StaticModal";
 import Text from "../../components/Text";
 import { IN_GAME } from "../../constants/app";
 import { images } from "../../constants/images";
+import { useAppState } from "../../states/app";
 import { useJoinServerPrompt } from "../../states/joinServerPrompt";
 import { usePersistentServers, useServers } from "../../states/servers";
 import { useSettings } from "../../states/settings";
 import { useTheme } from "../../states/theme";
-import { startGame } from "../../utils/game";
+import { checkDirectoryValidity, startGame } from "../../utils/game";
 import {
   getSampVersionFromName,
   getSampVersionName,
@@ -40,6 +42,7 @@ const JoinServerPrompt = () => {
     perServerSettings,
   } = usePersistentServers();
   const { updateServer } = useServers();
+  const { hostOS } = useAppState();
   const { height, width } = useWindowDimensions();
   const { theme, themeType } = useTheme();
   const [password, setPassword] = useState("");
@@ -58,6 +61,8 @@ const JoinServerPrompt = () => {
     }
     return undefined;
   }, [server, perServerSettings]);
+  const perServerGamePath = settings?.gtasaPath || "";
+  const effectiveGamePath = perServerGamePath || gtasaPath;
 
   useEffect(() => {
     if (!settings?.sampVersion) {
@@ -69,7 +74,7 @@ const JoinServerPrompt = () => {
         setSampVersion(perServerVersion);
       }
     }
-  }, [visible, perServerVersion, settings?.sampVersion]);
+  }, [visible, perServerVersion, settings?.sampVersion, effectiveGamePath]);
 
   useEffect(() => {
     if (settings) {
@@ -107,7 +112,7 @@ const JoinServerPrompt = () => {
 
   const bigView = bannerUrl.length || logoUrl.length;
 
-  const HEIGHT = (server?.hasPassword ? 316 : 248) + (bigView ? 77 : 7);
+  const HEIGHT = (server?.hasPassword ? 316 : 248) + (bigView ? 77 : 7) + 60;
   const WIDTH = 320;
 
   const dynamicStyles = useMemo(
@@ -154,7 +159,7 @@ const JoinServerPrompt = () => {
   );
 
   const setInitialSampVersion = useCallback(async () => {
-    if (await fs.exists(`${gtasaPath}/samp.dll`)) {
+    if (await fs.exists(`${effectiveGamePath}/samp.dll`)) {
       setPerServerVersion("custom");
     } else if (
       (server && server.version.includes("0.3.7")) ||
@@ -176,22 +181,46 @@ const JoinServerPrompt = () => {
     } else {
       setPerServerVersion("037R5_samp.dll");
     }
-  }, [gtasaPath, server]);
+  }, [effectiveGamePath, server]);
 
   const handleNicknameChange = useCallback(
     (text: string) => {
       setPerServerNickname(text);
 
       if (server) {
-        if (settings) {
-          setServerSettings(server, text, settings.sampVersion);
-        } else {
-          setServerSettings(server, text, undefined);
-        }
+        setServerSettings(server, { nickname: text });
       }
     },
-    [server, settings, setServerSettings]
+    [server, setServerSettings]
   );
+
+  const handleGamePathSelect = useCallback(async () => {
+    if (!server) return;
+
+    const defaultPath = effectiveGamePath
+      ? hostOS === "Windows_NT"
+        ? effectiveGamePath.replace(/\//g, "\\")
+        : effectiveGamePath
+      : undefined;
+    const selected = await open({
+      defaultPath,
+      directory: true,
+      multiple: false,
+    });
+
+    if (typeof selected !== "string") return;
+
+    const newPath = selected.replace(/\\/g, "/");
+    if (await checkDirectoryValidity(newPath)) {
+      setServerSettings(server, { gtasaPath: newPath });
+    }
+  }, [effectiveGamePath, hostOS, server, setServerSettings]);
+
+  const handleGamePathClear = useCallback(() => {
+    if (!server) return;
+
+    setServerSettings(server, { gtasaPath: undefined });
+  }, [server, setServerSettings]);
 
   const openDropdown = useCallback(() => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -207,16 +236,12 @@ const JoinServerPrompt = () => {
     (name: string) => {
       setPerServerNickname(name);
       if (server) {
-        if (settings) {
-          setServerSettings(server, name, settings.sampVersion);
-        } else {
-          setServerSettings(server, name, undefined);
-        }
+        setServerSettings(server, { nickname: name });
       }
       if (hideTimer.current) clearTimeout(hideTimer.current);
       setDropdownOpen(false);
     },
-    [server, settings, setServerSettings]
+    [server, setServerSettings]
   );
 
   const handleConnect = useCallback(() => {
@@ -233,7 +258,7 @@ const JoinServerPrompt = () => {
       startGame(
         server,
         perServerNickname.length ? perServerNickname : nickName,
-        gtasaPath,
+        effectiveGamePath,
         server.hasPassword ? password : ""
       );
       showPrompt(false);
@@ -243,7 +268,7 @@ const JoinServerPrompt = () => {
     password,
     perServerNickname,
     nickName,
-    gtasaPath,
+    effectiveGamePath,
     updateServer,
     updateInFavoritesList,
     updateInRecentlyJoinedList,
@@ -255,9 +280,15 @@ const JoinServerPrompt = () => {
       const version = getSampVersionFromName(value);
       if (server) {
         if (settings) {
-          setServerSettings(server, perServerNickname, version);
+          setServerSettings(server, {
+            nickname: perServerNickname,
+            sampVersion: version,
+          });
         } else {
-          setServerSettings(server, perServerNickname || undefined, version);
+          setServerSettings(server, {
+            nickname: perServerNickname || undefined,
+            sampVersion: version,
+          });
         }
         setPerServerVersion(version);
       }
@@ -395,6 +426,46 @@ const JoinServerPrompt = () => {
               )}
             </View>
           </View>
+          <View style={styles.gamePathSection}>
+            <Text semibold color={theme.textPrimary} size={2}>
+              {t("server_game_path")}:
+            </Text>
+            <View style={styles.gamePathControls}>
+              <Text
+                numberOfLines={1}
+                style={[styles.gamePathText, { color: theme.textPrimary }]}
+              >
+                {perServerGamePath ||
+                  (gtasaPath
+                    ? t("server_game_path_using_default", { path: gtasaPath })
+                    : t("server_game_path_not_set"))}
+              </Text>
+              <TouchableOpacity
+                style={[
+                  styles.gamePathButton,
+                  { backgroundColor: `${theme.primary}BB` },
+                ]}
+                onPress={handleGamePathSelect}
+              >
+                <Text semibold color="#FFFFFF" size={1}>
+                  {t("browse")}
+                </Text>
+              </TouchableOpacity>
+              {perServerGamePath.length > 0 && (
+                <TouchableOpacity
+                  style={[
+                    styles.gamePathButton,
+                    { backgroundColor: `${theme.primary}BB` },
+                  ]}
+                  onPress={handleGamePathClear}
+                >
+                  <Text semibold color="#FFFFFF" size={1}>
+                    {t("clear")}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
           <TouchableOpacity
             style={[styles.connectButton, dynamicStyles.connectButton]}
             onPress={handleConnect}
@@ -506,6 +577,28 @@ const styles = StyleSheet.create({
   nicknameSection: {
     marginTop: sc(10),
     zIndex: 1,
+  },
+  gamePathSection: {
+    marginTop: sc(8),
+    width: 300,
+  },
+  gamePathControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: sc(5),
+  },
+  gamePathText: {
+    flex: 1,
+    fontFamily: "Proxima Nova Regular",
+    fontSize: sc(13),
+  },
+  gamePathButton: {
+    minHeight: sc(30),
+    paddingHorizontal: sc(7),
+    borderRadius: sc(4),
+    marginLeft: sc(5),
+    justifyContent: "center",
+    alignItems: "center",
   },
   nicknameInputWrapper: {
     position: "relative",
