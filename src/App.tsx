@@ -18,6 +18,7 @@ import { StyleSheet, View } from "react-native";
 import { DEBUG_MODE, IN_GAME, IN_GAME_PROCESS_ID } from "./constants/app";
 import LoadingScreen from "./containers/LoadingScreen";
 import { useIsWine, useWineCursorReset } from "./hooks/wine";
+import { useGlobalShortcuts } from "./hooks/useGlobalShortcuts";
 import WindowTitleBar from "./containers/WindowTitleBar";
 import { changeLanguage } from "./locales";
 import { useGenericPersistentState } from "./states/genericStates";
@@ -57,6 +58,7 @@ const App = memo(() => {
   const [maximized, setMaximized] = useState(false);
   const isWine = useIsWine();
   useWineCursorReset(isWine && !IN_GAME);
+  useGlobalShortcuts(!loading);
   const { theme } = useTheme();
   const { language } = useGenericPersistentState();
   const windowSize = useRef<PhysicalSize>();
